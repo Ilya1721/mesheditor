@@ -97,11 +97,12 @@
     <ClInclude Include="RenderSystem\Camera.h" />
     <ClInclude Include="RenderSystem\Constants.h" />
     <ClInclude Include="RenderSystem\framework.h" />
+    <ClInclude Include="RenderSystem\IEventHandler.h" />
     <ClInclude Include="RenderSystem\khrplatform.h" />
-    <ClInclude Include="RenderSystem\MainSceneRenderer.h" />
-    <ClInclude Include="RenderSystem\MainWindow.h" />
+    <ClInclude Include="RenderSystem\PanHandler.h" />
     <ClInclude Include="RenderSystem\pch.h" />
     <ClInclude Include="RenderSystem\Scene.h" />
+    <ClInclude Include="RenderSystem\TestRenderer.h" />
     <ClInclude Include="RenderSystem\Viewport.h" />
     <ClInclude Include="RenderSystem\Window.h" />
   </ItemGroup>
@@ -113,8 +114,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="MainWindow.cpp" />
+    <ClCompile Include="PanHandler.cpp" />
     <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="TestRenderer.cpp" />
     <ClCompile Include="Viewport.cpp" />
     <ClCompile Include="Window.cpp" />
     <ClCompile Include="pch.cpp">

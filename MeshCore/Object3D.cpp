@@ -6,12 +6,13 @@
 
 namespace MeshCore
 {
-	Object3D::Object3D(Object3D* parent, std::unique_ptr<Mesh> mesh) noexcept
-		:
+	Object3D::Object3D(Object3D* parent, std::unique_ptr<Mesh> mesh) noexcept :
 		mLocalTransform(1.0f),
 		mMesh(std::move(mesh)),
 		mParent(parent),
-		mNeedUpdateRenderData(true)
+		mNeedUpdateRenderData(true),
+		mVertexShader(0),
+		mFragmentShader(0)
 	{}
 
 	void Object3D::setParent(Object3D* parent) noexcept
@@ -99,6 +100,11 @@ namespace MeshCore
 		{
 			mChildren.erase(childIt);
 		}
+	}
+
+	ShaderType Object3D::getShaderType() const noexcept
+	{
+		return ShaderType::BASIC_SHADER;
 	}
 
 	void Object3D::prepareRenderData() noexcept

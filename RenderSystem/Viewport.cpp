@@ -4,15 +4,14 @@
 
 namespace RenderSystem
 {
-	Viewport::Viewport(int x, int y, int width, int height) noexcept 
-		:
+	Viewport::Viewport(int x, int y, int width, int height) noexcept :
 		mFov(45.0f),
 		mNearPlaneDistance(0.01f),
 		mFarPlaneDistance(1000.0f),
-		mX(x),
-		mY(y),
+		mPos(x, y),
 		mWidth(800),
-		mHeight(600)
+		mHeight(600),
+		mProjectionType(PROJECTION_TYPE::ORTHOGRAPHIC)
 	{}
 
 	Camera& Viewport::getCamera() noexcept
@@ -20,9 +19,9 @@ namespace RenderSystem
 		return mCamera;
 	}
 
-	glm::mat4 Viewport::calcProjectionMatrix(PROJECTION_TYPE projectionType) noexcept
+	glm::mat4 Viewport::calcProjectionMatrix() noexcept
 	{
-		if (projectionType == PROJECTION_TYPE::ORTHOGRAPHIC)
+		if (mProjectionType == PROJECTION_TYPE::ORTHOGRAPHIC)
 		{
 			return glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, mNearPlaneDistance, mFarPlaneDistance);
 		}
@@ -30,6 +29,16 @@ namespace RenderSystem
 		{
 			return glm::perspective(mFov, static_cast<float>(mWidth / mHeight), mNearPlaneDistance, mFarPlaneDistance);
 		}
+	}
+
+	PROJECTION_TYPE Viewport::getProjectionType() const noexcept
+	{
+		return mProjectionType;
+	}
+
+	void Viewport::setProjectionType(PROJECTION_TYPE projectionType) noexcept
+	{
+		mProjectionType = projectionType;
 	}
 
 	float Viewport::getFov() const noexcept
@@ -64,30 +73,20 @@ namespace RenderSystem
 
 	void Viewport::setViewport(int x, int y, int width, int height) noexcept
 	{
-		mX = x;
-		mY = y;
+		setPos(x, y);
 		mWidth = width;
 		mHeight = height;
 	}
 
-	int Viewport::getX() const noexcept
+	const glm::ivec2& Viewport::getPos() const noexcept
 	{
-		return mX;
+		return mPos;
 	}
 
-	void Viewport::setX(int x) noexcept
+	void Viewport::setPos(int x, int y) noexcept
 	{
-		mX = x;
-	}
-
-	int Viewport::getY() const noexcept
-	{
-		return mY;
-	}
-
-	void Viewport::setY(int y) noexcept
-	{
-		mY = y;
+		mPos.x = x;
+		mPos.y = y;
 	}
 		 
 	int Viewport::getWidth() const noexcept

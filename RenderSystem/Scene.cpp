@@ -13,10 +13,19 @@
 namespace RenderSystem
 {
 	Scene::Scene(const std::string& meshFilePath, std::unique_ptr<BasicRenderer> renderer) noexcept :
-		mRenderer(std::move(renderer)), mVBO(0), mVAO(0), mViewport(0, 0, 800, 600)
+		mRenderer(std::move(renderer)),
+		mVBO(0),
+		mVAO(0),
+		mViewport(0, 0, 800, 600),
+		mPanHandler(&mViewport),
+		mSavedMousePos()
 	{
 		MeshFilesLoader::STLLoader stlFileLoader;
-		auto mesh = std::move(stlFileLoader.loadMesh(meshFilePath));
+		auto mesh = std::make_unique<MeshCore::Mesh>(stlFileLoader.loadMesh(meshFilePath));
+
+		auto object3D = std::make_unique<MeshCore::Object3D>(nullptr, std::move(mesh));
+		object3D->prepareRenderData();
+		mObjects.push_back(std::move(object3D));
 	}
 
 	Scene::~Scene() noexcept
@@ -31,7 +40,8 @@ namespace RenderSystem
 
 		glClearColor(0.09f, 0.42f, 0.69f, 1.0f);
 
-		glViewport(mViewport.getX(), mViewport.getY(), mViewport.getWidth(), mViewport.getHeight());
+		auto viewportPos = mViewport.getPos();
+		glViewport(viewportPos.x, viewportPos.y, mViewport.getWidth(), mViewport.getHeight());
 
 		glGenBuffers(1, &mVBO);
 		glGenVertexArrays(1, &mVAO);
@@ -41,8 +51,6 @@ namespace RenderSystem
 		mViewport.setFarPlaneDistance(1000.0f);
 		mViewport.setNearPlaneDistance(0.1f);
 		mViewport.getCamera().setPositionTargetUp({ 0.0f, 0.0f, -5.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f });
-
-
 	}
 
 	void Scene::setViewport(int x, int y, int width, int height) noexcept
@@ -55,52 +63,70 @@ namespace RenderSystem
 		mRenderer = std::move(renderer);
 	}
 
-	/*void Scene::setMesh(const MeshCore::Mesh& mesh) noexcept
-	{
-		mMeshData.mesh = mesh;
-	}*/
-
 	void Scene::render() noexcept
 	{
-		glClear(GL_COLOR_BUFFER_BIT);
-
-		if (mMeshData.needUpdate)
+		for (auto& object : mObjects)
 		{
-			loadData(mMeshData.mesh.getVertices());
-			mMeshData.needUpdate = false;
-		}
-
-		auto mvp = mViewport.calcProjectionMatrix(PROJECTION_TYPE::PERSPECTIVE) * mViewport.getCamera().calcViewMatrix();
-		mRenderer->setMVP(glm::value_ptr(mvp));
-
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+			render(object.get());
+		}	
 	}
-		 
-	void Scene::loadData(const std::vector<MeshCore::Vertex>& vertices) noexcept
+
+	void Scene::setRenderData(const MeshCore::RenderData& renderData) noexcept
 	{
-		/*mPositions.reserve(vertices.size() * Constants::COORDINATES_PER_VERTEX);
-		mNormals.reserve(vertices.size() * Constants::COORDINATES_PER_NORMAL);
-		mColors.reserve(vertices.size() * Constants::COLOR_COMPONENTS_COUNT);
-
-		static_assert(Constants::COORDINATES_PER_VERTEX == Constants::COORDINATES_PER_NORMAL &&
-			Constants::COORDINATES_PER_VERTEX == Constants::COLOR_COMPONENTS_COUNT);
-
-		for (const auto& vertex : vertices)
-		{
-			for (glm::vec3::length_type coordIdx = 0; coordIdx < Constants::COORDINATES_PER_VERTEX; ++coordIdx)
-			{
-				mPositions.push_back(vertex.pos[coordIdx]);
-				mNormals.push_back(vertex.normal[coordIdx]);
-				mColors.push_back(vertex.color[coordIdx]);
-			}
-		}*/
-
 		glBindBuffer(GL_ARRAY_BUFFER, mVBO);
 		glBindVertexArray(mVAO);
-		glBufferData(GL_ARRAY_BUFFER, mPositions.size() * sizeof(float), mPositions.data(), GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, renderData.positions.size() * sizeof(float), renderData.positions.data(), GL_STATIC_DRAW);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
 		glEnableVertexAttribArray(0);
 
 		mRenderer->printOpenGLErrorMessage();
+	}
+
+	void Scene::render(MeshCore::Object3D* object) noexcept
+	{
+		setRenderData(object->getRenderData());
+
+		auto mvp = mViewport.calcProjectionMatrix() * mViewport.getCamera().calcViewMatrix();
+		mRenderer->setMVP(glm::value_ptr(mvp));
+
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+
+		for (auto& object : object->getChildren())
+		{
+			render(object);
+		}
+	}
+
+	void Scene::onMouseMove(const glm::vec2& mousePos, const MouseButtonsState& mouseButtonsState) noexcept
+	{
+		if (mouseButtonsState.middleButtonPressed)
+		{
+			mPanHandler.pan(mSavedMousePos, mousePos);
+		}
+	}
+
+	void Scene::onMouseDown(int button, const glm::vec2& mousePos) noexcept
+	{
+		mSavedMousePos = mousePos;
+	}
+
+	void Scene::onMouseUp(int button) noexcept
+	{
+		//std::cerr << "Scene::onMouseUp, button = " << button << std::endl;
+	}
+
+	void Scene::onMouseScroll(double yOffset) noexcept
+	{
+		std::cerr << "Scene::onMouseScroll, yOffset = " << yOffset << std::endl;
+	}
+
+	void Scene::onKeyDown(int keyCode) noexcept
+	{
+		std::cerr << "Scene::onKeyDown, keyCode = " << keyCode << std::endl;
+	}
+
+	void Scene::onKeyUp(int keyCode) noexcept
+	{
+		std::cerr << "Scene::onKeyUp, keyCode = " << keyCode << std::endl;
 	}
 }

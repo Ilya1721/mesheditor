@@ -3,6 +3,9 @@
 #include <string>
 #include <vector>
 
+#include "MeshCore/ShaderType.h"
+#include "BaseUtility/SolutionMacros.h"
+
 namespace RenderSystem
 {
 	enum class SHADER_LOG_TYPE
@@ -14,27 +17,33 @@ namespace RenderSystem
 	class BasicRenderer
 	{
 	public:
-		__declspec(dllexport) BasicRenderer() noexcept;
-		__declspec(dllexport) virtual ~BasicRenderer() noexcept;
+		API BasicRenderer() noexcept;
+		API virtual ~BasicRenderer() noexcept;
 
-		__declspec(dllexport) virtual void init() noexcept;
+		API virtual void init() noexcept;
 
-		__declspec(dllexport) virtual void beginUse() noexcept;
-		__declspec(dllexport) virtual void endUse() noexcept;
+		API virtual int getBasicVertexShader() const noexcept;
+		API virtual int getBasicFragmentShader() const noexcept;
 
-		__declspec(dllexport) void setMVP(const float* mvp) noexcept;
+		API virtual void beginUse() noexcept;
+		API virtual void endUse() noexcept;
 
-		__declspec(dllexport) static void printOpenGLErrorMessage() noexcept;
+		API void setMVP(const float* mvp) noexcept;
+
+		API static void printOpenGLErrorMessage() noexcept;
 
 	protected:
-		__declspec(dllexport) virtual int loadShader(const std::string& filePath, int shaderType) noexcept;
+		API virtual int loadShader(const std::string& filePath, int shaderType) noexcept;
 
-		__declspec(dllexport) virtual std::vector<char> getShaderLog(int shaderOrProgramId, SHADER_LOG_TYPE logType) noexcept;
+		API virtual std::vector<char> getShaderLog(int shaderOrProgramId, SHADER_LOG_TYPE logType) noexcept;
 
 		int mVertexShader;
 		int mFragmentShader;
 		int mShaderProgram;
+
 		int mMVP;
+
+		MeshCore::ShaderType mActiveShader;
 	};
 }
 

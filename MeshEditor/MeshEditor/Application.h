@@ -9,7 +9,7 @@ namespace MeshEditor
 	class Application
 	{
 	public:
-		Application(std::unique_ptr<RenderSystem::Window> window) noexcept;
+		Application(RenderSystem::Window* window) noexcept;
 		Application(const Application& other) = delete;
 		Application(Application&& other) = delete;
 		Application& operator=(const Application& other) = delete;
@@ -18,6 +18,6 @@ namespace MeshEditor
 		void start() noexcept;
 		
 	private:
-		std::unique_ptr<RenderSystem::Window> mWindow;
+		RenderSystem::Window* mWindow;
 	};
 }

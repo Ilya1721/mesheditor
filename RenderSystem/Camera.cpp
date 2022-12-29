@@ -6,8 +6,7 @@
 
 namespace RenderSystem
 {
-	Camera::Camera() noexcept
-		:
+	Camera::Camera() noexcept :
 		mTarget(0.0f, 0.0f, 0.0f),
 		mPosition(0.0f, 0.0f, 1.0f),
 		mDirection(mTarget - mPosition),
@@ -69,6 +68,12 @@ namespace RenderSystem
 		mUp = newUp;
 
 		recalcCamera();
+	}
+
+	void Camera::translate(const glm::vec3& movement) noexcept
+	{
+		mPosition += movement;
+		mTarget += movement;
 	}
 
 	void Camera::recalcCamera() noexcept

@@ -4,9 +4,8 @@
 
 namespace MeshEditor
 {
-	Application::Application(std::unique_ptr<RenderSystem::Window> window) noexcept
-		:
-		mWindow(std::move(window))
+	Application::Application(RenderSystem::Window* window) noexcept	:
+		mWindow(window)
 	{}
 
 	void Application::start() noexcept

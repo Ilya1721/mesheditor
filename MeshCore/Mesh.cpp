@@ -4,8 +4,7 @@
 
 namespace MeshCore
 {
-	Mesh::Mesh(const std::vector<Vertex>& vertices) noexcept
-		: 
+	Mesh::Mesh(const std::vector<Vertex>& vertices) noexcept : 
 		mVertices(vertices)
 	{}
 

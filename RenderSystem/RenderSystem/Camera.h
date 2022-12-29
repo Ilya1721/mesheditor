@@ -22,6 +22,8 @@ namespace RenderSystem
 
 		void setPositionTargetUp(const glm::vec3& newPosition, const glm::vec3& newTarget, const glm::vec3& newUp) noexcept;
 
+		void translate(const glm::vec3& movement) noexcept;
+
 	private:
 		void recalcCamera() noexcept;
 

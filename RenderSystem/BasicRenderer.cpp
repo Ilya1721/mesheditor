@@ -13,7 +13,11 @@
 namespace RenderSystem
 {
 	BasicRenderer::BasicRenderer() noexcept :
-		mVertexShader(0), mFragmentShader(0), mShaderProgram(0), mMVP(0)
+		mVertexShader(0),
+		mFragmentShader(0),
+		mShaderProgram(0),
+		mMVP(0),
+		mActiveShader(MeshCore::ShaderType::BASIC_SHADER)
 	{}
 
 	BasicRenderer::~BasicRenderer() noexcept
@@ -36,9 +40,6 @@ namespace RenderSystem
 		glAttachShader(mShaderProgram, mFragmentShader);
 		glLinkProgram(mShaderProgram);
 
-		glDeleteShader(mVertexShader);
-		glDeleteShader(mFragmentShader);
-
 		int isLinked = false;
 		glGetProgramiv(mShaderProgram, GL_LINK_STATUS, &isLinked);
 
@@ -50,9 +51,19 @@ namespace RenderSystem
 			return;
 		}
 
-		beginUse();
-
 		mMVP = glGetUniformLocation(mShaderProgram, "mvp");
+
+		beginUse();
+	}
+
+	int BasicRenderer::getBasicVertexShader() const noexcept
+	{
+		return mVertexShader;
+	}
+
+	int BasicRenderer::getBasicFragmentShader() const noexcept
+	{
+		return mFragmentShader;
 	}
 
 	void BasicRenderer::beginUse() noexcept
@@ -161,7 +172,5 @@ namespace RenderSystem
 				}
 			}
 		}
-
-		std::cerr << "No error" << std::endl;
 	}
 }

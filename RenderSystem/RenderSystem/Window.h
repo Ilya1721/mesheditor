@@ -7,6 +7,7 @@
 #include <glfw/glfw3.h>
 
 #include "MeshCore/Mesh.h"
+#include "IEventHandler.h"
 #include "Viewport.h"
 #include "Scene.h"
 
@@ -15,17 +16,33 @@ namespace RenderSystem
 	class Window
 	{
 	public:
-		__declspec(dllexport) Window(const std::string& title, int width, int height) noexcept;
-		__declspec(dllexport) Window(const Window& other) = delete;
-		__declspec(dllexport) Window(Window&& other) = delete;
-		__declspec(dllexport) Window& operator=(const Window& other) = delete;
-		__declspec(dllexport) Window& operator=(Window&& other) = delete;
+		API static Window* createInstance(const std::string& title, int width, int height) noexcept;
 
-		__declspec(dllexport) virtual ~Window() noexcept = default;
+		API static Window* getInstance() noexcept;
 
-		__declspec(dllexport) virtual void setScene(std::unique_ptr<Scene> scene) noexcept;
+		API virtual ~Window() noexcept = default;
 
-		__declspec(dllexport) virtual void start() noexcept;
+		API virtual void setScene(std::unique_ptr<Scene> scene) noexcept;
+
+		API virtual void start() noexcept;
+
+		API virtual void subscribe(IEventHandler* eventHandler) noexcept;
+
+	private:
+		Window(const std::string& title, int width, int height) noexcept;
+		Window(const Window& other) = delete;
+		Window(Window&& other) = delete;
+		Window& operator=(const Window& other) = delete;
+		Window& operator=(Window&& other) = delete;
+
+		glm::vec2 getMousePos() const noexcept;
+
+		void setCallbacks() noexcept;
+
+		API static void onMouseMove(GLFWwindow* window, double xPos, double yPos) noexcept;
+		API static void onMouseButton(GLFWwindow* window, int button, int action, int mods) noexcept;
+		API static void onMouseScroll(GLFWwindow* window, double xOffset, double yOffset) noexcept;
+		API static void onKey(GLFWwindow* window, int keyCode, int scanCode, int action, int mods) noexcept;
 
 	private:
 		std::string mTitle;
@@ -36,6 +53,10 @@ namespace RenderSystem
 		GLFWwindow* mWindow;
 
 		std::unique_ptr<Scene> mScene;
+
+		std::vector<IEventHandler*> mEventHandlers;
+
+		static std::unique_ptr<Window> sInstance;
 	};
 }
 

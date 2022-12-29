@@ -19,7 +19,10 @@ namespace RenderSystem
 
 		Camera& getCamera() noexcept;
 
-		glm::mat4 calcProjectionMatrix(PROJECTION_TYPE projectionType) noexcept;
+		glm::mat4 calcProjectionMatrix() noexcept;
+
+		PROJECTION_TYPE getProjectionType() const noexcept;
+		void setProjectionType(PROJECTION_TYPE projectionType) noexcept;
 
 		float getFov() const noexcept;
 		void setFov(float fov) noexcept;
@@ -32,11 +35,8 @@ namespace RenderSystem
 
 		void setViewport(int x, int y, int width, int height) noexcept;
 
-		int getX() const noexcept;
-		void setX(int x) noexcept;
-
-		int getY() const noexcept;
-		void setY(int y) noexcept;
+		const glm::ivec2& getPos() const noexcept;
+		void setPos(int x, int y) noexcept;
 
 		int getWidth() const noexcept;
 		void setWidth(int width) noexcept;
@@ -49,13 +49,14 @@ namespace RenderSystem
 		float mNearPlaneDistance;
 		float mFarPlaneDistance;
 
-		int mX;
-		int mY;
+		glm::ivec2 mPos;
 
 		int mWidth;
 		int mHeight;
 		
 		Camera mCamera;
+
+		PROJECTION_TYPE mProjectionType;
 	};
 }
 
