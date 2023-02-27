@@ -1,6 +1,6 @@
 #pragma once
 
-namespace BaseUtility
+namespace Utility
 {
 	class Constants
 	{

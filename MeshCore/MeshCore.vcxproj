@@ -57,7 +57,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\;$(SolutionDir)MeshCore\MeshCore\;$(SolutionDir)BaseUtility\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\;$(SolutionDir)MeshCore\MeshCore\;$(SolutionDir)Utility\</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -76,7 +76,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\;$(SolutionDir)MeshCore\MeshCore\;$(SolutionDir)BaseUtility\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\;$(SolutionDir)MeshCore\MeshCore\;$(SolutionDir)Utility\</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -88,6 +88,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AABBox.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Object3D.cpp" />
@@ -97,12 +98,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BaseUtility\BaseUtility.vcxproj">
-      <Project>{65b2b36f-a237-4404-9a85-08b0c69d8504}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\RenderSystem\RenderSystem\ShaderType.h" />
+    <ClInclude Include="MeshCore\AABBox.h" />
     <ClInclude Include="MeshCore\Constants.h" />
     <ClInclude Include="MeshCore\framework.h" />
     <ClInclude Include="MeshCore\Mesh.h" />
@@ -110,6 +107,11 @@
     <ClInclude Include="MeshCore\pch.h" />
     <ClInclude Include="MeshCore\RenderData.h" />
     <ClInclude Include="MeshCore\Vertex.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Utility\Utility.vcxproj">
+      <Project>{65b2b36f-a237-4404-9a85-08b0c69d8504}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

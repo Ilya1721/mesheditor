@@ -58,7 +58,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)RenderSystem\;$(SolutionDir)ThirdParty\;$(SolutionDir)BaseUtility\;$(SolutionDir)MeshCore\;$(SolutionDir)MeshFilesLoader\;$(SolutionDir)MeshEditor\MeshEditor\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)RenderSystem\;$(SolutionDir)ThirdParty\;$(SolutionDir)Utility\;$(SolutionDir)MeshCore\;$(SolutionDir)MeshFilesLoader\;$(SolutionDir)MeshEditor\MeshEditor\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -78,7 +78,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)RenderSystem\;$(SolutionDir)ThirdParty\;$(SolutionDir)BaseUtility\;$(SolutionDir)MeshCore\;$(SolutionDir)MeshFilesLoader\;$(SolutionDir)MeshEditor\MeshEditor\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)RenderSystem\;$(SolutionDir)ThirdParty\;$(SolutionDir)Utility\;$(SolutionDir)MeshCore\;$(SolutionDir)MeshFilesLoader\;$(SolutionDir)MeshEditor\MeshEditor\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

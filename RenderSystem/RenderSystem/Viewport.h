@@ -4,6 +4,8 @@
 
 #include "Camera.h"
 
+#include "MeshCore/Object3D.h"
+
 namespace RenderSystem
 {
 	enum class PROJECTION_TYPE
@@ -19,7 +21,8 @@ namespace RenderSystem
 
 		Camera& getCamera() noexcept;
 
-		glm::mat4 calcProjectionMatrix() noexcept;
+		glm::mat4 getProjectionMatrix() const noexcept;
+		void calcProjectionMatrix() noexcept;
 
 		PROJECTION_TYPE getProjectionType() const noexcept;
 		void setProjectionType(PROJECTION_TYPE projectionType) noexcept;
@@ -35,6 +38,8 @@ namespace RenderSystem
 
 		void setViewport(int x, int y, int width, int height) noexcept;
 
+		void adjustToObject(const MeshCore::Object3D& object) noexcept;
+
 		const glm::ivec2& getPos() const noexcept;
 		void setPos(int x, int y) noexcept;
 
@@ -43,6 +48,8 @@ namespace RenderSystem
 
 		int getHeight() const noexcept;
 		void setHeight(int height) noexcept;
+
+		glm::vec3 screenToWorld(const glm::vec3& screenPos) const noexcept;
 
 	private:
 		float mFov;
@@ -57,6 +64,7 @@ namespace RenderSystem
 		Camera mCamera;
 
 		PROJECTION_TYPE mProjectionType;
+		glm::mat4 mProjectionMatrix;
 	};
 }
 

@@ -16,6 +16,7 @@
     <ProjectGuid>{65b2b36f-a237-4404-9a85-08b0c69d8504}</ProjectGuid>
     <RootNamespace>BaseUtility</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>Utility</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -58,7 +59,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\;$(SolutionDir)BaseUtility\BaseUtility\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\;$(SolutionDir)Utility\Utility\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -79,7 +80,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\;$(SolutionDir)BaseUtility\BaseUtility\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\;$(SolutionDir)Utility\Utility\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -92,19 +93,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="BaseUtility\Constants.h" />
-    <ClInclude Include="BaseUtility\framework.h" />
-    <ClInclude Include="BaseUtility\SolutionMacros.h" />
-    <ClInclude Include="BaseUtility\Utility.h" />
-    <ClInclude Include="pch.h" />
+    <ClInclude Include="Utility\Constants.h" />
+    <ClInclude Include="Utility\framework.h" />
+    <ClInclude Include="Utility\GeomUtils.h" />
+    <ClInclude Include="Utility\LogUtils.h" />
+    <ClInclude Include="Utility\pch.h" />
+    <ClInclude Include="Utility\SolutionMacros.h" />
+    <ClInclude Include="Utility\EqualityUtils.h" />
+    <ClInclude Include="Utility\FileUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="GeomUtils.cpp" />
+    <ClCompile Include="LogUtils.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Utility.cpp" />
+    <ClCompile Include="EqualityUtils.cpp" />
+    <ClCompile Include="FileUtils.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

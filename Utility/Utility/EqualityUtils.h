@@ -8,14 +8,12 @@
 #include "Constants.h"
 #include "SolutionMacros.h"
 
-namespace BaseUtility
+namespace Utility
 {
-	class Utility final
+	class EqualityUtils final
 	{
 	public:
-		Utility() = delete;
-
-		API static std::string readFile(const std::filesystem::path& filePath);
+		EqualityUtils() = delete;
 
 		API static bool stringEquals(const std::string& firstString, const std::string& secondString, bool caseSensitive = false) noexcept;
 

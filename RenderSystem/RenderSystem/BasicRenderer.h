@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "MeshCore/ShaderType.h"
-#include "BaseUtility/SolutionMacros.h"
+#include "Utility/SolutionMacros.h"
 
 namespace RenderSystem
 {
@@ -18,6 +18,10 @@ namespace RenderSystem
 	{
 	public:
 		API BasicRenderer() noexcept;
+		API BasicRenderer(const BasicRenderer& renderer) = delete;
+		API BasicRenderer(BasicRenderer&& renderer) = delete;
+		API BasicRenderer& operator=(const BasicRenderer& renderer) = delete;
+		API BasicRenderer& operator=(BasicRenderer&& renderer) = delete;
 		API virtual ~BasicRenderer() noexcept;
 
 		API virtual void init() noexcept;

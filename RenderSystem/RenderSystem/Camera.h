@@ -9,7 +9,8 @@ namespace RenderSystem
 	public:
 		Camera() noexcept;
 
-		glm::mat4 calcViewMatrix() noexcept;
+		glm::mat4 getViewMatrix() const noexcept;
+		void calcViewMatrix() noexcept;
 
 		void setTarget(const glm::vec3& newTarget) noexcept;
 		const glm::vec3& getTarget() const noexcept;
@@ -33,6 +34,8 @@ namespace RenderSystem
 		glm::vec3 mDirection;
 		glm::vec3 mUp;
 		glm::vec3 mRight;
+
+		glm::mat4 mViewMatrix;
 	};
 }
 

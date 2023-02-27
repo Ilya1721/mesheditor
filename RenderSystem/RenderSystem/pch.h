@@ -22,4 +22,6 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/ext/matrix_projection.hpp>
 
+#include "MeshCore/AABBox.h"
+
 #endif //PCH_H

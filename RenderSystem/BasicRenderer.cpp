@@ -8,7 +8,7 @@
 
 #include "glad.h"
 
-#include "BaseUtility/Utility.h"
+#include "Utility/FileUtils.h"
 
 namespace RenderSystem
 {
@@ -84,7 +84,7 @@ namespace RenderSystem
 	int BasicRenderer::loadShader(const std::string& shaderPath, int shaderType) noexcept
 	{
 		auto shader = glCreateShader(shaderType);
-		auto shaderString = BaseUtility::Utility::readFile(shaderPath);
+		auto shaderString = Utility::FileUtils::readFile(shaderPath);
 		auto shaderStr = shaderString.c_str();
 
 		glShaderSource(shader, 1, &shaderStr, NULL);

@@ -57,7 +57,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\;$(SolutionDir)BaseUtility\;$(SolutionDir)MeshCore\;$(SolutionDir)RenderSystem\RenderSystem\;$(SolutionDir)MeshFilesLoader\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\;$(SolutionDir)Utility\;$(SolutionDir)MeshCore\;$(SolutionDir)RenderSystem\RenderSystem\;$(SolutionDir)MeshFilesLoader\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -78,7 +78,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\;$(SolutionDir)BaseUtility\;$(SolutionDir)MeshCore\;$(SolutionDir)RenderSystem\RenderSystem\;$(SolutionDir)MeshFilesLoader\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\;$(SolutionDir)Utility\;$(SolutionDir)MeshCore\;$(SolutionDir)RenderSystem\RenderSystem\;$(SolutionDir)MeshFilesLoader\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -125,11 +125,11 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BaseUtility\BaseUtility.vcxproj">
-      <Project>{65b2b36f-a237-4404-9a85-08b0c69d8504}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\MeshCore\MeshCore.vcxproj">
       <Project>{27a4bba3-8da4-4e41-a872-ed4732a7f7bc}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Utility\Utility.vcxproj">
+      <Project>{65b2b36f-a237-4404-9a85-08b0c69d8504}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

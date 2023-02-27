@@ -2,6 +2,8 @@
 
 #include "Viewport.h"
 
+#include "Utility/GeomUtils.h"
+
 namespace RenderSystem
 {
 	Viewport::Viewport(int x, int y, int width, int height) noexcept :
@@ -11,7 +13,8 @@ namespace RenderSystem
 		mPos(x, y),
 		mWidth(800),
 		mHeight(600),
-		mProjectionType(PROJECTION_TYPE::ORTHOGRAPHIC)
+		mProjectionType(PROJECTION_TYPE::PERSPECTIVE),
+		mProjectionMatrix(1.0f)
 	{}
 
 	Camera& Viewport::getCamera() noexcept
@@ -19,15 +22,20 @@ namespace RenderSystem
 		return mCamera;
 	}
 
-	glm::mat4 Viewport::calcProjectionMatrix() noexcept
+	glm::mat4 Viewport::getProjectionMatrix() const noexcept
+	{
+		return mProjectionMatrix;
+	}
+
+	void Viewport::calcProjectionMatrix() noexcept
 	{
 		if (mProjectionType == PROJECTION_TYPE::ORTHOGRAPHIC)
 		{
-			return glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, mNearPlaneDistance, mFarPlaneDistance);
+			mProjectionMatrix = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, mNearPlaneDistance, mFarPlaneDistance);
 		}
 		else
 		{
-			return glm::perspective(mFov, static_cast<float>(mWidth / mHeight), mNearPlaneDistance, mFarPlaneDistance);
+			mProjectionMatrix = glm::perspective(mFov, static_cast<float>(mWidth / mHeight), mNearPlaneDistance, mFarPlaneDistance);
 		}
 	}
 
@@ -78,6 +86,19 @@ namespace RenderSystem
 		mHeight = height;
 	}
 
+	void Viewport::adjustToObject(const MeshCore::Object3D& object) noexcept
+	{
+		MeshCore::AABBox bbox;
+		bbox.setFromObject(object);
+
+		auto bboxCenter = bbox.getCenter();
+		auto bboxHalfHeight = bbox.getHeight() * 0.5;
+		auto distanceToCamera = bboxHalfHeight / std::tan(glm::radians(mFov * 0.5));
+
+		mCamera.setPositionTargetUp({ bboxCenter.x - 18.0f, bboxCenter.y, distanceToCamera }, bboxCenter, { 0.0f, 1.0f, 0.0f });
+		mCamera.calcViewMatrix();
+	}
+
 	const glm::ivec2& Viewport::getPos() const noexcept
 	{
 		return mPos;
@@ -107,5 +128,19 @@ namespace RenderSystem
 	void Viewport::setHeight(int height) noexcept
 	{
 		mHeight = height;
+	}
+
+	glm::vec3 Viewport::screenToWorld(const glm::vec3& screenPos) const noexcept
+	{
+		auto modelViewInverse = glm::inverse(mCamera.getViewMatrix() * getProjectionMatrix());
+
+		const float newMin = -1.0f;
+		const float newMax = 1.0f;
+
+		auto x = Utility::GeomUtils::convertToRange(screenPos.x, 0.0f, static_cast<float>(mWidth), newMin, newMax);
+		auto y = Utility::GeomUtils::convertToRange(screenPos.y, 0.0f, static_cast<float>(mHeight), newMin, newMax);
+		auto z = Utility::GeomUtils::convertToRange(screenPos.z, mNearPlaneDistance, mFarPlaneDistance, newMin, newMax);
+		
+		return glm::vec4(x, y, z, 1.0f) * modelViewInverse;
 	}
 }

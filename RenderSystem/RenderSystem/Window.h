@@ -20,8 +20,6 @@ namespace RenderSystem
 
 		API static Window* getInstance() noexcept;
 
-		API virtual ~Window() noexcept = default;
-
 		API virtual void setScene(std::unique_ptr<Scene> scene) noexcept;
 
 		API virtual void start() noexcept;

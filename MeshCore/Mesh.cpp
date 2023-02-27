@@ -8,7 +8,7 @@ namespace MeshCore
 		mVertices(vertices)
 	{}
 
-	const std::vector<Vertex>& Mesh::getVertices() noexcept
+	const std::vector<Vertex>& Mesh::getVertices() const noexcept
 	{
 		return mVertices;
 	}

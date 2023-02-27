@@ -9,6 +9,7 @@
 #include "glad.h"
 
 #include "MeshFilesLoader/STLLoader.h"
+#include "MeshCore/AABBox.h"
 
 namespace RenderSystem
 {
@@ -22,10 +23,8 @@ namespace RenderSystem
 	{
 		MeshFilesLoader::STLLoader stlFileLoader;
 		auto mesh = std::make_unique<MeshCore::Mesh>(stlFileLoader.loadMesh(meshFilePath));
-
-		auto object3D = std::make_unique<MeshCore::Object3D>(nullptr, std::move(mesh));
-		object3D->prepareRenderData();
-		mObjects.push_back(std::move(object3D));
+		mRootObject = std::make_unique<MeshCore::Object3D>(nullptr, std::move(mesh));
+		mRootObject->prepareRenderData();
 	}
 
 	Scene::~Scene() noexcept
@@ -34,23 +33,33 @@ namespace RenderSystem
 		glDeleteVertexArrays(1, &mVAO);
 	}
 
-	void Scene::init() noexcept
+	void Scene::initRenderer() noexcept
 	{
 		mRenderer->init();
-
-		glClearColor(0.09f, 0.42f, 0.69f, 1.0f);
-
-		auto viewportPos = mViewport.getPos();
-		glViewport(viewportPos.x, viewportPos.y, mViewport.getWidth(), mViewport.getHeight());
+		setBackgroundColor();
 
 		glGenBuffers(1, &mVBO);
 		glGenVertexArrays(1, &mVAO);
+		glEnable(GL_DEPTH_TEST);
 
 		mRenderer->printOpenGLErrorMessage();
+	}
+
+	void Scene::initViewport() noexcept
+	{
+		auto viewportPos = mViewport.getPos();
+		glViewport(viewportPos.x, viewportPos.y, mViewport.getWidth(), mViewport.getHeight());
 
 		mViewport.setFarPlaneDistance(1000.0f);
 		mViewport.setNearPlaneDistance(0.1f);
-		mViewport.getCamera().setPositionTargetUp({ 0.0f, 0.0f, -5.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f });
+		mViewport.calcProjectionMatrix();
+	}
+
+	void Scene::init() noexcept
+	{
+		initRenderer();
+		initViewport();
+		mViewport.adjustToObject(*mRootObject);
 	}
 
 	void Scene::setViewport(int x, int y, int width, int height) noexcept
@@ -63,12 +72,14 @@ namespace RenderSystem
 		mRenderer = std::move(renderer);
 	}
 
+	void Scene::setBackgroundColor(const glm::vec4& backgroundColor) noexcept
+	{
+		glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
+	}
+
 	void Scene::render() noexcept
 	{
-		for (auto& object : mObjects)
-		{
-			render(object.get());
-		}	
+		render(*mRootObject);
 	}
 
 	void Scene::setRenderData(const MeshCore::RenderData& renderData) noexcept
@@ -82,16 +93,16 @@ namespace RenderSystem
 		mRenderer->printOpenGLErrorMessage();
 	}
 
-	void Scene::render(MeshCore::Object3D* object) noexcept
+	void Scene::render(const MeshCore::Object3D& object) noexcept
 	{
-		setRenderData(object->getRenderData());
+		setRenderData(object.getRenderData());
 
-		auto mvp = mViewport.calcProjectionMatrix() * mViewport.getCamera().calcViewMatrix();
+		auto mvp = mViewport.getProjectionMatrix() * mViewport.getCamera().getViewMatrix();
 		mRenderer->setMVP(glm::value_ptr(mvp));
 
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
-		for (auto& object : object->getChildren())
+		for (auto& object : object.getChildren())
 		{
 			render(object);
 		}

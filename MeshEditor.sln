@@ -7,11 +7,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MeshEditor", "MeshEditor\Me
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RenderSystem", "RenderSystem\RenderSystem.vcxproj", "{87421FCA-792F-47BA-998A-7A041A3079B8}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BaseUtility", "BaseUtility\BaseUtility.vcxproj", "{65B2B36F-A237-4404-9A85-08B0C69D8504}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MeshFilesLoader", "MeshFilesLoader\MeshFilesLoader.vcxproj", "{4B6A0654-5334-4368-B142-F947161B301F}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MeshCore", "MeshCore\MeshCore.vcxproj", "{27A4BBA3-8DA4-4E41-A872-ED4732A7F7BC}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Utility", "Utility\Utility.vcxproj", "{65B2B36F-A237-4404-9A85-08B0C69D8504}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,10 +27,6 @@ Global
 		{87421FCA-792F-47BA-998A-7A041A3079B8}.Debug|x64.Build.0 = Debug|x64
 		{87421FCA-792F-47BA-998A-7A041A3079B8}.Release|x64.ActiveCfg = Release|x64
 		{87421FCA-792F-47BA-998A-7A041A3079B8}.Release|x64.Build.0 = Release|x64
-		{65B2B36F-A237-4404-9A85-08B0C69D8504}.Debug|x64.ActiveCfg = Debug|x64
-		{65B2B36F-A237-4404-9A85-08B0C69D8504}.Debug|x64.Build.0 = Debug|x64
-		{65B2B36F-A237-4404-9A85-08B0C69D8504}.Release|x64.ActiveCfg = Release|x64
-		{65B2B36F-A237-4404-9A85-08B0C69D8504}.Release|x64.Build.0 = Release|x64
 		{4B6A0654-5334-4368-B142-F947161B301F}.Debug|x64.ActiveCfg = Debug|x64
 		{4B6A0654-5334-4368-B142-F947161B301F}.Debug|x64.Build.0 = Debug|x64
 		{4B6A0654-5334-4368-B142-F947161B301F}.Release|x64.ActiveCfg = Release|x64
@@ -39,6 +35,10 @@ Global
 		{27A4BBA3-8DA4-4E41-A872-ED4732A7F7BC}.Debug|x64.Build.0 = Debug|x64
 		{27A4BBA3-8DA4-4E41-A872-ED4732A7F7BC}.Release|x64.ActiveCfg = Release|x64
 		{27A4BBA3-8DA4-4E41-A872-ED4732A7F7BC}.Release|x64.Build.0 = Release|x64
+		{65B2B36F-A237-4404-9A85-08B0C69D8504}.Debug|x64.ActiveCfg = Debug|x64
+		{65B2B36F-A237-4404-9A85-08B0C69D8504}.Debug|x64.Build.0 = Debug|x64
+		{65B2B36F-A237-4404-9A85-08B0C69D8504}.Release|x64.ActiveCfg = Release|x64
+		{65B2B36F-A237-4404-9A85-08B0C69D8504}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
