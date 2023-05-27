@@ -49,8 +49,6 @@ namespace RenderSystem
 		int getHeight() const noexcept;
 		void setHeight(int height) noexcept;
 
-		glm::vec3 screenToWorld(const glm::vec3& screenPos) const noexcept;
-
 	private:
 		float mFov;
 		float mNearPlaneDistance;

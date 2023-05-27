@@ -88,14 +88,16 @@ namespace RenderSystem
 
 	void Viewport::adjustToObject(const MeshCore::Object3D& object) noexcept
 	{
-		MeshCore::AABBox bbox;
+		/*MeshCore::AABBox bbox;
 		bbox.setFromObject(object);
 
 		auto bboxCenter = bbox.getCenter();
 		auto bboxHalfHeight = bbox.getHeight() * 0.5;
 		auto distanceToCamera = bboxHalfHeight / std::tan(glm::radians(mFov * 0.5));
+		float bboxXOffset = 18.0f;
 
-		mCamera.setPositionTargetUp({ bboxCenter.x - 18.0f, bboxCenter.y, distanceToCamera }, bboxCenter, { 0.0f, 1.0f, 0.0f });
+		mCamera.setPositionTargetUp({ bboxCenter.x - bboxXOffset, bboxCenter.y, distanceToCamera }, bboxCenter, { 0.0f, 1.0f, 0.0f });
+		mCamera.calcViewMatrix();*/
 		mCamera.calcViewMatrix();
 	}
 
@@ -128,19 +130,5 @@ namespace RenderSystem
 	void Viewport::setHeight(int height) noexcept
 	{
 		mHeight = height;
-	}
-
-	glm::vec3 Viewport::screenToWorld(const glm::vec3& screenPos) const noexcept
-	{
-		auto modelViewInverse = glm::inverse(mCamera.getViewMatrix() * getProjectionMatrix());
-
-		const float newMin = -1.0f;
-		const float newMax = 1.0f;
-
-		auto x = Utility::GeomUtils::convertToRange(screenPos.x, 0.0f, static_cast<float>(mWidth), newMin, newMax);
-		auto y = Utility::GeomUtils::convertToRange(screenPos.y, 0.0f, static_cast<float>(mHeight), newMin, newMax);
-		auto z = Utility::GeomUtils::convertToRange(screenPos.z, mNearPlaneDistance, mFarPlaneDistance, newMin, newMax);
-		
-		return glm::vec4(x, y, z, 1.0f) * modelViewInverse;
 	}
 }

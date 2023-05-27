@@ -45,7 +45,7 @@ namespace RenderSystem
 
 		if (!isLinked)
 		{
-			auto shaderLog = std::move(getShaderLog(mShaderProgram, SHADER_LOG_TYPE::SHADER_PROGRAM));
+			const auto& shaderLog = std::move(getShaderLog(mShaderProgram, SHADER_LOG_TYPE::SHADER_PROGRAM));
 			std::cerr << "Shader program was not linked\n" << shaderLog.data() << std::endl;
 			glDeleteProgram(mShaderProgram);
 			return;

@@ -1,12 +1,12 @@
-#pragma once
+module;
+#include "SolutionMacros.h"
+export module Mesh;
 
-#include <vector>
+import std;
 
-#include "Utility/SolutionMacros.h"
+import Vertex;
 
-#include "Vertex.h"
-
-namespace MeshCore
+export namespace MeshCore
 {
 	class Mesh
 	{

@@ -20,15 +20,19 @@ namespace RenderSystem
 	{
 		auto viewportHeight = mViewport->getHeight();
 		auto viewportWidth = mViewport->getWidth();
-
-		glm::vec3 startScreenPos(startMousePos.x, viewportHeight - startMousePos.y, 0.0);
-		glm::vec3 endScreenPos(endMousePos.x, viewportHeight - endMousePos.y, 0.0);
-
-		auto unProjectedStartMousePos = mViewport->screenToWorld(startScreenPos);
-		auto unProjectedEndMousePos = mViewport->screenToWorld(endScreenPos);
-		auto movement = unProjectedStartMousePos - unProjectedEndMousePos;
-
 		auto& camera = mViewport->getCamera();
+		const auto& modelViewMatrix = camera.getViewMatrix();
+		const auto& projectionMatrix = mViewport->getProjectionMatrix();
+		glm::vec4 viewportDimensions { 0.0, 0.0, viewportWidth, viewportHeight };
+
+		const auto& projectedCenter = glm::project({ 0.0, 0.0, 0.0 }, modelViewMatrix, projectionMatrix, viewportDimensions);
+		glm::vec3 startScreenPos(startMousePos.x, viewportHeight - startMousePos.y, projectedCenter.z);
+		glm::vec3 endScreenPos(endMousePos.x, viewportHeight - endMousePos.y, projectedCenter.z);
+
+		auto unProjectedStartMousePos = glm::unProject(startScreenPos, modelViewMatrix, projectionMatrix, viewportDimensions);
+		auto unProjectedEndMousePos = glm::unProject(endScreenPos, modelViewMatrix, projectionMatrix, viewportDimensions);
+		auto movement = unProjectedEndMousePos - unProjectedStartMousePos;
+
 		camera.translate(movement);
 		camera.calcViewMatrix();
 	}

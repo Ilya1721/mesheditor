@@ -1,6 +1,4 @@
-#include "pch.h"
-
-#include "AABBox.h"
+module AABBox;
 
 namespace MeshCore
 {

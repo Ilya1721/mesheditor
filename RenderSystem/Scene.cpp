@@ -17,7 +17,7 @@ namespace RenderSystem
 		mRenderer(std::move(renderer)),
 		mVBO(0),
 		mVAO(0),
-		mViewport(0, 0, 800, 600),
+		mViewport(0, 0, 0, 0),
 		mPanHandler(&mViewport),
 		mSavedMousePos()
 	{
@@ -47,7 +47,7 @@ namespace RenderSystem
 
 	void Scene::initViewport() noexcept
 	{
-		auto viewportPos = mViewport.getPos();
+		const auto& viewportPos = mViewport.getPos();
 		glViewport(viewportPos.x, viewportPos.y, mViewport.getWidth(), mViewport.getHeight());
 
 		mViewport.setFarPlaneDistance(1000.0f);
@@ -128,16 +128,16 @@ namespace RenderSystem
 
 	void Scene::onMouseScroll(double yOffset) noexcept
 	{
-		std::cerr << "Scene::onMouseScroll, yOffset = " << yOffset << std::endl;
+		//std::cerr << "Scene::onMouseScroll, yOffset = " << yOffset << std::endl;
 	}
 
 	void Scene::onKeyDown(int keyCode) noexcept
 	{
-		std::cerr << "Scene::onKeyDown, keyCode = " << keyCode << std::endl;
+		//std::cerr << "Scene::onKeyDown, keyCode = " << keyCode << std::endl;
 	}
 
 	void Scene::onKeyUp(int keyCode) noexcept
 	{
-		std::cerr << "Scene::onKeyUp, keyCode = " << keyCode << std::endl;
+		//std::cerr << "Scene::onKeyUp, keyCode = " << keyCode << std::endl;
 	}
 }

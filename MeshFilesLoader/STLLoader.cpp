@@ -40,7 +40,7 @@ namespace
 		{
 			bool newVertex = false;
 
-			if (Utility::EqualityUtils::stringEquals(currentToken, MeshFilesLoader::Constants::NORMAL_KEYWORD))
+			if (Utility::EqualityUtils::isEqual(currentToken, MeshFilesLoader::Constants::NORMAL_KEYWORD))
 			{
 				vertices.emplace_back();
 
@@ -50,7 +50,7 @@ namespace
 					vertices.back().normal[coordIdx] = std::stof(currentToken);
 				}
 			}
-			else if (Utility::EqualityUtils::stringEquals(currentToken, MeshFilesLoader::Constants::VERTEX_KEYWORD))
+			else if (Utility::EqualityUtils::isEqual(currentToken, MeshFilesLoader::Constants::VERTEX_KEYWORD))
 			{
 				for (glm::vec3::length_type coordIdx = 0; coordIdx < 3; ++coordIdx)
 				{
@@ -111,7 +111,7 @@ namespace MeshFilesLoader
 	{
 		try
 		{
-			if (!Utility::EqualityUtils::stringEquals(filePath.extension().string(), ".stl"))
+			if (!Utility::EqualityUtils::isEqual(filePath.extension().string(), ".stl"))
 			{
 				throw std::exception("This file is not of stl format");
 			}

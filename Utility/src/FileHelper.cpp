@@ -1,10 +1,10 @@
-#include "pch.h"
+module FileHelper;
 
-#include "FileUtils.h"
+import std;
 
-namespace Utility
+namespace Helpers
 {
-	std::string FileUtils::readFile(const std::filesystem::path& filePath)
+	std::string readFile(const std::filesystem::path& filePath)
 	{
 		if (filePath.empty())
 		{
@@ -23,7 +23,6 @@ namespace Utility
 
 		std::string content(fileSize, '\0');
 		file.read(content.data(), fileSize);
-
 		if (file.bad())
 		{
 			throw std::exception("file was not read");

@@ -109,7 +109,7 @@ namespace MeshCore
 
 	void Object3D::prepareRenderData() noexcept
 	{
-		auto vertices = mMesh->getVertices();
+		const auto& vertices = mMesh->getVertices();
 
 		mRenderData.positions.reserve(vertices.size() * Constants::COORDINATES_PER_VERTEX);
 		mRenderData.normals.reserve(vertices.size() * Constants::COORDINATES_PER_NORMAL);

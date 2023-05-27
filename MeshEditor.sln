@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31129.286
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33712.159
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MeshEditor", "MeshEditor\MeshEditor.vcxproj", "{3C770D06-ACFB-46A0-918C-7331BF58E227}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SceneEditor", "MeshEditor\MeshEditor.vcxproj", "{3C770D06-ACFB-46A0-918C-7331BF58E227}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RenderSystem", "RenderSystem\RenderSystem.vcxproj", "{87421FCA-792F-47BA-998A-7A041A3079B8}"
 EndProject
@@ -12,6 +12,13 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MeshCore", "MeshCore\MeshCore.vcxproj", "{27A4BBA3-8DA4-4E41-A872-ED4732A7F7BC}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Utility", "Utility\Utility.vcxproj", "{65B2B36F-A237-4404-9A85-08B0C69D8504}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GeometryCore", "GeometryCore\GeometryCore.vcxproj", "{E0DDBAE3-3969-4639-A61F-6F5CB05CB11B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Global", "Global", "{2DE17526-5994-4AED-B96C-562ADEA2572B}"
+	ProjectSection(SolutionItems) = preProject
+		Global\SolutionMacros.h = Global\SolutionMacros.h
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +46,10 @@ Global
 		{65B2B36F-A237-4404-9A85-08B0C69D8504}.Debug|x64.Build.0 = Debug|x64
 		{65B2B36F-A237-4404-9A85-08B0C69D8504}.Release|x64.ActiveCfg = Release|x64
 		{65B2B36F-A237-4404-9A85-08B0C69D8504}.Release|x64.Build.0 = Release|x64
+		{E0DDBAE3-3969-4639-A61F-6F5CB05CB11B}.Debug|x64.ActiveCfg = Debug|x64
+		{E0DDBAE3-3969-4639-A61F-6F5CB05CB11B}.Debug|x64.Build.0 = Debug|x64
+		{E0DDBAE3-3969-4639-A61F-6F5CB05CB11B}.Release|x64.ActiveCfg = Release|x64
+		{E0DDBAE3-3969-4639-A61F-6F5CB05CB11B}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
