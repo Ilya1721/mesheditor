@@ -1,121 +1,27 @@
 #include "Vector.h"
 
-#include <memory>
-
-#include <glm/glm.hpp>
-#include <glm/gtc/epsilon.hpp>
-
-#include "Constants.h"
+#include "VecImpl.h"
 
 namespace Geometry
 {
-	template<int Dimension>
-	using VecType = glm::vec<Dimension, double, glm::qualifier::defaultp>;
-
-	template<int Dimension>
-	class VecImpl
-	{
-	public:
-		VecImpl() noexcept;
-		VecImpl(double arg) noexcept;
-		VecImpl(double args...) noexcept;
-
-		VecImpl(const VecImpl& other) noexcept;
-		VecImpl(VecImpl&& other) noexcept;
-		VecImpl& operator=(const VecImpl& other) noexcept;
-		VecImpl& operator=(VecImpl&& other) noexcept;
-
-		bool operator==(const VecImpl& other) const noexcept;
-
-	private:
-		std::unique_ptr<VecType<Dimension>> mpImplVec;
-	};
-
-	template<int Dimension>
-	VecImpl<Dimension>::VecImpl() noexcept
-		: mpImplVec(std::make_unique<VecType>())
+	Vector2D::Vector2D() noexcept
+		: mpImpl(new Vec4Impl())
 	{}
 
-	template<int Dimension>
-	VecImpl<Dimension>::VecImpl(double arg) noexcept
-		: mpImplVec(std::make_unique<VecType>(arg))
+	Vector2D::Vector2D(double x, double y) noexcept
+		: mpImpl(new Vec4Impl(x, y, 0.0, 0.0))
 	{}
 
-	template<int Dimension>
-	VecImpl<Dimension>::VecImpl(double args...) noexcept
-		: mpImplVec(std::make_unique<VecType>(args...))
+	Vector2D::Vector2D(const Vector2D& other) noexcept
+		: mpImpl(new Vec4Impl(*other.mpImpl))
 	{}
 
-	template<int Dimension>
-	VecImpl<Dimension>::VecImpl(const VecImpl& other) noexcept
-		: mpImplVec(std::make_unique(*other.mpImplVec))
-	{}
-
-	template<int Dimension>
-	VecImpl<Dimension>::VecImpl(VecImpl&& other) noexcept
+	Vector2D::Vector2D(Vector2D&& other) noexcept
 	{
 		*this = std::move(other);
 	}
 
-	template<int Dimension>
-	VecImpl<Dimension>& VecImpl<Dimension>::operator=(VecImpl&& other) noexcept
-	{
-		if (this != &other)
-		{
-			mpImplVec = std::move(other.mpImplVec);
-		}
-
-		return *this;
-	}
-
-	template<int Dimension>
-	VecImpl<Dimension>& VecImpl<Dimension>::operator=(const VecImpl& other) noexcept
-	{
-		if (this != &other)
-		{
-			*mpImplVec = *other.mpImplVec;
-		}
-
-		return *this;
-	}
-
-	template<int Dimension>
-	bool VecImpl<Dimension>::operator==(const VecImpl& other) const noexcept
-	{
-		return glm::all(glm::epsilonEqual(*mpImplVec, *other.mpImplVec, EPSILON));
-	}
-}
-
-namespace Geometry
-{
-	template<int Dimension>
-	Vector<Dimension>::Vector() noexcept
-		: mpImpl(new VecImpl<Dimension>())
-	{}
-
-	template<int Dimension>
-	Vector<Dimension>::Vector(double arg) noexcept
-		: mpImpl(new VecImpl<Dimension>(arg))
-	{}
-
-	template<int Dimension>
-	Vector<Dimension>::Vector(double args...) noexcept
-		: mpImpl(new VecImpl<Dimension>(args...))
-	{}
-
-	template<int Dimension>
-	Vector<Dimension>::Vector(const Vector& other) noexcept
-		: mpImpl(new VecImpl<Dimension>(*other.mpImpl))
-	{}
-
-	template<int Dimension>
-	Vector<Dimension>::Vector(Vector&& other) noexcept
-	{
-		*this = std::move(other);
-	}
-
-	template<int Dimension>
-	Vector<Dimension>& Vector<Dimension>::operator=(const Vector& other) noexcept
+	Vector2D& Vector2D::operator=(const Vector2D& other) noexcept
 	{
 		if (this != &other)
 		{
@@ -125,28 +31,307 @@ namespace Geometry
 		return *this;
 	}
 
-	template<int Dimension>
-	Vector<Dimension>& Vector<Dimension>::operator=(Vector&& othertor) noexcept
+	Vector2D& Vector2D::operator=(Vector2D&& other) noexcept
 	{
-		if (this != &othertor)
+		if (this != &other)
 		{
 			delete mpImpl;
-			mpImpl = othertor.mpImpl;
-			othertor.mpImpl = nullptr;
+			mpImpl = other.mpImpl;
+			other.mpImpl = nullptr;
 		}
 
 		return *this;
 	}
 
-	template<int Dimension>
-	Vector<Dimension>::~Vector() noexcept
+	Vector2D::~Vector2D() noexcept
 	{
 		delete mpImpl;
 	}
 
-	template<int Dimension>
-	bool Vector<Dimension>::operator==(const Vector& other) const noexcept
+	Vector2D::Vector2D(Vec4Impl&& other) noexcept
+		: mpImpl(new Vec4Impl(other))
+	{}
+
+	bool Vector2D::operator==(const Vector2D& other) const noexcept
 	{
 		return *mpImpl == *other.mpImpl;
+	}
+
+	double& Vector2D::operator[](int index) noexcept
+	{
+		return (*mpImpl)[index];
+	}
+
+	double Vector2D::operator[](int index) const noexcept
+	{
+		return (*mpImpl)[index];
+	}
+
+	Vector2D Vector2D::operator+(const Vector2D& other) const noexcept
+	{
+		return (*mpImpl) + (*other.mpImpl);
+	}
+
+	void Vector2D::operator+=(const Vector2D& other) noexcept
+	{
+		(*mpImpl) += (*other.mpImpl);
+	}
+
+	Vector2D Vector2D::operator-(const Vector2D& other) const noexcept
+	{
+		return (*mpImpl) - (*other.mpImpl);
+	}
+
+	Vector2D Vector2D::operator/(double n) const noexcept
+	{
+		return (*mpImpl) / n;
+	}
+
+	double Vector2D::x() const noexcept
+	{
+		return (*mpImpl)[0];
+	}
+
+	void Vector2D::setX(double x) noexcept
+	{
+		(*mpImpl)[0] = x;
+	}
+
+	double Vector2D::y() const noexcept
+	{
+		return (*mpImpl)[1];
+	}
+
+	void Vector2D::setY(double y) noexcept
+	{
+		(*mpImpl)[1] = y;
+	}
+
+	double Vector2D::r() const noexcept
+	{
+		return x();
+	}
+
+	void Vector2D::setR(double r) noexcept
+	{
+		setX(r);
+	}
+
+	double Vector2D::g() const noexcept
+	{
+		return y();
+	}
+
+	void Vector2D::setG(double g) noexcept
+	{
+		setY(g);
+	}
+
+	Vec4Impl* Vector2D::__internal_getPimpl() const noexcept
+	{
+		return mpImpl;
+	}
+
+	Vector2D Vector2D::normalize(const Vector2D& vec) noexcept
+	{
+		return Vec4Impl::normalize(*vec.mpImpl);
+	}
+
+	double Vector2D::dot(const Vector2D& firstVec, const Vector2D& secondVec) noexcept
+	{
+		return Vec4Impl::dot(*firstVec.mpImpl, *secondVec.mpImpl);
+	}
+
+	Vector2D Vector2D::cross(const Vector2D& firstVec, const Vector2D& secondVec) noexcept
+	{
+		return Vec4Impl::cross(*firstVec.mpImpl, *secondVec.mpImpl);
+	}
+
+	Vector3D::Vector3D(double x, double y, double z) noexcept
+		: Vector2D(x, y)
+	{
+		setZ(z);
+	}
+
+	Vector3D::Vector3D(Vector2D&& other) noexcept
+		: Vector2D(other)
+	{}
+
+	Vector3D::Vector3D(const Vector3D& other) noexcept
+		: Vector2D(other)
+	{}
+
+	Vector3D::Vector3D(Vector3D&& other) noexcept
+		: Vector2D(other)
+	{}
+
+	Vector3D::Vector3D(Vec4Impl&& other) noexcept
+		: Vector2D(std::move(other))
+	{}
+
+	Vector3D& Vector3D::operator=(const Vector3D& other) noexcept
+	{
+		Vector2D::operator=(other);
+		return *this;
+	}
+
+	Vector3D& Vector3D::operator=(Vector3D&& other) noexcept
+	{
+		Vector2D::operator=(other);
+		return *this;
+	}
+
+	Vector3D Vector3D::operator+(const Vector3D& other) const noexcept
+	{
+		return Vector2D::operator+(other);
+	}
+
+	Vector3D Vector3D::operator-(const Vector3D& other) const noexcept
+	{
+		return Vector2D::operator-(other);
+	}
+
+	Vector3D Vector3D::operator/(double n) const noexcept
+	{
+		return Vector2D::operator/(n);
+	}
+
+	double Vector3D::z() const noexcept
+	{
+		return (*mpImpl)[2];
+	}
+
+	void Vector3D::setZ(double z) noexcept
+	{
+		(*mpImpl)[2] = z;
+	}
+
+	double Vector3D::b() const noexcept
+	{
+		return z();
+	}
+
+	void Vector3D::setB(double b) noexcept
+	{
+		setZ(b);
+	}
+
+	Vector3D Vector3D::normalize(const Vector3D& vec) noexcept
+	{
+		return Vector2D::normalize(vec);
+	}
+
+	double Vector3D::dot(const Vector3D& firstVec, const Vector3D& secondVec) noexcept
+	{
+		return Vector2D::dot(firstVec, secondVec);
+	}
+
+	Vector3D Vector3D::cross(const Vector3D& firstVec, const Vector3D& secondVec) noexcept
+	{
+		return Vector2D::cross(firstVec, secondVec);
+	}
+
+	Vector3D Vector3D::project(const Vector3D& obj, const Matrix4D& model, const Matrix4D& proj, const Vector4D& viewport) noexcept
+	{
+		return Vec4Impl::project(*obj.mpImpl, model, proj, *viewport.mpImpl);
+	}
+
+	Vector3D Vector3D::unProject(const Vector3D& win, const Matrix4D& model, const Matrix4D& proj, const Vector4D& viewport) noexcept
+	{
+		return Vec4Impl::unProject(*win.mpImpl, model, proj, *viewport.mpImpl);
+	}
+
+	Vector4D::Vector4D(double x, double y, double z, double w) noexcept
+		: Vector3D(x, y, z)
+	{
+		setW(w);
+	}
+
+	Vector4D::Vector4D(Vector3D&& other) noexcept
+		: Vector3D(other)
+	{}
+
+	Vector4D::Vector4D(Vec4Impl&& other) noexcept
+		: Vector3D(std::move(other))
+	{}
+
+	Vector4D::Vector4D(const Vector4D& other) noexcept
+		: Vector3D(other)
+	{}
+
+	Vector4D::Vector4D(Vector4D&& other) noexcept
+		: Vector3D(other)
+	{}
+
+	Vector4D& Vector4D::operator=(const Vector4D& other) noexcept
+	{
+		Vector3D::operator=(other);
+		return *this;
+	}
+
+	Vector4D& Vector4D::operator=(Vector4D&& other) noexcept
+	{
+		Vector3D::operator=(other);
+		return *this;
+	}
+
+	Vector4D Vector4D::operator+(const Vector4D& other) const noexcept
+	{
+		return Vector3D::operator+(other);
+	}
+
+	Vector4D Vector4D::operator-(const Vector4D& other) const noexcept
+	{
+		return Vector3D::operator-(other);
+	}
+
+	Vector4D Vector4D::operator/(double n) const noexcept
+	{
+		return Vector3D::operator/(n);
+	}
+
+	Vector4D Vector4D::operator*(const Matrix4D& matrix) const noexcept
+	{
+		return (*mpImpl) * matrix;
+	}
+
+	Vector3D Vector4D::getVec3() const noexcept
+	{
+		return Vector3D(x(), y(), z());
+	}
+
+	double Vector4D::w() const noexcept
+	{
+		return (*mpImpl)[3];
+	}
+
+	void Vector4D::setW(double w) noexcept
+	{
+		(*mpImpl)[3] = w;
+	}
+
+	double Vector4D::a() const noexcept
+	{
+		return w();
+	}
+
+	void Vector4D::setA(double a) noexcept
+	{
+		setW(a);
+	}
+
+	Vector4D Vector4D::normalize(const Vector4D& vec) noexcept
+	{
+		return Vector3D::normalize(vec);
+	}
+
+	double Vector4D::dot(const Vector4D& firstVec, const Vector4D& secondVec) noexcept
+	{
+		return Vector3D::dot(firstVec, secondVec);
+	}
+
+	Vector4D Vector4D::cross(const Vector4D& firstVec, const Vector4D& secondVec) noexcept
+	{
+		return Vector3D::cross(firstVec, secondVec);
 	}
 }

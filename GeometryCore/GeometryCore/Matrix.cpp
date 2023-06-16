@@ -1,110 +1,28 @@
 #include "Matrix.h"
 
-#include <memory>
-
-#include <glm/glm.hpp>
-#include <glm/gtc/epsilon.hpp>
-
-#include "Constants.h"
+#include "MatImpl.h"
+#include "Vector.h"
 
 namespace Geometry
 {
-	template<int Rows, int Cols>
-	using MatType = glm::mat<Rows, Cols, double, glm::qualifier::defaultp>;
-
-	template<int Rows, int Cols>
-	class MatImpl
-	{
-	public:
-		MatImpl() noexcept;
-		MatImpl(double arg) noexcept;
-
-		MatImpl(const MatImpl& other) noexcept;
-		MatImpl(MatImpl&& other) noexcept;
-		MatImpl& operator=(const MatImpl& other) noexcept;
-		MatImpl& operator=(MatImpl&& other) noexcept;
-
-		bool operator==(const MatImpl& other) const noexcept;
-
-	private:
-		std::unique_ptr<MatType<Rows, Cols>> mpImplMat;
-	};
-
-	template<int Rows, int Cols>
-	MatImpl<Rows, Cols>::MatImpl() noexcept
-		: mpImplMat(std::make_unique<MatType>())
+	Matrix4D::Matrix4D() noexcept
+		: mpImpl(new Mat4Impl())
 	{}
 
-	template<int Rows, int Cols>
-	MatImpl<Rows, Cols>::MatImpl(double arg) noexcept
-		: mpImplMat(std::make_unique<MatType>(arg))
+	Matrix4D::Matrix4D(double arg) noexcept
+		: mpImpl(new Mat4Impl(arg))
 	{}
 
-	template<int Rows, int Cols>
-	MatImpl<Rows, Cols>::MatImpl(const MatImpl& other) noexcept
-		: mpImplMat(std::make_unique(*other.mpImplMat))
+	Matrix4D::Matrix4D(const Matrix4D& other) noexcept
+		: mpImpl(new Mat4Impl(*other.mpImpl))
 	{}
 
-	template<int Rows, int Cols>
-	MatImpl<Rows, Cols>::MatImpl(MatImpl&& other) noexcept
+	Matrix4D::Matrix4D(Matrix4D&& other) noexcept
 	{
 		*this = std::move(other);
 	}
 
-	template<int Rows, int Cols>
-	MatImpl<Rows, Cols>& MatImpl<Rows, Cols>::operator=(MatImpl&& other) noexcept
-	{
-		if (this != &other)
-		{
-			mpImplMat = std::move(other.mpImplMat);
-		}
-
-		return *this;
-	}
-
-	template<int Rows, int Cols>
-	MatImpl<Rows, Cols>& MatImpl<Rows, Cols>::operator=(const MatImpl& other) noexcept
-	{
-		if (this != &other)
-		{
-			*mpImplMat = *other.mpImplMat;
-		}
-
-		return *this;
-	}
-
-	template<int Rows, int Cols>
-	bool MatImpl<Rows, Cols>::operator==(const MatImpl& other) const noexcept
-	{
-		return glm::all(glm::epsilonEqual(*mpImplMat, *other.mpImplMat, EPSILON));
-	}
-}
-
-namespace Geometry
-{
-	template<int Rows, int Cols>
-	Matrix<Rows, Cols>::Matrix() noexcept
-		: mpImpl(new MatImpl<Rows, Cols>())
-	{}
-
-	template<int Rows, int Cols>
-	Matrix<Rows, Cols>::Matrix(double arg) noexcept
-		: mpImpl(new MatImpl<Rows, Cols>(arg))
-	{}
-
-	template<int Rows, int Cols>
-	Matrix<Rows, Cols>::Matrix(const Matrix& other) noexcept
-		: mpImpl(new MatImpl<Rows, Cols>(*other.mpImpl))
-	{}
-
-	template<int Rows, int Cols>
-	Matrix<Rows, Cols>::Matrix(Matrix&& other) noexcept
-	{
-		*this = std::move(other);
-	}
-
-	template<int Rows, int Cols>
-	Matrix<Rows, Cols>& Matrix<Rows, Cols>::operator=(const Matrix& other) noexcept
+	Matrix4D& Matrix4D::operator=(const Matrix4D& other) noexcept
 	{
 		if (this != &other)
 		{
@@ -114,28 +32,59 @@ namespace Geometry
 		return *this;
 	}
 
-	template<int Rows, int Cols>
-	Matrix<Rows, Cols>& Matrix<Rows, Cols>::operator=(Matrix&& othertor) noexcept
+	Matrix4D& Matrix4D::operator=(Matrix4D&& other) noexcept
 	{
-		if (this != &othertor)
+		if (this != &other)
 		{
 			delete mpImpl;
-			mpImpl = othertor.mpImpl;
-			othertor.mpImpl = nullptr;
+			mpImpl = other.mpImpl;
+			other.mpImpl = nullptr;
 		}
 
 		return *this;
 	}
 
-	template<int Rows, int Cols>
-	Matrix<Rows, Cols>::~Matrix() noexcept
+	Matrix4D::~Matrix4D() noexcept
 	{
 		delete mpImpl;
 	}
 
-	template<int Rows, int Cols>
-	bool Matrix<Rows, Cols>::operator==(const Matrix& other) const noexcept
+	Matrix4D::Matrix4D(Mat4Impl&& mat4Impl) noexcept
+		: mpImpl(new Mat4Impl(mat4Impl))
+	{}
+
+	bool Matrix4D::operator==(const Matrix4D& other) const noexcept
 	{
 		return *mpImpl == *other.mpImpl;
+	}
+
+	Matrix4D Matrix4D::operator*(const Matrix4D& other) const noexcept
+	{
+		return (*mpImpl) * (*other.mpImpl);
+	}
+
+	double* Matrix4D::valuePtr() noexcept
+	{
+		return mpImpl->valuePtr();
+	}
+
+	Mat4Impl* Matrix4D::__internal_getPimpl() const noexcept
+	{
+		return mpImpl;
+	}
+
+	Matrix4D Matrix4D::lookAt(const Vector3D& mPosition, const Vector3D& mTarget, const Vector3D& mUp) noexcept
+	{
+		return Mat4Impl::lookAt(mPosition, mTarget, mUp);
+	}
+
+	Matrix4D Matrix4D::ortho(double left, double right, double bottom, double top, double zNear, double zFar) noexcept
+	{
+		return Mat4Impl::ortho(left, right, bottom, top, zNear, zFar);
+	}
+
+	Matrix4D Matrix4D::perspective(double fov, double aspect, double zNear, double zFar) noexcept
+	{
+		return Mat4Impl::perspective(fov, aspect, zNear, zFar);
 	}
 }

@@ -1,11 +1,13 @@
-#include "pch.h"
+module Mesh;
 
-#include "Mesh.h"
+import std;
+
+import Vertex;
 
 namespace MeshCore
 {
-	Mesh::Mesh(const std::vector<Vertex>& vertices) noexcept : 
-		mVertices(vertices)
+	Mesh::Mesh(const std::vector<Vertex>& vertices) noexcept
+		: mVertices(vertices)
 	{}
 
 	const std::vector<Vertex>& Mesh::getVertices() const noexcept

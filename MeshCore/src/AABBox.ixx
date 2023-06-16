@@ -1,14 +1,14 @@
 module;
-#include "SolutionMacros.h"
 #include "GeometryCore/Vector.h"
 #include "GeometryCore/Matrix.h"
 export module AABBox;
 
+import Mesh;
+import Object3D;
+
 export namespace MeshCore
 {
-	using namespace Geometry;
-
-	class API AABBox
+	class AABBox final
 	{
 	public:
 		AABBox() noexcept;
@@ -16,24 +16,23 @@ export namespace MeshCore
 		AABBox(AABBox&& box) = default;
 		AABBox& operator=(const AABBox& box) = default;
 		AABBox& operator=(AABBox&& box) = default;
-		virtual ~AABBox() noexcept = default;
 
 		void setFromMesh(const Mesh& mesh) noexcept;
 		void setFromObject(const Object3D& object) noexcept;
 
-		void applyTransform(const Matrix4D& transform) noexcept;
+		void applyTransform(const Geometry::Matrix4D& transform) noexcept;
 
-		Vector3D getCenter() const noexcept;
-		const Vector3D& getMin() const noexcept;
-		const Vector3D& getMax() const noexcept;
+		Geometry::Vector4D getCenter() const noexcept;
+		const Geometry::Vector4D& getMin() const noexcept;
+		const Geometry::Vector4D& getMax() const noexcept;
 		double getHeight() const noexcept;
 
 	private:
 		void init() noexcept;
 
 	private:
-		Vector4D mMin;
-		Vector4D mMax;
+		Geometry::Vector4D mMin;
+		Geometry::Vector4D mMax;
 	};
 }
 

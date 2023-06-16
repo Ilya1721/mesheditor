@@ -20,14 +20,14 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <SpectreMitigation>false</SpectreMitigation>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -61,12 +61,17 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)GeometryCore\;$(SolutionDir)ThirdParty\;$(SolutionDir)Global\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
       <AdditionalModuleDependencies>
       </AdditionalModuleDependencies>
-      <TranslateIncludes>true</TranslateIncludes>
+      <TranslateIncludes>false</TranslateIncludes>
       <EnableModules>true</EnableModules>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <BuildStlModules>false</BuildStlModules>
+      <AdditionalBMIDirectories>
+      </AdditionalBMIDirectories>
+      <AdditionalOptions>/reference std=$(SolutionDir)ThirdParty\std\std.ixx.ifc %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -87,12 +92,17 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)GeometryCore\;$(SolutionDir)ThirdParty\;$(SolutionDir)Global\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
       <AdditionalModuleDependencies>
       </AdditionalModuleDependencies>
-      <TranslateIncludes>true</TranslateIncludes>
+      <TranslateIncludes>false</TranslateIncludes>
       <EnableModules>true</EnableModules>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <BuildStlModules>false</BuildStlModules>
+      <AdditionalBMIDirectories>
+      </AdditionalBMIDirectories>
+      <AdditionalOptions>/reference std=$(SolutionDir)ThirdParty\std\std.ixx.ifc %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -105,10 +115,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="src\StringHelper.cpp" />
     <ClCompile Include="src\StringHelper.ixx" />
     <ClCompile Include="src\FileHelper.cpp" />

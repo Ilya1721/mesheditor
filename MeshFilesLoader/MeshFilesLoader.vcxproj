@@ -19,13 +19,13 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -54,11 +54,20 @@
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;MESHFILESLOADER_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <ConformanceMode>Default</ConformanceMode>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)MeshCore\;$(SolutionDir)ThirdParty\;$(SolutionDir)Utility\;$(SolutionDir)MeshFilesLoader\MeshFilesLoader\</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <EnableModules>true</EnableModules>
+      <AdditionalModuleDependencies>
+      </AdditionalModuleDependencies>
+      <AdditionalBMIDirectories>
+      </AdditionalBMIDirectories>
+      <TranslateIncludes>true</TranslateIncludes>
+      <BuildStlModules>false</BuildStlModules>
+      <AdditionalOptions>/reference std=$(SolutionDir)ThirdParty\std\std.ixx.ifc %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -75,11 +84,20 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;MESHFILESLOADER_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <ConformanceMode>Default</ConformanceMode>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)MeshCore\;$(SolutionDir)ThirdParty\;$(SolutionDir)Utility\;$(SolutionDir)MeshFilesLoader\MeshFilesLoader\</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <EnableModules>true</EnableModules>
+      <AdditionalModuleDependencies>
+      </AdditionalModuleDependencies>
+      <AdditionalBMIDirectories>
+      </AdditionalBMIDirectories>
+      <TranslateIncludes>true</TranslateIncludes>
+      <BuildStlModules>false</BuildStlModules>
+      <AdditionalOptions>/reference std=$(SolutionDir)ThirdParty\std\std.ixx.ifc %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -92,24 +110,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="MeshFilesLoader\Constants.h" />
-    <ClInclude Include="MeshFilesLoader\framework.h" />
-    <ClInclude Include="MeshFilesLoader\IFileLoader.h" />
-    <ClInclude Include="MeshFilesLoader\pch.h" />
-    <ClInclude Include="MeshFilesLoader\STLLoader.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="pch.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="STLLoader.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\MeshCore\MeshCore.vcxproj">
       <Project>{27a4bba3-8da4-4e41-a872-ed4732a7f7bc}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Utility\Utility.vcxproj">
+      <Project>{65b2b36f-a237-4404-9a85-08b0c69d8504}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\IFileLoader.ixx" />
+    <ClCompile Include="src\MeshFilesLoaderConsts.ixx" />
+    <ClCompile Include="src\STLLoader.cpp" />
+    <ClCompile Include="src\STLLoader.ixx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,13 +1,19 @@
-#include "pch.h"
+module;
+#include "GeometryCore/Matrix.h"
+module Object3D;
 
-#include "Object3D.h"
+import std;
 
-#include "Constants.h"
+import Mesh;
+import RenderData;
+import MeshCoreConsts;
+
+using namespace Geometry;
 
 namespace MeshCore
 {
-	Object3D::Object3D(Object3D* parent, std::unique_ptr<Mesh> mesh) noexcept :
-		mLocalTransform(1.0f),
+	Object3D::Object3D(Object3D* parent, std::unique_ptr<Mesh> mesh) noexcept
+		: mLocalTransform(1.0f),
 		mMesh(std::move(mesh)),
 		mParent(parent),
 		mNeedUpdateRenderData(true),
@@ -31,12 +37,12 @@ namespace MeshCore
 		mMesh = std::move(mesh);
 	}
 
-	void Object3D::setLocalTransform(const glm::mat4& transform) noexcept 
+	void Object3D::setLocalTransform(const Geometry::Matrix4D& transform) noexcept
 	{
 		mLocalTransform = transform;
 	}
 
-	void Object3D::updateLocalTransform(const glm::mat4& transform) noexcept
+	void Object3D::updateLocalTransform(const Geometry::Matrix4D& transform) noexcept
 	{
 		mLocalTransform = transform * mLocalTransform;
 	}
@@ -53,7 +59,6 @@ namespace MeshCore
 	void Object3D::updateTransformsGlobally() noexcept
 	{
 		auto currentRoot = this;
-
 		while (currentRoot->getParent() != nullptr)
 		{
 			currentRoot = currentRoot->getParent();
@@ -62,7 +67,7 @@ namespace MeshCore
 		currentRoot->updateChildrenTransforms();
 	}
 
-	const glm::mat4& Object3D::getLocalTransform() const noexcept
+	const Geometry::Matrix4D& Object3D::getLocalTransform() const noexcept
 	{
 		return mLocalTransform;
 	}
@@ -95,32 +100,26 @@ namespace MeshCore
 	void Object3D::removeChild(Object3D* object) noexcept
 	{
 		auto childIt = mChildren.find(object);
-
 		if (childIt != mChildren.end())
 		{
 			mChildren.erase(childIt);
 		}
 	}
 
-	ShaderType Object3D::getShaderType() const noexcept
-	{
-		return ShaderType::BASIC_SHADER;
-	}
-
 	void Object3D::prepareRenderData() noexcept
 	{
 		const auto& vertices = mMesh->getVertices();
 
-		mRenderData.positions.reserve(vertices.size() * Constants::COORDINATES_PER_VERTEX);
-		mRenderData.normals.reserve(vertices.size() * Constants::COORDINATES_PER_NORMAL);
-		mRenderData.colors.reserve(vertices.size() * Constants::COLOR_COMPONENTS_COUNT);
+		mRenderData.positions.reserve(vertices.size() * COORDINATES_PER_VERTEX);
+		mRenderData.normals.reserve(vertices.size() * COORDINATES_PER_NORMAL);
+		mRenderData.colors.reserve(vertices.size() * COLOR_COMPONENTS_COUNT);
 
-		static_assert(Constants::COORDINATES_PER_VERTEX == Constants::COORDINATES_PER_NORMAL &&
-			Constants::COORDINATES_PER_VERTEX == Constants::COLOR_COMPONENTS_COUNT);
+		static_assert(COORDINATES_PER_VERTEX == COORDINATES_PER_NORMAL &&
+			COORDINATES_PER_VERTEX == COLOR_COMPONENTS_COUNT);
 
 		for (const auto& vertex : vertices)
 		{
-			for (glm::vec3::length_type coordIdx = 0; coordIdx < Constants::COORDINATES_PER_VERTEX; ++coordIdx)
+			for (int coordIdx = 0; coordIdx < COORDINATES_PER_VERTEX; ++coordIdx)
 			{
 				mRenderData.positions.push_back(vertex.pos[coordIdx]);
 				mRenderData.normals.push_back(vertex.normal[coordIdx]);

@@ -19,13 +19,13 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -53,6 +53,8 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\;$(SolutionDir)Global\</AdditionalIncludeDirectories>
+      <TranslateIncludes>true</TranslateIncludes>
+      <BuildStlModules>false</BuildStlModules>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -72,6 +74,8 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\;$(SolutionDir)Global\</AdditionalIncludeDirectories>
+      <TranslateIncludes>true</TranslateIncludes>
+      <BuildStlModules>false</BuildStlModules>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -82,16 +86,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h" />
-    <ClInclude Include="GeometryCore\Constants.h" />
+    <ClInclude Include="GeometryCore\GeomConsts.h" />
+    <ClInclude Include="GeometryCore\MatImpl.h" />
     <ClInclude Include="GeometryCore\Matrix.h" />
     <ClInclude Include="GeometryCore\Numeric.h" />
     <ClInclude Include="GeometryCore\Range.h" />
+    <ClInclude Include="GeometryCore\VecImpl.h" />
     <ClInclude Include="GeometryCore\Vector.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="GeometryCore\MatImpl.cpp" />
     <ClCompile Include="GeometryCore\Matrix.cpp" />
+    <ClCompile Include="GeometryCore\Numeric.cpp" />
+    <ClCompile Include="GeometryCore\VecImpl.cpp" />
     <ClCompile Include="GeometryCore\Vector.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

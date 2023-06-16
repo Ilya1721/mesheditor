@@ -19,13 +19,13 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -54,11 +54,15 @@
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;RENDERSYSTEM_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <ConformanceMode>Default</ConformanceMode>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\;$(SolutionDir)Utility\;$(SolutionDir)MeshCore\;$(SolutionDir)RenderSystem\RenderSystem\;$(SolutionDir)MeshFilesLoader\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\;$(SolutionDir)GeometryCore\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <EnableModules>true</EnableModules>
+      <TranslateIncludes>true</TranslateIncludes>
+      <BuildStlModules>false</BuildStlModules>
+      <AdditionalOptions>/reference std=$(SolutionDir)ThirdParty\std\std.ixx.ifc %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -67,6 +71,10 @@
       <AdditionalLibraryDirectories>$(SolutionDir)ThirdParty\glfw\lib\;$(SolutionDir)$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glfw3.lib;MeshFilesLoader.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -75,11 +83,15 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;RENDERSYSTEM_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <ConformanceMode>Default</ConformanceMode>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\;$(SolutionDir)Utility\;$(SolutionDir)MeshCore\;$(SolutionDir)RenderSystem\RenderSystem\;$(SolutionDir)MeshFilesLoader\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\;$(SolutionDir)GeometryCore\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <EnableModules>true</EnableModules>
+      <TranslateIncludes>true</TranslateIncludes>
+      <BuildStlModules>false</BuildStlModules>
+      <AdditionalOptions>/reference std=$(SolutionDir)ThirdParty\std\std.ixx.ifc %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -90,43 +102,40 @@
       <AdditionalLibraryDirectories>$(SolutionDir)ThirdParty\glfw\lib\;$(SolutionDir)$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glfw3.lib;MeshFilesLoader.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="glad.h" />
-    <ClInclude Include="RenderSystem\BasicRenderer.h" />
-    <ClInclude Include="RenderSystem\Camera.h" />
-    <ClInclude Include="RenderSystem\Constants.h" />
-    <ClInclude Include="RenderSystem\framework.h" />
-    <ClInclude Include="RenderSystem\IEventHandler.h" />
-    <ClInclude Include="RenderSystem\khrplatform.h" />
-    <ClInclude Include="RenderSystem\PanHandler.h" />
-    <ClInclude Include="RenderSystem\pch.h" />
-    <ClInclude Include="RenderSystem\Scene.h" />
-    <ClInclude Include="RenderSystem\TestRenderer.h" />
-    <ClInclude Include="RenderSystem\Viewport.h" />
-    <ClInclude Include="RenderSystem\Window.h" />
+    <ClInclude Include="src\glad.h" />
+    <ClInclude Include="src\khrplatform.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BasicRenderer.cpp" />
-    <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="glad.c">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="PanHandler.cpp" />
-    <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="TestRenderer.cpp" />
-    <ClCompile Include="Viewport.cpp" />
-    <ClCompile Include="Window.cpp" />
-    <ClCompile Include="pch.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-    </ClCompile>
+    <ClCompile Include="src\BasicRenderer.cpp" />
+    <ClCompile Include="src\BasicRenderer.ixx" />
+    <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\Camera.ixx" />
+    <ClCompile Include="src\glad.c" />
+    <ClCompile Include="src\IEventHandler.ixx" />
+    <ClCompile Include="src\PanHandler.cpp" />
+    <ClCompile Include="src\PanHandler.ixx" />
+    <ClCompile Include="src\RenderSystemConstants.ixx" />
+    <ClCompile Include="src\Scene.cpp" />
+    <ClCompile Include="src\Scene.ixx" />
+    <ClCompile Include="src\TestRenderer.cpp" />
+    <ClCompile Include="src\TestRenderer.ixx" />
+    <ClCompile Include="src\Viewport.cpp" />
+    <ClCompile Include="src\Viewport.ixx" />
+    <ClCompile Include="src\Window.cpp" />
+    <ClCompile Include="src\Window.ixx" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MeshCore\MeshCore.vcxproj">
       <Project>{27a4bba3-8da4-4e41-a872-ed4732a7f7bc}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\MeshFilesLoader\MeshFilesLoader.vcxproj">
+      <Project>{4b6a0654-5334-4368-b142-f947161b301f}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Utility\Utility.vcxproj">
       <Project>{65b2b36f-a237-4404-9a85-08b0c69d8504}</Project>

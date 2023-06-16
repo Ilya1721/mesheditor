@@ -1,33 +1,37 @@
 #pragma once
 
-#include "SolutionMacros.h"
-
 namespace Geometry
 {
-	template<int Rows, int Cols>
-	class MatImpl;
+	class Vector3D;
+	class Mat4Impl;
 
-	template<int Rows, int Cols>
-	class API Matrix final
+	class Matrix4D
 	{
 	public:
-		Matrix() noexcept;
-		Matrix(double arg) noexcept;
+		Matrix4D() noexcept;
+		Matrix4D(double arg) noexcept;
 
-		Matrix(const Matrix& other) noexcept;
-		Matrix(Matrix&& other) noexcept;
-		Matrix& operator=(const Matrix& other) noexcept;
-		Matrix& operator=(Matrix&& other) noexcept;
-		~Matrix() noexcept;
+		Matrix4D(const Matrix4D& other) noexcept;
+		Matrix4D(Matrix4D&& other) noexcept;
+		Matrix4D& operator=(const Matrix4D& other) noexcept;
+		Matrix4D& operator=(Matrix4D&& other) noexcept;
+		~Matrix4D() noexcept;
 
-		bool operator==(const Matrix& other) const noexcept;
+		bool operator==(const Matrix4D& other) const noexcept;
+		Matrix4D operator*(const Matrix4D& other) const noexcept;
+		double* valuePtr() noexcept;
+
+		Mat4Impl* __internal_getPimpl() const noexcept;
+
+		static Matrix4D lookAt(const Vector3D& mPosition, const Vector3D& mTarget, const Vector3D& mUp) noexcept;
+		static Matrix4D ortho(double left, double right, double bottom, double top, double zNear, double zFar) noexcept;
+		static Matrix4D perspective(double fov, double aspect, double zNear, double zFar) noexcept;
 
 	private:
-		MatImpl<Rows, Cols>* mpImpl;
-	};
+		Matrix4D(Mat4Impl&& Mat4Impl) noexcept;
 
-	using Matrix2D = Matrix<2, 2>;
-	using Matrix3D = Matrix<3, 3>;
-	using Matrix4D = Matrix<4, 4>;
+	private:
+		Mat4Impl* mpImpl;
+	};
 }
 

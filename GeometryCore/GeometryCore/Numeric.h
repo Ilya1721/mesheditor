@@ -1,14 +1,8 @@
 #pragma once
 
-#include "SolutionMacros.h"
-
-#include <type_traits>
-
 namespace Geometry
 {
-	template <typename Numeric, std::enable_if_t<std::is_arithmetic_v<Numeric>, bool>>
-	API bool isEqual(Numeric first, Numeric second) noexcept
-	{
-		return std::abs(first - second) < Geometry::EPSILON;
-	}
+	bool isEqual(double first, double second) noexcept;
+	double toRadians(double degrees) noexcept;
+	double tan(double angle) noexcept;
 }

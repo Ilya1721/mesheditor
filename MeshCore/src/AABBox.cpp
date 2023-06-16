@@ -1,4 +1,13 @@
+module;
+#include "GeometryCore/Matrix.h"
+#include "GeometryCore/Vector.h"
 module AABBox;
+
+import std;
+
+import Mesh;
+
+using namespace Geometry;
 
 namespace MeshCore
 {
@@ -13,14 +22,14 @@ namespace MeshCore
 		{
 			const auto& pos = vertex.pos;
 
-			mMin.x = std::min(mMin.x, pos.x);
-			mMax.x = std::max(mMax.x, pos.x);
+			mMin.setX(std::min(mMin.x(), pos.x()));
+			mMax.setX(std::max(mMax.x(), pos.x()));
 
-			mMin.y = std::min(mMin.y, pos.y);
-			mMax.y = std::max(mMax.y, pos.y);
+			mMin.setY(std::min(mMin.y(), pos.y()));
+			mMax.setY(std::max(mMax.y(), pos.y()));
 
-			mMin.z = std::min(mMin.z, pos.z);
-			mMax.z = std::max(mMax.z, pos.z);
+			mMin.setZ(std::min(mMin.z(), pos.z()));
+			mMax.setZ(std::max(mMax.z(), pos.z()));
 		}
 	}
 
@@ -37,36 +46,35 @@ namespace MeshCore
 
 	void AABBox::init() noexcept
 	{
-		constexpr auto floatMin = std::numeric_limits<float>::min();
-		constexpr auto floatMax = std::numeric_limits<float>::max();
-		mMax = glm::vec4(floatMin, floatMin, floatMin, 1.0f);
-		mMin = glm::vec4(floatMax, floatMax, floatMax, 1.0f);
+		constexpr auto doubleMin = std::numeric_limits<double>::min();
+		constexpr auto doubleMax = std::numeric_limits<double>::max();
+		mMax = Vector4D(doubleMin, doubleMin, doubleMin, 1.0);
+		mMin = Vector4D(doubleMax, doubleMax, doubleMax, 1.0);
 	}
 
-	void AABBox::applyTransform(const glm::mat4& transform) noexcept
+	void AABBox::applyTransform(const Matrix4D& transform) noexcept
 	{
 		mMin = mMin * transform;
 		mMax = mMax * transform;
 	}
 
-	glm::vec3 AABBox::getCenter() const noexcept
+	Vector4D AABBox::getCenter() const noexcept
 	{
-		auto center = (mMin + mMax) / 2.0f;
-		return center;
+		return (mMin + mMax) / 2.0;
 	}
 
-	const glm::vec3& AABBox::getMin() const noexcept
+	const Vector4D& AABBox::getMin() const noexcept
 	{
 		return mMin;
 	}
 
-	const glm::vec3& AABBox::getMax() const noexcept
+	const Vector4D& AABBox::getMax() const noexcept
 	{
 		return mMax;
 	}
 
 	double AABBox::getHeight() const noexcept
 	{
-		return mMax.y - mMin.y;
+		return mMax.y() - mMin.y();
 	}
 }
