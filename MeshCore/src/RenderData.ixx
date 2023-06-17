@@ -1,6 +1,6 @@
 export module RenderData;
 
-import std;
+import <vector>;
 
 export namespace MeshCore
 {

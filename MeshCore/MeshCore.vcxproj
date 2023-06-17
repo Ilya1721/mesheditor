@@ -58,11 +58,11 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(SolutionDir)GeometryCore\</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <EnableModules>true</EnableModules>
       <TranslateIncludes>true</TranslateIncludes>
       <BuildStlModules>false</BuildStlModules>
-      <AdditionalOptions>/reference std=$(SolutionDir)ThirdParty\std\std.ixx.ifc %(AdditionalOptions)</AdditionalOptions>
+      <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -82,11 +82,11 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(SolutionDir)GeometryCore\</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <EnableModules>true</EnableModules>
       <TranslateIncludes>true</TranslateIncludes>
       <BuildStlModules>false</BuildStlModules>
-      <AdditionalOptions>/reference std=$(SolutionDir)ThirdParty\std\std.ixx.ifc %(AdditionalOptions)</AdditionalOptions>
+      <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -98,23 +98,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\AABBox.cpp" />
-    <ClCompile Include="src\AABBox.ixx" />
-    <ClCompile Include="src\MeshCoreConsts.ixx" />
-    <ClCompile Include="src\Mesh.cpp" />
-    <ClCompile Include="src\Mesh.ixx" />
-    <ClCompile Include="src\Object3D.cpp" />
-    <ClCompile Include="src\Object3D.ixx" />
-    <ClCompile Include="src\RenderData.ixx" />
-    <ClCompile Include="src\Vertex.ixx" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\GeometryCore\GeometryCore.vcxproj">
       <Project>{e0ddbae3-3969-4639-a61f-6f5cb05cb11b}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Utility\Utility.vcxproj">
       <Project>{65b2b36f-a237-4404-9a85-08b0c69d8504}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\AABBox.cpp" />
+    <ClCompile Include="src\AABBox.ixx" />
+    <ClCompile Include="src\Mesh.cpp" />
+    <ClCompile Include="src\Mesh.ixx" />
+    <ClCompile Include="src\MeshCoreConsts.ixx" />
+    <ClCompile Include="src\Object3D.cpp" />
+    <ClCompile Include="src\Object3D.ixx" />
+    <ClCompile Include="src\RenderData.ixx" />
+    <ClCompile Include="src\Vertex.ixx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

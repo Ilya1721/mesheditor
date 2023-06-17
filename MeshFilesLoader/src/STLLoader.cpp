@@ -1,15 +1,13 @@
-module;
-#include <cstring>
-#include <cstdint>
 module STLLoader;
 
-import std;
+import <cstring>;
+import <cstdint>;
 
-import MeshFilesLoaderConsts;
 import Mesh;
+import Vertex;
 import StringHelper;
 import FileHelper;
-import Vertex;
+import MeshFilesLoaderConsts;
 
 namespace
 {

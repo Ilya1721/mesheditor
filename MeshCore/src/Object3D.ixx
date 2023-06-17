@@ -2,7 +2,8 @@ module;
 #include "GeometryCore/Matrix.h"
 export module Object3D;
 
-import std;
+import <memory>;
+import <unordered_set>;
 
 import Mesh;
 import RenderData;

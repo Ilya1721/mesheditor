@@ -58,11 +58,11 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\;$(SolutionDir)GeometryCore\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <EnableModules>true</EnableModules>
       <TranslateIncludes>true</TranslateIncludes>
       <BuildStlModules>false</BuildStlModules>
-      <AdditionalOptions>/reference std=$(SolutionDir)ThirdParty\std\std.ixx.ifc %(AdditionalOptions)</AdditionalOptions>
+      <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -87,11 +87,11 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\;$(SolutionDir)GeometryCore\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <EnableModules>true</EnableModules>
       <TranslateIncludes>true</TranslateIncludes>
       <BuildStlModules>false</BuildStlModules>
-      <AdditionalOptions>/reference std=$(SolutionDir)ThirdParty\std\std.ixx.ifc %(AdditionalOptions)</AdditionalOptions>
+      <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -120,7 +120,7 @@
     <ClCompile Include="src\IEventHandler.ixx" />
     <ClCompile Include="src\PanHandler.cpp" />
     <ClCompile Include="src\PanHandler.ixx" />
-    <ClCompile Include="src\RenderSystemConstants.ixx" />
+    <ClCompile Include="src\RenderSystemConsts.ixx" />
     <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\Scene.ixx" />
     <ClCompile Include="src\TestRenderer.cpp" />

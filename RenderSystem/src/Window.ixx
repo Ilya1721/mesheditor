@@ -1,9 +1,9 @@
 module;
 #include <glfw/glfw3.h>
-#include "GeometryCore/Vector.h"
 export module Window;
 
-import std;
+import <string>;
+import <memory>;
 
 import Scene;
 import Viewport;

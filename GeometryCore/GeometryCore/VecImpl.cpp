@@ -3,7 +3,7 @@
 #include <glm/gtc/epsilon.hpp>
 #include <glm/ext/matrix_projection.hpp>
 
-#include "GeomConsts.h"
+#include "Constants.h"
 #include "Matrix.h"
 #include "MatImpl.h"
 

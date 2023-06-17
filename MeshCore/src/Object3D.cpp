@@ -2,10 +2,6 @@ module;
 #include "GeometryCore/Matrix.h"
 module Object3D;
 
-import std;
-
-import Mesh;
-import RenderData;
 import MeshCoreConsts;
 
 using namespace Geometry;

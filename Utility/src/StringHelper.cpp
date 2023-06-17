@@ -1,7 +1,5 @@
 module StringHelper;
 
-import std;
-
 namespace Helpers
 {
 	bool isEqual(const std::string& firstString, const std::string& secondString, bool caseSensitive) noexcept

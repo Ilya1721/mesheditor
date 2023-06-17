@@ -1,6 +1,7 @@
 export module BasicRenderer;
 
-import std;
+import <vector>;
+import <string>;
 
 export namespace RenderSystem
 {

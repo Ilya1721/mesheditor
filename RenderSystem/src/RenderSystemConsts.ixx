@@ -1,6 +1,6 @@
 module;
 #include "GeometryCore/Vector.h"
-export module RenderSystemConstants;
+export module RenderSystemConsts;
 
 export namespace RenderSystem
 {

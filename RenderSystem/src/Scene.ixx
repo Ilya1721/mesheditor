@@ -2,7 +2,8 @@ module;
 #include "GeometryCore/Vector.h"
 export module Scene;
 
-import std;
+import <string>;
+import <memory>;
 
 import Mesh;
 import Object3D;
@@ -11,7 +12,7 @@ import Viewport;
 import PanHandler;
 import IEventHandler;
 import RenderData;
-import RenderSystemConstants;
+import RenderSystemConsts;
 
 export namespace RenderSystem
 {

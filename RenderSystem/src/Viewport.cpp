@@ -1,10 +1,6 @@
 module;
-#include "GeometryCore/Matrix.h"
-#include "GeometryCore/Vector.h"
 #include "GeometryCore/Numeric.h"
 module Viewport;
-
-import std;
 
 import AABBox;
 

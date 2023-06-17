@@ -1,6 +1,3 @@
-module;
-#include "GeometryCore/Matrix.h"
-#include "GeometryCore/Vector.h"
 export module Viewport;
 
 import Camera;

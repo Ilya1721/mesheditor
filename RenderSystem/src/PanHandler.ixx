@@ -1,5 +1,3 @@
-module;
-#include "GeometryCore/Vector.h"
 export module PanHandler;
 
 import Viewport;

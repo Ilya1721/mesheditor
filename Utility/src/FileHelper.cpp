@@ -1,6 +1,6 @@
 module FileHelper;
 
-import std;
+import <fstream>;
 
 namespace Helpers
 {

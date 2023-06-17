@@ -1,6 +1,6 @@
 export module IFileLoader;
 
-import std;
+import <filesystem>;
 
 import Mesh;
 

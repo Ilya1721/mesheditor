@@ -86,7 +86,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="GeometryCore\GeomConsts.h" />
+    <ClInclude Include="GeometryCore\Constants.h" />
     <ClInclude Include="GeometryCore\MatImpl.h" />
     <ClInclude Include="GeometryCore\Matrix.h" />
     <ClInclude Include="GeometryCore\Numeric.h" />

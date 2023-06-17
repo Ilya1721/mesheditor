@@ -1,6 +1,6 @@
 export module FileHelper;
 
-import std;
+export import <filesystem>;
 
 export namespace Helpers
 {

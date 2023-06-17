@@ -1,6 +1,6 @@
 export module StringHelper;
 
-import std;
+export import <iostream>;
 
 export namespace Helpers
 {

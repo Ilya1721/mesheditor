@@ -3,7 +3,7 @@
 #include <cmath>
 #include <glm/glm.hpp>
 
-#include "GeomConsts.h"
+#include "Constants.h"
 
 namespace Geometry
 {

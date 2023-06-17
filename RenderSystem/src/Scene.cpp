@@ -3,20 +3,8 @@ module;
 #undef __gl_h_
 #endif
 #include "glad.h"
-#include "GeometryCore/Vector.h"
-#include "GeometryCore/Matrix.h"
 module Scene;
 
-import std;
-
-import Mesh;
-import Object3D;
-import BasicRenderer;
-import Viewport;
-import PanHandler;
-import IEventHandler;
-import RenderData;
-import RenderSystemConstants;
 import STLLoader;
 
 namespace RenderSystem

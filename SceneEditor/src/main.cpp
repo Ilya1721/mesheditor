@@ -1,11 +1,9 @@
-import std;
+import <memory>;
 
 import Scene;
 import Window;
 import Application;
 import BasicRenderer;
-
-#include <glfw/glfw3.h>
 
 int main()
 {

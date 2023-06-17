@@ -5,7 +5,7 @@ module;
 #include "glad.h"
 module BasicRenderer;
 
-import std;
+import <iostream>;
 
 import FileHelper;
 

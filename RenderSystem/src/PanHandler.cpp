@@ -3,11 +3,7 @@ module;
 #undef __gl_h_
 #endif
 #include "glad.h"
-#include "GeometryCore/Vector.h"
 module PanHandler;
-
-import TestRenderer;
-import Viewport;
 
 namespace RenderSystem
 {

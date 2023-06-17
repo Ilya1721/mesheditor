@@ -1,10 +1,8 @@
 module;
-#include "GeometryCore/Vector.h"
-#include "GeometryCore/Matrix.h"
 #include "GeometryCore/Numeric.h"
 module Camera;
 
-import std;
+import <iostream>;
 
 using namespace Geometry;
 
@@ -61,7 +59,7 @@ namespace RenderSystem
 
 	void Camera::setPositionTargetUp(const Vector3D& newPosition, const Vector3D& newTarget, const Vector3D& newUp) noexcept
 	{
-		if (newUp == Vector3D(0.0f, 0.0f, 0.0f))
+		if (newUp == Vector3D(0.0, 0.0, 0.0))
 		{
 			std::cerr << "The Camera Up vector must never be equal to null vector" << std::endl;
 			return;

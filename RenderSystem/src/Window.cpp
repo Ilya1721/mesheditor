@@ -4,15 +4,9 @@ module;
 #endif
 #include "glad.h"
 #include <glfw/glfw3.h>
-#include "GeometryCore/Vector.h"
 module Window;
 
-import std;
-
-import Scene;
-import Viewport;
-import Mesh;
-import IEventHandler;
+import <iostream>;
 
 namespace RenderSystem
 {

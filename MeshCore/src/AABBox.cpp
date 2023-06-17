@@ -1,11 +1,6 @@
-module;
-#include "GeometryCore/Matrix.h"
-#include "GeometryCore/Vector.h"
 module AABBox;
 
-import std;
-
-import Mesh;
+import <numeric>;
 
 using namespace Geometry;
 

@@ -59,7 +59,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <EnableModules>true</EnableModules>
       <AdditionalModuleDependencies>
       </AdditionalModuleDependencies>
@@ -67,7 +67,7 @@
       </AdditionalBMIDirectories>
       <TranslateIncludes>true</TranslateIncludes>
       <BuildStlModules>false</BuildStlModules>
-      <AdditionalOptions>/reference std=$(SolutionDir)ThirdParty\std\std.ixx.ifc %(AdditionalOptions)</AdditionalOptions>
+      <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -89,7 +89,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <EnableModules>true</EnableModules>
       <AdditionalModuleDependencies>
       </AdditionalModuleDependencies>
@@ -97,7 +97,7 @@
       </AdditionalBMIDirectories>
       <TranslateIncludes>true</TranslateIncludes>
       <BuildStlModules>false</BuildStlModules>
-      <AdditionalOptions>/reference std=$(SolutionDir)ThirdParty\std\std.ixx.ifc %(AdditionalOptions)</AdditionalOptions>
+      <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -118,8 +118,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\IFileLoader.ixx" />
     <ClCompile Include="src\MeshFilesLoaderConsts.ixx" />
+    <ClCompile Include="src\IFileLoader.ixx" />
     <ClCompile Include="src\STLLoader.cpp" />
     <ClCompile Include="src\STLLoader.ixx" />
   </ItemGroup>

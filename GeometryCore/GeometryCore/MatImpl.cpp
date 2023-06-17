@@ -6,7 +6,7 @@
 
 #include "Vector.h"
 #include "VecImpl.h"
-#include "GeomConsts.h"
+#include "Constants.h"
 
 namespace Geometry
 {

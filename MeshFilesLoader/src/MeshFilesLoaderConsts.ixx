@@ -1,6 +1,6 @@
 export module MeshFilesLoaderConsts;
 
-import std;
+import <string>;
 
 export namespace MeshFilesLoader
 {

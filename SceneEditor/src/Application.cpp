@@ -1,7 +1,5 @@
 module Application;
 
-import std;
-
 import Window;
 
 namespace MeshEditor
