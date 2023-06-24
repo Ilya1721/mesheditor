@@ -7,17 +7,17 @@
 
 namespace Geometry
 {
-	bool isEqual(double first, double second) noexcept
+	bool isEqual(float first, float second) noexcept
 	{
 		return std::abs(first - second) < EPSILON;
 	}
 
-	double toRadians(double degrees) noexcept
+	float toRadians(float degrees) noexcept
 	{
 		return glm::radians(degrees);
 	}
 
-	double tan(double angle) noexcept
+	float tan(float angle) noexcept
 	{
 		return std::tan(angle);
 	}

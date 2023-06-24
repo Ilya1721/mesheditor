@@ -3,30 +3,49 @@ module;
 #undef __gl_h_
 #endif
 #include "glad.h"
-module BasicRenderer;
+module Renderer;
 
 import <iostream>;
 
 import FileHelper;
+import RenderSystemConsts;
 
 namespace RenderSystem
 {
-	BasicRenderer::BasicRenderer() noexcept :
+	Renderer::Renderer() :
 		mVertexShader(0),
 		mFragmentShader(0),
 		mShaderProgram(0),
-		mMVP(0)
-	{}
+		mModel(0),
+		mView(0),
+		mProjection(0),
+		mVBO(0),
+		mVAO(0)
+	{
+		init();
+	}
 
-	BasicRenderer::~BasicRenderer() noexcept
+	Renderer::~Renderer() noexcept
 	{
 		glUseProgram(0);
-		glDeleteProgram(mVertexShader);
-		glDeleteProgram(mFragmentShader);
+		glDeleteShader(mVertexShader);
+		glDeleteShader(mFragmentShader);
 		glDeleteProgram(mShaderProgram);
 	}
 
-	void BasicRenderer::init() noexcept
+	void Renderer::init()
+	{
+		initShaders();
+
+		glClearColor(static_cast<float>(BACKGROUND_COLOR.r()), static_cast<float>(BACKGROUND_COLOR.g()),
+			static_cast<float>(BACKGROUND_COLOR.b()), static_cast<float>(BACKGROUND_COLOR.a()));
+		glEnable(GL_DEPTH_TEST);
+
+		glGenBuffers(1, &mVBO);
+		glGenVertexArrays(1, &mVAO);
+	}
+
+	void Renderer::initShaders()
 	{
 		mVertexShader = loadShader(R"(../RenderSystem/Shaders/VertexShader.vert)", GL_VERTEX_SHADER);
 		mFragmentShader = loadShader(R"(../RenderSystem/Shaders/FragmentShader.frag)", GL_FRAGMENT_SHADER);
@@ -40,69 +59,82 @@ namespace RenderSystem
 		glGetProgramiv(mShaderProgram, GL_LINK_STATUS, &isLinked);
 		if (!isLinked)
 		{
-			const auto& shaderLog = getShaderLog(mShaderProgram, SHADER_LOG_TYPE::SHADER_PROGRAM);
+			const auto& shaderLog = getLog(mShaderProgram, SHADER_LOG_TYPE::SHADER_PROGRAM);
 			std::cerr << "Shader program was not linked\n" << shaderLog.data() << std::endl;
-			glDeleteProgram(mShaderProgram);
-			return;
+			throw std::exception("Shader program was not linked");
 		}
 
-		mMVP = glGetUniformLocation(mShaderProgram, "mvp");
-		beginUse();
-	}
+		mModel = glGetUniformLocation(mShaderProgram, "model");
+		mView = glGetUniformLocation(mShaderProgram, "view");
+		mProjection = glGetUniformLocation(mShaderProgram, "projection");
 
-	int BasicRenderer::getBasicVertexShader() const noexcept
-	{
-		return mVertexShader;
-	}
-
-	int BasicRenderer::getBasicFragmentShader() const noexcept
-	{
-		return mFragmentShader;
-	}
-
-	void BasicRenderer::beginUse() noexcept
-	{
 		glUseProgram(mShaderProgram);
 	}
 
-	void BasicRenderer::endUse() noexcept
+	void Renderer::setRenderData(const MeshCore::RenderData& renderData) noexcept
 	{
-		glUseProgram(0);
+		glBindBuffer(GL_ARRAY_BUFFER, mVBO);
+		glBindVertexArray(mVAO);
+		auto compactData = renderData.getCompactData();
+		glBufferData(GL_ARRAY_BUFFER, compactData.size() * sizeof(float), compactData.data(), GL_STATIC_DRAW);
+
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, reinterpret_cast<void*>(renderData.positions.size() * sizeof(float)));
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0,
+			reinterpret_cast<void*>((renderData.positions.size() + renderData.normals.size()) * sizeof(float)));
 	}
 
-	void BasicRenderer::setMVP(const double* mvp) noexcept
+	void Renderer::setModel(const float* model) noexcept
 	{
-		glUniformMatrix4dv(mMVP, 1, false, mvp);
+		glUniformMatrix4fv(mModel, 1, false, model);
 	}
 
-	int BasicRenderer::loadShader(const std::string& shaderPath, int shaderType) noexcept
+	void Renderer::setView(const float* view) noexcept
+	{
+		glUniformMatrix4fv(mView, 1, false, view);
+	}
+
+	void Renderer::setProjection(const float* projection) noexcept
+	{
+		glUniformMatrix4fv(mProjection, 1, false, projection);
+
+	}
+
+	void Renderer::render() const noexcept
+	{
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+	}
+
+	int Renderer::loadShader(const std::string& shaderPath, int shaderType)
 	{
 		auto shader = glCreateShader(shaderType);
-		auto shaderString = Helpers::readFile(shaderPath);
-		auto shaderStr = shaderString.c_str();
+		auto shaderStr = Helpers::readFile(shaderPath);
+		std::vector<const char*> shaderStrVec {shaderStr.c_str()};
+		std::vector<int> shaderStrLengthsVec {static_cast<int>(shaderStr.size())};
 
-		glShaderSource(shader, 1, &shaderStr, 0);
+		glShaderSource(shader, 1, shaderStrVec.data(), shaderStrLengthsVec.data());
 		glCompileShader(shader);
 
 		int isCompiled;
 		glGetShaderiv(shader, GL_COMPILE_STATUS, &isCompiled);
-		printOpenGLErrorMessage();
-
 		if (!isCompiled)
 		{
-			auto shaderLog = getShaderLog(shader, SHADER_LOG_TYPE::SHADER);
+			auto shaderLog = getLog(shader, SHADER_LOG_TYPE::SHADER);
 			std::cerr << "Shader was not compiled!\n" << shaderLog.data() << std::endl;
-			glDeleteShader(shader);
-			return -1;
+			throw std::exception("Shader was not compiled!");
 		}
 
 		return shader;
 	}
 
-	std::vector<char> BasicRenderer::getShaderLog(int shaderOrProgramId, SHADER_LOG_TYPE logType) noexcept
+	std::string Renderer::getLog(int shaderOrProgramId, SHADER_LOG_TYPE logType) noexcept
 	{
 		int logLength = 0;
-		std::vector<char> errorLog {'\0'};
+		std::string errorLog {'\0'};
 
 		if (logType == SHADER_LOG_TYPE::SHADER)
 		{
@@ -120,7 +152,7 @@ namespace RenderSystem
 		return errorLog;
 	}
 
-	void BasicRenderer::printOpenGLErrorMessage() noexcept
+	void Renderer::printOpenGLErrorMessage() noexcept
 	{
 		GLenum error;
 

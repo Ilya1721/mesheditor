@@ -9,7 +9,7 @@
 
 namespace Geometry
 {
-	Vec4Impl::Vec4Impl(double x, double y, double z, double w) noexcept
+	Vec4Impl::Vec4Impl(float x, float y, float z, float w) noexcept
 		: mImplVec(x, y, z, w)
 	{}
 
@@ -43,7 +43,7 @@ namespace Geometry
 	}
 
 	Vec4Impl::Vec4Impl(Vec3Type&& vec) noexcept
-		: mImplVec(vec, 1.0)
+		: mImplVec(vec, 1.0f)
 	{}
 
 	Vec4Impl::Vec4Impl(Vec4Type&& vec) noexcept
@@ -65,12 +65,12 @@ namespace Geometry
 		return glm::all(glm::epsilonEqual(mImplVec, other.mImplVec, EPSILON));
 	}
 
-	double& Vec4Impl::operator[](int index) noexcept
+	float& Vec4Impl::operator[](int index) noexcept
 	{
 		return mImplVec[index];
 	}
 
-	double Vec4Impl::operator[](int index) const noexcept
+	float Vec4Impl::operator[](int index) const noexcept
 	{
 		return mImplVec[index];
 	}
@@ -95,7 +95,7 @@ namespace Geometry
 		return mImplVec - other.mImplVec;
 	}
 
-	Vec4Impl Vec4Impl::operator/(double n) const noexcept
+	Vec4Impl Vec4Impl::operator/(float n) const noexcept
 	{
 		return mImplVec / n;
 	}
@@ -105,7 +105,7 @@ namespace Geometry
 		return glm::normalize(vec.mImplVec);
 	}
 
-	double Vec4Impl::dot(const Vec4Impl& firstVec, const Vec4Impl& secondVec) noexcept
+	float Vec4Impl::dot(const Vec4Impl& firstVec, const Vec4Impl& secondVec) noexcept
 	{
 		return glm::dot(firstVec.mImplVec, secondVec.mImplVec);
 	}

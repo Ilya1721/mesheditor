@@ -2,7 +2,7 @@
 
 namespace Geometry
 {
-	bool isEqual(double first, double second) noexcept;
-	double toRadians(double degrees) noexcept;
-	double tan(double angle) noexcept;
+	bool isEqual(float first, float second) noexcept;
+	float toRadians(float degrees) noexcept;
+	float tan(float angle) noexcept;
 }

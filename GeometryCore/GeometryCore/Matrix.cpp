@@ -9,7 +9,7 @@ namespace Geometry
 		: mpImpl(new Mat4Impl())
 	{}
 
-	Matrix4D::Matrix4D(double arg) noexcept
+	Matrix4D::Matrix4D(float arg) noexcept
 		: mpImpl(new Mat4Impl(arg))
 	{}
 
@@ -63,7 +63,7 @@ namespace Geometry
 		return (*mpImpl) * (*other.mpImpl);
 	}
 
-	double* Matrix4D::valuePtr() noexcept
+	const float* Matrix4D::valuePtr() const noexcept
 	{
 		return mpImpl->valuePtr();
 	}
@@ -78,12 +78,12 @@ namespace Geometry
 		return Mat4Impl::lookAt(mPosition, mTarget, mUp);
 	}
 
-	Matrix4D Matrix4D::ortho(double left, double right, double bottom, double top, double zNear, double zFar) noexcept
+	Matrix4D Matrix4D::ortho(float left, float right, float bottom, float top, float zNear, float zFar) noexcept
 	{
 		return Mat4Impl::ortho(left, right, bottom, top, zNear, zFar);
 	}
 
-	Matrix4D Matrix4D::perspective(double fov, double aspect, double zNear, double zFar) noexcept
+	Matrix4D Matrix4D::perspective(float fov, float aspect, float zNear, float zFar) noexcept
 	{
 		return Mat4Impl::perspective(fov, aspect, zNear, zFar);
 	}

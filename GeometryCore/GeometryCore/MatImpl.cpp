@@ -10,7 +10,7 @@
 
 namespace Geometry
 {
-	Mat4Impl::Mat4Impl(double arg) noexcept
+	Mat4Impl::Mat4Impl(float arg) noexcept
 		: mImplMat(arg)
 	{}
 
@@ -51,7 +51,7 @@ namespace Geometry
 		: mImplMat(std::move(matrix))
 	{}
 
-	double* Mat4Impl::valuePtr() noexcept
+	float* Mat4Impl::valuePtr() noexcept
 	{
 		return glm::value_ptr(mImplMat);
 	}
@@ -89,12 +89,12 @@ namespace Geometry
 						   mUp.__internal_getPimpl()->getVec3());
 	}
 
-	Mat4Impl Mat4Impl::ortho(double left, double right, double bottom, double top, double zNear, double zFar) noexcept
+	Mat4Impl Mat4Impl::ortho(float left, float right, float bottom, float top, float zNear, float zFar) noexcept
 	{
 		return glm::ortho(left, right, bottom, top, zNear, zFar);
 	}
 
-	Mat4Impl Mat4Impl::perspective(double fov, double aspect, double zNear, double zFar) noexcept
+	Mat4Impl Mat4Impl::perspective(float fov, float aspect, float zNear, float zFar) noexcept
 	{
 		return glm::perspective(fov, aspect, zNear, zFar);
 	}

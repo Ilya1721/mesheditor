@@ -90,7 +90,6 @@
     <ClInclude Include="GeometryCore\MatImpl.h" />
     <ClInclude Include="GeometryCore\Matrix.h" />
     <ClInclude Include="GeometryCore\Numeric.h" />
-    <ClInclude Include="GeometryCore\Range.h" />
     <ClInclude Include="GeometryCore\VecImpl.h" />
     <ClInclude Include="GeometryCore\Vector.h" />
   </ItemGroup>

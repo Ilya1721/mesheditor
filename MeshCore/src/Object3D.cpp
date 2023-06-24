@@ -3,18 +3,16 @@ module;
 module Object3D;
 
 import MeshCoreConsts;
+import RenderData;
 
 using namespace Geometry;
 
 namespace MeshCore
 {
-	Object3D::Object3D(Object3D* parent, std::unique_ptr<Mesh> mesh) noexcept
-		: mLocalTransform(1.0f),
-		mMesh(std::move(mesh)),
+	Object3D::Object3D(Object3D* parent, Mesh&& mesh) :
 		mParent(parent),
-		mNeedUpdateRenderData(true),
-		mVertexShader(0),
-		mFragmentShader(0)
+		mMesh(std::move(mesh)),
+		mTransform(1.0f)
 	{}
 
 	void Object3D::setParent(Object3D* parent) noexcept
@@ -28,47 +26,7 @@ namespace MeshCore
 		mParent->appendChild(this);
 	}
 
-	void Object3D::setMesh(std::unique_ptr<Mesh> mesh) noexcept
-	{
-		mMesh = std::move(mesh);
-	}
-
-	void Object3D::setLocalTransform(const Geometry::Matrix4D& transform) noexcept
-	{
-		mLocalTransform = transform;
-	}
-
-	void Object3D::updateLocalTransform(const Geometry::Matrix4D& transform) noexcept
-	{
-		mLocalTransform = transform * mLocalTransform;
-	}
-
-	void Object3D::updateChildrenTransforms() noexcept
-	{
-		for (auto& child : mChildren)
-		{
-			child->updateLocalTransform(mLocalTransform);
-			child->updateChildrenTransforms();
-		}
-	}
-
-	void Object3D::updateTransformsGlobally() noexcept
-	{
-		auto currentRoot = this;
-		while (currentRoot->getParent() != nullptr)
-		{
-			currentRoot = currentRoot->getParent();
-		}
-
-		currentRoot->updateChildrenTransforms();
-	}
-
-	const Geometry::Matrix4D& Object3D::getLocalTransform() const noexcept
-	{
-		return mLocalTransform;
-	}
-
-	const std::unique_ptr<Mesh>& Object3D::getMesh() const noexcept
+	const Mesh& Object3D::getMesh() const noexcept
 	{
 		return mMesh;
 	}
@@ -83,9 +41,31 @@ namespace MeshCore
 		return mChildren;
 	}
 
-	const RenderData& Object3D::getRenderData() const noexcept
+	const RenderData Object3D::getRenderData() const noexcept
 	{
-		return mRenderData;
+		return getRenderData(this);
+	}
+
+	const RenderData Object3D::getRenderData(const Object3D* object) const noexcept
+	{
+		RenderData renderData;
+		renderData.append(object->getMesh().getRenderData());
+		for (const auto& child : object->getChildren())
+		{
+			renderData.append(getRenderData(child));
+		}
+
+		return renderData;
+	}
+
+	void Object3D::updateTransform(const Geometry::Matrix4D& transform) noexcept
+	{
+		mTransform = mTransform * transform;
+	}
+
+	const Geometry::Matrix4D& Object3D::getTransform() const noexcept
+	{
+		return mTransform;
 	}
 
 	void Object3D::appendChild(Object3D* object) noexcept
@@ -100,29 +80,5 @@ namespace MeshCore
 		{
 			mChildren.erase(childIt);
 		}
-	}
-
-	void Object3D::prepareRenderData() noexcept
-	{
-		const auto& vertices = mMesh->getVertices();
-
-		mRenderData.positions.reserve(vertices.size() * COORDINATES_PER_VERTEX);
-		mRenderData.normals.reserve(vertices.size() * COORDINATES_PER_NORMAL);
-		mRenderData.colors.reserve(vertices.size() * COLOR_COMPONENTS_COUNT);
-
-		static_assert(COORDINATES_PER_VERTEX == COORDINATES_PER_NORMAL &&
-			COORDINATES_PER_VERTEX == COLOR_COMPONENTS_COUNT);
-
-		for (const auto& vertex : vertices)
-		{
-			for (int coordIdx = 0; coordIdx < COORDINATES_PER_VERTEX; ++coordIdx)
-			{
-				mRenderData.positions.push_back(vertex.pos[coordIdx]);
-				mRenderData.normals.push_back(vertex.normal[coordIdx]);
-				mRenderData.colors.push_back(vertex.color[coordIdx]);
-			}
-		}
-
-		mNeedUpdateRenderData = false;
 	}
 }

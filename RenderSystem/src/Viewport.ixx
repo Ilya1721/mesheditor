@@ -1,7 +1,7 @@
+module;
+#include "GeometryCore/Matrix.h"
+#include "GeometryCore/Vector.h"
 export module Viewport;
-
-import Camera;
-import Object3D;
 
 export namespace RenderSystem
 {
@@ -11,53 +11,37 @@ export namespace RenderSystem
 		PERSPECTIVE
 	};
 
-	class Viewport
+	class Viewport final
 	{
 	public:
-		Viewport(int x, int y, int width, int height) noexcept;
+		Viewport(float x, float y, int width, int height) noexcept;
 
-		Camera& getCamera() noexcept;
-
-		Geometry::Matrix4D getProjectionMatrix() const noexcept;
-		void calcProjectionMatrix() noexcept;
-
+		const Geometry::Matrix4D& getProjectionMatrix() const noexcept;
 		PROJECTION_TYPE getProjectionType() const noexcept;
 		void setProjectionType(PROJECTION_TYPE projectionType) noexcept;
 
-		double getFov() const noexcept;
-		void setFov(double fov) noexcept;
-
-		double getNearPlaneDistance() const noexcept;
-		void setNearPlaneDistance(double nearPlaneDistance) noexcept;
-
-		double getFarPlaneDistance() const noexcept;
-		void setFarPlaneDistance(double farPlaneDisance) noexcept;
-
-		void setViewport(int x, int y, int width, int height) noexcept;
-
-		void adjustToObject(const MeshCore::Object3D& object) noexcept;
-
-		const Geometry::Vector2D& getPos() const noexcept;
-		void setPos(int x, int y) noexcept;
+		float getFov() const noexcept;
+		float getNearPlaneDistance() const noexcept;
+		float getFarPlaneDistance() const noexcept;
 
 		int getWidth() const noexcept;
-		void setWidth(int width) noexcept;
-
 		int getHeight() const noexcept;
+		void setWidth(int width) noexcept;
 		void setHeight(int height) noexcept;
 
 	private:
-		double mFov;
-		double mNearPlaneDistance;
-		double mFarPlaneDistance;
+		void init();
+		Geometry::Matrix4D createProjectionMatrix() const noexcept;
+
+	private:
+		float mFov;
+		float mNearPlaneDistance;
+		float mFarPlaneDistance;
 
 		Geometry::Vector2D mPos;
-
 		int mWidth;
 		int mHeight;
 		
-		Camera mCamera;
-
 		PROJECTION_TYPE mProjectionType;
 		Geometry::Matrix4D mProjectionMatrix;
 	};

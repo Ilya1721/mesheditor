@@ -25,7 +25,7 @@ export namespace MeshCore
 		Geometry::Vector4D getCenter() const noexcept;
 		const Geometry::Vector4D& getMin() const noexcept;
 		const Geometry::Vector4D& getMax() const noexcept;
-		double getHeight() const noexcept;
+		float getHeight() const noexcept;
 
 	private:
 		void init() noexcept;

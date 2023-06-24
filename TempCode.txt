@@ -1,0 +1,38 @@
+void Object3D::setLocalTransform(const Geometry::Matrix4D& transform) noexcept
+	{
+		mLocalTransform = transform;
+	}
+
+	void Object3D::updateLocalTransform(const Geometry::Matrix4D& transform) noexcept
+	{
+		mLocalTransform = transform * mLocalTransform;
+	}
+
+	void Object3D::updateChildrenTransforms() noexcept
+	{
+		for (auto& child : mChildren)
+		{
+			child->updateLocalTransform(mLocalTransform);
+			child->updateChildrenTransforms();
+		}
+	}
+
+	void Object3D::updateTransformsGlobally() noexcept
+	{
+		auto currentRoot = this;
+		while (currentRoot->getParent() != nullptr)
+		{
+			currentRoot = currentRoot->getParent();
+		}
+
+		currentRoot->updateChildrenTransforms();
+	}
+
+	const Geometry::Matrix4D& Object3D::getLocalTransform() const noexcept
+	{
+		return mLocalTransform;
+	}
+
+
+auto mvp = mViewport.getProjectionMatrix() * mViewport.getCamera().getViewMatrix();
+		mRenderer->setMVP(mvp.valuePtr());

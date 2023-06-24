@@ -1,42 +1,48 @@
 module;
+#ifdef __gl_h_
+#undef __gl_h_
+#endif
+#include "glad.h"
 #include "GeometryCore/Numeric.h"
 module Viewport;
 
-import AABBox;
+import RenderSystemConsts;
 
 namespace RenderSystem
 {
-	Viewport::Viewport(int x, int y, int width, int height) noexcept :
-		mFov(45.0),
-		mNearPlaneDistance(0.01),
-		mFarPlaneDistance(1000.0),
+	Viewport::Viewport(float x, float y, int width, int height) noexcept :
+		mFov(FOV),
+		mNearPlaneDistance(NEAR_PLANE_DISTANCE),
+		mFarPlaneDistance(FAR_PLANE_DISTANCE),
 		mPos(x, y),
-		mWidth(800),
-		mHeight(600),
+		mWidth(width),
+		mHeight(height),
 		mProjectionType(PROJECTION_TYPE::PERSPECTIVE),
-		mProjectionMatrix(1.0)
-	{}
-
-	Camera& Viewport::getCamera() noexcept
+		mProjectionMatrix(1.0f)
 	{
-		return mCamera;
+		init();
 	}
 
-	Geometry::Matrix4D Viewport::getProjectionMatrix() const noexcept
+	void Viewport::init()
 	{
-		return mProjectionMatrix;
+		glViewport(static_cast<int>(mPos.x()), static_cast<int>(mPos.y()),
+			static_cast<int>(mWidth), static_cast<int>(mHeight));
+		mProjectionMatrix = createProjectionMatrix();
 	}
 
-	void Viewport::calcProjectionMatrix() noexcept
+	Geometry::Matrix4D Viewport::createProjectionMatrix() const noexcept
 	{
 		if (mProjectionType == PROJECTION_TYPE::ORTHOGRAPHIC)
 		{
-			mProjectionMatrix = Geometry::Matrix4D::ortho(-1.0, 1.0, -1.0, 1.0, mNearPlaneDistance, mFarPlaneDistance);
+			return Geometry::Matrix4D::ortho(-1.0f, 1.0f, -1.0f, 1.0f, mNearPlaneDistance, mFarPlaneDistance);
 		}
-		else
-		{
-			mProjectionMatrix = Geometry::Matrix4D::perspective(mFov, static_cast<double>(mWidth / mHeight), mNearPlaneDistance, mFarPlaneDistance);
-		}
+
+		return Geometry::Matrix4D::perspective(mFov, static_cast<float>(mWidth / mHeight), mNearPlaneDistance, mFarPlaneDistance);
+	}
+
+	const Geometry::Matrix4D& Viewport::getProjectionMatrix() const noexcept
+	{
+		return mProjectionMatrix;
 	}
 
 	PROJECTION_TYPE Viewport::getProjectionType() const noexcept
@@ -47,69 +53,22 @@ namespace RenderSystem
 	void Viewport::setProjectionType(PROJECTION_TYPE projectionType) noexcept
 	{
 		mProjectionType = projectionType;
+		mProjectionMatrix = createProjectionMatrix();
 	}
 
-	double Viewport::getFov() const noexcept
+	float Viewport::getFov() const noexcept
 	{
 		return mFov;
 	}
 
-	void Viewport::setFov(double fov) noexcept
-	{
-		mFov = fov;
-	}
-
-	double Viewport::getNearPlaneDistance() const noexcept
+	float Viewport::getNearPlaneDistance() const noexcept
 	{
 		return mNearPlaneDistance;
 	}
 
-	void Viewport::setNearPlaneDistance(double nearPlaneDistance) noexcept
-	{
-		mNearPlaneDistance = nearPlaneDistance;
-	}
-
-	double Viewport::getFarPlaneDistance() const noexcept
+	float Viewport::getFarPlaneDistance() const noexcept
 	{
 		return mFarPlaneDistance;
-	}
-
-	void Viewport::setFarPlaneDistance(double farPlaneDistance) noexcept
-	{
-		mFarPlaneDistance = farPlaneDistance;
-	}
-
-	void Viewport::setViewport(int x, int y, int width, int height) noexcept
-	{
-		setPos(x, y);
-		mWidth = width;
-		mHeight = height;
-	}
-
-	void Viewport::adjustToObject(const MeshCore::Object3D& object) noexcept
-	{
-		MeshCore::AABBox bbox;
-		bbox.setFromObject(object);
-
-		auto bboxCenter = bbox.getCenter();
-		auto bboxHalfHeight = bbox.getHeight() * 0.5;
-		auto distanceToCamera = bboxHalfHeight / Geometry::tan(Geometry::toRadians(mFov * 0.5));
-		double bboxXOffset = 18.0;
-
-		mCamera.setPositionTargetUp({ bboxCenter.x() - bboxXOffset, bboxCenter.y(), distanceToCamera},
-									  bboxCenter.getVec3(), {0.0, 1.0, 0.0});
-		mCamera.calcViewMatrix();
-	}
-
-	const Geometry::Vector2D& Viewport::getPos() const noexcept
-	{
-		return mPos;
-	}
-
-	void Viewport::setPos(int x, int y) noexcept
-	{
-		mPos.setX(x);
-		mPos.setY(y);
 	}
 		 
 	int Viewport::getWidth() const noexcept

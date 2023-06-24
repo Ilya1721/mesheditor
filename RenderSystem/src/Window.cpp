@@ -8,12 +8,15 @@ module Window;
 
 import <iostream>;
 
+import RenderSystemConsts;
+
 namespace RenderSystem
 {
 	std::unique_ptr<Window> Window::sInstance {};
 
-	Window::Window(const std::string& title, int width, int height) noexcept :
+	Window::Window(const std::string& title, int width, int height, const std::string& meshFilePath) noexcept :
 		mTitle(title),
+		mMeshFilePath(meshFilePath),
 		mWidth(width),
 		mHeight(height)
 	{
@@ -34,6 +37,14 @@ namespace RenderSystem
 			std::cerr << "Failed to init glad" << std::endl;
 		}
 
+		init();
+	}
+
+	void Window::init()
+	{
+		mViewport = std::make_unique<Viewport>(VIEWPORT_POSITION.x(), VIEWPORT_POSITION.y(), mWidth, mHeight);
+		mScene = std::make_unique<Scene>(mMeshFilePath, this);
+		//mScene->adjustCamera(mViewport->getFov());
 		setCallbacks();
 	}
 
@@ -45,9 +56,9 @@ namespace RenderSystem
 		glfwSetKeyCallback(mWindow, onKey);
 	}
 
-	Window* Window::createInstance(const std::string& title, int width, int height) noexcept
+	Window* Window::createInstance(const std::string& title, int width, int height, const std::string& meshFilePath) noexcept
 	{
-		static auto window = new Window(title, width, height);
+		static auto window = new Window(title, width, height, meshFilePath);
 		sInstance = std::move(std::unique_ptr<Window>(window));
 		return sInstance.get();
 	}
@@ -57,35 +68,24 @@ namespace RenderSystem
 		return sInstance.get();
 	}
 
-	void Window::setScene(std::unique_ptr<Scene> scene) noexcept
-	{
-		mScene = std::move(scene);
-		subscribe(mScene.get());
-		mScene->setViewport(0, 0, mWidth, mHeight);
-	}
-
-	void Window::start() noexcept
+	void Window::render()
 	{
 		if (!mWindow || !mScene)
 		{
-			std::cerr << "Window or RenderSystem are nullptr" << std::endl;
-			return;
+			throw std::exception("Window or RenderSystem are nullptr");
 		}
-
-		mScene->init();
 		
 		while (!glfwWindowShouldClose(mWindow))
 		{
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			mScene->render();
 			glfwSwapBuffers(mWindow);
 			glfwWaitEvents();
 		}
 	}
-	
-	void Window::subscribe(IEventHandler* eventHandler) noexcept
+
+	const std::unique_ptr<Viewport>& Window::getViewport() const noexcept
 	{
-		mEventHandlers.push_back(eventHandler);
+		return mViewport;
 	}
 
 	Geometry::Vector2D Window::getMousePos() const noexcept
@@ -93,7 +93,20 @@ namespace RenderSystem
 		double mousePosX, mousePosY;
 		glfwGetCursorPos(mWindow, &mousePosX, &mousePosY);
 
-		return { mousePosX, mousePosY };
+		return { static_cast<float>(mousePosX), static_cast<float>(mousePosY) };
+	}
+
+	MouseButtonsState Window::getMouseButtonsState() const noexcept
+	{
+		MouseButtonsState mouseButtonsState;
+		int leftMouseButtonState = glfwGetMouseButton(mWindow, GLFW_MOUSE_BUTTON_LEFT);
+		mouseButtonsState.leftButtonPressed = (leftMouseButtonState == GLFW_PRESS);
+		int rightMouseButtonState = glfwGetMouseButton(mWindow, GLFW_MOUSE_BUTTON_RIGHT);
+		mouseButtonsState.rightButtonPressed = (rightMouseButtonState == GLFW_PRESS);
+		int middleMouseButtonState = glfwGetMouseButton(mWindow, GLFW_MOUSE_BUTTON_MIDDLE);
+		mouseButtonsState.middleButtonPressed = (middleMouseButtonState == GLFW_PRESS);
+
+		return mouseButtonsState;
 	}
 
 	void Window::onMouseMove(GLFWwindow* window, double xPos, double yPos) noexcept
@@ -103,19 +116,37 @@ namespace RenderSystem
 			return;
 		}
 
-		MouseButtonsState mouseButtonsState;
-		int leftMouseButtonState = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
-		mouseButtonsState.leftButtonPressed = (leftMouseButtonState == GLFW_PRESS);
-		int rightMouseButtonState = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT);
-		mouseButtonsState.rightButtonPressed = (rightMouseButtonState == GLFW_PRESS);
-		int middleMouseButtonState = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE);
-		mouseButtonsState.middleButtonPressed = (middleMouseButtonState == GLFW_PRESS);
+		sInstance->mMouseButtonsState = sInstance->getMouseButtonsState();
+		sInstance->mMousePos = Geometry::Vector2D(static_cast<float>(xPos), static_cast<float>(yPos));
 
-		Geometry::Vector2D mousePos(xPos, yPos);
-		for (auto& eventHandler : sInstance->mEventHandlers)
-		{
-			eventHandler->onMouseMove(mousePos, mouseButtonsState);
-		}
+		sInstance->chooseAction();
+	}
+
+	void Window::chooseAction()
+	{
+		if (mMouseButtonsState.middleButtonPressed)
+			pan();
+	}
+
+	void Window::pan()
+	{
+		/*auto viewportHeight = mViewport->getHeight();
+		auto viewportWidth = mViewport->getWidth();
+
+		auto& camera = mScene->getCamera();
+		const auto& modelViewMatrix = camera.getViewMatrix();
+		const auto& projectionMatrix = mViewport->getProjectionMatrix();
+		Geometry::Vector4D viewportDimensions { 0.0, 0.0, static_cast<double>(viewportWidth), static_cast<double>(viewportHeight) };
+
+		const auto& projectedCenter = Geometry::Vector3D::project({ 0.0, 0.0, 0.0 }, modelViewMatrix, projectionMatrix, viewportDimensions);
+		Geometry::Vector3D startScreenPos(startMousePos.x(), viewportHeight - startMousePos.y(), projectedCenter.z());
+		Geometry::Vector3D endScreenPos(endMousePos.x(), viewportHeight - endMousePos.y(), projectedCenter.z());
+
+		auto unProjectedStartMousePos = Geometry::Vector3D::unProject(startScreenPos, modelViewMatrix, projectionMatrix, viewportDimensions);
+		auto unProjectedEndMousePos = Geometry::Vector3D::unProject(endScreenPos, modelViewMatrix, projectionMatrix, viewportDimensions);
+		auto movement = unProjectedEndMousePos - unProjectedStartMousePos;
+
+		camera.translate(movement);*/
 	}
 
 	void Window::onMouseButton(GLFWwindow* window, int button, int action, int mods) noexcept
@@ -123,22 +154,6 @@ namespace RenderSystem
 		if (!sInstance || !window)
 		{
 			return;
-		}
-
-		auto mousePos = sInstance->getMousePos();
-		if (action == GLFW_PRESS)
-		{
-			for (auto& eventHandler : sInstance->mEventHandlers)
-			{
-				eventHandler->onMouseDown(button, mousePos);
-			}
-
-			return;
-		}
-
-		for (auto& eventHandler : sInstance->mEventHandlers)
-		{
-			eventHandler->onMouseUp(button);
 		}
 	}
 
@@ -148,11 +163,6 @@ namespace RenderSystem
 		{
 			return;
 		}
-
-		for (auto& eventHandler : sInstance->mEventHandlers)
-		{
-			eventHandler->onMouseScroll(yOffset);
-		}
 	}
 
 	void Window::onKey(GLFWwindow* window, int keyCode, int scanCode, int action, int mods) noexcept
@@ -160,21 +170,6 @@ namespace RenderSystem
 		if (!sInstance || !window)
 		{
 			return;
-		}
-
-		if (action == GLFW_PRESS)
-		{
-			for (auto& eventHandler : sInstance->mEventHandlers)
-			{
-				eventHandler->onKeyDown(keyCode);
-			}
-
-			return;
-		}
-
-		for (auto& eventHandler : sInstance->mEventHandlers)
-		{
-			eventHandler->onKeyUp(keyCode);
 		}
 	}
 }

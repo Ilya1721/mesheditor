@@ -2,5 +2,5 @@
 
 namespace Geometry
 {
-	constexpr double EPSILON = 0.000001;
+	constexpr float EPSILON = 0.000001f;
 }

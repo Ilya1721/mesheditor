@@ -4,30 +4,31 @@ module Camera;
 
 import <iostream>;
 
+import RenderSystemConsts;
+
 using namespace Geometry;
 
 namespace RenderSystem
 {
 	Camera::Camera() noexcept :
-		mTarget(0.0f, 0.0f, 0.0f),
-		mPosition(0.0f, 0.0f, 1.0f),
-		mDirection(mTarget - mPosition),
-		mUp(0.0f, 1.0f, 0.0f),
-		mRight(1.0f, 0.0f, 0.0f),
+		mTarget(CAMERA_TARGET),
+		mPosition(CAMERA_POSITION),
+		mUp(CAMERA_UP),
+		mRight(CAMERA_RIGHT),
 		mViewMatrix(1.0f)
 	{}
 
-	Matrix4D Camera::getViewMatrix() const noexcept
+	const Matrix4D& Camera::getViewMatrix() const noexcept
 	{
 		return mViewMatrix;
 	}
 
-	void Camera::calcViewMatrix() noexcept
+	Matrix4D Camera::createViewMatrix() const noexcept
 	{
-		mViewMatrix = Matrix4D::lookAt(mPosition, mTarget, mUp);
+		return Matrix4D::lookAt(mPosition, mTarget, mUp);
 	}
 
-	void Camera::setTarget(const Vector3D& newTarget) noexcept
+	void Camera::setTarget(const Vector3D& newTarget)
 	{
 		setPositionTargetUp(mPosition, newTarget, mUp);
 	}
@@ -37,7 +38,7 @@ namespace RenderSystem
 		return mTarget;
 	}
 
-	void Camera::setPosition(const Vector3D& newPosition) noexcept
+	void Camera::setPosition(const Vector3D& newPosition)
 	{
 		setPositionTargetUp(newPosition, mTarget, mUp);
 	}
@@ -47,7 +48,7 @@ namespace RenderSystem
 		return mPosition;
 	}
 
-	void Camera::setUp(const Vector3D& newUp) noexcept
+	void Camera::setUp(const Vector3D& newUp)
 	{
 		setPositionTargetUp(mPosition, mTarget, newUp);
 	}
@@ -57,25 +58,22 @@ namespace RenderSystem
 		return mUp;
 	}
 
-	void Camera::setPositionTargetUp(const Vector3D& newPosition, const Vector3D& newTarget, const Vector3D& newUp) noexcept
+	void Camera::setPositionTargetUp(const Vector3D& newPosition, const Vector3D& newTarget, const Vector3D& newUp)
 	{
-		if (newUp == Vector3D(0.0, 0.0, 0.0))
+		if (newUp == Vector3D(0.0f, 0.0f, 0.0f))
 		{
-			std::cerr << "The Camera Up vector must never be equal to null vector" << std::endl;
-			return;
+			throw std::exception("The Camera Up vector must never be equal to null vector");
 		}
 
 		if (mTarget == newPosition)
 		{
-			std::cerr << "Target must never be equal to the position of the Camera" << std::endl;
-			return;
+			throw std::exception("Target must never be equal to the position of the Camera");
 		}
 
 		mPosition = newPosition;
 		mTarget = newTarget;
 		mUp = newUp;
-
-		recalcCamera();
+		mRight = calcRight();
 	}
 
 	void Camera::translate(const Vector3D& movement) noexcept
@@ -84,16 +82,23 @@ namespace RenderSystem
 		mTarget += movement;
 	}
 
-	void Camera::recalcCamera() noexcept
+	Geometry::Vector3D Camera::calcRight()
 	{
-		mDirection = Vector3D::normalize(mTarget - mPosition);
-
-		if (mDirection == mUp || !isEqual(Vector3D::dot(mDirection, mUp), 0.0))
+		auto direction = Vector3D::normalize(mTarget - mPosition);
+		if (!isEqual(Vector3D::dot(direction, mUp), 0.0f))
 		{
-			std::cerr << "Camera Up and Direction vectors must be perpendicular to each other" << std::endl;
-			return;
+			throw std::exception("Camera Up and Direction vectors must be perpendicular to each other");
 		}
 
-		mRight = Vector3D::normalize(Vector3D::cross(mUp, mDirection));
+		return Vector3D::normalize(Vector3D::cross(mUp, direction));
+	}
+
+	void Camera::adjust(const MeshCore::AABBox& bbox, float fov) noexcept
+	{
+		auto bboxCenter = bbox.getCenter();
+		auto bboxHalfHeight = bbox.getHeight() * 0.5f;
+		auto distanceToCamera = bboxHalfHeight / Geometry::tan(Geometry::toRadians(fov * 0.5f));
+
+		setPositionTargetUp({ bboxCenter.x(), bboxCenter.y(), distanceToCamera }, bboxCenter.getVec3(), mUp);
 	}
 }

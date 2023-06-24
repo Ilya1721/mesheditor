@@ -8,8 +8,8 @@ namespace Geometry
 		: mpImpl(new Vec4Impl())
 	{}
 
-	Vector2D::Vector2D(double x, double y) noexcept
-		: mpImpl(new Vec4Impl(x, y, 0.0, 0.0))
+	Vector2D::Vector2D(float x, float y) noexcept
+		: mpImpl(new Vec4Impl(x, y, 0.0f, 0.0f))
 	{}
 
 	Vector2D::Vector2D(const Vector2D& other) noexcept
@@ -57,12 +57,12 @@ namespace Geometry
 		return *mpImpl == *other.mpImpl;
 	}
 
-	double& Vector2D::operator[](int index) noexcept
+	float& Vector2D::operator[](int index) noexcept
 	{
 		return (*mpImpl)[index];
 	}
 
-	double Vector2D::operator[](int index) const noexcept
+	float Vector2D::operator[](int index) const noexcept
 	{
 		return (*mpImpl)[index];
 	}
@@ -82,47 +82,47 @@ namespace Geometry
 		return (*mpImpl) - (*other.mpImpl);
 	}
 
-	Vector2D Vector2D::operator/(double n) const noexcept
+	Vector2D Vector2D::operator/(float n) const noexcept
 	{
 		return (*mpImpl) / n;
 	}
 
-	double Vector2D::x() const noexcept
+	float Vector2D::x() const noexcept
 	{
 		return (*mpImpl)[0];
 	}
 
-	void Vector2D::setX(double x) noexcept
+	void Vector2D::setX(float x) noexcept
 	{
 		(*mpImpl)[0] = x;
 	}
 
-	double Vector2D::y() const noexcept
+	float Vector2D::y() const noexcept
 	{
 		return (*mpImpl)[1];
 	}
 
-	void Vector2D::setY(double y) noexcept
+	void Vector2D::setY(float y) noexcept
 	{
 		(*mpImpl)[1] = y;
 	}
 
-	double Vector2D::r() const noexcept
+	float Vector2D::r() const noexcept
 	{
 		return x();
 	}
 
-	void Vector2D::setR(double r) noexcept
+	void Vector2D::setR(float r) noexcept
 	{
 		setX(r);
 	}
 
-	double Vector2D::g() const noexcept
+	float Vector2D::g() const noexcept
 	{
 		return y();
 	}
 
-	void Vector2D::setG(double g) noexcept
+	void Vector2D::setG(float g) noexcept
 	{
 		setY(g);
 	}
@@ -137,7 +137,7 @@ namespace Geometry
 		return Vec4Impl::normalize(*vec.mpImpl);
 	}
 
-	double Vector2D::dot(const Vector2D& firstVec, const Vector2D& secondVec) noexcept
+	float Vector2D::dot(const Vector2D& firstVec, const Vector2D& secondVec) noexcept
 	{
 		return Vec4Impl::dot(*firstVec.mpImpl, *secondVec.mpImpl);
 	}
@@ -147,7 +147,7 @@ namespace Geometry
 		return Vec4Impl::cross(*firstVec.mpImpl, *secondVec.mpImpl);
 	}
 
-	Vector3D::Vector3D(double x, double y, double z) noexcept
+	Vector3D::Vector3D(float x, float y, float z) noexcept
 		: Vector2D(x, y)
 	{
 		setZ(z);
@@ -191,27 +191,27 @@ namespace Geometry
 		return Vector2D::operator-(other);
 	}
 
-	Vector3D Vector3D::operator/(double n) const noexcept
+	Vector3D Vector3D::operator/(float n) const noexcept
 	{
 		return Vector2D::operator/(n);
 	}
 
-	double Vector3D::z() const noexcept
+	float Vector3D::z() const noexcept
 	{
 		return (*mpImpl)[2];
 	}
 
-	void Vector3D::setZ(double z) noexcept
+	void Vector3D::setZ(float z) noexcept
 	{
 		(*mpImpl)[2] = z;
 	}
 
-	double Vector3D::b() const noexcept
+	float Vector3D::b() const noexcept
 	{
 		return z();
 	}
 
-	void Vector3D::setB(double b) noexcept
+	void Vector3D::setB(float b) noexcept
 	{
 		setZ(b);
 	}
@@ -221,7 +221,7 @@ namespace Geometry
 		return Vector2D::normalize(vec);
 	}
 
-	double Vector3D::dot(const Vector3D& firstVec, const Vector3D& secondVec) noexcept
+	float Vector3D::dot(const Vector3D& firstVec, const Vector3D& secondVec) noexcept
 	{
 		return Vector2D::dot(firstVec, secondVec);
 	}
@@ -241,7 +241,7 @@ namespace Geometry
 		return Vec4Impl::unProject(*win.mpImpl, model, proj, *viewport.mpImpl);
 	}
 
-	Vector4D::Vector4D(double x, double y, double z, double w) noexcept
+	Vector4D::Vector4D(float x, float y, float z, float w) noexcept
 		: Vector3D(x, y, z)
 	{
 		setW(w);
@@ -285,7 +285,7 @@ namespace Geometry
 		return Vector3D::operator-(other);
 	}
 
-	Vector4D Vector4D::operator/(double n) const noexcept
+	Vector4D Vector4D::operator/(float n) const noexcept
 	{
 		return Vector3D::operator/(n);
 	}
@@ -300,22 +300,22 @@ namespace Geometry
 		return Vector3D(x(), y(), z());
 	}
 
-	double Vector4D::w() const noexcept
+	float Vector4D::w() const noexcept
 	{
 		return (*mpImpl)[3];
 	}
 
-	void Vector4D::setW(double w) noexcept
+	void Vector4D::setW(float w) noexcept
 	{
 		(*mpImpl)[3] = w;
 	}
 
-	double Vector4D::a() const noexcept
+	float Vector4D::a() const noexcept
 	{
 		return w();
 	}
 
-	void Vector4D::setA(double a) noexcept
+	void Vector4D::setA(float a) noexcept
 	{
 		setW(a);
 	}
@@ -325,7 +325,7 @@ namespace Geometry
 		return Vector3D::normalize(vec);
 	}
 
-	double Vector4D::dot(const Vector4D& firstVec, const Vector4D& secondVec) noexcept
+	float Vector4D::dot(const Vector4D& firstVec, const Vector4D& secondVec) noexcept
 	{
 		return Vector3D::dot(firstVec, secondVec);
 	}

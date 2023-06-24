@@ -6,8 +6,15 @@ export namespace MeshCore
 {
 	struct RenderData
 	{
-		std::vector<double> positions;
-		std::vector<double> normals;
-		std::vector<double> colors;
+		std::vector<float> positions;
+		std::vector<float> normals;
+		std::vector<float> colors;
+
+		void append(const RenderData& other) noexcept;
+		void append(float posCoord, float normalCoord, float colorPart) noexcept;
+
+		void reserveMemory(size_t elementsCount) noexcept;
+
+		std::vector<float> getCompactData() const noexcept;
 	};
 }

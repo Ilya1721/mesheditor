@@ -110,29 +110,21 @@ namespace
 
 namespace MeshFilesLoader
 {
-	MeshCore::Mesh STLLoader::loadMesh(const std::filesystem::path& filePath) const noexcept
+	MeshCore::Mesh STLLoader::loadMesh(const std::filesystem::path& filePath) const
 	{
-		try
+		if (!Helpers::isEqual(filePath.extension().string(), ".stl"))
 		{
-			if (!Helpers::isEqual(filePath.extension().string(), ".stl"))
-			{
-				throw std::exception("This file is not of stl format");
-			}
-
-			auto fileContent = Helpers::readFile(filePath);
-
-			if (isBinaryFile(fileContent))
-			{
-				return readBinary(fileContent);
-			}
-			else
-			{
-				return readText(fileContent);
-			}
+			throw std::exception("This file is not of stl format");
 		}
-		catch (std::exception& exc)
+
+		auto fileContent = Helpers::readFile(filePath);
+		if (isBinaryFile(fileContent))
 		{
-			std::cerr << exc.what() << std::endl;
+			return readBinary(fileContent);
+		}
+		else
+		{
+			return readText(fileContent);
 		}
 
 		return MeshCore::Mesh();

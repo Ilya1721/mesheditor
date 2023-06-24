@@ -15,36 +15,32 @@ namespace MeshCore
 	{
 		for (const auto& vertex : mesh.getVertices())
 		{
-			const auto& pos = vertex.pos;
+			mMin.setX(std::min(mMin.x(), vertex.pos.x()));
+			mMax.setX(std::max(mMax.x(), vertex.pos.x()));
 
-			mMin.setX(std::min(mMin.x(), pos.x()));
-			mMax.setX(std::max(mMax.x(), pos.x()));
+			mMin.setY(std::min(mMin.y(), vertex.pos.y()));
+			mMax.setY(std::max(mMax.y(), vertex.pos.y()));
 
-			mMin.setY(std::min(mMin.y(), pos.y()));
-			mMax.setY(std::max(mMax.y(), pos.y()));
-
-			mMin.setZ(std::min(mMin.z(), pos.z()));
-			mMax.setZ(std::max(mMax.z(), pos.z()));
+			mMin.setZ(std::min(mMin.z(), vertex.pos.z()));
+			mMax.setZ(std::max(mMax.z(), vertex.pos.z()));
 		}
 	}
 
 	void AABBox::setFromObject(const Object3D& object) noexcept
 	{
-		setFromMesh(*object.getMesh());
-		applyTransform(object.getLocalTransform());
-
+		setFromMesh(object.getMesh());
 		for (const auto& child : object.getChildren())
 		{
-			setFromObject(child);
+			setFromObject(*child);
 		}
 	}
 
 	void AABBox::init() noexcept
 	{
-		constexpr auto doubleMin = std::numeric_limits<double>::min();
-		constexpr auto doubleMax = std::numeric_limits<double>::max();
-		mMax = Vector4D(doubleMin, doubleMin, doubleMin, 1.0);
-		mMin = Vector4D(doubleMax, doubleMax, doubleMax, 1.0);
+		constexpr auto floatMin = std::numeric_limits<float>::min();
+		constexpr auto floatMax = std::numeric_limits<float>::max();
+		mMax = Vector4D(floatMin, floatMin, floatMin, 1.0f);
+		mMin = Vector4D(floatMax, floatMax, floatMax, 1.0f);
 	}
 
 	void AABBox::applyTransform(const Matrix4D& transform) noexcept
@@ -55,7 +51,7 @@ namespace MeshCore
 
 	Vector4D AABBox::getCenter() const noexcept
 	{
-		return (mMin + mMax) / 2.0;
+		return (mMin + mMax) / 2.0f;
 	}
 
 	const Vector4D& AABBox::getMin() const noexcept
@@ -68,7 +64,7 @@ namespace MeshCore
 		return mMax;
 	}
 
-	double AABBox::getHeight() const noexcept
+	float AABBox::getHeight() const noexcept
 	{
 		return mMax.y() - mMin.y();
 	}

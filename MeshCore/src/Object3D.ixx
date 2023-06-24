@@ -6,19 +6,18 @@ import <memory>;
 import <unordered_set>;
 
 import Mesh;
-import RenderData;
 
 export namespace MeshCore 
 {
 	class Object3D final
 	{
 	public:
-		Object3D(Object3D* parent, std::unique_ptr<Mesh> mesh = nullptr) noexcept;
-
-		void updateLocalTransform(const Geometry::Matrix4D& transform) noexcept;
-		void updateChildrenTransforms() noexcept;
-		void updateTransformsGlobally() noexcept;
-		const Geometry::Matrix4D& getLocalTransform() const noexcept;
+		Object3D() = default;
+		Object3D(Object3D* parent, Mesh&& mesh);
+		Object3D(const Object3D& other) = delete;
+		Object3D(Object3D&& other) = default;
+		Object3D& operator=(const Object3D& other) = delete;
+		Object3D& operator=(Object3D&& other) = default;
 
 		void setParent(Object3D* parent) noexcept;
 		Object3D* getParent() const noexcept;
@@ -26,25 +25,20 @@ export namespace MeshCore
 		void appendChild(Object3D* object) noexcept;
 		void removeChild(Object3D* object) noexcept;
 
-		void setMesh(std::unique_ptr<Mesh> mesh) noexcept;
-		void setLocalTransform(const Geometry::Matrix4D& transform) noexcept;
-		const std::unique_ptr<Mesh>& getMesh() const noexcept;
+		const Mesh& getMesh() const noexcept;
+		const RenderData getRenderData() const noexcept;
 
-		const RenderData& getRenderData() const noexcept;
-		void prepareRenderData() noexcept;
+		void updateTransform(const Geometry::Matrix4D& transform) noexcept;
+		const Geometry::Matrix4D& getTransform() const noexcept;
 
 	private:
-		Geometry::Matrix4D mLocalTransform;
+		const RenderData getRenderData(const Object3D* object) const noexcept;
 
+	private:
 		Object3D* mParent;
 		std::unordered_set<Object3D*> mChildren;
-
-		std::unique_ptr<Mesh> mMesh;
-		RenderData mRenderData;
-		bool mNeedUpdateRenderData;
-
-		int mVertexShader;
-		int mFragmentShader;
+		Mesh mMesh;
+		Geometry::Matrix4D mTransform;
 	};
 }
 

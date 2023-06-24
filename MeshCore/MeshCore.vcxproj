@@ -113,6 +113,7 @@
     <ClCompile Include="src\MeshCoreConsts.ixx" />
     <ClCompile Include="src\Object3D.cpp" />
     <ClCompile Include="src\Object3D.ixx" />
+    <ClCompile Include="src\RenderData.cpp" />
     <ClCompile Include="src\RenderData.ixx" />
     <ClCompile Include="src\Vertex.ixx" />
   </ItemGroup>
