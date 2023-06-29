@@ -10,11 +10,11 @@
 
 namespace Geometry
 {
-	Mat4Impl::Mat4Impl(float arg) noexcept
+	Mat4Impl::Mat4Impl(float arg)
 		: mImplMat(arg)
 	{}
 
-	Mat4Impl::Mat4Impl(const Mat4Impl& other) noexcept
+	Mat4Impl::Mat4Impl(const Mat4Impl& other)
 		: mImplMat(other.mImplMat)
 	{}
 
@@ -33,7 +33,7 @@ namespace Geometry
 		return *this;
 	}
 
-	Mat4Impl& Mat4Impl::operator=(const Mat4Impl& other) noexcept
+	Mat4Impl& Mat4Impl::operator=(const Mat4Impl& other)
 	{
 		if (this != &other)
 		{
@@ -43,7 +43,7 @@ namespace Geometry
 		return *this;
 	}
 
-	Mat4Impl::Mat4Impl(const MatType& matrix) noexcept
+	Mat4Impl::Mat4Impl(const MatType& matrix)
 		: mImplMat(matrix)
 	{}
 
@@ -51,17 +51,17 @@ namespace Geometry
 		: mImplMat(std::move(matrix))
 	{}
 
-	float* Mat4Impl::valuePtr() noexcept
+	float* Mat4Impl::valuePtr()
 	{
 		return glm::value_ptr(mImplMat);
 	}
 
-	const MatType& Mat4Impl::getImplMat() const noexcept
+	const MatType& Mat4Impl::getImplMat() const
 	{
 		return mImplMat;
 	}
 
-	bool Mat4Impl::operator==(const Mat4Impl& other) const noexcept
+	bool Mat4Impl::operator==(const Mat4Impl& other) const
 	{
 		if (mImplMat.length() != other.mImplMat.length())
 			return false;
@@ -77,24 +77,24 @@ namespace Geometry
 		return true;
 	}
 
-	Mat4Impl Mat4Impl::operator*(const Mat4Impl& other) const noexcept
+	Mat4Impl Mat4Impl::operator*(const Mat4Impl& other) const
 	{
 		return mImplMat * other.mImplMat;
 	}
 
-	Mat4Impl Mat4Impl::lookAt(const Vector3D& mPosition, const Vector3D& mTarget, const Vector3D& mUp) noexcept
+	Mat4Impl Mat4Impl::lookAt(const Vector3D& mPosition, const Vector3D& mTarget, const Vector3D& mUp)
 	{
 		return glm::lookAt(mPosition.__internal_getPimpl()->getVec3(),
 						   mTarget.__internal_getPimpl()->getVec3(),
 						   mUp.__internal_getPimpl()->getVec3());
 	}
 
-	Mat4Impl Mat4Impl::ortho(float left, float right, float bottom, float top, float zNear, float zFar) noexcept
+	Mat4Impl Mat4Impl::ortho(float left, float right, float bottom, float top, float zNear, float zFar)
 	{
 		return glm::ortho(left, right, bottom, top, zNear, zFar);
 	}
 
-	Mat4Impl Mat4Impl::perspective(float fov, float aspect, float zNear, float zFar) noexcept
+	Mat4Impl Mat4Impl::perspective(float fov, float aspect, float zNear, float zFar)
 	{
 		return glm::perspective(fov, aspect, zNear, zFar);
 	}

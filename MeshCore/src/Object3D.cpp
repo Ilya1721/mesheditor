@@ -15,7 +15,7 @@ namespace MeshCore
 		mTransform(1.0f)
 	{}
 
-	void Object3D::setParent(Object3D* parent) noexcept
+	void Object3D::setParent(Object3D* parent)
 	{
 		if (mParent) 
 		{
@@ -26,27 +26,27 @@ namespace MeshCore
 		mParent->appendChild(this);
 	}
 
-	const Mesh& Object3D::getMesh() const noexcept
+	const Mesh& Object3D::getMesh() const
 	{
 		return mMesh;
 	}
 
-	Object3D* Object3D::getParent() const noexcept 
+	Object3D* Object3D::getParent() const 
 	{
 		return mParent;
 	}
 
-	const std::unordered_set<Object3D*>& Object3D::getChildren() const noexcept
+	const std::unordered_set<Object3D*>& Object3D::getChildren() const
 	{
 		return mChildren;
 	}
 
-	const RenderData Object3D::getRenderData() const noexcept
+	const RenderData Object3D::getRenderData() const
 	{
 		return getRenderData(this);
 	}
 
-	const RenderData Object3D::getRenderData(const Object3D* object) const noexcept
+	const RenderData Object3D::getRenderData(const Object3D* object) const
 	{
 		RenderData renderData;
 		renderData.append(object->getMesh().getRenderData());
@@ -58,22 +58,22 @@ namespace MeshCore
 		return renderData;
 	}
 
-	void Object3D::updateTransform(const Geometry::Matrix4D& transform) noexcept
+	void Object3D::updateTransform(const Geometry::Matrix4D& transform)
 	{
 		mTransform = mTransform * transform;
 	}
 
-	const Geometry::Matrix4D& Object3D::getTransform() const noexcept
+	const Geometry::Matrix4D& Object3D::getTransform() const
 	{
 		return mTransform;
 	}
 
-	void Object3D::appendChild(Object3D* object) noexcept
+	void Object3D::appendChild(Object3D* object)
 	{
 		object->setParent(this);
 	}
 
-	void Object3D::removeChild(Object3D* object) noexcept
+	void Object3D::removeChild(Object3D* object)
 	{
 		auto childIt = mChildren.find(object);
 		if (childIt != mChildren.end())

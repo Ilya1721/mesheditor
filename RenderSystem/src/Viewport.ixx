@@ -14,24 +14,24 @@ export namespace RenderSystem
 	class Viewport final
 	{
 	public:
-		Viewport(float x, float y, int width, int height) noexcept;
+		Viewport(float x, float y, int width, int height);
 
-		const Geometry::Matrix4D& getProjectionMatrix() const noexcept;
-		PROJECTION_TYPE getProjectionType() const noexcept;
-		void setProjectionType(PROJECTION_TYPE projectionType) noexcept;
+		const Geometry::Matrix4D& getProjectionMatrix() const;
+		PROJECTION_TYPE getProjectionType() const;
+		void setProjectionType(PROJECTION_TYPE projectionType);
 
-		float getFov() const noexcept;
-		float getNearPlaneDistance() const noexcept;
-		float getFarPlaneDistance() const noexcept;
+		float getFov() const;
+		float getNearPlaneDistance() const;
+		float getFarPlaneDistance() const;
+		int getWidth() const;
+		int getHeight() const;
+		const Geometry::Vector2D& getPos() const;
 
-		int getWidth() const noexcept;
-		int getHeight() const noexcept;
-		void setWidth(int width) noexcept;
-		void setHeight(int height) noexcept;
+		void resize(int width, int height);
 
 	private:
 		void init();
-		Geometry::Matrix4D createProjectionMatrix() const noexcept;
+		Geometry::Matrix4D createProjectionMatrix() const;
 
 	private:
 		float mFov;

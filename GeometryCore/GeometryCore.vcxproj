@@ -90,6 +90,8 @@
     <ClInclude Include="GeometryCore\MatImpl.h" />
     <ClInclude Include="GeometryCore\Matrix.h" />
     <ClInclude Include="GeometryCore\Numeric.h" />
+    <ClInclude Include="GeometryCore\Plane.h" />
+    <ClInclude Include="GeometryCore\Ray.h" />
     <ClInclude Include="GeometryCore\VecImpl.h" />
     <ClInclude Include="GeometryCore\Vector.h" />
   </ItemGroup>
@@ -97,6 +99,7 @@
     <ClCompile Include="GeometryCore\MatImpl.cpp" />
     <ClCompile Include="GeometryCore\Matrix.cpp" />
     <ClCompile Include="GeometryCore\Numeric.cpp" />
+    <ClCompile Include="GeometryCore\Ray.cpp" />
     <ClCompile Include="GeometryCore\VecImpl.cpp" />
     <ClCompile Include="GeometryCore\Vector.cpp" />
   </ItemGroup>

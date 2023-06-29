@@ -14,7 +14,7 @@ namespace RenderSystem
 {
 	std::unique_ptr<Window> Window::sInstance {};
 
-	Window::Window(const std::string& title, int width, int height, const std::string& meshFilePath) noexcept :
+	Window::Window(const std::string& title, int width, int height, const std::string& meshFilePath) :
 		mTitle(title),
 		mMeshFilePath(meshFilePath),
 		mWidth(width),
@@ -44,26 +44,27 @@ namespace RenderSystem
 	{
 		mViewport = std::make_unique<Viewport>(VIEWPORT_POSITION.x(), VIEWPORT_POSITION.y(), mWidth, mHeight);
 		mScene = std::make_unique<Scene>(mMeshFilePath, this);
-		//mScene->adjustCamera(mViewport->getFov());
+		mScene->adjust(mViewport->getFov());
 		setCallbacks();
 	}
 
-	void Window::setCallbacks() noexcept
+	void Window::setCallbacks()
 	{
 		glfwSetCursorPosCallback(mWindow, onMouseMove);
 		glfwSetMouseButtonCallback(mWindow, onMouseButton);
 		glfwSetScrollCallback(mWindow, onMouseScroll);
 		glfwSetKeyCallback(mWindow, onKey);
+		glfwSetFramebufferSizeCallback(mWindow, onFramebufferSizeChanged);
 	}
 
-	Window* Window::createInstance(const std::string& title, int width, int height, const std::string& meshFilePath) noexcept
+	Window* Window::createInstance(const std::string& title, int width, int height, const std::string& meshFilePath)
 	{
 		static auto window = new Window(title, width, height, meshFilePath);
 		sInstance = std::move(std::unique_ptr<Window>(window));
 		return sInstance.get();
 	}
 
-	Window* Window::getInstance() noexcept
+	Window* Window::getInstance()
 	{
 		return sInstance.get();
 	}
@@ -83,12 +84,12 @@ namespace RenderSystem
 		}
 	}
 
-	const std::unique_ptr<Viewport>& Window::getViewport() const noexcept
+	const std::unique_ptr<Viewport>& Window::getViewport() const
 	{
 		return mViewport;
 	}
 
-	Geometry::Vector2D Window::getMousePos() const noexcept
+	Geometry::Vector2D Window::getMousePos() const
 	{
 		double mousePosX, mousePosY;
 		glfwGetCursorPos(mWindow, &mousePosX, &mousePosY);
@@ -96,7 +97,7 @@ namespace RenderSystem
 		return { static_cast<float>(mousePosX), static_cast<float>(mousePosY) };
 	}
 
-	MouseButtonsState Window::getMouseButtonsState() const noexcept
+	MouseButtonsState Window::getMouseButtonsState() const
 	{
 		MouseButtonsState mouseButtonsState;
 		int leftMouseButtonState = glfwGetMouseButton(mWindow, GLFW_MOUSE_BUTTON_LEFT);
@@ -109,67 +110,75 @@ namespace RenderSystem
 		return mouseButtonsState;
 	}
 
-	void Window::onMouseMove(GLFWwindow* window, double xPos, double yPos) noexcept
+	void Window::onMouseMove(GLFWwindow* window, double xPos, double yPos)
 	{
 		if (!sInstance || !window)
 		{
 			return;
 		}
 
-		sInstance->mMouseButtonsState = sInstance->getMouseButtonsState();
 		sInstance->mMousePos = Geometry::Vector2D(static_cast<float>(xPos), static_cast<float>(yPos));
-
 		sInstance->chooseAction();
 	}
 
 	void Window::chooseAction()
 	{
-		if (mMouseButtonsState.middleButtonPressed)
+		auto mouseButtonsState = sInstance->getMouseButtonsState();
+		if (mouseButtonsState.middleButtonPressed)
 			pan();
 	}
 
 	void Window::pan()
 	{
-		/*auto viewportHeight = mViewport->getHeight();
-		auto viewportWidth = mViewport->getWidth();
+		auto modelViewMatrix = mScene->getViewMatrix() * mScene->getModelMatrix();
+		auto projectionMatrix = mViewport->getProjectionMatrix();
+		auto viewportPos = mViewport->getPos();
+		auto viewportHeight = static_cast<float>(mViewport->getHeight());
+		Geometry::Vector4D viewport = { viewportPos.x(), viewportPos.y(), static_cast<float>(mViewport->getWidth()), viewportHeight };
+		
+		Geometry::Vector3D firstMousePos3D(mSavedMousePos.x(), viewportHeight - mSavedMousePos.y(), 0.0);
+		Geometry::Vector3D secondMousePos3D(mMousePos.x(), viewportHeight - mMousePos.y(), 0.0);
+		auto firstMousePosUnprojected = firstMousePos3D.unProject(modelViewMatrix, projectionMatrix, viewport);
+		auto secondMousePosUnprojected = secondMousePos3D.unProject(modelViewMatrix, projectionMatrix, viewport);
 
-		auto& camera = mScene->getCamera();
-		const auto& modelViewMatrix = camera.getViewMatrix();
-		const auto& projectionMatrix = mViewport->getProjectionMatrix();
-		Geometry::Vector4D viewportDimensions { 0.0, 0.0, static_cast<double>(viewportWidth), static_cast<double>(viewportHeight) };
-
-		const auto& projectedCenter = Geometry::Vector3D::project({ 0.0, 0.0, 0.0 }, modelViewMatrix, projectionMatrix, viewportDimensions);
-		Geometry::Vector3D startScreenPos(startMousePos.x(), viewportHeight - startMousePos.y(), projectedCenter.z());
-		Geometry::Vector3D endScreenPos(endMousePos.x(), viewportHeight - endMousePos.y(), projectedCenter.z());
-
-		auto unProjectedStartMousePos = Geometry::Vector3D::unProject(startScreenPos, modelViewMatrix, projectionMatrix, viewportDimensions);
-		auto unProjectedEndMousePos = Geometry::Vector3D::unProject(endScreenPos, modelViewMatrix, projectionMatrix, viewportDimensions);
-		auto movement = unProjectedEndMousePos - unProjectedStartMousePos;
-
-		camera.translate(movement);*/
+		mScene->pan(firstMousePosUnprojected, secondMousePosUnprojected);
+		mSavedMousePos = mMousePos;
 	}
 
-	void Window::onMouseButton(GLFWwindow* window, int button, int action, int mods) noexcept
+	void Window::resizeViewport(int width, int height)
+	{
+		mViewport->resize(width, height);
+		mScene->setProjectionMatrix(mViewport->getProjectionMatrix());
+	}
+
+	void Window::onMouseButton(GLFWwindow* window, int button, int action, int mods)
 	{
 		if (!sInstance || !window)
-		{
 			return;
+
+		if (action == GLFW_PRESS)
+		{
+			sInstance->mSavedMousePos = sInstance->getMousePos();
 		}
 	}
 
-	void Window::onMouseScroll(GLFWwindow* window, double xOffset, double yOffset) noexcept
+	void Window::onMouseScroll(GLFWwindow* window, double xOffset, double yOffset)
 	{
 		if (!sInstance || !window)
-		{
 			return;
-		}
 	}
 
-	void Window::onKey(GLFWwindow* window, int keyCode, int scanCode, int action, int mods) noexcept
+	void Window::onKey(GLFWwindow* window, int keyCode, int scanCode, int action, int mods)
 	{
 		if (!sInstance || !window)
-		{
 			return;
-		}
+	}
+
+	void Window::onFramebufferSizeChanged(GLFWwindow* window, int width, int height)
+	{
+		if (!sInstance || !window)
+			return;
+
+		sInstance->resizeViewport(width, height);
 	}
 }

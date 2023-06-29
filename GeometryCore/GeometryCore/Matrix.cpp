@@ -5,15 +5,15 @@
 
 namespace Geometry
 {
-	Matrix4D::Matrix4D() noexcept
+	Matrix4D::Matrix4D()
 		: mpImpl(new Mat4Impl())
 	{}
 
-	Matrix4D::Matrix4D(float arg) noexcept
+	Matrix4D::Matrix4D(float arg)
 		: mpImpl(new Mat4Impl(arg))
 	{}
 
-	Matrix4D::Matrix4D(const Matrix4D& other) noexcept
+	Matrix4D::Matrix4D(const Matrix4D& other)
 		: mpImpl(new Mat4Impl(*other.mpImpl))
 	{}
 
@@ -22,7 +22,7 @@ namespace Geometry
 		*this = std::move(other);
 	}
 
-	Matrix4D& Matrix4D::operator=(const Matrix4D& other) noexcept
+	Matrix4D& Matrix4D::operator=(const Matrix4D& other)
 	{
 		if (this != &other)
 		{
@@ -44,7 +44,7 @@ namespace Geometry
 		return *this;
 	}
 
-	Matrix4D::~Matrix4D() noexcept
+	Matrix4D::~Matrix4D()
 	{
 		delete mpImpl;
 	}
@@ -53,37 +53,37 @@ namespace Geometry
 		: mpImpl(new Mat4Impl(mat4Impl))
 	{}
 
-	bool Matrix4D::operator==(const Matrix4D& other) const noexcept
+	bool Matrix4D::operator==(const Matrix4D& other) const
 	{
 		return *mpImpl == *other.mpImpl;
 	}
 
-	Matrix4D Matrix4D::operator*(const Matrix4D& other) const noexcept
+	Matrix4D Matrix4D::operator*(const Matrix4D& other) const
 	{
 		return (*mpImpl) * (*other.mpImpl);
 	}
 
-	const float* Matrix4D::valuePtr() const noexcept
+	const float* Matrix4D::valuePtr() const
 	{
 		return mpImpl->valuePtr();
 	}
 
-	Mat4Impl* Matrix4D::__internal_getPimpl() const noexcept
+	Mat4Impl* Matrix4D::__internal_getPimpl() const
 	{
 		return mpImpl;
 	}
 
-	Matrix4D Matrix4D::lookAt(const Vector3D& mPosition, const Vector3D& mTarget, const Vector3D& mUp) noexcept
+	Matrix4D Matrix4D::lookAt(const Vector3D& mPosition, const Vector3D& mTarget, const Vector3D& mUp)
 	{
 		return Mat4Impl::lookAt(mPosition, mTarget, mUp);
 	}
 
-	Matrix4D Matrix4D::ortho(float left, float right, float bottom, float top, float zNear, float zFar) noexcept
+	Matrix4D Matrix4D::ortho(float left, float right, float bottom, float top, float zNear, float zFar)
 	{
 		return Mat4Impl::ortho(left, right, bottom, top, zNear, zFar);
 	}
 
-	Matrix4D Matrix4D::perspective(float fov, float aspect, float zNear, float zFar) noexcept
+	Matrix4D Matrix4D::perspective(float fov, float aspect, float zNear, float zFar)
 	{
 		return Mat4Impl::perspective(fov, aspect, zNear, zFar);
 	}

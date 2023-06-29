@@ -2,7 +2,7 @@ module StringHelper;
 
 namespace Helpers
 {
-	bool isEqual(const std::string& firstString, const std::string& secondString, bool caseSensitive) noexcept
+	bool isEqual(const std::string& firstString, const std::string& secondString, bool caseSensitive)
 	{
 		if (firstString.size() != secondString.size())
 		{

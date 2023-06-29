@@ -8,13 +8,12 @@ export namespace MeshCore
 	{
 		std::vector<float> positions;
 		std::vector<float> normals;
-		std::vector<float> colors;
 
-		void append(const RenderData& other) noexcept;
-		void append(float posCoord, float normalCoord, float colorPart) noexcept;
+		void append(const RenderData& other);
+		void append(float posCoord, float normalCoord);
 
-		void reserveMemory(size_t elementsCount) noexcept;
+		void reserveMemory(size_t elementsCount);
 
-		std::vector<float> getCompactData() const noexcept;
+		std::vector<float> getCompactData() const;
 	};
 }

@@ -10,6 +10,5 @@ export namespace MeshCore
 	{
 		Vector3D pos;
 		Vector3D normal;
-		Vector3D color;
 	};
 }

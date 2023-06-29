@@ -11,28 +11,28 @@ export namespace MeshCore
 	class AABBox final
 	{
 	public:
-		AABBox() noexcept;
+		AABBox();
 		AABBox(const AABBox& box) = default;
-		AABBox(AABBox&& box) = default;
+		AABBox(AABBox&& box) noexcept = default;
 		AABBox& operator=(const AABBox& box) = default;
-		AABBox& operator=(AABBox&& box) = default;
+		AABBox& operator=(AABBox&& box) noexcept = default;
 
-		void setFromMesh(const Mesh& mesh) noexcept;
-		void setFromObject(const Object3D& object) noexcept;
+		void setFromMesh(const Mesh& mesh);
+		void setFromObject(const Object3D& object);
 
-		void applyTransform(const Geometry::Matrix4D& transform) noexcept;
+		void applyTransform(const Geometry::Matrix4D& transform);
 
-		Geometry::Vector4D getCenter() const noexcept;
-		const Geometry::Vector4D& getMin() const noexcept;
-		const Geometry::Vector4D& getMax() const noexcept;
-		float getHeight() const noexcept;
-
-	private:
-		void init() noexcept;
+		Geometry::Vector3D getCenter() const;
+		const Geometry::Vector3D& getMin() const;
+		const Geometry::Vector3D& getMax() const;
+		float getHeight() const;
 
 	private:
-		Geometry::Vector4D mMin;
-		Geometry::Vector4D mMax;
+		void init();
+
+	private:
+		Geometry::Vector3D mMin;
+		Geometry::Vector3D mMax;
 	};
 }
 

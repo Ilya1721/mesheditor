@@ -10,26 +10,27 @@ export namespace RenderSystem
 	class Camera
 	{
 	public:
-		Camera() noexcept;
+		Camera();
 
-		const Geometry::Matrix4D& getViewMatrix() const noexcept;
+		const Geometry::Matrix4D& getViewMatrix() const;
 
 		void setTarget(const Geometry::Vector3D& newTarget);
-		const Geometry::Vector3D& getTarget() const noexcept;
+		const Geometry::Vector3D& getTarget() const;
 		void setPosition(const Geometry::Vector3D& newPosition);
-		const Geometry::Vector3D& getPosition() const noexcept;
+		const Geometry::Vector3D& getPosition() const;
 		void setUp(const Geometry::Vector3D& newUp);
-		const Geometry::Vector3D& getUp() const noexcept;
+		const Geometry::Vector3D& getUp() const;
 		void setPositionTargetUp(const Geometry::Vector3D& newPosition,
 								 const Geometry::Vector3D& newTarget,
 							     const Geometry::Vector3D& newUp);
 
-		void translate(const Geometry::Vector3D& movement) noexcept;
-		void adjust(const MeshCore::AABBox& bbox, float fov) noexcept;
+		void pan(const Geometry::Vector3D& firstPoint, const Geometry::Vector3D& secondPoint);
+		void adjust(const MeshCore::AABBox& bbox, float fov);
 
 	private:
 		Geometry::Vector3D calcRight();
-		Geometry::Matrix4D createViewMatrix() const noexcept;
+		Geometry::Matrix4D createViewMatrix() const;
+		void translate(const Geometry::Vector3D& movement);
 
 	private:
 		Geometry::Vector3D mTarget;

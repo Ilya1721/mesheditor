@@ -10,8 +10,13 @@ export namespace RenderSystem
 	const Geometry::Vector3D CAMERA_UP = Geometry::Vector3D(0.0f, 1.0f, 0.0f);
 	const Geometry::Vector3D CAMERA_RIGHT = Geometry::Vector3D(1.0f, 0.0f, 0.0f);
 	const Geometry::Vector2D VIEWPORT_POSITION = Geometry::Vector2D(0.0f, 0.0f);
+	const Geometry::Vector3D DEFAULT_OBJECT_COLOR = Geometry::Vector3D(0.5f, 0.25f, 0.1f);
+	const Geometry::Vector3D AMBIENT_COLOR = Geometry::Vector3D(1.0f, 1.0f, 1.0f);
+	const Geometry::Vector3D DIFFUSE_COLOR = Geometry::Vector3D(1.0f, 1.0f, 1.0f);
 
 	constexpr float FOV = 45.0f;
 	constexpr float NEAR_PLANE_DISTANCE = 0.01f;
 	constexpr float FAR_PLANE_DISTANCE = 1000.0f;
+	constexpr float AMBIENT_STRENGTH = 0.1f;
+	constexpr int CAMERA_DISTANCE_MULT = 3;
 }

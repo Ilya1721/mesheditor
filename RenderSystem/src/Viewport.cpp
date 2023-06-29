@@ -10,7 +10,7 @@ import RenderSystemConsts;
 
 namespace RenderSystem
 {
-	Viewport::Viewport(float x, float y, int width, int height) noexcept :
+	Viewport::Viewport(float x, float y, int width, int height) :
 		mFov(FOV),
 		mNearPlaneDistance(NEAR_PLANE_DISTANCE),
 		mFarPlaneDistance(FAR_PLANE_DISTANCE),
@@ -25,69 +25,73 @@ namespace RenderSystem
 
 	void Viewport::init()
 	{
-		glViewport(static_cast<int>(mPos.x()), static_cast<int>(mPos.y()),
-			static_cast<int>(mWidth), static_cast<int>(mHeight));
+		glViewport(static_cast<int>(mPos.x()), static_cast<int>(mPos.y()), mWidth, mHeight);
 		mProjectionMatrix = createProjectionMatrix();
 	}
 
-	Geometry::Matrix4D Viewport::createProjectionMatrix() const noexcept
+	Geometry::Matrix4D Viewport::createProjectionMatrix() const
 	{
+		auto width = static_cast<float>(mWidth);
+		auto height = static_cast<float>(mHeight);
+
 		if (mProjectionType == PROJECTION_TYPE::ORTHOGRAPHIC)
 		{
-			return Geometry::Matrix4D::ortho(-1.0f, 1.0f, -1.0f, 1.0f, mNearPlaneDistance, mFarPlaneDistance);
+			return Geometry::Matrix4D::ortho(0.0f, width, 0.0f, height, mNearPlaneDistance, mFarPlaneDistance); // need to implement later
 		}
 
-		return Geometry::Matrix4D::perspective(mFov, static_cast<float>(mWidth / mHeight), mNearPlaneDistance, mFarPlaneDistance);
+		return Geometry::Matrix4D::perspective(Geometry::toRadians(mFov), width / height, mNearPlaneDistance, mFarPlaneDistance);
 	}
 
-	const Geometry::Matrix4D& Viewport::getProjectionMatrix() const noexcept
+	const Geometry::Matrix4D& Viewport::getProjectionMatrix() const
 	{
 		return mProjectionMatrix;
 	}
 
-	PROJECTION_TYPE Viewport::getProjectionType() const noexcept
+	PROJECTION_TYPE Viewport::getProjectionType() const
 	{
 		return mProjectionType;
 	}
 
-	void Viewport::setProjectionType(PROJECTION_TYPE projectionType) noexcept
+	void Viewport::setProjectionType(PROJECTION_TYPE projectionType)
 	{
 		mProjectionType = projectionType;
 		mProjectionMatrix = createProjectionMatrix();
 	}
 
-	float Viewport::getFov() const noexcept
+	float Viewport::getFov() const
 	{
 		return mFov;
 	}
 
-	float Viewport::getNearPlaneDistance() const noexcept
+	float Viewport::getNearPlaneDistance() const
 	{
 		return mNearPlaneDistance;
 	}
 
-	float Viewport::getFarPlaneDistance() const noexcept
+	float Viewport::getFarPlaneDistance() const
 	{
 		return mFarPlaneDistance;
 	}
 		 
-	int Viewport::getWidth() const noexcept
+	int Viewport::getWidth() const
 	{
 		return mWidth;
 	}
 
-	void Viewport::setWidth(int width) noexcept
-	{
-		mWidth = width;
-	}
-
-	int Viewport::getHeight() const noexcept
+	int Viewport::getHeight() const
 	{
 		return mHeight;
 	}
 
-	void Viewport::setHeight(int height) noexcept
+	const Geometry::Vector2D& Viewport::getPos() const
 	{
+		return mPos;
+	}
+
+	void Viewport::resize(int width, int height)
+	{
+		mWidth = width;
 		mHeight = height;
+		init();
 	}
 }

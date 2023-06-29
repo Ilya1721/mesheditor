@@ -2,6 +2,7 @@
 
 #include <glm/gtc/epsilon.hpp>
 #include <glm/ext/matrix_projection.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "Constants.h"
 #include "Matrix.h"
@@ -9,11 +10,11 @@
 
 namespace Geometry
 {
-	Vec4Impl::Vec4Impl(float x, float y, float z, float w) noexcept
+	Vec4Impl::Vec4Impl(float x, float y, float z, float w)
 		: mImplVec(x, y, z, w)
 	{}
 
-	Vec4Impl::Vec4Impl(const Vec4Impl& other) noexcept
+	Vec4Impl::Vec4Impl(const Vec4Impl& other)
 		: mImplVec(other.mImplVec)
 	{}
 
@@ -32,7 +33,7 @@ namespace Geometry
 		return *this;
 	}
 
-	Vec4Impl& Vec4Impl::operator=(const Vec4Impl& other) noexcept
+	Vec4Impl& Vec4Impl::operator=(const Vec4Impl& other)
 	{
 		if (this != &other)
 		{
@@ -50,84 +51,99 @@ namespace Geometry
 		: mImplVec(vec)
 	{}
 
-	const Vec4Type& Vec4Impl::getImplVec() const noexcept
+	const Vec4Type& Vec4Impl::getImplVec() const
 	{
 		return mImplVec;
 	}
 
-	const Vec3Type Vec4Impl::getVec3() const noexcept
+	const Vec3Type Vec4Impl::getVec3() const
 	{
 		return Vec3Type(mImplVec);
 	}
 
-	bool Vec4Impl::operator==(const Vec4Impl& other) const noexcept
+	bool Vec4Impl::operator==(const Vec4Impl& other) const
 	{
 		return glm::all(glm::epsilonEqual(mImplVec, other.mImplVec, EPSILON));
 	}
 
-	float& Vec4Impl::operator[](int index) noexcept
+	float& Vec4Impl::operator[](int index)
 	{
 		return mImplVec[index];
 	}
 
-	float Vec4Impl::operator[](int index) const noexcept
+	float Vec4Impl::operator[](int index) const
 	{
 		return mImplVec[index];
 	}
 
-	Vec4Impl Vec4Impl::operator*(const Matrix4D& matrix) const noexcept
+	Vec4Impl Vec4Impl::operator*(const Matrix4D& matrix) const
 	{
 		return (mImplVec * matrix.__internal_getPimpl()->getImplMat());
 	}
 
-	Vec4Impl Vec4Impl::operator+(const Vec4Impl& other) const noexcept
+	float Vec4Impl::operator*(const Vec4Impl& other) const
+	{
+		return glm::dot(mImplVec, other.mImplVec);
+	}
+
+	Vec4Impl Vec4Impl::operator+(const Vec4Impl& other) const
 	{
 		return mImplVec + other.mImplVec;
 	}
 
-	void Vec4Impl::operator+=(const Vec4Impl& other) noexcept
+	void Vec4Impl::operator+=(const Vec4Impl& other)
 	{
 		mImplVec += other.mImplVec;
 	}
 
-	Vec4Impl Vec4Impl::operator-(const Vec4Impl& other) const noexcept
+	Vec4Impl operator*(float n, const Vec4Impl& other)
+	{
+		return n * other.mImplVec;
+	}
+
+	Vec4Impl Vec4Impl::operator-(const Vec4Impl& other) const
 	{
 		return mImplVec - other.mImplVec;
 	}
 
-	Vec4Impl Vec4Impl::operator/(float n) const noexcept
+	Vec4Impl Vec4Impl::operator/(float n) const
 	{
 		return mImplVec / n;
 	}
 
-	Vec4Impl Vec4Impl::normalize(const Vec4Impl& vec) noexcept
+	Vec4Impl Vec4Impl::operator*(float n) const
 	{
-		return glm::normalize(vec.mImplVec);
+		return n * (*this);
 	}
 
-	float Vec4Impl::dot(const Vec4Impl& firstVec, const Vec4Impl& secondVec) noexcept
+	const float* Vec4Impl::valuePtr() const
 	{
-		return glm::dot(firstVec.mImplVec, secondVec.mImplVec);
+		return glm::value_ptr(mImplVec);
 	}
 
-	Vec4Impl Vec4Impl::cross(const Vec4Impl& firstVec, const Vec4Impl& secondVec) noexcept
+	Vec4Impl Vec4Impl::getNormalized() const
 	{
-		glm::vec3 firstVec3(firstVec.mImplVec);
-		glm::vec3 secondVec3(secondVec.mImplVec);
+		return glm::normalize(mImplVec);
+	}
+
+	Vec4Impl Vec4Impl::cross(const Vec4Impl& other) const
+	{
+		glm::vec3 firstVec3(mImplVec);
+		glm::vec3 secondVec3(other.mImplVec);
 		return glm::cross(firstVec3, secondVec3);
 	}
 
-	Vec4Impl Vec4Impl::project(const Vec4Impl& obj, const Matrix4D& model, const Matrix4D& proj, const Vec4Impl& viewport) noexcept
+	Vec4Impl Vec4Impl::project(const Matrix4D& model, const Matrix4D& proj, const Vec4Impl& viewport) const
 	{
-		return glm::project(obj.getVec3(),
+		return glm::project(getVec3(),
 			model.__internal_getPimpl()->getImplMat(),
 			proj.__internal_getPimpl()->getImplMat(),
 			viewport.getImplVec());
 	}
 
-	Vec4Impl Vec4Impl::unProject(const Vec4Impl& win, const Matrix4D& model, const Matrix4D& proj, const Vec4Impl& viewport) noexcept
+	Vec4Impl Vec4Impl::unProject(const Matrix4D& model, const Matrix4D& proj, const Vec4Impl& viewport) const
 	{
-		return glm::unProject(win.getVec3(),
+		return glm::unProject(getVec3(),
 			model.__internal_getPimpl()->getImplMat(),
 			proj.__internal_getPimpl()->getImplMat(),
 			viewport.getImplVec());

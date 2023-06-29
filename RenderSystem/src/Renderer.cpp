@@ -8,7 +8,7 @@ module Renderer;
 import <iostream>;
 
 import FileHelper;
-import RenderSystemConsts;
+import RenderLogger;
 
 namespace RenderSystem
 {
@@ -16,16 +16,13 @@ namespace RenderSystem
 		mVertexShader(0),
 		mFragmentShader(0),
 		mShaderProgram(0),
-		mModel(0),
-		mView(0),
-		mProjection(0),
-		mVBO(0),
-		mVAO(0)
+		mLighting(),
+		mRenderBuffer()
 	{
 		init();
 	}
 
-	Renderer::~Renderer() noexcept
+	Renderer::~Renderer()
 	{
 		glUseProgram(0);
 		glDeleteShader(mVertexShader);
@@ -36,13 +33,8 @@ namespace RenderSystem
 	void Renderer::init()
 	{
 		initShaders();
-
-		glClearColor(static_cast<float>(BACKGROUND_COLOR.r()), static_cast<float>(BACKGROUND_COLOR.g()),
-			static_cast<float>(BACKGROUND_COLOR.b()), static_cast<float>(BACKGROUND_COLOR.a()));
-		glEnable(GL_DEPTH_TEST);
-
-		glGenBuffers(1, &mVBO);
-		glGenVertexArrays(1, &mVAO);
+		mLighting.init(mShaderProgram);
+		mRenderBuffer.init(mShaderProgram);
 	}
 
 	void Renderer::initShaders()
@@ -64,49 +56,13 @@ namespace RenderSystem
 			throw std::exception("Shader program was not linked");
 		}
 
-		mModel = glGetUniformLocation(mShaderProgram, "model");
-		mView = glGetUniformLocation(mShaderProgram, "view");
-		mProjection = glGetUniformLocation(mShaderProgram, "projection");
-
 		glUseProgram(mShaderProgram);
 	}
 
-	void Renderer::setRenderData(const MeshCore::RenderData& renderData) noexcept
-	{
-		glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-		glBindVertexArray(mVAO);
-		auto compactData = renderData.getCompactData();
-		glBufferData(GL_ARRAY_BUFFER, compactData.size() * sizeof(float), compactData.data(), GL_STATIC_DRAW);
-
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, reinterpret_cast<void*>(renderData.positions.size() * sizeof(float)));
-		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0,
-			reinterpret_cast<void*>((renderData.positions.size() + renderData.normals.size()) * sizeof(float)));
-	}
-
-	void Renderer::setModel(const float* model) noexcept
-	{
-		glUniformMatrix4fv(mModel, 1, false, model);
-	}
-
-	void Renderer::setView(const float* view) noexcept
-	{
-		glUniformMatrix4fv(mView, 1, false, view);
-	}
-
-	void Renderer::setProjection(const float* projection) noexcept
-	{
-		glUniformMatrix4fv(mProjection, 1, false, projection);
-
-	}
-
-	void Renderer::render() const noexcept
+	void Renderer::render() const
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawArrays(GL_TRIANGLES, 0, mRenderBuffer.getVertexCount());
 	}
 
 	int Renderer::loadShader(const std::string& shaderPath, int shaderType)
@@ -131,71 +87,13 @@ namespace RenderSystem
 		return shader;
 	}
 
-	std::string Renderer::getLog(int shaderOrProgramId, SHADER_LOG_TYPE logType) noexcept
+	Lighting& Renderer::getLighting()
 	{
-		int logLength = 0;
-		std::string errorLog {'\0'};
-
-		if (logType == SHADER_LOG_TYPE::SHADER)
-		{
-			glGetShaderiv(shaderOrProgramId, GL_INFO_LOG_LENGTH, &logLength);
-			errorLog.resize(logLength);
-			glGetShaderInfoLog(shaderOrProgramId, logLength, &logLength, errorLog.data());
-		}
-		else if (logType == SHADER_LOG_TYPE::SHADER_PROGRAM)
-		{
-			glGetProgramiv(shaderOrProgramId, GL_INFO_LOG_LENGTH, &logLength);
-			errorLog.resize(logLength);
-			glGetProgramInfoLog(shaderOrProgramId, logLength, &logLength, errorLog.data());
-		}
-
-		return errorLog;
+		return mLighting;
 	}
 
-	void Renderer::printOpenGLErrorMessage() noexcept
+	RenderBuffer& Renderer::getRenderBuffer()
 	{
-		GLenum error;
-
-		while ((error = glGetError()) != GL_NO_ERROR)
-		{
-			switch (error)
-			{
-				case GL_INVALID_ENUM:
-				{
-					std::cerr << "An unacceptable value is specified for an enumerated argument" << std::endl;
-					break;
-				}
-				case GL_INVALID_VALUE:
-				{
-					std::cerr << "A numeric argument is out of range" << std::endl;
-					break;
-				}
-				case GL_INVALID_OPERATION:
-				{
-					std::cerr << "The specified operation is not allowed in the current state" << std::endl;
-					break;
-				}
-				case GL_INVALID_FRAMEBUFFER_OPERATION:
-				{
-					std::cerr << "The framebuffer object is not complete" << std::endl;
-					break;
-				}
-				case GL_OUT_OF_MEMORY:
-				{
-					std::cerr << "There is not enough memory left to execute the command" << std::endl;
-					break;
-				}
-				case GL_STACK_UNDERFLOW:
-				{
-					std::cerr << "An attempt has been made to perform an operation that would cause an internal stack to underflow" << std::endl;
-					break;
-				}
-				case GL_STACK_OVERFLOW:
-				{
-					std::cerr << "An attempt has been made to perform an operation that would cause an internal stack to overflow" << std::endl;
-					break;
-				}
-			}
-		}
+		return mRenderBuffer;
 	}
 }

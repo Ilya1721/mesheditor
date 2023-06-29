@@ -10,13 +10,12 @@ export namespace MeshCore
 	class Mesh
 	{
 	public:
-		Mesh() noexcept = default;
-		Mesh(const std::vector<Vertex>& vertices) noexcept;
+		Mesh() = default;
+		Mesh(const std::vector<Vertex>& vertices);
 
-		const std::vector<Vertex>& getVertices() const noexcept;
-		void setVertices(const std::vector<Vertex>& vertices) noexcept;
-		void addVertex(const Vertex& vertex) noexcept;
-		RenderData getRenderData() const noexcept;
+		const std::vector<Vertex>& getVertices() const;
+		void addVertex(const Vertex& vertex);
+		RenderData getRenderData() const;
 
 	private:
 		std::vector<Vertex> mVertices;

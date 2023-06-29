@@ -1,5 +1,7 @@
 module;
 #include "GeometryCore/Numeric.h"
+#include "GeometryCore/Ray.h"
+#include "GeometryCore/Plane.h"
 module Camera;
 
 import <iostream>;
@@ -10,20 +12,21 @@ using namespace Geometry;
 
 namespace RenderSystem
 {
-	Camera::Camera() noexcept :
+	Camera::Camera() :
 		mTarget(CAMERA_TARGET),
 		mPosition(CAMERA_POSITION),
 		mUp(CAMERA_UP),
-		mRight(CAMERA_RIGHT),
-		mViewMatrix(1.0f)
-	{}
+		mRight(CAMERA_RIGHT)
+	{
+		mViewMatrix = createViewMatrix();
+	}
 
-	const Matrix4D& Camera::getViewMatrix() const noexcept
+	const Matrix4D& Camera::getViewMatrix() const
 	{
 		return mViewMatrix;
 	}
 
-	Matrix4D Camera::createViewMatrix() const noexcept
+	Matrix4D Camera::createViewMatrix() const
 	{
 		return Matrix4D::lookAt(mPosition, mTarget, mUp);
 	}
@@ -33,7 +36,7 @@ namespace RenderSystem
 		setPositionTargetUp(mPosition, newTarget, mUp);
 	}
 
-	const Vector3D& Camera::getTarget() const noexcept
+	const Vector3D& Camera::getTarget() const
 	{
 		return mTarget;
 	}
@@ -43,7 +46,7 @@ namespace RenderSystem
 		setPositionTargetUp(newPosition, mTarget, mUp);
 	}
 
-	const Vector3D& Camera::getPosition() const noexcept
+	const Vector3D& Camera::getPosition() const
 	{
 		return mPosition;
 	}
@@ -53,7 +56,7 @@ namespace RenderSystem
 		setPositionTargetUp(mPosition, mTarget, newUp);
 	}
 
-	const Vector3D& Camera::getUp() const noexcept
+	const Vector3D& Camera::getUp() const
 	{
 		return mUp;
 	}
@@ -74,9 +77,23 @@ namespace RenderSystem
 		mTarget = newTarget;
 		mUp = newUp;
 		mRight = calcRight();
+		mViewMatrix = createViewMatrix();
 	}
 
-	void Camera::translate(const Vector3D& movement) noexcept
+	void Camera::pan(const Geometry::Vector3D& firstPoint, const Geometry::Vector3D& secondPoint)
+	{
+		Ray firstRay(firstPoint, firstPoint - mPosition);
+		Ray secondRay(secondPoint, secondPoint - mPosition);
+		Plane targetPlane(mTarget, mPosition - mTarget);
+		auto firstIntersectionPoint = firstRay.findIntersection(targetPlane);
+		auto secondIntersectionPoint = secondRay.findIntersection(targetPlane);
+		auto movement = firstIntersectionPoint - secondIntersectionPoint;
+
+		translate(movement);
+		mViewMatrix = createViewMatrix();
+	}
+
+	void Camera::translate(const Geometry::Vector3D& movement)
 	{
 		mPosition += movement;
 		mTarget += movement;
@@ -84,21 +101,20 @@ namespace RenderSystem
 
 	Geometry::Vector3D Camera::calcRight()
 	{
-		auto direction = Vector3D::normalize(mTarget - mPosition);
-		if (!isEqual(Vector3D::dot(direction, mUp), 0.0f))
+		auto direction = (mTarget - mPosition).getNormalized();
+		if (!isEqual(direction * mUp, 0.0f))
 		{
 			throw std::exception("Camera Up and Direction vectors must be perpendicular to each other");
 		}
 
-		return Vector3D::normalize(Vector3D::cross(mUp, direction));
+		return mUp.cross(direction).getNormalized();
 	}
 
-	void Camera::adjust(const MeshCore::AABBox& bbox, float fov) noexcept
+	void Camera::adjust(const MeshCore::AABBox& bbox, float fov)
 	{
+		auto distanceToCamera = bbox.getHeight() / (2.0f * Geometry::tan(Geometry::toRadians(fov / 2.0f)));
 		auto bboxCenter = bbox.getCenter();
-		auto bboxHalfHeight = bbox.getHeight() * 0.5f;
-		auto distanceToCamera = bboxHalfHeight / Geometry::tan(Geometry::toRadians(fov * 0.5f));
-
-		setPositionTargetUp({ bboxCenter.x(), bboxCenter.y(), distanceToCamera }, bboxCenter.getVec3(), mUp);
+		Geometry::Vector3D position(bboxCenter.x(), bboxCenter.y(), bbox.getMax().z() + distanceToCamera * CAMERA_DISTANCE_MULT);
+		setPositionTargetUp(position, bboxCenter, mUp);
 	}
 }

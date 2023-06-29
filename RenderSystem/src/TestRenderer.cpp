@@ -8,7 +8,7 @@ module TestRenderer;
 
 namespace RenderSystem
 {
-	void drawLine(const Geometry::Vector3D& startPoint, const Geometry::Vector3D& endPoint) noexcept
+	void drawLine(const Geometry::Vector3D& startPoint, const Geometry::Vector3D& endPoint)
 	{
 		glBegin(GL_LINES);
 			glVertex3d(startPoint.x(), startPoint.y(), startPoint.z());

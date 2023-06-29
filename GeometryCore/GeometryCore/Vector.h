@@ -8,38 +8,40 @@ namespace Geometry
 	class Vector2D
 	{
 	public:
-		Vector2D() noexcept;
-		Vector2D(float x, float y) noexcept;
+		Vector2D();
+		Vector2D(float x, float y);
 
-		Vector2D(const Vector2D& other) noexcept;
+		Vector2D(const Vector2D& other);
 		Vector2D(Vector2D&& other) noexcept;
-		Vector2D& operator=(const Vector2D& other) noexcept;
+		Vector2D& operator=(const Vector2D& other);
 		Vector2D& operator=(Vector2D&& other) noexcept;
-		~Vector2D() noexcept;
+		~Vector2D();
 
-		bool operator==(const Vector2D& other) const noexcept;
-		float& operator[](int index) noexcept;
-		float operator[](int index) const noexcept;
-		Vector2D operator+(const Vector2D& other) const noexcept;
-		Vector2D operator-(const Vector2D& other) const noexcept;
-		Vector2D operator/(float n) const noexcept;
-		void operator+=(const Vector2D& other) noexcept;
+		bool operator==(const Vector2D& other) const;
+		float& operator[](int index);
+		float operator[](int index) const;
+		float operator*(const Vector2D& other) const;
+		Vector2D operator+(const Vector2D& other) const;
+		Vector2D operator-(const Vector2D& other) const;
+		Vector2D operator/(float n) const;
+		void operator+=(const Vector2D& other);
+		Vector2D operator*(float n) const;
+		friend Vector2D operator*(float n, const Vector2D& other);
+		const float* valuePtr() const;
+		Vector2D getNormalized() const;
+		Vector2D cross(const Vector2D& other) const;
 
-		float x() const noexcept;
-		void setX(float x) noexcept;
-		float y() const noexcept;
-		void setY(float y) noexcept;
+		float x() const;
+		void setX(float x);
+		float y() const;
+		void setY(float y);
 
-		float r() const noexcept;
-		void setR(float r) noexcept;
-		float g() const noexcept;
-		void setG(float g) noexcept;
+		float r() const;
+		void setR(float r);
+		float g() const;
+		void setG(float g);
 
-		Vec4Impl* __internal_getPimpl() const noexcept;
-
-		static Vector2D normalize(const Vector2D& vec) noexcept;
-		static float dot(const Vector2D& firstVec, const Vector2D& secondVec) noexcept;
-		static Vector2D cross(const Vector2D& firstVec, const Vector2D& secondVec) noexcept;
+		Vec4Impl* __internal_getPimpl() const;
 	protected:
 		Vector2D(Vec4Impl&& other) noexcept;
 
@@ -52,29 +54,30 @@ namespace Geometry
 	class Vector3D : public Vector2D
 	{
 	public:
-		Vector3D() noexcept = default;
-		Vector3D(float x, float y, float z) noexcept;
+		Vector3D() = default;
+		Vector3D(float x, float y, float z);
 		Vector3D(Vector2D&& other) noexcept;
 
-		Vector3D(const Vector3D& other) noexcept;
+		Vector3D(const Vector3D& other);
 		Vector3D(Vector3D&& other) noexcept;
-		Vector3D& operator=(const Vector3D& other) noexcept;
+		Vector3D& operator=(const Vector3D& other);
 		Vector3D& operator=(Vector3D&& other) noexcept;
 
-		Vector3D operator+(const Vector3D& other) const noexcept;
-		Vector3D operator-(const Vector3D& other) const noexcept;
-		Vector3D operator/(float n) const noexcept;
+		float operator*(const Vector3D& other) const;
+		Vector3D operator+(const Vector3D& other) const;
+		Vector3D operator-(const Vector3D& other) const;
+		Vector3D operator/(float n) const;
+		Vector3D operator*(float n) const;
+		friend Vector3D operator*(float n, const Vector3D& other);
+		Vector3D getNormalized() const;
+		Vector3D cross(const Vector3D& other) const;
+		Vector3D project(const Matrix4D& model, const Matrix4D& proj, const Vector4D& viewport) const;
+		Vector3D unProject(const Matrix4D& model, const Matrix4D& proj, const Vector4D& viewport) const;
 
-		float z() const noexcept;
-		void setZ(float z) noexcept;
-		float b() const noexcept;
-		void setB(float b) noexcept;
-
-		static Vector3D normalize(const Vector3D& vec) noexcept;
-		static float dot(const Vector3D& firstVec, const Vector3D& secondVec) noexcept;
-		static Vector3D cross(const Vector3D& firstVec, const Vector3D& secondVec) noexcept;
-		static Vector3D project(const Vector3D& obj, const Matrix4D& model, const Matrix4D& proj, const Vector4D& viewport) noexcept;
-		static Vector3D unProject(const Vector3D& win, const Matrix4D& model, const Matrix4D& proj, const Vector4D& viewport) noexcept;
+		float z() const;
+		void setZ(float z);
+		float b() const;
+		void setB(float b);
 
 	protected:
 		Vector3D(Vec4Impl&& other) noexcept;
@@ -83,30 +86,31 @@ namespace Geometry
 	class Vector4D : public Vector3D
 	{
 	public:
-		Vector4D() noexcept = default;
-		Vector4D(float x, float y, float z, float w) noexcept;
+		Vector4D() = default;
+		Vector4D(float x, float y, float z, float w);
+		Vector4D(const Vector3D& vec3, float w);
 		Vector4D(Vector3D&& other) noexcept;
 
-		Vector4D(const Vector4D& other) noexcept;
+		Vector4D(const Vector4D& other);
 		Vector4D(Vector4D&& other) noexcept;
-		Vector4D& operator=(const Vector4D& other) noexcept;
+		Vector4D& operator=(const Vector4D& other);
 		Vector4D& operator=(Vector4D&& other) noexcept;
 
-		Vector4D operator+(const Vector4D& other) const noexcept;
-		Vector4D operator-(const Vector4D& other) const noexcept;
-		Vector4D operator/(float n) const noexcept;
-		Vector4D operator*(const Matrix4D& matrix) const noexcept;
+		float operator*(const Vector4D& other) const;
+		Vector4D operator+(const Vector4D& other) const;
+		Vector4D operator-(const Vector4D& other) const;
+		Vector4D operator/(float n) const;
+		Vector4D operator*(const Matrix4D& matrix) const;
+		Vector4D operator*(float n) const;
+		friend Vector4D operator*(float n, const Vector4D& other);
+		Vector4D getNormalized() const;
+		Vector4D cross(const Vector4D& other) const;
+		Vector3D getVec3() const;
 
-		Vector3D getVec3() const noexcept;
-
-		float w() const noexcept;
-		void setW(float w) noexcept;
-		float a() const noexcept;
-		void setA(float b) noexcept;
-
-		static Vector4D normalize(const Vector4D& vec) noexcept;
-		static float dot(const Vector4D& firstVec, const Vector4D& secondVec) noexcept;
-		static Vector4D cross(const Vector4D& firstVec, const Vector4D& secondVec) noexcept;
+		float w() const;
+		void setW(float w);
+		float a() const;
+		void setA(float b);
 
 	protected:
 		Vector4D(Vec4Impl&& other) noexcept;
