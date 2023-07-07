@@ -130,25 +130,31 @@ namespace RenderSystem
 
 	void Window::pan()
 	{
-		auto modelViewMatrix = mScene->getViewMatrix() * mScene->getModelMatrix();
-		auto projectionMatrix = mViewport->getProjectionMatrix();
-		auto viewportPos = mViewport->getPos();
-		auto viewportHeight = static_cast<float>(mViewport->getHeight());
-		Geometry::Vector4D viewport = { viewportPos.x(), viewportPos.y(), static_cast<float>(mViewport->getWidth()), viewportHeight };
-		
-		Geometry::Vector3D firstMousePos3D(mSavedMousePos.x(), viewportHeight - mSavedMousePos.y(), 0.0);
-		Geometry::Vector3D secondMousePos3D(mMousePos.x(), viewportHeight - mMousePos.y(), 0.0);
-		auto firstMousePosUnprojected = firstMousePos3D.unProject(modelViewMatrix, projectionMatrix, viewport);
-		auto secondMousePosUnprojected = secondMousePos3D.unProject(modelViewMatrix, projectionMatrix, viewport);
-
-		mScene->pan(firstMousePosUnprojected, secondMousePosUnprojected);
+		mScene->pan(unProject(mSavedMousePos), unProject(mMousePos));
 		mSavedMousePos = mMousePos;
+	}
+
+	void Window::zoom(int yOffset)
+	{
+		mScene->zoomToPoint(unProject(getMousePos()), yOffset);
 	}
 
 	void Window::resizeViewport(int width, int height)
 	{
 		mViewport->resize(width, height);
 		mScene->setProjectionMatrix(mViewport->getProjectionMatrix());
+	}
+
+	Geometry::Vector3D Window::unProject(const Geometry::Vector2D& mousePos) const
+	{
+		auto modelViewMatrix = mScene->getViewMatrix() * mScene->getModelMatrix();
+		auto projectionMatrix = mViewport->getProjectionMatrix();
+		auto viewportPos = mViewport->getPos();
+		auto viewportHeight = static_cast<float>(mViewport->getHeight());
+		Geometry::Vector4D viewport = { viewportPos.x(), viewportPos.y(), static_cast<float>(mViewport->getWidth()), viewportHeight };
+		Geometry::Vector3D mousePos3D(mousePos.x(), viewportHeight - mousePos.y(), 0.0);
+
+		return mousePos3D.unProject(modelViewMatrix, projectionMatrix, viewport);
 	}
 
 	void Window::onMouseButton(GLFWwindow* window, int button, int action, int mods)
@@ -166,6 +172,8 @@ namespace RenderSystem
 	{
 		if (!sInstance || !window)
 			return;
+
+		sInstance->zoom(static_cast<int>(yOffset));
 	}
 
 	void Window::onKey(GLFWwindow* window, int keyCode, int scanCode, int action, int mods)
@@ -177,6 +185,9 @@ namespace RenderSystem
 	void Window::onFramebufferSizeChanged(GLFWwindow* window, int width, int height)
 	{
 		if (!sInstance || !window)
+			return;
+
+		if (width == 0 || height == 0)
 			return;
 
 		sInstance->resizeViewport(width, height);

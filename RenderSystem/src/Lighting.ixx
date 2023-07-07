@@ -11,9 +11,11 @@ export namespace RenderSystem
 
 		void setLightPos(const float* lightPos);
 		void setObjectColor(const float* color);
-		void setAmbientColor(const float* color);
-		void setDiffuseColor(const float* color);
+		void setLightColor(const float* color);
+		void setCameraPos(const float* pos);
 		void setAmbientStrength(float strength);
+		void setSpecularStrength(float strength);
+		void setShininess(int shininess);
 
 	private:
 		void initUniformLocations();
@@ -24,9 +26,11 @@ export namespace RenderSystem
 
 		int mLightPos;
 		int mObjectColor;
-		int mAmbientColor;
+		int mLightColor;
 		int mAmbientStrength;
-		int mDiffuseColor;
+		int mSpecularStrength;
+		int mShininess;
+		int mCameraPos;
 	};
 }
 

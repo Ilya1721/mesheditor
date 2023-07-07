@@ -1,6 +1,7 @@
 #include "Matrix.h"
 
 #include "MatImpl.h"
+#include "VecImpl.h"
 #include "Vector.h"
 
 namespace Geometry
@@ -63,6 +64,11 @@ namespace Geometry
 		return (*mpImpl) * (*other.mpImpl);
 	}
 
+	Vector4D Matrix4D::operator*(const Vector4D& other) const
+	{
+		return (*mpImpl) * (*other.__internal_getPimpl());
+	}
+
 	const float* Matrix4D::valuePtr() const
 	{
 		return mpImpl->valuePtr();
@@ -86,5 +92,15 @@ namespace Geometry
 	Matrix4D Matrix4D::perspective(float fov, float aspect, float zNear, float zFar)
 	{
 		return Mat4Impl::perspective(fov, aspect, zNear, zFar);
+	}
+
+	Matrix4D Matrix4D::getScaleMatrix(const Vector3D& scale)
+	{
+		return Mat4Impl::getScaleMatrix(scale);
+	}
+
+	Matrix4D Matrix4D::getRotationMatrix(float angle, const Vector3D& rotationAxis)
+	{
+		return Mat4Impl::getRotationMatrix(angle, rotationAxis);
 	}
 }

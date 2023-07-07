@@ -32,6 +32,7 @@ export namespace RenderSystem
 		void render();
 		void adjust(float fov);
 		void pan(const Geometry::Vector3D& firstPoint, const Geometry::Vector3D& secondPoint);
+		void zoomToPoint(const Geometry::Vector3D& unProjectedMousePos, int scrollSign);
 
 	private:
 		void init();

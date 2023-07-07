@@ -45,8 +45,8 @@ namespace MeshCore
 
 	void AABBox::applyTransform(const Matrix4D& transform)
 	{
-		mMin = Geometry::Vector4D(mMin, 1.0f) * transform;
-		mMax = Geometry::Vector4D(mMax, 1.0f) * transform;
+		mMin = transform * Geometry::Vector4D(mMin, 1.0f);
+		mMax = transform * Geometry::Vector4D(mMax, 1.0f);
 	}
 
 	Vector3D AABBox::getCenter() const

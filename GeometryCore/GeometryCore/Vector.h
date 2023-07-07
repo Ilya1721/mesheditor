@@ -30,6 +30,8 @@ namespace Geometry
 		const float* valuePtr() const;
 		Vector2D getNormalized() const;
 		Vector2D cross(const Vector2D& other) const;
+		Vector2D operator-() const;
+		float length() const;
 
 		float x() const;
 		void setX(float x);
@@ -42,6 +44,7 @@ namespace Geometry
 		void setG(float g);
 
 		Vec4Impl* __internal_getPimpl() const;
+
 	protected:
 		Vector2D(Vec4Impl&& other) noexcept;
 
@@ -73,6 +76,8 @@ namespace Geometry
 		Vector3D cross(const Vector3D& other) const;
 		Vector3D project(const Matrix4D& model, const Matrix4D& proj, const Vector4D& viewport) const;
 		Vector3D unProject(const Matrix4D& model, const Matrix4D& proj, const Vector4D& viewport) const;
+		Vector3D operator-() const;
+		float length() const;
 
 		float z() const;
 		void setZ(float z);
@@ -90,6 +95,7 @@ namespace Geometry
 		Vector4D(float x, float y, float z, float w);
 		Vector4D(const Vector3D& vec3, float w);
 		Vector4D(Vector3D&& other) noexcept;
+		Vector4D(Vec4Impl&& other) noexcept;
 
 		Vector4D(const Vector4D& other);
 		Vector4D(Vector4D&& other) noexcept;
@@ -100,19 +106,17 @@ namespace Geometry
 		Vector4D operator+(const Vector4D& other) const;
 		Vector4D operator-(const Vector4D& other) const;
 		Vector4D operator/(float n) const;
-		Vector4D operator*(const Matrix4D& matrix) const;
 		Vector4D operator*(float n) const;
 		friend Vector4D operator*(float n, const Vector4D& other);
 		Vector4D getNormalized() const;
 		Vector4D cross(const Vector4D& other) const;
+		Vector4D operator-() const;
 		Vector3D getVec3() const;
+		float length() const;
 
 		float w() const;
 		void setW(float w);
 		float a() const;
 		void setA(float b);
-
-	protected:
-		Vector4D(Vec4Impl&& other) noexcept;
 	};
 }

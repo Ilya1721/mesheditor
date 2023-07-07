@@ -117,6 +117,16 @@ namespace Geometry
 		return mpImpl->cross(*other.mpImpl);
 	}
 
+	Vector2D Vector2D::operator-() const
+	{
+		return -(*mpImpl);
+	}
+
+	float Vector2D::length() const
+	{
+		return mpImpl->length();
+	}
+
 	float Vector2D::x() const
 	{
 		return (*mpImpl)[0];
@@ -246,6 +256,16 @@ namespace Geometry
 		return mpImpl->unProject(model, proj, *viewport.mpImpl);
 	}
 
+	Vector3D Vector3D::operator-() const
+	{
+		return Vector2D::operator-();
+	}
+
+	float Vector3D::length() const
+	{
+		return Vector2D::length();
+	}
+
 	float Vector3D::z() const
 	{
 		return (*mpImpl)[2];
@@ -326,11 +346,6 @@ namespace Geometry
 		return Vector3D::operator/(n);
 	}
 
-	Vector4D Vector4D::operator*(const Matrix4D& matrix) const
-	{
-		return (*mpImpl) * matrix;
-	}
-
 	Vector4D Vector4D::operator*(float n) const
 	{
 		return Vector3D::operator*(n);
@@ -351,9 +366,19 @@ namespace Geometry
 		return Vector3D::cross(other);
 	}
 
+	Vector4D Vector4D::operator-() const
+	{
+		return Vector3D::operator-();
+	}
+
 	Vector3D Vector4D::getVec3() const
 	{
 		return Vector3D(x(), y(), z());
+	}
+
+	float Vector4D::length() const
+	{
+		return Vector3D::length();
 	}
 
 	float Vector4D::w() const

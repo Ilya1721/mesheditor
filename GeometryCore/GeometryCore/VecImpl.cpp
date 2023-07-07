@@ -44,19 +44,19 @@ namespace Geometry
 	}
 
 	Vec4Impl::Vec4Impl(Vec3Type&& vec) noexcept
-		: mImplVec(vec, 1.0f)
+		: mImplVec(vec, 0.0f)
 	{}
 
 	Vec4Impl::Vec4Impl(Vec4Type&& vec) noexcept
 		: mImplVec(vec)
 	{}
 
-	const Vec4Type& Vec4Impl::getImplVec() const
+	Vec4Type Vec4Impl::getImplVec() const
 	{
 		return mImplVec;
 	}
 
-	const Vec3Type Vec4Impl::getVec3() const
+	Vec3Type Vec4Impl::getVec3() const
 	{
 		return Vec3Type(mImplVec);
 	}
@@ -74,11 +74,6 @@ namespace Geometry
 	float Vec4Impl::operator[](int index) const
 	{
 		return mImplVec[index];
-	}
-
-	Vec4Impl Vec4Impl::operator*(const Matrix4D& matrix) const
-	{
-		return (mImplVec * matrix.__internal_getPimpl()->getImplMat());
 	}
 
 	float Vec4Impl::operator*(const Vec4Impl& other) const
@@ -147,5 +142,15 @@ namespace Geometry
 			model.__internal_getPimpl()->getImplMat(),
 			proj.__internal_getPimpl()->getImplMat(),
 			viewport.getImplVec());
+	}
+
+	Vec4Impl Vec4Impl::operator-() const
+	{
+		return -mImplVec;
+	}
+
+	float Vec4Impl::length() const
+	{
+		return glm::length(mImplVec);
 	}
 }

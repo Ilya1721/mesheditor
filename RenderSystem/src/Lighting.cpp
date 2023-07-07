@@ -13,9 +13,11 @@ namespace RenderSystem
 		mLightPos(0),
 		mShaderProgram(0),
 		mObjectColor(0),
-		mAmbientColor(0),
+		mLightColor(0),
 		mAmbientStrength(0),
-		mDiffuseColor(0)
+		mSpecularStrength(0),
+		mShininess(0),
+		mCameraPos(0)
 	{}
 
 	void Lighting::init(int shaderProgram)
@@ -29,9 +31,11 @@ namespace RenderSystem
 	{
 		mLightPos = glGetUniformLocation(mShaderProgram, "lightPos");
 		mObjectColor = glGetUniformLocation(mShaderProgram, "objectColor");
-		mAmbientColor = glGetUniformLocation(mShaderProgram, "ambientColor");
+		mLightColor = glGetUniformLocation(mShaderProgram, "lightColor");
 		mAmbientStrength = glGetUniformLocation(mShaderProgram, "ambientStrength");
-		mDiffuseColor = glGetUniformLocation(mShaderProgram, "diffuseColor");
+		mSpecularStrength = glGetUniformLocation(mShaderProgram, "specularStrength");
+		mShininess = glGetUniformLocation(mShaderProgram, "shininess");
+		mCameraPos = glGetUniformLocation(mShaderProgram, "cameraPos");
 	}
 
 	void Lighting::setUpSettings()
@@ -51,18 +55,28 @@ namespace RenderSystem
 		glUniform3fv(mObjectColor, 1, color);
 	}
 
-	void Lighting::setAmbientColor(const float* color)
+	void Lighting::setLightColor(const float* color)
 	{
-		glUniform3fv(mAmbientColor, 1, color);
+		glUniform3fv(mLightColor, 1, color);
 	}
 
-	void Lighting::setDiffuseColor(const float* color)
+	void Lighting::setCameraPos(const float* pos)
 	{
-		glUniform3fv(mDiffuseColor, 1, color);
+		glUniform3fv(mCameraPos, 1, pos);
 	}
 
 	void Lighting::setAmbientStrength(float strength)
 	{
 		glUniform1f(mAmbientStrength, strength);
+	}
+
+	void Lighting::setSpecularStrength(float strength)
+	{
+		glUniform1f(mSpecularStrength, strength);
+	}
+
+	void Lighting::setShininess(int shininess)
+	{
+		glUniform1i(mShininess, shininess);
 	}
 }

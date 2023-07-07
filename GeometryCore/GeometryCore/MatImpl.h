@@ -5,6 +5,7 @@
 namespace Geometry
 {
 	class Vector3D;
+	class Vec4Impl;
 
 	using MatType = glm::mat<4, 4, float, glm::qualifier::defaultp>;
 
@@ -25,10 +26,13 @@ namespace Geometry
 		const MatType& getImplMat() const;
 		bool operator==(const Mat4Impl& other) const;
 		Mat4Impl operator*(const Mat4Impl& other) const;
+		Vec4Impl operator*(const Vec4Impl& vec4) const;
 
 		static Mat4Impl lookAt(const Vector3D& mPosition, const Vector3D& mTarget, const Vector3D& mUp);
 		static Mat4Impl ortho(float left, float right, float bottom, float top, float zNear, float zFar);
 		static Mat4Impl perspective(float fov, float aspect, float zNear, float zFar);
+		static Mat4Impl getScaleMatrix(const Vector3D& scale);
+		static Mat4Impl getRotationMatrix(float angle, const Vector3D& rotationAxis);
 
 	private:
 		MatType mImplMat;

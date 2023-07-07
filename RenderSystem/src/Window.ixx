@@ -48,7 +48,9 @@ export namespace RenderSystem
 	private:
 		void chooseAction();
 		void pan();
+		void zoom(int yOffset);
 		void resizeViewport(int width, int height);
+		Geometry::Vector3D unProject(const Geometry::Vector2D& mousePos) const;
 
 	private:
 		std::string mTitle;

@@ -22,13 +22,12 @@ namespace Geometry
 		Vec4Impl(Vec3Type&& vec) noexcept;
 		Vec4Impl(Vec4Type&& vec) noexcept;
 
-		const Vec4Type& getImplVec() const;
-		const Vec3Type getVec3() const;
+		Vec4Type getImplVec() const;
+		Vec3Type getVec3() const;
 
 		bool operator==(const Vec4Impl& other) const;
 		float& operator[](int index);
 		float operator[](int index) const;
-		Vec4Impl operator*(const Matrix4D& matrix) const;
 		float operator*(const Vec4Impl& other) const;
 		Vec4Impl operator+(const Vec4Impl& other) const;
 		Vec4Impl operator-(const Vec4Impl& other) const;
@@ -41,6 +40,8 @@ namespace Geometry
 		Vec4Impl cross(const Vec4Impl& other) const;
 		Vec4Impl project(const Matrix4D& model, const Matrix4D& proj, const Vec4Impl& viewport) const;
 		Vec4Impl unProject(const Matrix4D& model, const Matrix4D& proj, const Vec4Impl& viewport) const;
+		Vec4Impl operator-() const;
+		float length() const;
 
 	private:
 		Vec4Type mImplVec;
