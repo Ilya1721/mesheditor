@@ -38,8 +38,8 @@ namespace Geometry
 		const float* valuePtr() const;
 		Vec4Impl getNormalized() const;
 		Vec4Impl cross(const Vec4Impl& other) const;
-		Vec4Impl project(const Matrix4D& model, const Matrix4D& proj, const Vec4Impl& viewport) const;
-		Vec4Impl unProject(const Matrix4D& model, const Matrix4D& proj, const Vec4Impl& viewport) const;
+		Vec4Impl project(const Matrix4D& modelView, const Matrix4D& proj, const Vec4Impl& viewport) const;
+		Vec4Impl unProject(const Matrix4D& modelView, const Matrix4D& proj, const Vec4Impl& viewport) const;
 		Vec4Impl operator-() const;
 		float length() const;
 

@@ -18,6 +18,7 @@ namespace Geometry
 		~Vector2D();
 
 		bool operator==(const Vector2D& other) const;
+		bool operator!=(const Vector2D& other) const;
 		float& operator[](int index);
 		float operator[](int index) const;
 		float operator*(const Vector2D& other) const;
@@ -26,11 +27,11 @@ namespace Geometry
 		Vector2D operator/(float n) const;
 		void operator+=(const Vector2D& other);
 		Vector2D operator*(float n) const;
+		Vector2D operator-() const;
 		friend Vector2D operator*(float n, const Vector2D& other);
+
 		const float* valuePtr() const;
 		Vector2D getNormalized() const;
-		Vector2D cross(const Vector2D& other) const;
-		Vector2D operator-() const;
 		float length() const;
 
 		float x() const;
@@ -60,6 +61,7 @@ namespace Geometry
 		Vector3D() = default;
 		Vector3D(float x, float y, float z);
 		Vector3D(Vector2D&& other) noexcept;
+		Vector3D(const Vector2D vec2, float z) noexcept;
 
 		Vector3D(const Vector3D& other);
 		Vector3D(Vector3D&& other) noexcept;
@@ -71,13 +73,13 @@ namespace Geometry
 		Vector3D operator-(const Vector3D& other) const;
 		Vector3D operator/(float n) const;
 		Vector3D operator*(float n) const;
+		Vector3D operator-() const;
 		friend Vector3D operator*(float n, const Vector3D& other);
+
 		Vector3D getNormalized() const;
 		Vector3D cross(const Vector3D& other) const;
-		Vector3D project(const Matrix4D& model, const Matrix4D& proj, const Vector4D& viewport) const;
-		Vector3D unProject(const Matrix4D& model, const Matrix4D& proj, const Vector4D& viewport) const;
-		Vector3D operator-() const;
-		float length() const;
+		Vector3D project(const Matrix4D& modelView, const Matrix4D& proj, const Vector4D& viewport) const;
+		Vector3D unProject(const Matrix4D& modelView, const Matrix4D& proj, const Vector4D& viewport) const;
 
 		float z() const;
 		void setZ(float z);
@@ -93,7 +95,8 @@ namespace Geometry
 	public:
 		Vector4D() = default;
 		Vector4D(float x, float y, float z, float w);
-		Vector4D(const Vector3D& vec3, float w);
+		Vector4D(const Vector2D& vec2, float z = 0.0f, float w = 0.0f);
+		Vector4D(const Vector3D& vec3, float w = 0.0f);
 		Vector4D(Vector3D&& other) noexcept;
 		Vector4D(Vec4Impl&& other) noexcept;
 
@@ -107,12 +110,11 @@ namespace Geometry
 		Vector4D operator-(const Vector4D& other) const;
 		Vector4D operator/(float n) const;
 		Vector4D operator*(float n) const;
-		friend Vector4D operator*(float n, const Vector4D& other);
-		Vector4D getNormalized() const;
-		Vector4D cross(const Vector4D& other) const;
 		Vector4D operator-() const;
+		friend Vector4D operator*(float n, const Vector4D& other);
+
+		Vector4D getNormalized() const;
 		Vector3D getVec3() const;
-		float length() const;
 
 		float w() const;
 		void setW(float w);

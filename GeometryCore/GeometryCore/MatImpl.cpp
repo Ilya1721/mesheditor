@@ -11,8 +11,19 @@
 
 namespace Geometry
 {
+	Mat4Impl::Mat4Impl()
+		: mImplMat(1.0f)
+	{}
+
 	Mat4Impl::Mat4Impl(float arg)
 		: mImplMat(arg)
+	{}
+
+	Mat4Impl::Mat4Impl(const float* arrayPtr)
+		: mImplMat(arrayPtr[0], arrayPtr[1], arrayPtr[2], arrayPtr[3],
+				   arrayPtr[4], arrayPtr[5], arrayPtr[6], arrayPtr[7],
+				   arrayPtr[8], arrayPtr[9], arrayPtr[10], arrayPtr[11],
+				   arrayPtr[12], arrayPtr[13], arrayPtr[14], arrayPtr[15])
 	{}
 
 	Mat4Impl::Mat4Impl(const Mat4Impl& other)
@@ -60,6 +71,11 @@ namespace Geometry
 	const MatType& Mat4Impl::getImplMat() const
 	{
 		return mImplMat;
+	}
+
+	Mat4Impl Mat4Impl::getInverse() const
+	{
+		return glm::inverse(mImplMat);
 	}
 
 	bool Mat4Impl::operator==(const Mat4Impl& other) const
@@ -110,8 +126,8 @@ namespace Geometry
 		return glm::scale(glm::mat4(1.0f), glm::vec3(scale.__internal_getPimpl()->getImplVec()));
 	}
 
-	Mat4Impl Mat4Impl::getRotationMatrix(float angle, const Vector3D& rotationAxis)
+	Mat4Impl Mat4Impl::getRotationMatrix(float angleRad, const Vector3D& rotationAxis)
 	{
-		return glm::rotate(glm::mat4(1.0f), angle, glm::vec3(rotationAxis.__internal_getPimpl()->getImplVec()));
+		return glm::rotate(glm::mat4(1.0f), angleRad, glm::vec3(rotationAxis.__internal_getPimpl()->getImplVec()));
 	}
 }

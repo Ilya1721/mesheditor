@@ -3,6 +3,7 @@
 /x64
 /Release
 /ThirdParty
+/packages
 */x64
 */pch.cpp
 */glad.c
@@ -19,3 +20,4 @@
 *.pdb
 *.lib
 *.dll
+/Tests/GeometryCoreTest/x64/Debug

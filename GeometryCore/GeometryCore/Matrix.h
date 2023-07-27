@@ -11,6 +11,7 @@ namespace Geometry
 	public:
 		Matrix4D();
 		Matrix4D(float arg);
+		Matrix4D(const float* arrayPtr);
 
 		Matrix4D(const Matrix4D& other);
 		Matrix4D(Matrix4D&& other) noexcept;
@@ -20,8 +21,11 @@ namespace Geometry
 		~Matrix4D();
 
 		bool operator==(const Matrix4D& other) const;
+		bool operator!=(const Matrix4D& other) const;
 		Matrix4D operator*(const Matrix4D& other) const;
 		Vector4D operator*(const Vector4D& other) const;
+
+		Matrix4D getInverse() const;
 		const float* valuePtr() const;
 
 		Mat4Impl* __internal_getPimpl() const;
@@ -30,7 +34,7 @@ namespace Geometry
 		static Matrix4D ortho(float left, float right, float bottom, float top, float zNear, float zFar);
 		static Matrix4D perspective(float fov, float aspect, float zNear, float zFar);
 		static Matrix4D getScaleMatrix(const Vector3D& scale);
-		static Matrix4D getRotationMatrix(float angle, const Vector3D& rotationAxis);
+		static Matrix4D getRotationMatrix(float angleRad, const Vector3D& rotationAxis);
 
 	private:
 		Mat4Impl* mpImpl;

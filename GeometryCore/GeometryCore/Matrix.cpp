@@ -14,6 +14,10 @@ namespace Geometry
 		: mpImpl(new Mat4Impl(arg))
 	{}
 
+	Matrix4D::Matrix4D(const float* arrayPtr)
+		: mpImpl(new Mat4Impl(arrayPtr))
+	{}
+
 	Matrix4D::Matrix4D(const Matrix4D& other)
 		: mpImpl(new Mat4Impl(*other.mpImpl))
 	{}
@@ -59,6 +63,11 @@ namespace Geometry
 		return *mpImpl == *other.mpImpl;
 	}
 
+	bool Matrix4D::operator!=(const Matrix4D& other) const
+	{
+		return !(*this == other);
+	}
+
 	Matrix4D Matrix4D::operator*(const Matrix4D& other) const
 	{
 		return (*mpImpl) * (*other.mpImpl);
@@ -67,6 +76,11 @@ namespace Geometry
 	Vector4D Matrix4D::operator*(const Vector4D& other) const
 	{
 		return (*mpImpl) * (*other.__internal_getPimpl());
+	}
+
+	Matrix4D Matrix4D::getInverse() const
+	{
+		return mpImpl->getInverse();
 	}
 
 	const float* Matrix4D::valuePtr() const
@@ -99,8 +113,8 @@ namespace Geometry
 		return Mat4Impl::getScaleMatrix(scale);
 	}
 
-	Matrix4D Matrix4D::getRotationMatrix(float angle, const Vector3D& rotationAxis)
+	Matrix4D Matrix4D::getRotationMatrix(float angleRad, const Vector3D& rotationAxis)
 	{
-		return Mat4Impl::getRotationMatrix(angle, rotationAxis);
+		return Mat4Impl::getRotationMatrix(angleRad, rotationAxis);
 	}
 }

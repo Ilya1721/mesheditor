@@ -128,18 +128,18 @@ namespace Geometry
 		return glm::cross(firstVec3, secondVec3);
 	}
 
-	Vec4Impl Vec4Impl::project(const Matrix4D& model, const Matrix4D& proj, const Vec4Impl& viewport) const
+	Vec4Impl Vec4Impl::project(const Matrix4D& modelView, const Matrix4D& proj, const Vec4Impl& viewport) const
 	{
 		return glm::project(getVec3(),
-			model.__internal_getPimpl()->getImplMat(),
+			modelView.__internal_getPimpl()->getImplMat(),
 			proj.__internal_getPimpl()->getImplMat(),
 			viewport.getImplVec());
 	}
 
-	Vec4Impl Vec4Impl::unProject(const Matrix4D& model, const Matrix4D& proj, const Vec4Impl& viewport) const
+	Vec4Impl Vec4Impl::unProject(const Matrix4D& modelView, const Matrix4D& proj, const Vec4Impl& viewport) const
 	{
 		return glm::unProject(getVec3(),
-			model.__internal_getPimpl()->getImplMat(),
+			modelView.__internal_getPimpl()->getImplMat(),
 			proj.__internal_getPimpl()->getImplMat(),
 			viewport.getImplVec());
 	}

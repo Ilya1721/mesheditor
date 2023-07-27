@@ -57,6 +57,11 @@ namespace Geometry
 		return *mpImpl == *other.mpImpl;
 	}
 
+	bool Vector2D::operator!=(const Vector2D& other) const
+	{
+		return !(*this == other);
+	}
+
 	float& Vector2D::operator[](int index)
 	{
 		return (*mpImpl)[index];
@@ -110,11 +115,6 @@ namespace Geometry
 	Vector2D Vector2D::getNormalized() const
 	{
 		return mpImpl->getNormalized();
-	}
-
-	Vector2D Vector2D::cross(const Vector2D& other) const
-	{
-		return mpImpl->cross(*other.mpImpl);
 	}
 
 	Vector2D Vector2D::operator-() const
@@ -177,6 +177,13 @@ namespace Geometry
 	{
 		setZ(z);
 	}
+
+	Vector3D::Vector3D(const Vector2D vec2, float z) noexcept
+		: Vector2D(vec2)
+	{
+		setZ(z);
+	}
+
 
 	Vector3D::Vector3D(Vector2D&& other) noexcept
 		: Vector2D(other)
@@ -243,27 +250,22 @@ namespace Geometry
 
 	Vector3D Vector3D::cross(const Vector3D& other) const
 	{
-		return Vector2D::cross(other);
+		return mpImpl->cross(*other.mpImpl);
 	}
 
-	Vector3D Vector3D::project(const Matrix4D& model, const Matrix4D& proj, const Vector4D& viewport) const
+	Vector3D Vector3D::project(const Matrix4D& modelView, const Matrix4D& proj, const Vector4D& viewport) const
 	{
-		return mpImpl->project(model, proj, *viewport.mpImpl);
+		return mpImpl->project(modelView, proj, *viewport.mpImpl);
 	}
 
-	Vector3D Vector3D::unProject(const Matrix4D& model, const Matrix4D& proj, const Vector4D& viewport) const
+	Vector3D Vector3D::unProject(const Matrix4D& modelView, const Matrix4D& proj, const Vector4D& viewport) const
 	{
-		return mpImpl->unProject(model, proj, *viewport.mpImpl);
+		return mpImpl->unProject(modelView, proj, *viewport.mpImpl);
 	}
 
 	Vector3D Vector3D::operator-() const
 	{
 		return Vector2D::operator-();
-	}
-
-	float Vector3D::length() const
-	{
-		return Vector2D::length();
 	}
 
 	float Vector3D::z() const
@@ -288,6 +290,12 @@ namespace Geometry
 
 	Vector4D::Vector4D(float x, float y, float z, float w)
 		: Vector3D(x, y, z)
+	{
+		setW(w);
+	}
+
+	Vector4D::Vector4D(const Vector2D& vec2, float z, float w)
+		: Vector3D(vec2, z)
 	{
 		setW(w);
 	}
@@ -361,11 +369,6 @@ namespace Geometry
 		return Vector3D::getNormalized();
 	}
 
-	Vector4D Vector4D::cross(const Vector4D& other) const
-	{
-		return Vector3D::cross(other);
-	}
-
 	Vector4D Vector4D::operator-() const
 	{
 		return Vector3D::operator-();
@@ -374,11 +377,6 @@ namespace Geometry
 	Vector3D Vector4D::getVec3() const
 	{
 		return Vector3D(x(), y(), z());
-	}
-
-	float Vector4D::length() const
-	{
-		return Vector3D::length();
 	}
 
 	float Vector4D::w() const
