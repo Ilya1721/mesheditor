@@ -11,10 +11,10 @@ namespace Methods
 		Vector2D vec;
 		vec.setX(testX);
 		vec.setY(testY);
-		EXPECT_VEC_EQ(vec, Vector2D{ testX, testY });
+		EXPECT_TRUE(vec == (Vector2D{ testX, testY }));
 		vec.setR(5.0f);
 		vec.setG(6.0f);
-		EXPECT_VEC_EQ(vec, Vector2D{ 5.0f, 6.0f });
+		EXPECT_TRUE(vec == (Vector2D{ 5.0f, 6.0f }));
 	}
 
 	TEST(Vector3D, Setters)
@@ -45,28 +45,28 @@ namespace Methods
 	{
 		Vector2D vec(3.0f, 4.0f);
 		auto normalizedVec = vec.getNormalized();
-		EXPECT_VEC_EQ(normalizedVec, Vector2D{ 0.6f, 0.8f });
+		EXPECT_TRUE(normalizedVec == (Vector2D{ 0.6f, 0.8f }));
 	}
 
 	TEST(Vector3D, GetNormalized)
 	{
 		Vector3D vec(2.0f, 3.0f, 6.0f);
 		auto normalizedVec = vec.getNormalized();
-		EXPECT_VEC_EQ(normalizedVec, Vector3D{ 2.0f / vec.length(), 3.0f / vec.length(), 6.0f / vec.length() });
+		EXPECT_TRUE(normalizedVec == (Vector3D{ 2.0f / vec.length(), 3.0f / vec.length(), 6.0f / vec.length() }));
 	}
 
 	TEST(Vector4D, GetNormalized)
 	{
 		Vector4D vec(2.0f, 3.0f, 6.0f, 8.0f);
 		auto normalizedVec = vec.getNormalized();
-		EXPECT_VEC_EQ(normalizedVec, Vector4D{ 2.0f / vec.length(), 3.0f / vec.length(), 6.0f / vec.length(), 8.0f / vec.length() });
+		EXPECT_TRUE(normalizedVec == (Vector4D{ 2.0f / vec.length(), 3.0f / vec.length(), 6.0f / vec.length(), 8.0f / vec.length() }));
 	}
 
 	TEST(Vector4D, GetVec3)
 	{
 		Vector4D vec(2.0f, 3.0f, 6.0f, 8.0f);
 		auto vec3 = vec.getVec3();
-		EXPECT_VEC_EQ(vec3, Vector3D{ 2.0f, 3.0f, 6.0f });
+		EXPECT_TRUE(vec3 == (Vector3D{ 2.0f, 3.0f, 6.0f }));
 	}
 
 	TEST(Vector3D, CrossProduct)
@@ -74,7 +74,7 @@ namespace Methods
 		Vector3D vec(2.0f, 3.0f, 6.0f);
 		Vector3D otherVec(1.0f, 2.0f, 3.0f);
 		auto result = vec.cross(otherVec);
-		EXPECT_VEC_EQ(result, Vector3D{ -3.0f, 0.0f, 1.0f });
+		EXPECT_TRUE(result == (Vector3D{ -3.0f, 0.0f, 1.0f }));
 	}
 
 	namespace CursorPoint
@@ -92,16 +92,16 @@ namespace Methods
 
 		TEST(Vector3D, Project)
 		{
-			Vector4D point3D(1.0f, 2.0f, 3.0f, 1.0f);
+			Vector4D point4D(1.0f, 2.0f, 3.0f, 1.0f);
 
-			auto pointInView = modelView * point3D;
+			auto pointInView = modelView * point4D;
 			auto pointInClip = projection * pointInView;
 			auto normalizedPoint = Vector3D(pointInClip) / pointInClip.w();
 			auto screenX = (normalizedPoint.x() * 0.5f + 0.5f) * screenWidth;
 			auto screenY = (normalizedPoint.y() * 0.5f + 0.5f) * screenHeight;
 			auto z = normalizedPoint.z() * 0.5f + 0.5f;
 
-			auto result = point3D.project(modelView, projection, viewport);
+			auto result = point4D.getVec3().project(modelView, projection, viewport);
 			EXPECT_FLOAT_EQ(result.x(), screenX);
 			EXPECT_FLOAT_EQ(result.y(), screenY);
 			EXPECT_FLOAT_EQ(z, result.z());
@@ -115,10 +115,10 @@ namespace Methods
 			auto zNDC = 2.0f * cursorPoint.z() - 1.0f;
 			Vector4D point4D(xNDC, yNDC, zNDC, 1.0f);
 			auto invertedPoint = modelView.getInverse() * projection.getInverse() * point4D;
-			auto normalizedPoint = Vector3D(invertedPoint) / invertedPoint.w();
+			auto result = Vector3D(invertedPoint) / invertedPoint.w();
 
-			auto result = cursorPoint.unProject(modelView, projection, viewport);
-			EXPECT_VEC_EQ(result, normalizedPoint);
+			auto expected = cursorPoint.unProject(modelView, projection, viewport);
+			EXPECT_TRUE(result == expected);
 		}
 	}
 }

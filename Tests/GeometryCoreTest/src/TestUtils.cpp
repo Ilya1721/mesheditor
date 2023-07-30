@@ -1,23 +1,7 @@
 #include "TestUtils.h"
 
-void EXPECT_VEC_EQ(const Vector4D& firstVec, const Vector4D& secondVec)
-{
-	EXPECT_NEAR(firstVec.x(), firstVec.x(), EPSILON);
-	EXPECT_NEAR(firstVec.y(), firstVec.y(), EPSILON);
-	EXPECT_NEAR(firstVec.z(), firstVec.z(), EPSILON);
-	EXPECT_NEAR(firstVec.w(), firstVec.w(), EPSILON);
-}
+#include <iostream>
 
-void EXPECT_MAT_EQ(const Matrix4D& firstMat, const Matrix4DArray& secondMatArray)
-{
-	const auto& firstMatPtr = firstMat.valuePtr();
-	for (int matIndex = 0; matIndex < secondMatArray.size(); ++matIndex)
-	{
-		auto first = firstMatPtr[matIndex];
-		auto second = secondMatArray[matIndex];
-		EXPECT_NEAR(firstMatPtr[matIndex], secondMatArray[matIndex], EPSILON);
-	}
-}
 
 Vector2D getVec2()
 {
@@ -37,6 +21,18 @@ Vector4D getVec4()
 Matrix4D getMat4(float scaleFactor)
 {
 	return Matrix4D(scaleFactor);
+}
+
+void logMatrixComparison(const Matrix4D& result, const Matrix4D& expected)
+{
+	std::cout << "Result = \n" << result.getPrettyString() << std::endl;
+	std::cout << "Expected = \n" << expected.getPrettyString() << std::endl;
+}
+
+void logVectorComparison(const Vector2D& result, const Vector2D& expected)
+{
+	std::cout << "Result = \n" << result.getPrettyString() << std::endl;
+	std::cout << "Expected = \n" << expected.getPrettyString() << std::endl;
 }
 
 float cotangent(float angleRad)

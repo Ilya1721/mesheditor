@@ -4,24 +4,21 @@
 
 namespace Geometry
 {
-	Vector2D::Vector2D()
-		: mpImpl(new Vec4Impl())
+	Vector::Vector(float x, float y, float z, float w)
+		: mpImpl(new Vec4Impl(x, y, z, w))
 	{}
 
-	Vector2D::Vector2D(float x, float y)
-		: mpImpl(new Vec4Impl(x, y, 0.0f, 0.0f))
-	{}
-
-	Vector2D::Vector2D(const Vector2D& other)
+	Vector::Vector(const Vector& other)
 		: mpImpl(new Vec4Impl(*other.mpImpl))
 	{}
 
-	Vector2D::Vector2D(Vector2D&& other) noexcept
+	Vector::Vector(Vector&& other) noexcept
+		: mpImpl(nullptr)
 	{
 		*this = std::move(other);
 	}
 
-	Vector2D& Vector2D::operator=(const Vector2D& other)
+	Vector& Vector::operator=(const Vector& other)
 	{
 		if (this != &other)
 		{
@@ -31,7 +28,7 @@ namespace Geometry
 		return *this;
 	}
 
-	Vector2D& Vector2D::operator=(Vector2D&& other) noexcept
+	Vector& Vector::operator=(Vector&& other) noexcept
 	{
 		if (this != &other)
 		{
@@ -43,210 +40,235 @@ namespace Geometry
 		return *this;
 	}
 
-	Vector2D::~Vector2D()
+	Vector::~Vector() noexcept
 	{
 		delete mpImpl;
 	}
 
-	Vector2D::Vector2D(Vec4Impl&& other) noexcept
-		: mpImpl(new Vec4Impl(other))
+	Vector::Vector(Vec4Impl&& other) noexcept
+		: mpImpl(new Vec4Impl(std::move(other)))
 	{}
 
-	bool Vector2D::operator==(const Vector2D& other) const
+	bool Vector::operator==(const Vector& other) const
 	{
 		return *mpImpl == *other.mpImpl;
 	}
 
-	bool Vector2D::operator!=(const Vector2D& other) const
+	bool Vector::operator!=(const Vector& other) const
 	{
 		return !(*this == other);
 	}
 
-	float& Vector2D::operator[](int index)
+	float& Vector::operator[](int index)
 	{
 		return (*mpImpl)[index];
 	}
 
-	float Vector2D::operator[](int index) const
+	float Vector::operator[](int index) const
 	{
 		return (*mpImpl)[index];
 	}
 
-	float Vector2D::operator*(const Vector2D& other) const
+	float Vector::operator*(const Vector& other) const
 	{
 		return (*mpImpl) * (*other.mpImpl);
 	}
 
-	Vector2D Vector2D::operator+(const Vector2D& other) const
+	Vector Vector::operator+(const Vector& other) const
 	{
 		return (*mpImpl) + (*other.mpImpl);
 	}
 
-	void Vector2D::operator+=(const Vector2D& other)
+	void Vector::operator+=(const Vector& other)
 	{
 		(*mpImpl) += (*other.mpImpl);
 	}
 
-	Vector2D Vector2D::operator-(const Vector2D& other) const
+	Vector Vector::operator-(const Vector& other) const
 	{
 		return (*mpImpl) - (*other.mpImpl);
 	}
 
-	Vector2D Vector2D::operator/(float n) const
+	Vector Vector::operator/(float n) const
 	{
 		return (*mpImpl) / n;
 	}
 
-	Vector2D Vector2D::operator*(float n) const
+	Vector Vector::operator*(float n) const
 	{
 		return (*mpImpl) * n;
 	}
 
-	Vector2D operator*(float n, const Vector2D& other)
+	Vector operator*(float n, const Vector& other)
 	{
 		return other * n;
 	}
 
-	const float* Vector2D::valuePtr() const
+	const float* Vector::valuePtr() const
 	{
 		return mpImpl->valuePtr();
 	}
 
-	Vector2D Vector2D::getNormalized() const
+	Vector Vector::getNormalized() const
 	{
 		return mpImpl->getNormalized();
 	}
 
-	Vector2D Vector2D::operator-() const
+	Vector Vector::operator-() const
 	{
 		return -(*mpImpl);
 	}
 
-	float Vector2D::length() const
+	float Vector::length() const
 	{
 		return mpImpl->length();
 	}
 
-	float Vector2D::x() const
+	const char* Vector::getPrettyString() const
+	{
+		return mpImpl->getPrettyString();
+	}
+
+	float Vector::x() const
 	{
 		return (*mpImpl)[0];
 	}
 
-	void Vector2D::setX(float x)
+	void Vector::setX(float x)
 	{
 		(*mpImpl)[0] = x;
 	}
 
-	float Vector2D::y() const
+	float Vector::y() const
 	{
 		return (*mpImpl)[1];
 	}
 
-	void Vector2D::setY(float y)
+	void Vector::setY(float y)
 	{
 		(*mpImpl)[1] = y;
 	}
 
-	float Vector2D::r() const
+	float Vector::r() const
 	{
 		return x();
 	}
 
-	void Vector2D::setR(float r)
+	void Vector::setR(float r)
 	{
 		setX(r);
 	}
 
-	float Vector2D::g() const
+	float Vector::g() const
 	{
 		return y();
 	}
 
-	void Vector2D::setG(float g)
+	void Vector::setG(float g)
 	{
 		setY(g);
 	}
 
-	Vec4Impl* Vector2D::__internal_getPimpl() const
+	float Vector::z() const
+	{
+		return (*mpImpl)[2];
+	}
+
+	void Vector::setZ(float z)
+	{
+		(*mpImpl)[2] = z;
+	}
+
+	float Vector::b() const
+	{
+		return z();
+	}
+
+	void Vector::setB(float b)
+	{
+		setZ(b);
+	}
+
+	float Vector::w() const
+	{
+		return (*mpImpl)[3];
+	}
+
+	void Vector::setW(float w)
+	{
+		(*mpImpl)[3] = w;
+	}
+
+	float Vector::a() const
+	{
+		return w();
+	}
+
+	void Vector::setA(float a)
+	{
+		setW(a);
+	}
+
+	Vec4Impl* Vector::__internal_getPimpl() const
 	{
 		return mpImpl;
 	}
 
+	Vector2D::Vector2D(float x, float y)
+		: Vector(x, y, 0.0f, 0.0f)
+	{}
+
+	Vector2D::Vector2D(const Vector3D& vec3)
+		: Vector(vec3.x(), vec3.y(), 0.0f, 0.0f)
+	{}
+
+	Vector2D::Vector2D(Vector3D&& vec3)
+		: Vector(std::move(vec3))
+	{
+		Vector::setZ(0.0f);
+	}
+
+	Vector2D::Vector2D(Vec4Impl&& other) noexcept
+		: Vector(std::move(other))
+	{}
+
+	Vector2D::Vector2D(const Vector& other) noexcept
+		: Vector(other)
+	{}
+
+	Vector2D::Vector2D(Vector&& other) noexcept
+		: Vector(std::move(other))
+	{}
+
 	Vector3D::Vector3D(float x, float y, float z)
-		: Vector2D(x, y)
+		: Vector(x, y, z, 0.0f)
+	{}
+
+	Vector3D::Vector3D(const Vector2D& vec2, float z) noexcept
+		: Vector(vec2.x(), vec2.y(), z, 0.0f)
+	{}
+
+	Vector3D::Vector3D(const Vector4D& vec4) noexcept
+		: Vector(vec4.x(), vec4.y(), vec4.z(), 0.0f)
+	{}
+
+	Vector3D::Vector3D(Vector4D&& vec4) noexcept
+		: Vector(std::move(vec4))
 	{
-		setZ(z);
+		Vector::setW(0.0f);
 	}
-
-	Vector3D::Vector3D(const Vector2D vec2, float z) noexcept
-		: Vector2D(vec2)
-	{
-		setZ(z);
-	}
-
-
-	Vector3D::Vector3D(Vector2D&& other) noexcept
-		: Vector2D(other)
-	{}
-
-	Vector3D::Vector3D(const Vector3D& other)
-		: Vector2D(other)
-	{}
-
-	Vector3D::Vector3D(Vector3D&& other) noexcept
-		: Vector2D(other)
-	{}
 
 	Vector3D::Vector3D(Vec4Impl&& other) noexcept
-		: Vector2D(std::move(other))
+		: Vector(std::move(other))
 	{}
 
-	Vector3D& Vector3D::operator=(const Vector3D& other)
-	{
-		Vector2D::operator=(other);
-		return *this;
-	}
+	Vector3D::Vector3D(const Vector& other) noexcept
+		: Vector(other)
+	{}
 
-	Vector3D& Vector3D::operator=(Vector3D&& other) noexcept
-	{
-		Vector2D::operator=(other);
-		return *this;
-	}
-
-	float Vector3D::operator*(const Vector3D& other) const
-	{
-		return Vector2D::operator*(other);
-	}
-
-	Vector3D Vector3D::operator+(const Vector3D& other) const
-	{
-		return Vector2D::operator+(other);
-	}
-
-	Vector3D Vector3D::operator-(const Vector3D& other) const
-	{
-		return Vector2D::operator-(other);
-	}
-
-	Vector3D Vector3D::operator/(float n) const
-	{
-		return Vector2D::operator/(n);
-	}
-
-	Vector3D Vector3D::operator*(float n) const
-	{
-		return Vector2D::operator*(n);
-	}
-
-	Vector3D operator*(float n, const Vector3D& other)
-	{
-		return other * n;
-	}
-
-	Vector3D Vector3D::getNormalized() const
-	{
-		return Vector2D::getNormalized();
-	}
+	Vector3D::Vector3D(Vector&& other) noexcept
+		: Vector(std::move(other))
+	{}
 
 	Vector3D Vector3D::cross(const Vector3D& other) const
 	{
@@ -255,147 +277,40 @@ namespace Geometry
 
 	Vector3D Vector3D::project(const Matrix4D& modelView, const Matrix4D& proj, const Vector4D& viewport) const
 	{
-		return mpImpl->project(modelView, proj, *viewport.mpImpl);
+		return mpImpl->project(modelView, proj, *viewport.__internal_getPimpl());
 	}
 
 	Vector3D Vector3D::unProject(const Matrix4D& modelView, const Matrix4D& proj, const Vector4D& viewport) const
 	{
-		return mpImpl->unProject(modelView, proj, *viewport.mpImpl);
-	}
-
-	Vector3D Vector3D::operator-() const
-	{
-		return Vector2D::operator-();
-	}
-
-	float Vector3D::z() const
-	{
-		return (*mpImpl)[2];
-	}
-
-	void Vector3D::setZ(float z)
-	{
-		(*mpImpl)[2] = z;
-	}
-
-	float Vector3D::b() const
-	{
-		return z();
-	}
-
-	void Vector3D::setB(float b)
-	{
-		setZ(b);
+		return mpImpl->unProject(modelView, proj, *viewport.__internal_getPimpl());
 	}
 
 	Vector4D::Vector4D(float x, float y, float z, float w)
-		: Vector3D(x, y, z)
-	{
-		setW(w);
-	}
+		: Vector(x, y, z, w)
+	{}
 
 	Vector4D::Vector4D(const Vector2D& vec2, float z, float w)
-		: Vector3D(vec2, z)
-	{
-		setW(w);
-	}
+		: Vector(vec2.x(), vec2.y(), z, w)
+	{}
 
 	Vector4D::Vector4D(const Vector3D& vec3, float w)
-		: Vector3D(vec3)
-	{
-		setW(w);
-	}
-
-	Vector4D::Vector4D(Vector3D&& other) noexcept
-		: Vector3D(other)
+		: Vector(vec3.x(), vec3.y(), vec3.z(), w)
 	{}
 
 	Vector4D::Vector4D(Vec4Impl&& other) noexcept
-		: Vector3D(std::move(other))
+		: Vector(std::move(other))
 	{}
 
-	Vector4D::Vector4D(const Vector4D& other)
-		: Vector3D(other)
+	Vector4D::Vector4D(const Vector& other) noexcept
+		: Vector(other)
 	{}
 
-	Vector4D::Vector4D(Vector4D&& other) noexcept
-		: Vector3D(other)
+	Vector4D::Vector4D(Vector&& other) noexcept
+		: Vector(std::move(other))
 	{}
-
-	Vector4D& Vector4D::operator=(const Vector4D& other)
-	{
-		Vector3D::operator=(other);
-		return *this;
-	}
-
-	Vector4D& Vector4D::operator=(Vector4D&& other) noexcept
-	{
-		Vector3D::operator=(other);
-		return *this;
-	}
-
-	float Vector4D::operator*(const Vector4D& other) const
-	{
-		return Vector3D::operator*(other);
-	}
-
-	Vector4D Vector4D::operator+(const Vector4D& other) const
-	{
-		return Vector3D::operator+(other);
-	}
-
-	Vector4D Vector4D::operator-(const Vector4D& other) const
-	{
-		return Vector3D::operator-(other);
-	}
-
-	Vector4D Vector4D::operator/(float n) const
-	{
-		return Vector3D::operator/(n);
-	}
-
-	Vector4D Vector4D::operator*(float n) const
-	{
-		return Vector3D::operator*(n);
-	}
-
-	Vector4D operator*(float n, const Vector4D& other)
-	{
-		return other * n;
-	}
-
-	Vector4D Vector4D::getNormalized() const
-	{
-		return Vector3D::getNormalized();
-	}
-
-	Vector4D Vector4D::operator-() const
-	{
-		return Vector3D::operator-();
-	}
 
 	Vector3D Vector4D::getVec3() const
 	{
 		return Vector3D(x(), y(), z());
-	}
-
-	float Vector4D::w() const
-	{
-		return (*mpImpl)[3];
-	}
-
-	void Vector4D::setW(float w)
-	{
-		(*mpImpl)[3] = w;
-	}
-
-	float Vector4D::a() const
-	{
-		return w();
-	}
-
-	void Vector4D::setA(float a)
-	{
-		setW(a);
 	}
 }

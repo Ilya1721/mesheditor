@@ -45,7 +45,7 @@ namespace Operators
 		Vector2D vec(1.0f, 2.0f);
 		Vector2D otherVec(2.0f, 3.0f);
 		auto result = vec + otherVec;
-		EXPECT_VEC_EQ(result, Vector2D{ 3.0f, 5.0f });
+		EXPECT_TRUE(result == (Vector2D{ 3.0f, 5.0f }));
 	}
 
 	TEST(Vector3D, VecPlusVec)
@@ -53,7 +53,7 @@ namespace Operators
 		Vector3D vec(1.0f, 2.0f, 3.0f);
 		Vector3D otherVec(2.0f, 3.0f, 4.0f);
 		auto result = vec + otherVec;
-		EXPECT_VEC_EQ(result, Vector3D{ 3.0f, 5.0f, 7.0f });
+		EXPECT_TRUE(result == (Vector3D{ 3.0f, 5.0f, 7.0f }));
 	}
 
 	TEST(Vector4D, VecPlusVec)
@@ -61,7 +61,7 @@ namespace Operators
 		Vector4D vec(1.0f, 2.0f, 3.0f, 4.0f);
 		Vector4D otherVec(2.0f, 3.0f, 4.0f, 5.0f);
 		auto result = vec + otherVec;
-		EXPECT_VEC_EQ(result, Vector4D{ 3.0f, 5.0f, 7.0f, 9.0f });
+		EXPECT_TRUE(result == (Vector4D{ 3.0f, 5.0f, 7.0f, 9.0f }));
 	}
 
 	TEST(Vector2D, VecMinusVec)
@@ -69,7 +69,7 @@ namespace Operators
 		Vector2D vec(1.0f, 2.0f);
 		Vector2D otherVec(2.0f, 3.0f);
 		auto result = vec - otherVec;
-		EXPECT_VEC_EQ(result, Vector2D{ -1.0f, -1.0f });
+		EXPECT_TRUE(result == (Vector2D{ -1.0f, -1.0f }));
 	}
 
 	TEST(Vector3D, VecMinusVec)
@@ -77,7 +77,7 @@ namespace Operators
 		Vector3D vec(1.0f, 2.0f, 3.0f);
 		Vector3D otherVec(2.0f, 3.0f, 4.0f);
 		auto result = vec - otherVec;
-		EXPECT_VEC_EQ(result, Vector3D{ -1.0f, -1.0f, -1.0f });
+		EXPECT_TRUE(result == (Vector3D{ -1.0f, -1.0f, -1.0f }));
 	}
 
 	TEST(Vector4D, VecMinusVec)
@@ -85,7 +85,7 @@ namespace Operators
 		Vector4D vec(1.0f, 2.0f, 3.0f, 6.0f);
 		Vector4D otherVec(2.0f, 3.0f, 4.0f, 5.0f);
 		auto result = vec - otherVec;
-		EXPECT_VEC_EQ(result, Vector4D{ -1.0f, -1.0f, -1.0f, 1.0f });
+		EXPECT_TRUE(result == (Vector4D{ -1.0f, -1.0f, -1.0f, 1.0f }));
 	}
 
 	TEST(Vector2D, VecDivideScalar)
@@ -93,7 +93,7 @@ namespace Operators
 		Vector2D vec(1.0f, 2.0f);
 		Vector2D otherVec(2.0f, 3.0f);
 		auto result = vec / 2.0f;
-		EXPECT_VEC_EQ(result, Vector2D{ 0.5f, 1.0f });
+		EXPECT_TRUE(result == (Vector2D{ 0.5f, 1.0f }));
 	}
 
 	TEST(Vector3D, VecDivideScalar)
@@ -101,7 +101,7 @@ namespace Operators
 		Vector3D vec(1.0f, 2.0f, 3.0f);
 		Vector3D otherVec(2.0f, 3.0f, 2.0f);
 		auto result = vec / 2.0f;
-		EXPECT_VEC_EQ(result, Vector3D{ 0.5f, 1.0f, 1.5f });
+		EXPECT_TRUE(result == (Vector3D{ 0.5f, 1.0f, 1.5f }));
 	}
 
 	TEST(Vector4D, VecDivideScalar)
@@ -109,7 +109,7 @@ namespace Operators
 		Vector4D vec(1.0f, 2.0f, 3.0f, 4.0f);
 		Vector4D otherVec(2.0f, 3.0f, 2.0f, 2.0f);
 		auto result = vec / 2.0f;
-		EXPECT_VEC_EQ(result, Vector4D{ 0.5f, 1.0f, 1.5f, 2.0f });
+		EXPECT_TRUE(result == (Vector4D{ 0.5f, 1.0f, 1.5f, 2.0f }));
 	}
 
 	TEST(Vector2D, VecPlusEqualVec)
@@ -117,7 +117,7 @@ namespace Operators
 		Vector2D vec(1.0f, 2.0f);
 		Vector2D otherVec(2.0f, 3.0f);
 		vec += otherVec;
-		EXPECT_VEC_EQ(vec, Vector2D{ 3.0f, 5.0f });
+		EXPECT_TRUE(vec == (Vector2D{ 3.0f, 5.0f }));
 	}
 
 	TEST(Vector3D, VecPlusEqualVec)
@@ -125,7 +125,7 @@ namespace Operators
 		Vector3D vec(1.0f, 2.0f, 3.0f);
 		Vector3D otherVec(2.0f, 3.0f, 4.0f);
 		vec += otherVec;
-		EXPECT_VEC_EQ(vec, Vector3D{ 3.0f, 5.0f, 7.0f });
+		EXPECT_TRUE(vec == (Vector3D{ 3.0f, 5.0f, 7.0f }));
 	}
 
 	TEST(Vector4D, VecPlusEqualVec)
@@ -133,69 +133,69 @@ namespace Operators
 		Vector4D vec(1.0f, 2.0f, 3.0f, 4.0f);
 		Vector4D otherVec(2.0f, 3.0f, 4.0f, 5.0f);
 		vec += otherVec;
-		EXPECT_VEC_EQ(vec, Vector4D{ 3.0f, 5.0f, 7.0f, 9.0f });
+		EXPECT_TRUE(vec == (Vector4D{ 3.0f, 5.0f, 7.0f, 9.0f }));
 	}
 
 	TEST(Vector2D, VecMultScalar)
 	{
 		Vector2D vec(1.0f, 2.0f);
 		auto result = vec * 2.0f;
-		EXPECT_VEC_EQ(result, Vector2D{ 2.0f, 4.0f });
+		EXPECT_TRUE(result == (Vector2D{ 2.0f, 4.0f }));
 	}
 
 	TEST(Vector3D, VecMultScalar)
 	{
 		Vector3D vec(1.0f, 2.0f, 3.0f);
 		auto result = vec * 2.0f;
-		EXPECT_VEC_EQ(result, Vector3D{ 2.0f, 4.0f, 6.0f });
+		EXPECT_TRUE(result == (Vector3D{ 2.0f, 4.0f, 6.0f }));
 	}
 
 	TEST(Vector4D, VecMultScalar)
 	{
 		Vector4D vec(1.0f, 2.0f, 3.0f, 4.0f);
 		auto result = vec * 2.0f;
-		EXPECT_VEC_EQ(result, Vector4D{ 2.0f, 4.0f, 6.0f, 8.0f });
+		EXPECT_TRUE(result == (Vector4D{ 2.0f, 4.0f, 6.0f, 8.0f }));
 	}
 
 	TEST(Vector2D, ScalarMultVec)
 	{
 		Vector2D vec(1.0f, 2.0f);
 		auto result = 2.0f * vec;
-		EXPECT_VEC_EQ(result, Vector2D{ 2.0f, 4.0f });
+		EXPECT_TRUE(result == (Vector2D{ 2.0f, 4.0f }));
 	}
 
 	TEST(Vector3D, ScalarMultVec)
 	{
 		Vector3D vec(1.0f, 2.0f, 3.0f);
 		auto result = 2.0f * vec;
-		EXPECT_VEC_EQ(result, Vector3D{ 2.0f, 4.0f, 6.0f });
+		EXPECT_TRUE(result == (Vector3D{ 2.0f, 4.0f, 6.0f }));
 	}
 
 	TEST(Vector4D, ScalarMultVec)
 	{
 		Vector4D vec(1.0f, 2.0f, 3.0f, 4.0f);
 		auto result = 2.0f * vec;
-		EXPECT_VEC_EQ(result, Vector4D{ 2.0f, 4.0f, 6.f, 8.0f });
+		EXPECT_TRUE(result == (Vector4D{ 2.0f, 4.0f, 6.f, 8.0f }));
 	}
 
 	TEST(Vector2D, VecMinus)
 	{
 		Vector2D vec(1.0f, 2.0f);
 		auto result = -vec;
-		EXPECT_VEC_EQ(result, Vector2D{ -1.0f, -2.0f });
+		EXPECT_TRUE(result == (Vector2D{ -1.0f, -2.0f }));
 	}
 
 	TEST(Vector3D, VecMinus)
 	{
 		Vector3D vec(1.0f, 2.0f, 3.0f);
 		auto result = -vec;
-		EXPECT_VEC_EQ(result, Vector3D{ -1.0f, -2.0f, -3.0f });
+		EXPECT_TRUE(result == (Vector3D{ -1.0f, -2.0f, -3.0f }));
 	}
 
 	TEST(Vector4D, VecMinus)
 	{
 		Vector4D vec(1.0f, 2.0f, 3.0f, 4.0f);
 		auto result = -vec;
-		EXPECT_VEC_EQ(result, Vector4D{ -1.0f, -2.0f, -3.0f, -4.0f });
+		EXPECT_TRUE(result == (Vector4D{ -1.0f, -2.0f, -3.0f, -4.0f }));
 	}
 }

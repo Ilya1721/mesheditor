@@ -83,9 +83,19 @@ namespace Geometry
 		return mpImpl->getInverse();
 	}
 
+	Matrix4D Matrix4D::getTransposed() const
+	{
+		return mpImpl->getTransposed();
+	}
+
 	const float* Matrix4D::valuePtr() const
 	{
 		return mpImpl->valuePtr();
+	}
+
+	const char* Matrix4D::getPrettyString() const
+	{
+		return mpImpl->getPrettyString();
 	}
 
 	Mat4Impl* Matrix4D::__internal_getPimpl() const

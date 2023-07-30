@@ -26,7 +26,9 @@ namespace Geometry
 		Vector4D operator*(const Vector4D& other) const;
 
 		Matrix4D getInverse() const;
+		Matrix4D getTransposed() const;
 		const float* valuePtr() const;
+		const char* getPrettyString() const;
 
 		Mat4Impl* __internal_getPimpl() const;
 

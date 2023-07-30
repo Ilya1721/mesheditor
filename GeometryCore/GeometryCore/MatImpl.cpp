@@ -1,5 +1,7 @@
 #include "MatImpl.h"
 
+#include <sstream>
+
 #include <glm/gtc/epsilon.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -68,6 +70,11 @@ namespace Geometry
 		return glm::value_ptr(mImplMat);
 	}
 
+	const float* Mat4Impl::valuePtr() const
+	{
+		return glm::value_ptr(mImplMat);
+	}
+
 	const MatType& Mat4Impl::getImplMat() const
 	{
 		return mImplMat;
@@ -76,6 +83,32 @@ namespace Geometry
 	Mat4Impl Mat4Impl::getInverse() const
 	{
 		return glm::inverse(mImplMat);
+	}
+
+	Mat4Impl Mat4Impl::getTransposed() const
+	{
+		return glm::transpose(mImplMat);
+	}
+
+	const char* Mat4Impl::getPrettyString()
+	{
+		std::stringstream outputStream;
+		outputStream << "{";
+
+		const auto matPtr = valuePtr();
+		for (size_t rowIdx = 0; rowIdx < 4; ++rowIdx)
+		{
+			outputStream << "\n\t";
+			for (size_t colIdx = 0; colIdx < 4; ++colIdx)
+			{
+				outputStream << std::to_string(matPtr[rowIdx * 4 + colIdx]) << " ";
+			}
+		}
+
+		outputStream << "\n}";
+		mPrettyString = outputStream.str();
+		
+		return mPrettyString.c_str();
 	}
 
 	bool Mat4Impl::operator==(const Mat4Impl& other) const

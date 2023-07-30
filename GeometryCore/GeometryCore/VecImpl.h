@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include <glm/glm.hpp>
 
 namespace Geometry
@@ -42,8 +44,10 @@ namespace Geometry
 		Vec4Impl unProject(const Matrix4D& modelView, const Matrix4D& proj, const Vec4Impl& viewport) const;
 		Vec4Impl operator-() const;
 		float length() const;
+		const char* getPrettyString();
 
 	private:
 		Vec4Type mImplVec;
+		std::string mPrettyString;
 	};
 }

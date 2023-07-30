@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include <glm/glm.hpp>
 
 namespace Geometry
@@ -28,8 +30,11 @@ namespace Geometry
 		Vec4Impl operator*(const Vec4Impl& vec4) const;
 
 		float* valuePtr();
+		const float* valuePtr() const;
 		const MatType& getImplMat() const;
 		Mat4Impl getInverse() const;
+		Mat4Impl getTransposed() const;
+		const char* getPrettyString();
 
 		static Mat4Impl lookAt(const Vector3D& mPosition, const Vector3D& mTarget, const Vector3D& mUp);
 		static Mat4Impl ortho(float left, float right, float bottom, float top, float zNear, float zFar);
@@ -39,5 +44,6 @@ namespace Geometry
 
 	private:
 		MatType mImplMat;
+		std::string mPrettyString;
 	};
 }

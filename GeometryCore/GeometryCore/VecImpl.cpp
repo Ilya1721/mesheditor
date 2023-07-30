@@ -1,5 +1,7 @@
 #include "VecImpl.h"
 
+#include <sstream>
+
 #include <glm/gtc/epsilon.hpp>
 #include <glm/ext/matrix_projection.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -152,5 +154,20 @@ namespace Geometry
 	float Vec4Impl::length() const
 	{
 		return glm::length(mImplVec);
+	}
+
+	const char* Vec4Impl::getPrettyString()
+	{
+		std::stringstream outputStream;
+		outputStream << "{";
+		for (glm::length_t vecIdx = 0; vecIdx < 4; ++vecIdx)
+		{
+			outputStream << " " << std::to_string(mImplVec[vecIdx]);
+		}
+		outputStream << " }";
+
+		mPrettyString = outputStream.str();
+
+		return mPrettyString.c_str();
 	}
 }

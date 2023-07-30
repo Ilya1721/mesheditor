@@ -17,10 +17,10 @@ namespace Operators
 		Matrix4D firstMatrix(scaleFactor);
 		Matrix4D secondMatrix(scaleFactor);
 		auto result = firstMatrix * secondMatrix;
-		EXPECT_MAT_EQ(result, Matrix4DArray{ 4.0f, 0.0f, 0.0f, 0.0f,
-											 0.0f, 4.0f, 0.0f, 0.0f,
-											 0.0f, 0.0f, 4.0f, 0.0f,
-											 0.0f, 0.0f, 0.0f, 4.0f });
+		EXPECT_TRUE(result == Matrix4D(Matrix4DArray{ 4.0f, 0.0f, 0.0f, 0.0f,
+													  0.0f, 4.0f, 0.0f, 0.0f,
+													  0.0f, 0.0f, 4.0f, 0.0f,
+													  0.0f, 0.0f, 0.0f, 4.0f }.data()));
 	}
 
 	TEST(Matrix4D, MatMultVec)
@@ -28,6 +28,6 @@ namespace Operators
 		Matrix4D scaleMatrix(scaleFactor);
 		Vector4D vec4(1.0f, 1.0f, 1.0f, 1.0f);
 		auto result = scaleMatrix * vec4;
-		EXPECT_VEC_EQ(result, Vector4D{ 2.0f, 2.0f, 2.0f, 2.0f });
+		EXPECT_TRUE(result == (Vector4D{ 2.0f, 2.0f, 2.0f, 2.0f }));
 	}
 }
