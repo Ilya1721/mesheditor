@@ -11,10 +11,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\FileHelper.cpp" />
-    <ClCompile Include="src\FileHelper.ixx" />
-    <ClCompile Include="src\StringHelper.cpp" />
-    <ClCompile Include="src\StringHelper.ixx" />
+    <ClInclude Include="Utility\FileHelper.h" />
+    <ClInclude Include="Utility\StringHelper.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Utility\FileHelper.cpp" />
+    <ClCompile Include="Utility\StringHelper.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -71,13 +73,13 @@
       </AdditionalIncludeDirectories>
       <AdditionalModuleDependencies>
       </AdditionalModuleDependencies>
-      <TranslateIncludes>true</TranslateIncludes>
-      <EnableModules>true</EnableModules>
+      <TranslateIncludes>false</TranslateIncludes>
+      <EnableModules>false</EnableModules>
       <TreatWarningAsError>true</TreatWarningAsError>
       <BuildStlModules>false</BuildStlModules>
       <AdditionalBMIDirectories>
       </AdditionalBMIDirectories>
-      <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -102,13 +104,13 @@
       </AdditionalIncludeDirectories>
       <AdditionalModuleDependencies>
       </AdditionalModuleDependencies>
-      <TranslateIncludes>true</TranslateIncludes>
-      <EnableModules>true</EnableModules>
+      <TranslateIncludes>false</TranslateIncludes>
+      <EnableModules>false</EnableModules>
       <TreatWarningAsError>true</TreatWarningAsError>
       <BuildStlModules>false</BuildStlModules>
       <AdditionalBMIDirectories>
       </AdditionalBMIDirectories>
-      <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

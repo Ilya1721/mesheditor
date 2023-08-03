@@ -57,12 +57,12 @@
       <ConformanceMode>Default</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\;$(SolutionDir)GeometryCore\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\;$(SolutionDir)GeometryCore\;$(SolutionDir)MeshCore\;$(SolutionDir)MeshFilesLoader\;$(SolutionDir)Utility\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <EnableModules>true</EnableModules>
-      <TranslateIncludes>true</TranslateIncludes>
+      <EnableModules>false</EnableModules>
+      <TranslateIncludes>false</TranslateIncludes>
       <BuildStlModules>false</BuildStlModules>
-      <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -86,12 +86,12 @@
       <ConformanceMode>Default</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\;$(SolutionDir)GeometryCore\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\;$(SolutionDir)GeometryCore\;$(SolutionDir)MeshCore\;$(SolutionDir)MeshFilesLoader\;$(SolutionDir)Utility\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <EnableModules>true</EnableModules>
-      <TranslateIncludes>true</TranslateIncludes>
+      <EnableModules>false</EnableModules>
+      <TranslateIncludes>false</TranslateIncludes>
       <BuildStlModules>false</BuildStlModules>
-      <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -108,32 +108,6 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\glad.h" />
-    <ClInclude Include="src\khrplatform.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="src\Lighting.cpp" />
-    <ClCompile Include="src\Lighting.ixx" />
-    <ClCompile Include="src\RenderBuffer.cpp" />
-    <ClCompile Include="src\RenderBuffer.ixx" />
-    <ClCompile Include="src\Renderer.cpp" />
-    <ClCompile Include="src\Renderer.ixx" />
-    <ClCompile Include="src\Camera.cpp" />
-    <ClCompile Include="src\Camera.ixx" />
-    <ClCompile Include="src\glad.c" />
-    <ClCompile Include="src\RenderLogger.cpp" />
-    <ClCompile Include="src\RenderLogger.ixx" />
-    <ClCompile Include="src\RenderSystemConsts.ixx" />
-    <ClCompile Include="src\Scene.cpp" />
-    <ClCompile Include="src\Scene.ixx" />
-    <ClCompile Include="src\TestRenderer.cpp" />
-    <ClCompile Include="src\TestRenderer.ixx" />
-    <ClCompile Include="src\Viewport.cpp" />
-    <ClCompile Include="src\Viewport.ixx" />
-    <ClCompile Include="src\Window.cpp" />
-    <ClCompile Include="src\Window.ixx" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\MeshCore\MeshCore.vcxproj">
       <Project>{27a4bba3-8da4-4e41-a872-ed4732a7f7bc}</Project>
     </ProjectReference>
@@ -147,6 +121,32 @@
   <ItemGroup>
     <None Include="Shaders\FragmentShader.frag" />
     <None Include="Shaders\VertexShader.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="RenderSystem\Camera.cpp" />
+    <ClCompile Include="RenderSystem\glad.c" />
+    <ClCompile Include="RenderSystem\Lighting.cpp" />
+    <ClCompile Include="RenderSystem\RenderBuffer.cpp" />
+    <ClCompile Include="RenderSystem\Renderer.cpp" />
+    <ClCompile Include="RenderSystem\RenderLogger.cpp" />
+    <ClCompile Include="RenderSystem\Scene.cpp" />
+    <ClCompile Include="RenderSystem\TestRenderer.cpp" />
+    <ClCompile Include="RenderSystem\Viewport.cpp" />
+    <ClCompile Include="RenderSystem\Window.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="RenderSystem\Camera.h" />
+    <ClInclude Include="RenderSystem\Constants.h" />
+    <ClInclude Include="RenderSystem\glad.h" />
+    <ClInclude Include="RenderSystem\khrplatform.h" />
+    <ClInclude Include="RenderSystem\Lighting.h" />
+    <ClInclude Include="RenderSystem\RenderBuffer.h" />
+    <ClInclude Include="RenderSystem\Renderer.h" />
+    <ClInclude Include="RenderSystem\RenderLogger.h" />
+    <ClInclude Include="RenderSystem\Scene.h" />
+    <ClInclude Include="RenderSystem\TestRenderer.h" />
+    <ClInclude Include="RenderSystem\Viewport.h" />
+    <ClInclude Include="RenderSystem\Window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
