@@ -56,12 +56,12 @@ namespace MeshCore
 		return renderData;
 	}
 
-	void Object3D::updateTransform(const Geometry::Matrix4D& transform)
+	void Object3D::updateTransform(const glm::mat4& transform)
 	{
 		mTransform = mTransform * transform;
 	}
 
-	const Geometry::Matrix4D& Object3D::getTransform() const
+	const glm::mat4& Object3D::getTransform() const
 	{
 		return mTransform;
 	}

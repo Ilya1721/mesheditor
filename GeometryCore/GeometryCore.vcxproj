@@ -52,7 +52,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\;$(SolutionDir)Global\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\;</AdditionalIncludeDirectories>
       <TranslateIncludes>false</TranslateIncludes>
       <BuildStlModules>false</BuildStlModules>
     </ClCompile>
@@ -73,7 +73,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\;$(SolutionDir)Global\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\;</AdditionalIncludeDirectories>
       <TranslateIncludes>false</TranslateIncludes>
       <BuildStlModules>false</BuildStlModules>
     </ClCompile>
@@ -87,21 +87,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="GeometryCore\Constants.h" />
-    <ClInclude Include="GeometryCore\MatImpl.h" />
-    <ClInclude Include="GeometryCore\Matrix.h" />
     <ClInclude Include="GeometryCore\Numeric.h" />
     <ClInclude Include="GeometryCore\Plane.h" />
     <ClInclude Include="GeometryCore\Ray.h" />
-    <ClInclude Include="GeometryCore\VecImpl.h" />
-    <ClInclude Include="GeometryCore\Vector.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GeometryCore\MatImpl.cpp" />
-    <ClCompile Include="GeometryCore\Matrix.cpp" />
     <ClCompile Include="GeometryCore\Numeric.cpp" />
     <ClCompile Include="GeometryCore\Ray.cpp" />
-    <ClCompile Include="GeometryCore\VecImpl.cpp" />
-    <ClCompile Include="GeometryCore\Vector.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

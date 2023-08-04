@@ -10,34 +10,34 @@ namespace RenderSystem
 	public:
 		Camera();
 
-		const Geometry::Matrix4D& getViewMatrix() const;
+		const glm::mat4& getViewMatrix() const;
 
-		const Geometry::Vector3D& getTarget() const;
-		const Geometry::Vector3D& getPosition() const;
-		const Geometry::Vector3D& getUp() const;
-		const Geometry::Vector3D& getRight() const;
-		Geometry::Vector3D getNormalizedDirection() const;
+		const glm::vec3& getTarget() const;
+		const glm::vec3& getPosition() const;
+		const glm::vec3& getUp() const;
+		const glm::vec3& getRight() const;
+		glm::vec3 getNormalizedDirection() const;
 
-		void setPositionTargetUp(const Geometry::Vector3D& newPosition,
-								 const Geometry::Vector3D& newTarget,
-								 const Geometry::Vector3D& newUp);
+		void setPositionTargetUp(const glm::vec3& newPosition,
+								 const glm::vec3& newTarget,
+								 const glm::vec3& newUp);
 
-		void pan(const Geometry::Vector3D& firstPoint, const Geometry::Vector3D& secondPoint);
-		void zoomToPoint(const Geometry::Vector3D& unProjectedMousePos, int scrollSign);
+		void pan(const glm::vec3& firstPoint, const glm::vec3& secondPoint);
+		void zoomToPoint(const glm::vec3& unProjectedMousePos, int scrollSign);
 		void adjust(const MeshCore::AABBox& bbox, float fov);
 
 	private:
-		Geometry::Vector3D calcRight();
-		Geometry::Matrix4D createViewMatrix() const;
-		void translate(const Geometry::Vector3D& movement);
+		glm::vec3 calcRight();
+		glm::mat4 createViewMatrix() const;
+		void translate(const glm::vec3& movement);
 		Geometry::Plane getTargetPlane() const;
 
 	private:
-		Geometry::Vector3D mTarget;
-		Geometry::Vector3D mPos;
-		Geometry::Vector3D mUp;
-		Geometry::Vector3D mRight;
-		Geometry::Matrix4D mViewMatrix;
+		glm::vec3 mTarget;
+		glm::vec3 mPos;
+		glm::vec3 mUp;
+		glm::vec3 mRight;
+		glm::mat4 mViewMatrix;
 	};
 }
 

@@ -31,7 +31,7 @@ namespace RenderSystem
 
 		void init();
 
-		Geometry::Vector2D getMousePos() const;
+		glm::vec2 getMousePos() const;
 
 		MouseButtonsState getMouseButtonsState() const;
 
@@ -47,7 +47,7 @@ namespace RenderSystem
 		void pan();
 		void zoom(int yOffset);
 		void resizeViewport(int width, int height);
-		Geometry::Vector3D unProject(const Geometry::Vector2D& mousePos) const;
+		glm::vec3 unProject(const glm::vec2& mousePos) const;
 
 	private:
 		std::string mTitle;
@@ -56,8 +56,8 @@ namespace RenderSystem
 		int mHeight;
 
 		MouseButtonsState mMouseButtonsState;
-		Geometry::Vector2D mSavedMousePos;
-		Geometry::Vector2D mMousePos;
+		glm::vec2 mSavedMousePos;
+		glm::vec2 mMousePos;
 
 		GLFWwindow* mWindow;
 		std::unique_ptr<Scene> mScene;

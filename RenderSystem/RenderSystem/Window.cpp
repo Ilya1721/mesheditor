@@ -6,6 +6,8 @@
 #include "glad.h"
 #include <glfw/glfw3.h>
 
+#include <glm/ext/matrix_projection.hpp>
+
 #include <iostream>
 
 #include "Constants.h"
@@ -42,7 +44,7 @@ namespace RenderSystem
 
 	void Window::init()
 	{
-		mViewport = std::make_unique<Viewport>(VIEWPORT_POSITION.x(), VIEWPORT_POSITION.y(), mWidth, mHeight);
+		mViewport = std::make_unique<Viewport>(VIEWPORT_POSITION.x, VIEWPORT_POSITION.y, mWidth, mHeight);
 		mScene = std::make_unique<Scene>(mMeshFilePath, this);
 		mScene->adjust(mViewport->getFov());
 		setCallbacks();
@@ -89,7 +91,7 @@ namespace RenderSystem
 		return mViewport;
 	}
 
-	Geometry::Vector2D Window::getMousePos() const
+	glm::vec2 Window::getMousePos() const
 	{
 		double mousePosX, mousePosY;
 		glfwGetCursorPos(mWindow, &mousePosX, &mousePosY);
@@ -117,7 +119,7 @@ namespace RenderSystem
 			return;
 		}
 
-		sInstance->mMousePos = Geometry::Vector2D(static_cast<float>(xPos), static_cast<float>(yPos));
+		sInstance->mMousePos = glm::vec2(static_cast<float>(xPos), static_cast<float>(yPos));
 		sInstance->chooseAction();
 	}
 
@@ -145,16 +147,16 @@ namespace RenderSystem
 		mScene->setProjectionMatrix(mViewport->getProjectionMatrix());
 	}
 
-	Geometry::Vector3D Window::unProject(const Geometry::Vector2D& mousePos) const
+	glm::vec3 Window::unProject(const glm::vec2& mousePos) const
 	{
 		auto modelViewMatrix = mScene->getViewMatrix() * mScene->getModelMatrix();
 		auto projectionMatrix = mViewport->getProjectionMatrix();
 		auto viewportPos = mViewport->getPos();
 		auto viewportHeight = static_cast<float>(mViewport->getHeight());
-		Geometry::Vector4D viewport = { viewportPos.x(), viewportPos.y(), static_cast<float>(mViewport->getWidth()), viewportHeight };
-		Geometry::Vector3D mousePos3D(mousePos.x(), viewportHeight - mousePos.y(), 0.0);
+		glm::vec4 viewport = { viewportPos.x, viewportPos.y, static_cast<float>(mViewport->getWidth()), viewportHeight };
+		glm::vec3 mousePos3D(mousePos.x, viewportHeight - mousePos.y, 0.0);
 
-		return mousePos3D.unProject(modelViewMatrix, projectionMatrix, viewport);
+		return glm::unProject(mousePos3D, modelViewMatrix, projectionMatrix, viewport);
 	}
 
 	void Window::onMouseButton(GLFWwindow* window, int button, int action, int mods)

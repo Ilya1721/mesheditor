@@ -28,8 +28,8 @@ namespace MeshCore
 		const Mesh& getMesh() const;
 		const RenderData getRenderData() const;
 
-		void updateTransform(const Geometry::Matrix4D& transform);
-		const Geometry::Matrix4D& getTransform() const;
+		void updateTransform(const glm::mat4& transform);
+		const glm::mat4& getTransform() const;
 
 	private:
 		const RenderData getRenderData(const Object3D* object) const;
@@ -38,7 +38,7 @@ namespace MeshCore
 		Object3D* mParent;
 		std::unordered_set<Object3D*> mChildren;
 		Mesh mMesh;
-		Geometry::Matrix4D mTransform;
+		glm::mat4 mTransform;
 	};
 }
 

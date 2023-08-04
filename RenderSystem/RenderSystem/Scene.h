@@ -22,15 +22,15 @@ namespace RenderSystem
 		Scene& operator=(const Scene& scene) = delete;
 		Scene& operator=(Scene&& scene) = delete;
 
-		void setProjectionMatrix(const Geometry::Matrix4D& projectionMatrix);
+		void setProjectionMatrix(const glm::mat4& projectionMatrix);
 
-		const Geometry::Matrix4D& getModelMatrix() const;
-		const Geometry::Matrix4D& getViewMatrix() const;
+		const glm::mat4& getModelMatrix() const;
+		const glm::mat4& getViewMatrix() const;
 
 		void render();
 		void adjust(float fov);
-		void pan(const Geometry::Vector3D& firstPoint, const Geometry::Vector3D& secondPoint);
-		void zoomToPoint(const Geometry::Vector3D& unProjectedMousePos, int scrollSign);
+		void pan(const glm::vec3& firstPoint, const glm::vec3& secondPoint);
+		void zoomToPoint(const glm::vec3& unProjectedMousePos, int scrollSign);
 
 	private:
 		void init();
@@ -38,7 +38,7 @@ namespace RenderSystem
 		void initLighting();
 		void adjustCamera(const MeshCore::AABBox& bbox, float fov);
 		void adjustLightPos(const MeshCore::AABBox& bbox);
-		const Geometry::Matrix4D& getProjectionMatrix() const;
+		const glm::mat4& getProjectionMatrix() const;
 
 	private:
 		Window* mParentWindow;

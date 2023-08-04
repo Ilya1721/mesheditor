@@ -5,6 +5,8 @@
 #endif
 #include "glad.h"
 
+#include <glm/gtc/matrix_transform.hpp>
+
 #include "GeometryCore/Numeric.h"
 
 #include "Constants.h"
@@ -26,24 +28,24 @@ namespace RenderSystem
 
 	void Viewport::init()
 	{
-		glViewport(static_cast<int>(mPos.x()), static_cast<int>(mPos.y()), mWidth, mHeight);
+		glViewport(static_cast<int>(mPos.x), static_cast<int>(mPos.y), mWidth, mHeight);
 		mProjectionMatrix = createProjectionMatrix();
 	}
 
-	Geometry::Matrix4D Viewport::createProjectionMatrix() const
+	glm::mat4 Viewport::createProjectionMatrix() const
 	{
 		auto width = static_cast<float>(mWidth);
 		auto height = static_cast<float>(mHeight);
 
 		if (mProjectionType == PROJECTION_TYPE::ORTHOGRAPHIC)
 		{
-			return Geometry::Matrix4D::ortho(0.0f, width, 0.0f, height, mNearPlaneDistance, mFarPlaneDistance); // need to implement later
+			return glm::ortho(0.0f, width, 0.0f, height, mNearPlaneDistance, mFarPlaneDistance); // need to implement later
 		}
 
-		return Geometry::Matrix4D::perspective(Geometry::toRadians(mFov), width / height, mNearPlaneDistance, mFarPlaneDistance);
+		return glm::perspective(glm::radians(mFov), width / height, mNearPlaneDistance, mFarPlaneDistance);
 	}
 
-	const Geometry::Matrix4D& Viewport::getProjectionMatrix() const
+	const glm::mat4& Viewport::getProjectionMatrix() const
 	{
 		return mProjectionMatrix;
 	}
@@ -84,7 +86,7 @@ namespace RenderSystem
 		return mHeight;
 	}
 
-	const Geometry::Vector2D& Viewport::getPos() const
+	const glm::vec2& Viewport::getPos() const
 	{
 		return mPos;
 	}

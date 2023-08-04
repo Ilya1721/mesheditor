@@ -6,10 +6,10 @@ namespace Geometry
 {
 	struct Ray
 	{
-		Vector3D point;
-		Vector3D direction;
+		glm::vec3 point;
+		glm::vec3 direction;
 
-		Vector3D findIntersection(const Plane& plane) const;
+		glm::vec3 findIntersection(const Plane& plane) const;
 	};
 }
 

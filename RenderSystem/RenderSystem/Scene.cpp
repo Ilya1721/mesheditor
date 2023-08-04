@@ -5,6 +5,8 @@
 #endif
 #include "glad.h"
 
+#include <glm/gtc/type_ptr.hpp>
+
 #include "MeshFilesLoader/MeshFilesLoader.h"
 #include "MeshCore/AABBox.h"
 
@@ -35,16 +37,16 @@ namespace RenderSystem
 	{
 		auto& renderBuffer = mRenderer.getRenderBuffer();
 		renderBuffer.setRenderData(mRootObject.getRenderData());
-		renderBuffer.setModel(getModelMatrix().valuePtr());
-		renderBuffer.setView(getViewMatrix().valuePtr());
-		renderBuffer.setProjection(getProjectionMatrix().valuePtr());
+		renderBuffer.setModel(glm::value_ptr(getModelMatrix()));
+		renderBuffer.setView(glm::value_ptr(getViewMatrix()));
+		renderBuffer.setProjection(glm::value_ptr(getProjectionMatrix()));
 	}
 
 	void Scene::initLighting()
 	{
 		auto& lighting = mRenderer.getLighting();
-		lighting.setObjectColor(DEFAULT_OBJECT_COLOR.valuePtr());
-		lighting.setLightColor(LIGHT_COLOR.valuePtr());
+		lighting.setObjectColor(glm::value_ptr(DEFAULT_OBJECT_COLOR));
+		lighting.setLightColor(glm::value_ptr(LIGHT_COLOR));
 		lighting.setAmbientStrength(AMBIENT_STRENGTH);
 		lighting.setSpecularStrength(SPECULAR_STRENGTH);
 		lighting.setShininess(LIGHT_SHININESS);
@@ -68,46 +70,46 @@ namespace RenderSystem
 		auto firstLightPosDirVec = (mCamera.getRight() + mCamera.getUp()) * bbox.getHeight();
 		auto secondLightPosDirVec = -mCamera.getNormalizedDirection() * LIGHT_TO_CAMERA_DISTANCE;
 		auto lightPos = mCamera.getPosition() + firstLightPosDirVec + secondLightPosDirVec;
-		//auto lightPosInViewSpace = (mCamera.getViewMatrix() * Vector4D(lightPos, 1.0f)).getVec3();
-		//mRenderer.getLighting().setLightPos(lightPosInViewSpace.valuePtr());
+		auto lightPosInViewSpace = glm::vec3(mCamera.getViewMatrix() * glm::vec4(lightPos, 1.0f));
+		mRenderer.getLighting().setLightPos(glm::value_ptr(lightPosInViewSpace));
 	}
 
 	void Scene::adjustCamera(const MeshCore::AABBox& bbox, float fov)
 	{
 		mCamera.adjust(bbox, fov);
-		mRenderer.getRenderBuffer().setView(mCamera.getViewMatrix().valuePtr());
-		auto cameraPosInViewSpace = (mCamera.getViewMatrix() * Vector4D(mCamera.getPosition(), 1.0f)).getVec3();
-		mRenderer.getLighting().setCameraPos(cameraPosInViewSpace.valuePtr());
+		mRenderer.getRenderBuffer().setView(glm::value_ptr(mCamera.getViewMatrix()));
+		auto cameraPosInViewSpace = glm::vec3(mCamera.getViewMatrix() * glm::vec4(mCamera.getPosition(), 1.0f));
+		mRenderer.getLighting().setCameraPos(glm::value_ptr(cameraPosInViewSpace));
 	}
 
-	void Scene::pan(const Vector3D& firstPoint, const Vector3D& secondPoint)
+	void Scene::pan(const glm::vec3& firstPoint, const glm::vec3& secondPoint)
 	{
 		mCamera.pan(firstPoint, secondPoint);
-		mRenderer.getRenderBuffer().setView(mCamera.getViewMatrix().valuePtr());
+		mRenderer.getRenderBuffer().setView(glm::value_ptr(mCamera.getViewMatrix()));
 	}
 
-	void Scene::zoomToPoint(const Geometry::Vector3D& unProjectedMousePos, int scrollSign)
+	void Scene::zoomToPoint(const glm::vec3& unProjectedMousePos, int scrollSign)
 	{
 		mCamera.zoomToPoint(unProjectedMousePos, scrollSign);
-		mRenderer.getRenderBuffer().setView(mCamera.getViewMatrix().valuePtr());
+		mRenderer.getRenderBuffer().setView(glm::value_ptr(mCamera.getViewMatrix()));
 	}
 
-	void Scene::setProjectionMatrix(const Matrix4D& projectionMatrix)
+	void Scene::setProjectionMatrix(const glm::mat4& projectionMatrix)
 	{
-		mRenderer.getRenderBuffer().setProjection(projectionMatrix.valuePtr());
+		mRenderer.getRenderBuffer().setProjection(glm::value_ptr(projectionMatrix));
 	}
 
-	const Matrix4D& Scene::getModelMatrix() const
+	const glm::mat4& Scene::getModelMatrix() const
 	{
 		return mRootObject.getTransform();
 	}
 
-	const Matrix4D& Scene::getViewMatrix() const
+	const glm::mat4& Scene::getViewMatrix() const
 	{
 		return mCamera.getViewMatrix();
 	}
 
-	const Matrix4D& Scene::getProjectionMatrix() const
+	const glm::mat4& Scene::getProjectionMatrix() const
 	{
 		return mParentWindow->getViewport()->getProjectionMatrix();
 	}

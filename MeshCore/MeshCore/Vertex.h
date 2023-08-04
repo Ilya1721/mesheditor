@@ -1,12 +1,12 @@
 #pragma once
 
-#include "GeometryCore/Vector.h"
+#include <glm/glm.hpp>
 
 namespace MeshCore
 {
 	struct Vertex
 	{
-		Geometry::Vector3D pos;
-		Geometry::Vector3D normal;
+		glm::vec3 pos;
+		glm::vec3 normal;
 	};
 }

@@ -19,7 +19,7 @@ namespace MeshCore
 		if (NORMALIZE_NORMALS)
 		{
 			auto& lastVertexNormal = mVertices.back().normal;
-			lastVertexNormal = lastVertexNormal.getNormalized();
+			lastVertexNormal = glm::normalize(lastVertexNormal);
 		}
 	}
 

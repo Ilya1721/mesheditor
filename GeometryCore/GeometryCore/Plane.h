@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Vector.h"
+#include <glm/glm.hpp>
 
 namespace Geometry
 {
 	struct Plane
 	{
-		Vector3D point;
-		Vector3D normal;
+		glm::vec3 point;
+		glm::vec3 normal;
 	};
 }

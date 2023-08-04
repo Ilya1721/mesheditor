@@ -15,14 +15,14 @@ namespace MeshCore
 	{
 		for (const auto& vertex : mesh.getVertices())
 		{
-			mMin.setX(std::min(mMin.x(), vertex.pos.x()));
-			mMax.setX(std::max(mMax.x(), vertex.pos.x()));
+			mMin[0] = std::min(mMin.x, vertex.pos.x);
+			mMax[0] = std::max(mMax.x, vertex.pos.x);
 
-			mMin.setY(std::min(mMin.y(), vertex.pos.y()));
-			mMax.setY(std::max(mMax.y(), vertex.pos.y()));
+			mMin[1] = std::min(mMin.y, vertex.pos.y);
+			mMax[1] = std::max(mMax.y, vertex.pos.y);
 
-			mMin.setZ(std::min(mMin.z(), vertex.pos.z()));
-			mMax.setZ(std::max(mMax.z(), vertex.pos.z()));
+			mMin[2] = std::min(mMin.z, vertex.pos.z);
+			mMax[2] = std::max(mMax.z, vertex.pos.z);
 		}
 	}
 
@@ -39,33 +39,33 @@ namespace MeshCore
 	{
 		constexpr auto floatMax = std::numeric_limits<float>::max();
 		constexpr auto floatMin = -floatMax;
-		mMax = Vector3D(floatMin, floatMin, floatMin);
-		mMin = Vector3D(floatMax, floatMax, floatMax);
+		mMax = glm::vec3(floatMin, floatMin, floatMin);
+		mMin = glm::vec3(floatMax, floatMax, floatMax);
 	}
 
-	void AABBox::applyTransform(const Matrix4D& transform)
+	void AABBox::applyTransform(const glm::mat4& transform)
 	{
-		mMin = transform * Geometry::Vector4D(mMin, 1.0f);
-		mMax = transform * Geometry::Vector4D(mMax, 1.0f);
+		mMin = transform * glm::vec4(mMin, 1.0f);
+		mMax = transform * glm::vec4(mMax, 1.0f);
 	}
 
-	Vector3D AABBox::getCenter() const
+	glm::vec3 AABBox::getCenter() const
 	{
 		return (mMin + mMax) / 2.0f;
 	}
 
-	const Vector3D& AABBox::getMin() const
+	const glm::vec3& AABBox::getMin() const
 	{
 		return mMin;
 	}
 
-	const Vector3D& AABBox::getMax() const
+	const glm::vec3& AABBox::getMax() const
 	{
 		return mMax;
 	}
 
 	float AABBox::getHeight() const
 	{
-		return mMax.y() - mMin.y();
+		return mMax.y - mMin.y;
 	}
 }

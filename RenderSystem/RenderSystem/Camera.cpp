@@ -2,6 +2,10 @@
 
 #include <iostream>
 
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/vector_angle.hpp>
+#include <glm/gtx/transform.hpp>
+
 #include "GeometryCore/Numeric.h"
 #include "GeometryCore/Ray.h"
 #include "GeometryCore/Constants.h"
@@ -21,44 +25,44 @@ namespace RenderSystem
 		mViewMatrix = createViewMatrix();
 	}
 
-	const Matrix4D& Camera::getViewMatrix() const
+	const glm::mat4& Camera::getViewMatrix() const
 	{
 		return mViewMatrix;
 	}
 
-	Matrix4D Camera::createViewMatrix() const
+	glm::mat4 Camera::createViewMatrix() const
 	{
-		return Matrix4D::lookAt(mPos, mTarget, mUp);
+		return glm::lookAt(mPos, mTarget, mUp);
 	}
 
-	const Vector3D& Camera::getTarget() const
+	const glm::vec3& Camera::getTarget() const
 	{
 		return mTarget;
 	}
 
-	const Vector3D& Camera::getPosition() const
+	const glm::vec3& Camera::getPosition() const
 	{
 		return mPos;
 	}
 
-	const Vector3D& Camera::getUp() const
+	const glm::vec3& Camera::getUp() const
 	{
 		return mUp;
 	}
 
-	const Geometry::Vector3D& Camera::getRight() const
+	const glm::vec3& Camera::getRight() const
 	{
 		return mRight;
 	}
 
-	Geometry::Vector3D Camera::getNormalizedDirection() const
+	glm::vec3 Camera::getNormalizedDirection() const
 	{
-		return (mTarget - mPos).getNormalized();
+		return glm::normalize(mTarget - mPos);
 	}
 
-	void Camera::setPositionTargetUp(const Vector3D& newPosition, const Vector3D& newTarget, const Vector3D& newUp)
+	void Camera::setPositionTargetUp(const glm::vec3& newPosition, const glm::vec3& newTarget, const glm::vec3& newUp)
 	{
-		if (newUp == Vector3D(0.0f, 0.0f, 0.0f))
+		if (newUp == glm::vec3(0.0f, 0.0f, 0.0f))
 		{
 			throw std::exception("The Camera Up vector must never be equal to null vector");
 		}
@@ -75,7 +79,7 @@ namespace RenderSystem
 		mViewMatrix = createViewMatrix();
 	}
 
-	void Camera::pan(const Geometry::Vector3D& firstPoint, const Geometry::Vector3D& secondPoint)
+	void Camera::pan(const glm::vec3& firstPoint, const glm::vec3& secondPoint)
 	{
 		Ray firstRay(firstPoint, firstPoint - mPos);
 		Ray secondRay(secondPoint, secondPoint - mPos);
@@ -87,7 +91,7 @@ namespace RenderSystem
 		mViewMatrix = createViewMatrix();
 	}
 
-	void Camera::zoomToPoint(const Geometry::Vector3D& unProjectedMousePos, int scrollSign)
+	void Camera::zoomToPoint(const glm::vec3& unProjectedMousePos, int scrollSign)
 	{
 		Ray zoomRay(mPos, unProjectedMousePos - mPos);
 		auto targetPlane = getTargetPlane();
@@ -96,23 +100,14 @@ namespace RenderSystem
 		auto direction = mTarget - mPos;
 		mPos += direction * static_cast<float>(scrollSign) * ZOOM_STEP_KOEF;
 
-		Vector3D xozDirection(direction.x(), 0.0, direction.z());
-		auto rotateRightVecAngle = HALF_PI - angle(xozDirection, mRight);
-		auto rotateDegrees = toDegrees(rotateRightVecAngle);
-		mRight = (Matrix4D::getRotationMatrix(rotateRightVecAngle, mUp) * Vector4D(mRight, 0.0f)).getNormalized();
-		//mUp = direction.getNormalized().cross(mRight);
-
-		auto rightLength = mRight.length();
-		auto upLength = mUp.length();
-
-		auto upRightAngle = toDegrees(angle(mUp, mRight));
-		auto upDirRight = toDegrees(angle(direction, mRight));
-		auto upDirUp = toDegrees(angle(mUp, direction));
-
+		glm::vec3 xozDirection(direction.x, 0.0, direction.z);
+		auto rotateRightVecAngle = HALF_PI - glm::angle(xozDirection, mRight);
+		mRight = glm::rotate(glm::mat4(1.0f), rotateRightVecAngle, mUp) * glm::normalize(glm::vec4(mRight, 0.0f));
+		mUp = glm::cross(glm::normalize(direction), mRight);
 		mViewMatrix = createViewMatrix();
 	}
 
-	void Camera::translate(const Geometry::Vector3D& movement)
+	void Camera::translate(const glm::vec3& movement)
 	{
 		mPos += movement;
 		mTarget += movement;
@@ -123,22 +118,22 @@ namespace RenderSystem
 		return { mTarget, mPos - mTarget };
 	}
 
-	Geometry::Vector3D Camera::calcRight()
+	glm::vec3 Camera::calcRight()
 	{
-		auto direction = (mTarget - mPos).getNormalized();
-		if (!isEqual(direction * mUp, 0.0f))
+		auto direction = glm::normalize(mTarget - mPos);
+		if (!isEqual(glm::dot(direction, mUp), 0.0f))
 		{
 			throw std::exception("Camera Up and Direction vectors must be perpendicular to each other");
 		}
 
-		return mUp.cross(direction).getNormalized();
+		return glm::normalize(glm::cross(mUp, direction));
 	}
 
 	void Camera::adjust(const MeshCore::AABBox& bbox, float fov)
 	{
-		auto distanceToCamera = bbox.getHeight() / (2.0f * Geometry::tan(Geometry::toRadians(fov / 2.0f)));
+		auto distanceToCamera = bbox.getHeight() / (2.0f * glm::tan(glm::radians(fov / 2.0f)));
 		auto bboxCenter = bbox.getCenter();
-		Geometry::Vector3D position(bboxCenter.x(), bboxCenter.y(), bbox.getMax().z() + distanceToCamera * CAMERA_DIST_TO_BBOX_KOEF);
+		glm::vec3 position(bboxCenter.x, bboxCenter.y, bbox.getMax().z + distanceToCamera * CAMERA_DIST_TO_BBOX_KOEF);
 		setPositionTargetUp(position, bboxCenter, mUp);
 	}
 }

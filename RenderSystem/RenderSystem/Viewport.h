@@ -1,7 +1,6 @@
 #pragma once
 
-#include "GeometryCore/Matrix.h"
-#include "GeometryCore/Vector.h"
+#include <glm/glm.hpp>
 
 namespace RenderSystem
 {
@@ -16,7 +15,7 @@ namespace RenderSystem
 	public:
 		Viewport(float x, float y, int width, int height);
 
-		const Geometry::Matrix4D& getProjectionMatrix() const;
+		const glm::mat4& getProjectionMatrix() const;
 		PROJECTION_TYPE getProjectionType() const;
 		void setProjectionType(PROJECTION_TYPE projectionType);
 
@@ -25,25 +24,25 @@ namespace RenderSystem
 		float getFarPlaneDistance() const;
 		int getWidth() const;
 		int getHeight() const;
-		const Geometry::Vector2D& getPos() const;
+		const glm::vec2& getPos() const;
 
 		void resize(int width, int height);
 
 	private:
 		void init();
-		Geometry::Matrix4D createProjectionMatrix() const;
+		glm::mat4 createProjectionMatrix() const;
 
 	private:
 		float mFov;
 		float mNearPlaneDistance;
 		float mFarPlaneDistance;
 
-		Geometry::Vector2D mPos;
+		glm::vec2 mPos;
 		int mWidth;
 		int mHeight;
 		
 		PROJECTION_TYPE mProjectionType;
-		Geometry::Matrix4D mProjectionMatrix;
+		glm::mat4 mProjectionMatrix;
 	};
 }
 

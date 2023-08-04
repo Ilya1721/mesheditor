@@ -57,7 +57,7 @@
       <ConformanceMode>Default</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)GeometryCore\;$(SolutionDir)Utility\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)GeometryCore\;$(SolutionDir)Utility\;$(SolutionDir)ThirdParty\</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <EnableModules>false</EnableModules>
       <TranslateIncludes>false</TranslateIncludes>
@@ -82,7 +82,7 @@
       <ConformanceMode>Default</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)GeometryCore\;$(SolutionDir)Utility\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)GeometryCore\;$(SolutionDir)Utility\;$(SolutionDir)ThirdParty\</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <EnableModules>false</EnableModules>
       <TranslateIncludes>false</TranslateIncludes>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GeometryCore/Vector.h"
+#include <glm/glm.hpp>
 
 #include "Object3D.h"
 
@@ -18,19 +18,19 @@ namespace MeshCore
 		void setFromMesh(const Mesh& mesh);
 		void setFromObject(const Object3D& object);
 
-		void applyTransform(const Geometry::Matrix4D& transform);
+		void applyTransform(const glm::mat4& transform);
 
-		Geometry::Vector3D getCenter() const;
-		const Geometry::Vector3D& getMin() const;
-		const Geometry::Vector3D& getMax() const;
+		glm::vec3 getCenter() const;
+		const glm::vec3& getMin() const;
+		const glm::vec3& getMax() const;
 		float getHeight() const;
 
 	private:
 		void init();
 
 	private:
-		Geometry::Vector3D mMin;
-		Geometry::Vector3D mMax;
+		glm::vec3 mMin;
+		glm::vec3 mMax;
 	};
 }
 

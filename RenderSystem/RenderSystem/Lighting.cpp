@@ -40,8 +40,8 @@ namespace RenderSystem
 
 	void Lighting::setUpSettings()
 	{
-		glClearColor(static_cast<float>(BACKGROUND_COLOR.r()), static_cast<float>(BACKGROUND_COLOR.g()),
-			static_cast<float>(BACKGROUND_COLOR.b()), static_cast<float>(BACKGROUND_COLOR.a()));
+		glClearColor(static_cast<float>(BACKGROUND_COLOR.r), static_cast<float>(BACKGROUND_COLOR.g),
+			static_cast<float>(BACKGROUND_COLOR.b), static_cast<float>(BACKGROUND_COLOR.a));
 		glEnable(GL_DEPTH_TEST);
 	}
 
