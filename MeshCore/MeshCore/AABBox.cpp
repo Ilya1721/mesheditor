@@ -2,8 +2,6 @@
 
 #include <numeric>
 
-using namespace Geometry;
-
 namespace MeshCore
 {
 	AABBox::AABBox()

@@ -1,6 +1,6 @@
 #include "Ray.h"
 
-namespace Geometry
+namespace GeometryCore
 {
 	glm::vec3 Ray::findIntersection(const Plane& plane) const
 	{

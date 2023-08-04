@@ -12,7 +12,7 @@
 
 #include "Constants.h"
 
-using namespace Geometry;
+using namespace GeometryCore;
 
 namespace RenderSystem
 {

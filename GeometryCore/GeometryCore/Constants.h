@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Geometry
+namespace GeometryCore
 {
 	constexpr float EPSILON = 1e-6f;
 	constexpr float PI = 3.141592f;

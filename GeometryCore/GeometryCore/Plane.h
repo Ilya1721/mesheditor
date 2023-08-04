@@ -2,7 +2,7 @@
 
 #include <glm/glm.hpp>
 
-namespace Geometry
+namespace GeometryCore
 {
 	struct Plane
 	{

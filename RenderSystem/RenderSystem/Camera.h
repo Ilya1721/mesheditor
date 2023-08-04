@@ -30,7 +30,7 @@ namespace RenderSystem
 		glm::vec3 calcRight();
 		glm::mat4 createViewMatrix() const;
 		void translate(const glm::vec3& movement);
-		Geometry::Plane getTargetPlane() const;
+		GeometryCore::Plane getTargetPlane() const;
 
 	private:
 		glm::vec3 mTarget;

@@ -2,7 +2,7 @@
 
 #include "Plane.h"
 
-namespace Geometry
+namespace GeometryCore
 {
 	struct Ray
 	{

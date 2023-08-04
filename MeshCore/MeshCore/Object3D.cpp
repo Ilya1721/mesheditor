@@ -3,8 +3,6 @@
 #include "RenderData.h"
 #include "Constants.h"
 
-using namespace Geometry;
-
 namespace MeshCore
 {
 	Object3D::Object3D(Object3D* parent, Mesh&& mesh) :
