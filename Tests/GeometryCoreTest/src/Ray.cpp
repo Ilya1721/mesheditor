@@ -2,12 +2,12 @@
 
 #include "GeometryCore/Ray.h"
 
-namespace Methods
+namespace Ray
 {
-	TEST(Ray, FindIntersection)
+	TEST(Methods, FindIntersection)
 	{
-		Ray ray(Vector3D{ 0.0f, 0.0f, 1.0f }, Vector3D{ 0.0f, 0.0f, -1.0f });
-		Plane plane(Vector3D{ 0.0f, 0.0f, 0.0f }, Vector3D{ 0.0f, 0.0f, 1.0f });
-		EXPECT_TRUE(ray.findIntersection(plane) == (Vector3D{ 0.0f, 0.0f, 0.0f }));
+		GeometryCore::Ray ray(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+		Plane plane(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		EXPECT_TRUE(ray.findIntersection(plane) == glm::vec3(0.0f, 0.0f, 0.0f));
 	}
 }

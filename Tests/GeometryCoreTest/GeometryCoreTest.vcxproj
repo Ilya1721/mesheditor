@@ -36,6 +36,8 @@
     <ClCompile Include="src\MatrixConstructors.cpp" />
     <ClCompile Include="src\MatrixMethods.cpp" />
     <ClCompile Include="src\MatrixOperators.cpp" />
+    <ClCompile Include="src\Numeric.cpp" />
+    <ClCompile Include="src\Ray.cpp" />
     <ClCompile Include="src\TestUtils.cpp" />
     <ClCompile Include="src\VectorConstructors.cpp" />
     <ClCompile Include="src\VectorMethods.cpp" />
