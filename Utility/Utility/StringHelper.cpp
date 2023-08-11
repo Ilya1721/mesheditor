@@ -1,25 +1,12 @@
 #include "StringHelper.h"
 
-namespace Helpers
+namespace Utility
 {
 	bool isEqual(const std::string& firstString, const std::string& secondString, bool caseSensitive)
 	{
-		if (firstString.size() != secondString.size())
-		{
-			return false;
-		}
-
-		for (size_t strIdx = 0; strIdx < firstString.size(); ++strIdx)
-		{
-			auto firstSymbol = caseSensitive ? std::tolower(firstString[strIdx]) : firstString[strIdx];
-			auto secondSymbol = caseSensitive ? std::tolower(secondString[strIdx]) : secondString[strIdx];
-
-			if (firstSymbol != secondSymbol)
-			{
-				return false;
-			}
-		}
-
-		return true;
+		return std::equal(firstString.begin(), firstString.end(), secondString.begin(), secondString.end(),
+		[caseSensitive](char first, char second) {
+			return caseSensitive ? first == second : std::tolower(first) == std::tolower(second);
+		});
 	}
 }

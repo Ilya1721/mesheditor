@@ -70,7 +70,7 @@ namespace RenderSystem
 	int Renderer::loadShader(const std::string& shaderPath, int shaderType)
 	{
 		auto shader = glCreateShader(shaderType);
-		auto shaderStr = Helpers::readFile(shaderPath);
+		auto shaderStr = Utility::readFile(shaderPath);
 		std::vector<const char*> shaderStrVec {shaderStr.c_str()};
 		std::vector<int> shaderStrLengthsVec {static_cast<int>(shaderStr.size())};
 

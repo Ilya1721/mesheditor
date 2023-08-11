@@ -5,21 +5,33 @@
 
 namespace MeshCore
 {
+	Object3D::Object3D() :
+		mParent(nullptr)
+	{}
+
+	Object3D::Object3D(Object3D* parent, const Mesh& mesh) :
+		mParent(parent),
+		mMesh(mesh)
+	{
+		if (parent)
+		{
+			parent->appendChild(this);
+		}
+	}
+
 	Object3D::Object3D(Object3D* parent, Mesh&& mesh) :
 		mParent(parent),
-		mMesh(std::move(mesh)),
-		mTransform(1.0f)
-	{}
+		mMesh(std::move(mesh))
+	{
+		if (parent)
+		{
+			parent->appendChild(this);
+		}
+	}
 
 	void Object3D::setParent(Object3D* parent)
 	{
-		if (mParent) 
-		{
-			mParent->removeChild(this);
-		}
-
 		mParent = parent;
-		mParent->appendChild(this);
 	}
 
 	const Mesh& Object3D::getMesh() const
@@ -37,12 +49,12 @@ namespace MeshCore
 		return mChildren;
 	}
 
-	const RenderData Object3D::getRenderData() const
+	RenderData Object3D::getRenderData() const
 	{
 		return getRenderData(this);
 	}
 
-	const RenderData Object3D::getRenderData(const Object3D* object) const
+	RenderData Object3D::getRenderData(const Object3D* object) const
 	{
 		RenderData renderData;
 		renderData.append(object->getMesh().getRenderData());
@@ -54,19 +66,18 @@ namespace MeshCore
 		return renderData;
 	}
 
-	void Object3D::updateTransform(const glm::mat4& transform)
+	glm::mat4 Object3D::getTransform() const
 	{
-		mTransform = mTransform * transform;
-	}
-
-	const glm::mat4& Object3D::getTransform() const
-	{
-		return mTransform;
+		return glm::mat4(1.0f);
 	}
 
 	void Object3D::appendChild(Object3D* object)
 	{
-		object->setParent(this);
+		if (object)
+		{
+			mChildren.insert(object);
+			object->setParent(this);
+		}
 	}
 
 	void Object3D::removeChild(Object3D* object)
@@ -75,6 +86,7 @@ namespace MeshCore
 		if (childIt != mChildren.end())
 		{
 			mChildren.erase(childIt);
+			object->setParent(nullptr);
 		}
 	}
 }

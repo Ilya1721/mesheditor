@@ -13,6 +13,8 @@ namespace MeshCore
 		Mesh() = default;
 		Mesh(const std::vector<Vertex>& vertices);
 
+		bool operator==(const Mesh& other) const = default;
+
 		const std::vector<Vertex>& getVertices() const;
 		void addVertex(const Vertex& vertex);
 		RenderData getRenderData() const;

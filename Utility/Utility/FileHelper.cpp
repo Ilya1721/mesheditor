@@ -2,7 +2,7 @@
 
 #include <fstream>
 
-namespace Helpers
+namespace Utility
 {
 	std::string readFile(const std::filesystem::path& filePath)
 	{
@@ -14,7 +14,7 @@ namespace Helpers
 		std::ifstream file(filePath);
 		if (!file.is_open())
 		{
-			throw std::exception("File was not opened");
+			throw std::exception("Could not open the file");
 		}
 
 		file.seekg(0, std::ios::end);
@@ -25,7 +25,7 @@ namespace Helpers
 		file.read(content.data(), fileSize);
 		if (file.bad())
 		{
-			throw std::exception("file was not read");
+			throw std::exception("Could not read the file");
 		}
 
 		return content;

@@ -49,7 +49,7 @@ namespace MeshCore
 
 	glm::vec3 AABBox::getCenter() const
 	{
-		return (mMin + mMax) / 2.0f;
+		return (mMin + mMax) * 0.5f;
 	}
 
 	const glm::vec3& AABBox::getMin() const

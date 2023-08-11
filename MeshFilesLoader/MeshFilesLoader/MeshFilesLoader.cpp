@@ -39,7 +39,7 @@ namespace
 		{
 			bool newVertex = false;
 
-			if (Helpers::isEqual(currentToken, MeshFilesLoader::NORMAL_KEYWORD))
+			if (Utility::isEqual(currentToken, MeshFilesLoader::NORMAL_KEYWORD))
 			{
 				vertices.emplace_back();
 
@@ -49,7 +49,7 @@ namespace
 					vertices.back().normal[coordIdx] = std::stof(currentToken);
 				}
 			}
-			else if (Helpers::isEqual(currentToken, MeshFilesLoader::VERTEX_KEYWORD))
+			else if (Utility::isEqual(currentToken, MeshFilesLoader::VERTEX_KEYWORD))
 			{
 				for (int coordIdx = 0; coordIdx < 3; ++coordIdx)
 				{
@@ -108,12 +108,12 @@ namespace MeshFilesLoader
 {
 	MeshCore::Mesh loadSTL(const std::filesystem::path& filePath)
 	{
-		if (!Helpers::isEqual(filePath.extension().string(), ".stl"))
+		if (!Utility::isEqual(filePath.extension().string(), ".stl"))
 		{
 			throw std::exception("This file is not of stl format");
 		}
 
-		auto fileContent = Helpers::readFile(filePath);
+		auto fileContent = Utility::readFile(filePath);
 		if (isBinaryFile(fileContent))
 		{
 			return readBinary(fileContent);
