@@ -24,7 +24,7 @@ namespace RenderSystem
 
 		void setProjectionMatrix(const glm::mat4& projectionMatrix);
 
-		const glm::mat4& getModelMatrix() const;
+		glm::mat4 getModelMatrix() const;
 		const glm::mat4& getViewMatrix() const;
 
 		void render();

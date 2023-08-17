@@ -23,7 +23,7 @@ namespace RenderSystem
 								 const glm::vec3& newUp);
 
 		void pan(const glm::vec3& firstPoint, const glm::vec3& secondPoint);
-		void zoomToPoint(const glm::vec3& unProjectedMousePos, int scrollSign);
+		void zoomToPoint(const glm::vec3& unProjectedMousePos, int scrollSign, float step);
 		void adjust(const MeshCore::AABBox& bbox, float fov);
 
 	private:

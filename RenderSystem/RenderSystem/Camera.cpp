@@ -91,19 +91,10 @@ namespace RenderSystem
 		mViewMatrix = createViewMatrix();
 	}
 
-	void Camera::zoomToPoint(const glm::vec3& unProjectedMousePos, int scrollSign)
+	void Camera::zoomToPoint(const glm::vec3& unProjectedMousePos, int scrollSign, float step)
 	{
-		Ray zoomRay(mPos, unProjectedMousePos - mPos);
-		auto targetPlane = getTargetPlane();
-		auto intersectionPoint = zoomRay.findIntersection(targetPlane);
-		mTarget = intersectionPoint;
-		auto direction = mTarget - mPos;
-		mPos += direction * static_cast<float>(scrollSign) * ZOOM_STEP_KOEF;
-
-		glm::vec3 xozDirection(direction.x, 0.0, direction.z);
-		auto rotateRightVecAngle = HALF_PI - glm::angle(xozDirection, mRight);
-		mRight = glm::rotate(glm::mat4(1.0f), rotateRightVecAngle, mUp) * glm::normalize(glm::vec4(mRight, 0.0f));
-		mUp = glm::cross(glm::normalize(direction), mRight);
+		auto newDir = glm::normalize(unProjectedMousePos - mPos);
+		translate(newDir * static_cast<float>(scrollSign) * step);
 		mViewMatrix = createViewMatrix();
 	}
 

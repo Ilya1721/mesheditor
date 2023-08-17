@@ -90,7 +90,9 @@ namespace RenderSystem
 
 	void Scene::zoomToPoint(const glm::vec3& unProjectedMousePos, int scrollSign)
 	{
-		mCamera.zoomToPoint(unProjectedMousePos, scrollSign);
+		MeshCore::AABBox bbox;
+		bbox.setFromObject(mRootObject);
+		mCamera.zoomToPoint(unProjectedMousePos, scrollSign, bbox.getHeight() * ZOOM_STEP_KOEF);
 		mRenderer.getRenderBuffer().setView(glm::value_ptr(mCamera.getViewMatrix()));
 	}
 
@@ -99,7 +101,7 @@ namespace RenderSystem
 		mRenderer.getRenderBuffer().setProjection(glm::value_ptr(projectionMatrix));
 	}
 
-	const glm::mat4& Scene::getModelMatrix() const
+	glm::mat4 Scene::getModelMatrix() const
 	{
 		return mRootObject.getTransform();
 	}

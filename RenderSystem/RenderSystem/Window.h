@@ -32,7 +32,6 @@ namespace RenderSystem
 		void init();
 
 		glm::vec2 getMousePos() const;
-
 		MouseButtonsState getMouseButtonsState() const;
 
 		void setCallbacks();
