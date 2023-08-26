@@ -44,9 +44,11 @@ namespace RenderSystem
 	private:
 		void chooseAction();
 		void pan();
+		void orbit();
 		void zoom(int yOffset);
 		void resizeViewport(int width, int height);
 		glm::vec3 unProject(const glm::vec2& mousePos) const;
+		glm::vec3 mousePosToNDC(const glm::vec2& mousePos) const;
 
 	private:
 		std::string mTitle;

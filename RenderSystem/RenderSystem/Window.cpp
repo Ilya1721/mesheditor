@@ -95,7 +95,6 @@ namespace RenderSystem
 	{
 		double mousePosX, mousePosY;
 		glfwGetCursorPos(mWindow, &mousePosX, &mousePosY);
-
 		return { static_cast<float>(mousePosX), static_cast<float>(mousePosY) };
 	}
 
@@ -128,11 +127,19 @@ namespace RenderSystem
 		auto mouseButtonsState = sInstance->getMouseButtonsState();
 		if (mouseButtonsState.middleButtonPressed)
 			pan();
+		else if (mouseButtonsState.leftButtonPressed)
+			orbit();
 	}
 
 	void Window::pan()
 	{
 		mScene->pan(unProject(mSavedMousePos), unProject(mMousePos));
+		mSavedMousePos = mMousePos;
+	}
+
+	void Window::orbit()
+	{
+		mScene->orbit(mousePosToNDC(mSavedMousePos), mousePosToNDC(mMousePos));
 		mSavedMousePos = mMousePos;
 	}
 
@@ -149,14 +156,20 @@ namespace RenderSystem
 
 	glm::vec3 Window::unProject(const glm::vec2& mousePos) const
 	{
-		auto modelViewMatrix = mScene->getViewMatrix() * mScene->getModelMatrix();
-		auto projectionMatrix = mViewport->getProjectionMatrix();
-		auto viewportPos = mViewport->getPos();
+		const auto& viewMatrix = mScene->getViewMatrix();
+		const auto& projectionMatrix = mViewport->getProjectionMatrix();
+		const auto& viewportPos = mViewport->getPos();
 		auto viewportHeight = static_cast<float>(mViewport->getHeight());
 		glm::vec4 viewport = { viewportPos.x, viewportPos.y, static_cast<float>(mViewport->getWidth()), viewportHeight };
 		glm::vec3 mousePos3D(mousePos.x, viewportHeight - mousePos.y, 0.0);
+		return glm::unProject(mousePos3D, viewMatrix, projectionMatrix, viewport);
+	}
 
-		return glm::unProject(mousePos3D, modelViewMatrix, projectionMatrix, viewport);
+	glm::vec3 Window::mousePosToNDC(const glm::vec2& mousePos) const
+	{
+		auto ndcX = 2.0f * mousePos.x / mWidth - 1.0f;
+		auto ndcY = 1.0f - 2.0f * mousePos.y / mHeight;
+		return glm::vec3(ndcX, ndcY, 0.0f);
 	}
 
 	void Window::onMouseButton(GLFWwindow* window, int button, int action, int mods)

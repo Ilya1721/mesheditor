@@ -15,7 +15,7 @@ namespace MeshCore
 		AABBox& operator=(const AABBox& box) = default;
 		AABBox& operator=(AABBox&& box) noexcept = default;
 
-		void setFromMesh(const Mesh& mesh);
+		void setFromMesh(const Mesh& mesh, const glm::mat4& objectTransform);
 		void setFromObject(const Object3D& object);
 
 		void applyTransform(const glm::mat4& transform);

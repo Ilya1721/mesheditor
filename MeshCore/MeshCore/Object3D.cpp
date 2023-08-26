@@ -6,12 +6,14 @@
 namespace MeshCore
 {
 	Object3D::Object3D() :
-		mParent(nullptr)
+		mParent(nullptr),
+		mTransform(1.0f)
 	{}
 
 	Object3D::Object3D(Object3D* parent, const Mesh& mesh) :
 		mParent(parent),
-		mMesh(mesh)
+		mMesh(mesh),
+		mTransform(1.0f)
 	{
 		if (parent)
 		{
@@ -21,7 +23,8 @@ namespace MeshCore
 
 	Object3D::Object3D(Object3D* parent, Mesh&& mesh) :
 		mParent(parent),
-		mMesh(std::move(mesh))
+		mMesh(std::move(mesh)),
+		mTransform(1.0f)
 	{
 		if (parent)
 		{
@@ -66,9 +69,14 @@ namespace MeshCore
 		return renderData;
 	}
 
-	glm::mat4 Object3D::getTransform() const
+	const glm::mat4& Object3D::getTransform() const
 	{
-		return glm::mat4(1.0f);
+		return mTransform;
+	}
+
+	void Object3D::setTransform(const glm::mat4& transform)
+	{
+		mTransform = transform;
 	}
 
 	void Object3D::appendChild(Object3D* object)

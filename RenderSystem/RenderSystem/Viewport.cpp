@@ -7,8 +7,6 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "GeometryCore/Numeric.h"
-
 #include "Constants.h"
 
 namespace RenderSystem

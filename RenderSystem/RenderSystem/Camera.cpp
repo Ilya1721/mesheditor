@@ -5,8 +5,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/vector_angle.hpp>
 #include <glm/gtx/transform.hpp>
+#include <glm/gtc/epsilon.hpp>
 
-#include "GeometryCore/Numeric.h"
 #include "GeometryCore/Ray.h"
 #include "GeometryCore/Constants.h"
 
@@ -91,6 +91,16 @@ namespace RenderSystem
 		mViewMatrix = createViewMatrix();
 	}
 
+	void Camera::orbit(const glm::vec3& firstPoint, const glm::vec3& secondPoint)
+	{
+		auto firstArcballPoint = getPointOnArcball(firstPoint);
+		auto secondArcballPoint = getPointOnArcball(secondPoint);
+		auto rotationAngle = glm::angle(firstArcballPoint, secondArcballPoint) * ORBIT_SPEED_KOEF;
+		auto rotationAxis = glm::cross(firstArcballPoint, secondArcballPoint);
+		auto rotationMatrix = glm::inverse(glm::rotate(glm::mat4(1.0f), rotationAngle, rotationAxis));
+		setPositionTargetUp(rotationMatrix * glm::vec4(mPos, 1.0f), rotationMatrix * glm::vec4(mTarget, 1.0f), rotationMatrix * glm::vec4(mUp, 0.0f));
+	}
+
 	void Camera::zoomToPoint(const glm::vec3& unProjectedMousePos, int scrollSign, float step)
 	{
 		auto newDir = glm::normalize(unProjectedMousePos - mPos);
@@ -109,15 +119,27 @@ namespace RenderSystem
 		return { mTarget, mPos - mTarget };
 	}
 
-	glm::vec3 Camera::calcRight()
+	glm::vec3 Camera::getPointOnArcball(const glm::vec3& mousePosNDC) const
+	{
+		auto trasnformedMousePos = glm::inverse(mViewMatrix) * glm::vec4(mousePosNDC, 1.0f);
+		auto lengthSquared = glm::length2(trasnformedMousePos);
+		if (lengthSquared > 1.0f)
+		{
+			return glm::normalize(trasnformedMousePos);
+		}
+
+		return glm::vec3(trasnformedMousePos.x, trasnformedMousePos.y, sqrt(1.0f - lengthSquared));
+	}
+
+	glm::vec3 Camera::calcRight() const
 	{
 		auto direction = glm::normalize(mTarget - mPos);
-		if (!isEqual(glm::dot(direction, mUp), 0.0f))
+		if (glm::epsilonNotEqual(glm::dot(direction, mUp), 0.0f, 1e-5f))
 		{
 			throw std::exception("Camera Up and Direction vectors must be perpendicular to each other");
 		}
 
-		return glm::normalize(glm::cross(mUp, direction));
+		return glm::normalize(glm::cross(direction, mUp));
 	}
 
 	void Camera::adjust(const MeshCore::AABBox& bbox, float fov)

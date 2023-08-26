@@ -12,7 +12,7 @@ namespace AABBox
 	{
 		auto cube = loadCube();
 		MeshCore::AABBox bbox;
-		bbox.setFromMesh(cube);
+		bbox.setFromMesh(cube, glm::mat4(1.0f));
 		const auto& bboxMin = bbox.getMin();
 		const auto& bboxMax = bbox.getMax();
 		EXPECT_TRUE(bboxMin == glm::vec3(-55.0f, 40.0f, 0.0f));

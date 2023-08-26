@@ -20,6 +20,7 @@ namespace RenderSystem
 	constexpr float SPECULAR_STRENGTH = 0.5f;
 	constexpr float LIGHT_TO_CAMERA_DISTANCE = 25.0f;
 	constexpr float ZOOM_STEP_KOEF = 0.1f;
+	constexpr float ORBIT_SPEED_KOEF = 3.0F;
 	constexpr int CAMERA_DIST_TO_BBOX_KOEF = 4;
 	constexpr int LIGHT_SHININESS = 32;
 }

@@ -5,7 +5,6 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "GeometryCore/Logger.h"
-#include "GeometryCore/Numeric.h"
 
 glm::mat4 getMat4(float scaleFactor)
 {
@@ -44,7 +43,7 @@ bool matrixEqualMatArray(const glm::mat4& matrix, const Matrix4DArray& matArray)
 	auto matrixPtr = glm::value_ptr(matrix);
 	for (glm::size_t matIdx = 0; matIdx < 16; ++matIdx)
 	{
-		if (!GeometryCore::isEqual(matrixPtr[matIdx], matArray[matIdx]))
+		if (glm::epsilonNotEqual(matrixPtr[matIdx], matArray[matIdx], EPSILON))
 			return false;
 	}
 	return true;

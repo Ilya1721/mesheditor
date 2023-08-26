@@ -29,6 +29,7 @@ namespace RenderSystem
 
 	void Scene::init()
 	{
+		moveRootObjectToOrigin();
 		initRenderBuffer();
 		initLighting();
 	}
@@ -67,7 +68,7 @@ namespace RenderSystem
 
 	void Scene::adjustLightPos(const MeshCore::AABBox& bbox)
 	{
-		auto firstLightPosDirVec = (mCamera.getRight() + mCamera.getUp()) * bbox.getHeight();
+		auto firstLightPosDirVec = (mCamera.getRight() + mCamera.getUp()) * bbox.getHeight() * 0.25f;
 		auto secondLightPosDirVec = -mCamera.getNormalizedDirection() * LIGHT_TO_CAMERA_DISTANCE;
 		auto lightPos = mCamera.getPosition() + firstLightPosDirVec + secondLightPosDirVec;
 		auto lightPosInViewSpace = glm::vec3(mCamera.getViewMatrix() * glm::vec4(lightPos, 1.0f));
@@ -88,6 +89,12 @@ namespace RenderSystem
 		mRenderer.getRenderBuffer().setView(glm::value_ptr(mCamera.getViewMatrix()));
 	}
 
+	void Scene::orbit(const glm::vec3& firstPoint, const glm::vec3& secondPoint)
+	{
+		mCamera.orbit(firstPoint, secondPoint);
+		mRenderer.getRenderBuffer().setView(glm::value_ptr(mCamera.getViewMatrix()));
+	}
+
 	void Scene::zoomToPoint(const glm::vec3& unProjectedMousePos, int scrollSign)
 	{
 		MeshCore::AABBox bbox;
@@ -101,7 +108,7 @@ namespace RenderSystem
 		mRenderer.getRenderBuffer().setProjection(glm::value_ptr(projectionMatrix));
 	}
 
-	glm::mat4 Scene::getModelMatrix() const
+	const glm::mat4& Scene::getModelMatrix() const
 	{
 		return mRootObject.getTransform();
 	}
@@ -114,5 +121,13 @@ namespace RenderSystem
 	const glm::mat4& Scene::getProjectionMatrix() const
 	{
 		return mParentWindow->getViewport()->getProjectionMatrix();
+	}
+
+	void Scene::moveRootObjectToOrigin()
+	{
+		MeshCore::AABBox bbox;
+		bbox.setFromObject(mRootObject);
+		auto moveToOriginMatrix = glm::translate(glm::mat4(1.0f), -bbox.getCenter());
+		mRootObject.setTransform(moveToOriginMatrix);
 	}
 }
