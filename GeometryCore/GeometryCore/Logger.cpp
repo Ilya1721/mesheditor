@@ -11,13 +11,12 @@ namespace GeometryCore
 		std::stringstream outputStream;
 		outputStream << "{";
 
-		const auto matPtr = glm::value_ptr(mat);
 		for (size_t rowIdx = 0; rowIdx < 4; ++rowIdx)
 		{
 			outputStream << "\n\t";
 			for (size_t colIdx = 0; colIdx < 4; ++colIdx)
 			{
-				outputStream << std::to_string(matPtr[rowIdx * 4 + colIdx]) << " ";
+				outputStream << std::to_string(glm::value_ptr(mat)[rowIdx * 4 + colIdx]) << " ";
 			}
 		}
 
@@ -40,10 +39,12 @@ namespace GeometryCore
 	{
 		std::stringstream outputStream;
 		outputStream << "{";
+
 		for (glm::length_t vecIdx = 0; vecIdx < 4; ++vecIdx)
 		{
 			outputStream << " " << std::to_string(vec[vecIdx]);
 		}
+
 		outputStream << " }";
 
 		return outputStream.str();

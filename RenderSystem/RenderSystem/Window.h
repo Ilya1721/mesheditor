@@ -9,14 +9,15 @@
 
 namespace RenderSystem
 {
-	struct MouseButtonsState
+	enum class MouseButtonPressed
 	{
-		bool rightButtonPressed;
-		bool leftButtonPressed;
-		bool middleButtonPressed;
+		LEFT,
+		RIGHT,
+		MIDDLE,
+		NONE
 	};
 
-	class Window final
+	class Window
 	{
 	public:
 		static Window* createInstance(const std::string& title, int width, int height, const std::string& meshFilePath);
@@ -32,20 +33,15 @@ namespace RenderSystem
 		void init();
 
 		glm::vec2 getMousePos() const;
-		MouseButtonsState getMouseButtonsState() const;
 
 		void setCallbacks();
-		static void onMouseMove(GLFWwindow* window, double xPos, double yPos);
+		static void onMouseMove(GLFWwindow* window, double cursorX, double cursorY);
 		static void onMouseButton(GLFWwindow* window, int button, int action, int mods);
 		static void onMouseScroll(GLFWwindow* window, double xOffset, double yOffset);
 		static void onKey(GLFWwindow* window, int keyCode, int scanCode, int action, int mods);
 		static void onFramebufferSizeChanged(GLFWwindow* window, int width, int height);
 
 	private:
-		void chooseAction();
-		void pan();
-		void orbit();
-		void zoom(int yOffset);
 		void resizeViewport(int width, int height);
 		glm::vec3 unProject(const glm::vec2& mousePos) const;
 		glm::vec3 mousePosToNDC(const glm::vec2& mousePos) const;
@@ -56,9 +52,8 @@ namespace RenderSystem
 		int mWidth;
 		int mHeight;
 
-		MouseButtonsState mMouseButtonsState;
-		glm::vec2 mSavedMousePos;
-		glm::vec2 mMousePos;
+		MouseButtonPressed mMouseButtonPressed;
+		glm::vec2 mSavedCursorPosition;
 
 		GLFWwindow* mWindow;
 		std::unique_ptr<Scene> mScene;

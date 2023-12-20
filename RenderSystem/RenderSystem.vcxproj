@@ -130,6 +130,7 @@
     <ClCompile Include="RenderSystem\Renderer.cpp" />
     <ClCompile Include="RenderSystem\RenderLogger.cpp" />
     <ClCompile Include="RenderSystem\Scene.cpp" />
+    <ClCompile Include="RenderSystem\ShaderTransformationSystem.cpp" />
     <ClCompile Include="RenderSystem\TestRenderer.cpp" />
     <ClCompile Include="RenderSystem\Viewport.cpp" />
     <ClCompile Include="RenderSystem\Window.cpp" />
@@ -144,7 +145,9 @@
     <ClInclude Include="RenderSystem\Renderer.h" />
     <ClInclude Include="RenderSystem\RenderLogger.h" />
     <ClInclude Include="RenderSystem\Scene.h" />
+    <ClInclude Include="RenderSystem\ShaderTransformationSystem.h" />
     <ClInclude Include="RenderSystem\TestRenderer.h" />
+    <ClInclude Include="RenderSystem\Typedefs.h" />
     <ClInclude Include="RenderSystem\Viewport.h" />
     <ClInclude Include="RenderSystem\Window.h" />
   </ItemGroup>

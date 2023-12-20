@@ -18,15 +18,12 @@ namespace MeshCore
 		mVertices.push_back(vertex);
 		if (NORMALIZE_NORMALS)
 		{
-			auto& lastVertexNormal = mVertices.back().normal;
-			lastVertexNormal = glm::normalize(lastVertexNormal);
+			mVertices.back().normal = glm::normalize(mVertices.back().normal);
 		}
 	}
 
 	RenderData Mesh::getRenderData() const
 	{
-		static_assert(COORDINATES_PER_VERTEX == COORDINATES_PER_NORMAL);
-
 		RenderData renderData;
 		renderData.reserveMemory(mVertices.size() * COORDINATES_PER_VERTEX);
 

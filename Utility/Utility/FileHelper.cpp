@@ -6,11 +6,6 @@ namespace Utility
 {
 	std::string readFile(const std::filesystem::path& filePath)
 	{
-		if (filePath.empty())
-		{
-			throw std::exception("File path is empty");
-		}
-
 		std::ifstream file(filePath);
 		if (!file.is_open())
 		{

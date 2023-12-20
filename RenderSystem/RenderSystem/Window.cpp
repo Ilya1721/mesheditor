@@ -20,7 +20,8 @@ namespace RenderSystem
 		mTitle(title),
 		mMeshFilePath(meshFilePath),
 		mWidth(width),
-		mHeight(height)
+		mHeight(height),
+		mMouseButtonPressed(MouseButtonPressed::NONE)
 	{
 		glfwInit();
 
@@ -45,6 +46,7 @@ namespace RenderSystem
 	void Window::init()
 	{
 		mViewport = std::make_unique<Viewport>(VIEWPORT_POSITION.x, VIEWPORT_POSITION.y, mWidth, mHeight);
+		mViewport->setProjectionType(PROJECTION_TYPE::PERSPECTIVE);
 		mScene = std::make_unique<Scene>(mMeshFilePath, this);
 		mScene->adjust(mViewport->getFov());
 		setCallbacks();
@@ -95,57 +97,27 @@ namespace RenderSystem
 	{
 		double mousePosX, mousePosY;
 		glfwGetCursorPos(mWindow, &mousePosX, &mousePosY);
-		return { static_cast<float>(mousePosX), static_cast<float>(mousePosY) };
+		return { mousePosX, mousePosY };
 	}
 
-	MouseButtonsState Window::getMouseButtonsState() const
+	void Window::onMouseMove(GLFWwindow* window, double cursorX, double cursorY)
 	{
-		MouseButtonsState mouseButtonsState;
-		int leftMouseButtonState = glfwGetMouseButton(mWindow, GLFW_MOUSE_BUTTON_LEFT);
-		mouseButtonsState.leftButtonPressed = (leftMouseButtonState == GLFW_PRESS);
-		int rightMouseButtonState = glfwGetMouseButton(mWindow, GLFW_MOUSE_BUTTON_RIGHT);
-		mouseButtonsState.rightButtonPressed = (rightMouseButtonState == GLFW_PRESS);
-		int middleMouseButtonState = glfwGetMouseButton(mWindow, GLFW_MOUSE_BUTTON_MIDDLE);
-		mouseButtonsState.middleButtonPressed = (middleMouseButtonState == GLFW_PRESS);
+		glm::vec2 currentCursorPosition(cursorX, cursorY);
 
-		return mouseButtonsState;
-	}
-
-	void Window::onMouseMove(GLFWwindow* window, double xPos, double yPos)
-	{
-		if (!sInstance || !window)
+		switch (sInstance->mMouseButtonPressed)
 		{
-			return;
+		case MouseButtonPressed::MIDDLE:
+			sInstance->mScene->pan(sInstance->unProject(sInstance->mSavedCursorPosition), sInstance->unProject(currentCursorPosition));
+			break;
+		case MouseButtonPressed::LEFT:
+			sInstance->mScene->orbit(sInstance->mousePosToNDC(sInstance->mSavedCursorPosition), sInstance->mousePosToNDC(currentCursorPosition));
+			break;
 		}
 
-		sInstance->mMousePos = glm::vec2(static_cast<float>(xPos), static_cast<float>(yPos));
-		sInstance->chooseAction();
-	}
-
-	void Window::chooseAction()
-	{
-		auto mouseButtonsState = sInstance->getMouseButtonsState();
-		if (mouseButtonsState.middleButtonPressed)
-			pan();
-		else if (mouseButtonsState.leftButtonPressed)
-			orbit();
-	}
-
-	void Window::pan()
-	{
-		mScene->pan(unProject(mSavedMousePos), unProject(mMousePos));
-		mSavedMousePos = mMousePos;
-	}
-
-	void Window::orbit()
-	{
-		mScene->orbit(mousePosToNDC(mSavedMousePos), mousePosToNDC(mMousePos));
-		mSavedMousePos = mMousePos;
-	}
-
-	void Window::zoom(int yOffset)
-	{
-		mScene->zoomToPoint(unProject(getMousePos()), yOffset);
+		if (sInstance->mMouseButtonPressed != MouseButtonPressed::NONE)
+		{
+			sInstance->mSavedCursorPosition = currentCursorPosition;
+		}
 	}
 
 	void Window::resizeViewport(int width, int height)
@@ -159,8 +131,8 @@ namespace RenderSystem
 		const auto& viewMatrix = mScene->getViewMatrix();
 		const auto& projectionMatrix = mViewport->getProjectionMatrix();
 		const auto& viewportPos = mViewport->getPos();
-		auto viewportHeight = static_cast<float>(mViewport->getHeight());
-		glm::vec4 viewport = { viewportPos.x, viewportPos.y, static_cast<float>(mViewport->getWidth()), viewportHeight };
+		auto viewportHeight = mViewport->getHeight();
+		glm::vec4 viewport = { viewportPos.x, viewportPos.y, mViewport->getWidth(), viewportHeight };
 		glm::vec3 mousePos3D(mousePos.x, viewportHeight - mousePos.y, 0.0);
 		return glm::unProject(mousePos3D, viewMatrix, projectionMatrix, viewport);
 	}
@@ -174,34 +146,43 @@ namespace RenderSystem
 
 	void Window::onMouseButton(GLFWwindow* window, int button, int action, int mods)
 	{
-		if (!sInstance || !window)
+		if (action == GLFW_RELEASE)
+		{
+			sInstance->mMouseButtonPressed = MouseButtonPressed::NONE;
+			return;
+		}
+
+		if (action != GLFW_PRESS)
 			return;
 
-		if (action == GLFW_PRESS)
+		switch (button)
 		{
-			sInstance->mSavedMousePos = sInstance->getMousePos();
+			case GLFW_MOUSE_BUTTON_LEFT:
+				sInstance->mMouseButtonPressed = MouseButtonPressed::LEFT;
+				break;
+			case GLFW_MOUSE_BUTTON_RIGHT:
+				sInstance->mMouseButtonPressed = MouseButtonPressed::RIGHT;
+				break;
+			case GLFW_MOUSE_BUTTON_MIDDLE:
+				sInstance->mMouseButtonPressed = MouseButtonPressed::MIDDLE;
+				break;
 		}
+
+		sInstance->mSavedCursorPosition = sInstance->getMousePos();
 	}
 
 	void Window::onMouseScroll(GLFWwindow* window, double xOffset, double yOffset)
 	{
-		if (!sInstance || !window)
-			return;
-
-		sInstance->zoom(static_cast<int>(yOffset));
+		sInstance->mScene->zoomToPoint(sInstance->unProject(sInstance->getMousePos()), yOffset);
 	}
 
 	void Window::onKey(GLFWwindow* window, int keyCode, int scanCode, int action, int mods)
 	{
-		if (!sInstance || !window)
-			return;
+
 	}
 
 	void Window::onFramebufferSizeChanged(GLFWwindow* window, int width, int height)
 	{
-		if (!sInstance || !window)
-			return;
-
 		if (width == 0 || height == 0)
 			return;
 

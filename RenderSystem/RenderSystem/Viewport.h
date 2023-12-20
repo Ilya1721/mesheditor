@@ -10,36 +10,35 @@ namespace RenderSystem
 		PERSPECTIVE
 	};
 
-	class Viewport final
+	class Viewport
 	{
 	public:
-		Viewport(float x, float y, int width, int height);
+		Viewport(int x, int y, int width, int height);
 
 		const glm::mat4& getProjectionMatrix() const;
-		PROJECTION_TYPE getProjectionType() const;
 		void setProjectionType(PROJECTION_TYPE projectionType);
 
 		float getFov() const;
 		float getNearPlaneDistance() const;
 		float getFarPlaneDistance() const;
-		int getWidth() const;
-		int getHeight() const;
-		const glm::vec2& getPos() const;
+		float getWidth() const;
+		float getHeight() const;
+		const glm::ivec2& getPos() const;
 
 		void resize(int width, int height);
 
 	private:
-		void init();
+		void setGLViewport();
 		glm::mat4 createProjectionMatrix() const;
+		void updateProjectionMatrix();
 
 	private:
 		float mFov;
 		float mNearPlaneDistance;
 		float mFarPlaneDistance;
 
-		glm::vec2 mPos;
-		int mWidth;
-		int mHeight;
+		glm::ivec2 mPos;
+		glm::vec2 mDimensions;
 		
 		PROJECTION_TYPE mProjectionType;
 		glm::mat4 mProjectionMatrix;

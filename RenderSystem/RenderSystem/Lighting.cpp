@@ -7,42 +7,40 @@
 
 #include "Constants.h"
 
+namespace
+{
+	using namespace RenderSystem;
+
+	void setupSettings()
+	{
+		glClearColor(BACKGROUND_COLOR.r, BACKGROUND_COLOR.g, BACKGROUND_COLOR.b, BACKGROUND_COLOR.a);
+		glEnable(GL_DEPTH_TEST);
+	}
+}
+
 namespace RenderSystem
 {
-	Lighting::Lighting() :
-		mLightPos(0),
-		mShaderProgram(0),
-		mObjectColor(0),
-		mLightColor(0),
-		mAmbientStrength(0),
-		mSpecularStrength(0),
-		mShininess(0),
-		mCameraPos(0)
-	{}
-
 	void Lighting::init(int shaderProgram)
 	{
 		mShaderProgram = shaderProgram;
 		initUniformLocations();
-		setUpSettings();
+		setupSettings();
+	}
+
+	int Lighting::getUniformLocation(const char* name) const
+	{
+		return glGetUniformLocation(mShaderProgram, name);
 	}
 
 	void Lighting::initUniformLocations()
 	{
-		mLightPos = glGetUniformLocation(mShaderProgram, "lightPos");
-		mObjectColor = glGetUniformLocation(mShaderProgram, "objectColor");
-		mLightColor = glGetUniformLocation(mShaderProgram, "lightColor");
-		mAmbientStrength = glGetUniformLocation(mShaderProgram, "ambientStrength");
-		mSpecularStrength = glGetUniformLocation(mShaderProgram, "specularStrength");
-		mShininess = glGetUniformLocation(mShaderProgram, "shininess");
-		mCameraPos = glGetUniformLocation(mShaderProgram, "cameraPos");
-	}
-
-	void Lighting::setUpSettings()
-	{
-		glClearColor(static_cast<float>(BACKGROUND_COLOR.r), static_cast<float>(BACKGROUND_COLOR.g),
-			static_cast<float>(BACKGROUND_COLOR.b), static_cast<float>(BACKGROUND_COLOR.a));
-		glEnable(GL_DEPTH_TEST);
+		mLightPos = getUniformLocation("lightPos");
+		mCameraPos = getUniformLocation("cameraPos");
+		mObjectColor = getUniformLocation("objectColor");
+		mLightColor = getUniformLocation("lightColor");
+		mAmbientStrength = getUniformLocation("ambientStrength");
+		mSpecularStrength = getUniformLocation("specularStrength");
+		mShininess = getUniformLocation("shininess");
 	}
 
 	void Lighting::setLightPos(const float* lightPos)

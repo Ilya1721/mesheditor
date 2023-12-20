@@ -95,16 +95,16 @@ namespace RenderSystem
 	{
 		auto firstArcballPoint = getPointOnArcball(firstPoint);
 		auto secondArcballPoint = getPointOnArcball(secondPoint);
-		auto rotationAngle = glm::angle(firstArcballPoint, secondArcballPoint) * ORBIT_SPEED_KOEF;
+		auto rotationAngle = glm::angle(firstArcballPoint, secondArcballPoint) * glm::length(mTarget - mPos) * 0.0075f;
 		auto rotationAxis = glm::cross(firstArcballPoint, secondArcballPoint);
 		auto rotationMatrix = glm::inverse(glm::rotate(glm::mat4(1.0f), rotationAngle, rotationAxis));
-		setPositionTargetUp(rotationMatrix * glm::vec4(mPos, 1.0f), rotationMatrix * glm::vec4(mTarget, 1.0f), rotationMatrix * glm::vec4(mUp, 0.0f));
+		setPositionTargetUp(rotationMatrix * glm::vec4(mPos, 1.0f), rotationMatrix * glm::vec4(mTarget, 1.0f), rotationMatrix * glm::vec4(mUp, 1.0f));
 	}
 
-	void Camera::zoomToPoint(const glm::vec3& unProjectedMousePos, int scrollSign, float step)
+	void Camera::zoomToPoint(const glm::vec3& unProjectedMousePos, float scrollSign, float step)
 	{
 		auto newDir = glm::normalize(unProjectedMousePos - mPos);
-		translate(newDir * static_cast<float>(scrollSign) * step);
+		translate(newDir * step * scrollSign);
 		mViewMatrix = createViewMatrix();
 	}
 

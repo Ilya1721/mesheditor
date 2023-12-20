@@ -6,7 +6,7 @@
 
 namespace MeshCore
 {
-	class AABBox final
+	class AABBox
 	{
 	public:
 		AABBox();
@@ -15,7 +15,7 @@ namespace MeshCore
 		AABBox& operator=(const AABBox& box) = default;
 		AABBox& operator=(AABBox&& box) noexcept = default;
 
-		void setFromMesh(const Mesh& mesh, const glm::mat4& objectTransform);
+		void setFromMesh(const Mesh& mesh, const glm::mat4& meshTransform);
 		void setFromObject(const Object3D& object);
 
 		void applyTransform(const glm::mat4& transform);

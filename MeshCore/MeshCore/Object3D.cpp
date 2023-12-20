@@ -1,6 +1,5 @@
 #include "Object3D.h"
 
-#include "RenderData.h"
 #include "Constants.h"
 
 namespace MeshCore

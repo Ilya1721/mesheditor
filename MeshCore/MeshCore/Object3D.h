@@ -1,10 +1,9 @@
 #pragma once
 
-#include "GeometryCore/Matrix.h"
-
 #include <memory>
 #include <unordered_set>
 
+#include "GeometryCore/Matrix.h"
 #include "Mesh.h"
 
 namespace MeshCore 

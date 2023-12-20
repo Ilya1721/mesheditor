@@ -11,61 +11,61 @@ namespace
 	{
 		if (fileContent.empty())
 		{
-			throw std::exception("File path is empty");
+			throw std::exception("File content is empty");
 		}
 
 		const char* buffer = fileContent.c_str();
 		buffer += MeshFilesLoader::STL_HEADER_SIZE;
 
 		auto numberOfTriangles = *reinterpret_cast<const uint32_t*>(buffer);
-
 		auto correctBinaryFileSize = numberOfTriangles * 12llu * sizeof(float) + MeshFilesLoader::STL_HEADER_SIZE + sizeof(uint16_t);
 
 		return correctBinaryFileSize == fileContent.size();
 	}
 
+	void readTokenAsVector(char*& currentToken, const char* delimiter, char*& nextToken, glm::vec3& coordinates)
+	{
+		for (int coordIdx = 0; coordIdx < 3; ++coordIdx)
+		{
+			currentToken = strtok_s(nullptr, delimiter, &nextToken);
+			coordinates[coordIdx] = std::stof(currentToken);
+		}
+	}
+
+	void readCoordinatesFromBuffer(glm::vec3& coordinates, const char*& buffer)
+	{
+		for (int coordIdx = 0; coordIdx < 3; ++coordIdx)
+		{
+			coordinates[coordIdx] = *reinterpret_cast<const float*>(buffer);
+			buffer += sizeof(float);
+		}
+	}
+
 	MeshCore::Mesh readText(std::string& fileContent)
 	{
-		auto charStr = fileContent.data();
-		auto delimetersCharStr = MeshFilesLoader::STL_DELIMITERS.c_str();
-
-		char* nextToken = nullptr;
-		char* currentToken = strtok_s(charStr, delimetersCharStr, &nextToken);
+		auto contentString = fileContent.data();
+		auto delimiters = MeshFilesLoader::STL_DELIMITERS.c_str();
 
 		MeshCore::Mesh mesh;
 		std::vector<MeshCore::Vertex> vertices;
 
+		char* nextToken = nullptr;
+		char* currentToken = strtok_s(contentString, delimiters, &nextToken);
+
 		while (currentToken != nullptr)
 		{
-			bool newVertex = false;
-
-			if (Utility::isEqual(currentToken, MeshFilesLoader::NORMAL_KEYWORD))
+			if (Utility::isEqual(currentToken, MeshFilesLoader::KEYWORD_NORMAL))
 			{
 				vertices.emplace_back();
-
-				for (int coordIdx = 0; coordIdx < 3; ++coordIdx)
-				{
-					currentToken = strtok_s(nullptr, delimetersCharStr, &nextToken);
-					vertices.back().normal[coordIdx] = std::stof(currentToken);
-				}
+				readTokenAsVector(currentToken, delimiters, nextToken, vertices.back().normal);
 			}
-			else if (Utility::isEqual(currentToken, MeshFilesLoader::VERTEX_KEYWORD))
+			else if (Utility::isEqual(currentToken, MeshFilesLoader::KEYWORD_VERTEX))
 			{
-				for (int coordIdx = 0; coordIdx < 3; ++coordIdx)
-				{
-					currentToken = strtok_s(nullptr, delimetersCharStr, &nextToken);
-					vertices.back().pos[coordIdx] = std::stof(currentToken);
-				}
-
-				newVertex = true;
-			}
-
-			if (newVertex)
-			{
+				readTokenAsVector(currentToken, delimiters, nextToken, vertices.back().pos);
 				mesh.addVertex(vertices.back());
 			}
 
-			currentToken = strtok_s(nullptr, delimetersCharStr, &nextToken);
+			currentToken = strtok_s(nullptr, delimiters, &nextToken);
 		}
 
 		return mesh;
@@ -83,20 +83,9 @@ namespace
 
 		for (size_t idx = 0; idx < 3llu * numberOfTriangles; ++idx)
 		{
-			MeshCore::Vertex vertex;
-
-			for (int coordIdx = 0; coordIdx < 3; ++coordIdx)
-			{
-				vertex.normal[coordIdx] = *reinterpret_cast<const float*>(buffer);
-				buffer += sizeof(float);
-			}
-
-			for (int coordIdx = 0; coordIdx < 3; ++coordIdx)
-			{
-				vertex.pos[coordIdx] = *reinterpret_cast<const float*>(buffer);
-				buffer += sizeof(float);
-			}
-
+			MeshCore::Vertex vertex{};
+			readCoordinatesFromBuffer(vertex.normal, buffer);
+			readCoordinatesFromBuffer(vertex.pos, buffer);
 			mesh.addVertex(vertex);
 		}
 
@@ -114,11 +103,7 @@ namespace MeshFilesLoader
 		}
 
 		auto fileContent = Utility::readFile(filePath);
-		if (isBinaryFile(fileContent))
-		{
-			return readBinary(fileContent);
-		}
 
-		return readText(fileContent);
+		return isBinaryFile(fileContent) ? readBinary(fileContent) : readText(fileContent);
 	}
 }

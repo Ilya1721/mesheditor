@@ -31,12 +31,13 @@ namespace RenderSystem
 		void adjust(float fov);
 		void pan(const glm::vec3& firstPoint, const glm::vec3& secondPoint);
 		void orbit(const glm::vec3& firstPoint, const glm::vec3& secondPoint);
-		void zoomToPoint(const glm::vec3& unProjectedMousePos, int scrollSign);
+		void zoomToPoint(const glm::vec3& unProjectedMousePos, float scrollSign);
 
 	private:
 		void init();
 		void initRenderBuffer();
 		void initLighting();
+		void initShaderTransformationSystem();
 		void adjustCamera(const MeshCore::AABBox& bbox, float fov);
 		void adjustLightPos(const MeshCore::AABBox& bbox);
 		const glm::mat4& getProjectionMatrix() const;

@@ -9,20 +9,20 @@ namespace MeshCore
 		init();
 	}
 
-	void AABBox::setFromMesh(const Mesh& mesh, const glm::mat4& objectTransform)
+	void AABBox::setFromMesh(const Mesh& mesh, const glm::mat4& meshTransform)
 	{
 		for (const auto& vertex : mesh.getVertices())
 		{
-			auto transformedVertex = objectTransform * vertex;
+			auto transformedVertex = meshTransform * vertex;
 
-			mMin[0] = std::min(mMin.x, transformedVertex.pos.x);
-			mMax[0] = std::max(mMax.x, transformedVertex.pos.x);
+			mMin.x = std::min(mMin.x, transformedVertex.pos.x);
+			mMax.x = std::max(mMax.x, transformedVertex.pos.x);
 
-			mMin[1] = std::min(mMin.y, transformedVertex.pos.y);
-			mMax[1] = std::max(mMax.y, transformedVertex.pos.y);
+			mMin.y = std::min(mMin.y, transformedVertex.pos.y);
+			mMax.y = std::max(mMax.y, transformedVertex.pos.y);
 
-			mMin[2] = std::min(mMin.z, transformedVertex.pos.z);
-			mMax[2] = std::max(mMax.z, transformedVertex.pos.z);
+			mMin.z = std::min(mMin.z, transformedVertex.pos.z);
+			mMax.z = std::max(mMax.z, transformedVertex.pos.z);
 		}
 	}
 

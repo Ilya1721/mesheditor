@@ -13,7 +13,7 @@ namespace MeshCore
 
 		void append(const RenderData& other);
 		void append(float posCoord, float normalCoord);
-		void reserveMemory(size_t elementsCount);
+		void reserveMemory(size_t numberOfElements);
 		std::vector<float> getCompactData() const;
 	};
 }

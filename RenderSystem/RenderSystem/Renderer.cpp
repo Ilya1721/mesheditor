@@ -1,23 +1,37 @@
 #include "Renderer.h"
 
-#ifdef __gl_h_
-#undef __gl_h_
-#endif
-#include "glad.h"
-
 #include <iostream>
 
 #include "Utility/FileHelper.h"
 
 #include "Constants.h"
 #include "RenderLogger.h"
+#include "Typedefs.h"
+
+namespace
+{
+	using namespace RenderSystem;
+
+	void checkShaderOrProgramStatus(GetShaderIV getShaderIVFunc, int shaderOrProgram, int statusToCheck,
+									SHADER_TYPE shaderType, const std::string& failedMessage)
+	{
+		int isStatusSuccessful = false;
+		getShaderIVFunc(shaderOrProgram, statusToCheck, &isStatusSuccessful);
+		if (!isStatusSuccessful)
+		{
+			auto shaderLog = getShaderInfoLog(shaderOrProgram, shaderType);
+			std::cerr << shaderLog << std::endl;
+			throw std::exception(failedMessage.c_str());
+		}
+	}
+}
 
 namespace RenderSystem
 {
 	Renderer::Renderer() :
-		mVertexShader(0),
-		mFragmentShader(0),
-		mShaderProgram(0),
+		mVertexShader(),
+		mFragmentShader(),
+		mShaderProgram(),
 		mLighting(),
 		mRenderBuffer()
 	{
@@ -35,29 +49,25 @@ namespace RenderSystem
 	void Renderer::init()
 	{
 		initShaders();
+		mShaderTransformationSystem.init(mShaderProgram);
 		mLighting.init(mShaderProgram);
-		mRenderBuffer.init(mShaderProgram);
+		mRenderBuffer.init();
 	}
 
 	void Renderer::initShaders()
 	{
 		mVertexShader = loadShader(R"(../RenderSystem/Shaders/VertexShader.vert)", GL_VERTEX_SHADER);
 		mFragmentShader = loadShader(R"(../RenderSystem/Shaders/FragmentShader.frag)", GL_FRAGMENT_SHADER);
+		initShaderProgram();
+	}
 
+	void Renderer::initShaderProgram()
+	{
 		mShaderProgram = glCreateProgram();
 		glAttachShader(mShaderProgram, mVertexShader);
 		glAttachShader(mShaderProgram, mFragmentShader);
 		glLinkProgram(mShaderProgram);
-
-		int isLinked = false;
-		glGetProgramiv(mShaderProgram, GL_LINK_STATUS, &isLinked);
-		if (!isLinked)
-		{
-			const auto& shaderLog = getLog(mShaderProgram, SHADER_LOG_TYPE::SHADER_PROGRAM);
-			std::cerr << "Shader program was not linked\n" << shaderLog.data() << std::endl;
-			throw std::exception("Shader program was not linked");
-		}
-
+		checkShaderOrProgramStatus(glGetProgramiv, mShaderProgram, GL_LINK_STATUS, SHADER_TYPE::SHADER_PROGRAM, "Shader program was not linked");
 		glUseProgram(mShaderProgram);
 	}
 
@@ -69,24 +79,21 @@ namespace RenderSystem
 
 	int Renderer::loadShader(const std::string& shaderPath, int shaderType)
 	{
+		auto shaderContent = Utility::readFile(shaderPath);
+		std::vector<const char*> shaderContentVec {shaderContent.c_str()};
+		std::vector<int> shaderContentLengthVec {static_cast<int>(shaderContent.size())};
+
 		auto shader = glCreateShader(shaderType);
-		auto shaderStr = Utility::readFile(shaderPath);
-		std::vector<const char*> shaderStrVec {shaderStr.c_str()};
-		std::vector<int> shaderStrLengthsVec {static_cast<int>(shaderStr.size())};
-
-		glShaderSource(shader, 1, shaderStrVec.data(), shaderStrLengthsVec.data());
+		glShaderSource(shader, 1, shaderContentVec.data(), shaderContentLengthVec.data());
 		glCompileShader(shader);
-
-		int isCompiled;
-		glGetShaderiv(shader, GL_COMPILE_STATUS, &isCompiled);
-		if (!isCompiled)
-		{
-			auto shaderLog = getLog(shader, SHADER_LOG_TYPE::SHADER);
-			std::cerr << "Shader was not compiled!\n" << shaderLog.data() << std::endl;
-			throw std::exception("Shader was not compiled!");
-		}
+		checkShaderOrProgramStatus(glGetShaderiv, shader, GL_COMPILE_STATUS, SHADER_TYPE::SHADER, "Shader was not compiled!");
 
 		return shader;
+	}
+
+	ShaderTransformationSystem& Renderer::getShaderTransformationSystem()
+	{
+		return mShaderTransformationSystem;
 	}
 
 	Lighting& Renderer::getLighting()

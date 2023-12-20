@@ -14,17 +14,17 @@ namespace MeshCore
 		normals.emplace_back(normalCoord);
 	}
 
-	void RenderData::reserveMemory(size_t elementsCount)
+	void RenderData::reserveMemory(size_t numberOfElements)
 	{
-		positions.reserve(elementsCount);
-		normals.reserve(elementsCount);
+		positions.reserve(numberOfElements);
+		normals.reserve(numberOfElements);
 	}
 
 	std::vector<float> RenderData::getCompactData() const
 	{
-		std::vector<float> data;
-		data.insert(std::end(data), std::cbegin(positions), std::cend(positions));
+		std::vector<float> data (std::cbegin(positions), std::cend(positions));
 		data.insert(std::end(data), std::cbegin(normals), std::cend(normals));
+
 		return data;
 	}
 
