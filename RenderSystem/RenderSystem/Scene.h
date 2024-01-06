@@ -13,7 +13,7 @@ namespace RenderSystem
 {
 	class Window;
 
-	class Scene final
+	class Scene
 	{
 	public:
 		Scene(const std::string& meshFilePath, Window* parentWindow);
@@ -23,15 +23,12 @@ namespace RenderSystem
 		Scene& operator=(Scene&& scene) = delete;
 
 		void setProjectionMatrix(const glm::mat4& projectionMatrix);
-
-		const glm::mat4& getModelMatrix() const;
 		const glm::mat4& getViewMatrix() const;
 
 		void render();
-		void adjust(float fov);
-		void pan(const glm::vec3& firstPoint, const glm::vec3& secondPoint);
-		void orbit(const glm::vec3& firstPoint, const glm::vec3& secondPoint);
-		void zoomToPoint(const glm::vec3& unProjectedMousePos, float scrollSign);
+		void pan(const glm::vec3& unProjectedStartPoint, const glm::vec3& unProjectedEndPoint);
+		void orbit(const glm::vec3& unProjectedStartPoint, const glm::vec3& unProjectedEndPoint);
+		void zoomToPoint(const glm::vec3& unProjectedCursorPos, float yOffset);
 
 	private:
 		void init();
@@ -40,8 +37,8 @@ namespace RenderSystem
 		void initShaderTransformationSystem();
 		void adjustCamera(const MeshCore::AABBox& bbox, float fov);
 		void adjustLightPos(const MeshCore::AABBox& bbox);
-		const glm::mat4& getProjectionMatrix() const;
 		void moveRootObjectToOrigin();
+		void adjustCameraAndLight();
 
 	private:
 		Window* mParentWindow;

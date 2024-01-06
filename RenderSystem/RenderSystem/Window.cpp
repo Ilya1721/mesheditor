@@ -16,16 +16,20 @@ namespace RenderSystem
 {
 	std::unique_ptr<Window> Window::sInstance {};
 
-	Window::Window(const std::string& title, int width, int height, const std::string& meshFilePath) :
-		mTitle(title),
-		mMeshFilePath(meshFilePath),
+	Window::Window(int width, int height, const std::string& meshFilePath) :
 		mWidth(width),
 		mHeight(height),
 		mMouseButtonPressed(MouseButtonPressed::NONE)
 	{
-		glfwInit();
+		initGLFW();
+		initScene(meshFilePath);
+		setCallbacks();
+	}
 
-		mWindow = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
+	void Window::initGLFW()
+	{
+		glfwInit();
+		mWindow = glfwCreateWindow(mWidth, mHeight, WINDOW_TITLE.c_str(), nullptr, nullptr);
 		if (!mWindow)
 		{
 			std::cerr << "glfw create window returned nullptr" << std::endl;
@@ -39,17 +43,12 @@ namespace RenderSystem
 			glfwTerminate();
 			std::cerr << "Failed to init glad" << std::endl;
 		}
-
-		init();
 	}
 
-	void Window::init()
+	void Window::initScene(const std::string& meshFilePath)
 	{
 		mViewport = std::make_unique<Viewport>(VIEWPORT_POSITION.x, VIEWPORT_POSITION.y, mWidth, mHeight);
-		mViewport->setProjectionType(PROJECTION_TYPE::PERSPECTIVE);
-		mScene = std::make_unique<Scene>(mMeshFilePath, this);
-		mScene->adjust(mViewport->getFov());
-		setCallbacks();
+		mScene = std::make_unique<Scene>(meshFilePath, this);
 	}
 
 	void Window::setCallbacks()
@@ -57,29 +56,17 @@ namespace RenderSystem
 		glfwSetCursorPosCallback(mWindow, onMouseMove);
 		glfwSetMouseButtonCallback(mWindow, onMouseButton);
 		glfwSetScrollCallback(mWindow, onMouseScroll);
-		glfwSetKeyCallback(mWindow, onKey);
 		glfwSetFramebufferSizeCallback(mWindow, onFramebufferSizeChanged);
 	}
 
-	Window* Window::createInstance(const std::string& title, int width, int height, const std::string& meshFilePath)
+	Window* Window::createInstance(int width, int height, const std::string& meshFilePath)
 	{
-		static auto window = new Window(title, width, height, meshFilePath);
-		sInstance = std::move(std::unique_ptr<Window>(window));
-		return sInstance.get();
-	}
-
-	Window* Window::getInstance()
-	{
+		sInstance = std::move(std::unique_ptr<Window>(new Window(width, height, meshFilePath)));
 		return sInstance.get();
 	}
 
 	void Window::render()
-	{
-		if (!mWindow || !mScene)
-		{
-			throw std::exception("Window or RenderSystem are nullptr");
-		}
-		
+	{		
 		while (!glfwWindowShouldClose(mWindow))
 		{
 			mScene->render();
@@ -93,7 +80,7 @@ namespace RenderSystem
 		return mViewport;
 	}
 
-	glm::vec2 Window::getMousePos() const
+	glm::vec2 Window::getCursorPos() const
 	{
 		double mousePosX, mousePosY;
 		glfwGetCursorPos(mWindow, &mousePosX, &mousePosY);
@@ -110,7 +97,7 @@ namespace RenderSystem
 			sInstance->mScene->pan(sInstance->unProject(sInstance->mSavedCursorPosition), sInstance->unProject(currentCursorPosition));
 			break;
 		case MouseButtonPressed::LEFT:
-			sInstance->mScene->orbit(sInstance->mousePosToNDC(sInstance->mSavedCursorPosition), sInstance->mousePosToNDC(currentCursorPosition));
+			sInstance->mScene->orbit(sInstance->unProject(sInstance->mSavedCursorPosition), sInstance->unProject(currentCursorPosition));
 			break;
 		}
 
@@ -126,22 +113,11 @@ namespace RenderSystem
 		mScene->setProjectionMatrix(mViewport->getProjectionMatrix());
 	}
 
-	glm::vec3 Window::unProject(const glm::vec2& mousePos) const
+	glm::vec3 Window::unProject(const glm::vec2& cursorPos) const
 	{
-		const auto& viewMatrix = mScene->getViewMatrix();
-		const auto& projectionMatrix = mViewport->getProjectionMatrix();
-		const auto& viewportPos = mViewport->getPos();
-		auto viewportHeight = mViewport->getHeight();
-		glm::vec4 viewport = { viewportPos.x, viewportPos.y, mViewport->getWidth(), viewportHeight };
-		glm::vec3 mousePos3D(mousePos.x, viewportHeight - mousePos.y, 0.0);
-		return glm::unProject(mousePos3D, viewMatrix, projectionMatrix, viewport);
-	}
-
-	glm::vec3 Window::mousePosToNDC(const glm::vec2& mousePos) const
-	{
-		auto ndcX = 2.0f * mousePos.x / mWidth - 1.0f;
-		auto ndcY = 1.0f - 2.0f * mousePos.y / mHeight;
-		return glm::vec3(ndcX, ndcY, 0.0f);
+		glm::vec4 viewportData = { mViewport->getPos().x, mViewport->getPos().y, mViewport->getWidth(), mViewport->getHeight() };
+		glm::vec3 cursorPosGL3D(cursorPos.x, mViewport->getHeight() - cursorPos.y, 0.0);
+		return glm::unProject(cursorPosGL3D, mScene->getViewMatrix(), mViewport->getProjectionMatrix(), viewportData);
 	}
 
 	void Window::onMouseButton(GLFWwindow* window, int button, int action, int mods)
@@ -168,24 +144,16 @@ namespace RenderSystem
 				break;
 		}
 
-		sInstance->mSavedCursorPosition = sInstance->getMousePos();
+		sInstance->mSavedCursorPosition = sInstance->getCursorPos();
 	}
 
 	void Window::onMouseScroll(GLFWwindow* window, double xOffset, double yOffset)
 	{
-		sInstance->mScene->zoomToPoint(sInstance->unProject(sInstance->getMousePos()), yOffset);
-	}
-
-	void Window::onKey(GLFWwindow* window, int keyCode, int scanCode, int action, int mods)
-	{
-
+		sInstance->mScene->zoomToPoint(sInstance->unProject(sInstance->getCursorPos()), yOffset);
 	}
 
 	void Window::onFramebufferSizeChanged(GLFWwindow* window, int width, int height)
 	{
-		if (width == 0 || height == 0)
-			return;
-
 		sInstance->resizeViewport(width, height);
 	}
 }

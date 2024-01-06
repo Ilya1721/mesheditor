@@ -18,13 +18,10 @@ namespace RenderSystem
 		const glm::vec3& getRight() const;
 		glm::vec3 getNormalizedDirection() const;
 
-		void setPositionTargetUp(const glm::vec3& newPosition,
-								 const glm::vec3& newTarget,
-								 const glm::vec3& newUp);
-
-		void pan(const glm::vec3& firstPoint, const glm::vec3& secondPoint);
-		void orbit(const glm::vec3& firstPoint, const glm::vec3& secondPoint);
-		void zoomToPoint(const glm::vec3& unProjectedMousePos, float scrollSign, float step);
+		void setPositionTargetUp(const glm::vec3& position, const glm::vec3& target, const glm::vec3& up);
+		void pan(const glm::vec3& unProjectedStartPoint, const glm::vec3& unProjectedEndPoint);
+		void orbit(const glm::vec3& unProjectedStartPoint, const glm::vec3& unProjectedEndPoint);
+		void zoomToPoint(const glm::vec3& unProjectedCursorPos, float step);
 		void adjust(const MeshCore::AABBox& bbox, float fov);
 
 	private:
@@ -32,11 +29,11 @@ namespace RenderSystem
 		glm::mat4 createViewMatrix() const;
 		void translate(const glm::vec3& movement);
 		GeometryCore::Plane getTargetPlane() const;
-		glm::vec3 getPointOnArcball(const glm::vec3& mousePosNDC) const;
+		glm::vec3 getPointOnArcball(const glm::vec3& cursorPosNDC) const;
 
 	private:
 		glm::vec3 mTarget;
-		glm::vec3 mPos;
+		glm::vec3 mEye;
 		glm::vec3 mUp;
 		glm::vec3 mRight;
 		glm::mat4 mViewMatrix;

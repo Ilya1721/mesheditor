@@ -15,8 +15,8 @@ namespace RenderSystem
 	public:
 		Viewport(int x, int y, int width, int height);
 
-		const glm::mat4& getProjectionMatrix() const;
 		void setProjectionType(PROJECTION_TYPE projectionType);
+		void resize(int width, int height);
 
 		float getFov() const;
 		float getNearPlaneDistance() const;
@@ -24,8 +24,7 @@ namespace RenderSystem
 		float getWidth() const;
 		float getHeight() const;
 		const glm::ivec2& getPos() const;
-
-		void resize(int width, int height);
+		const glm::mat4& getProjectionMatrix() const;
 
 	private:
 		void setGLViewport();

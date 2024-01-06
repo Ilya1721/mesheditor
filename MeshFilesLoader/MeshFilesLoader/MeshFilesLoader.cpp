@@ -1,5 +1,7 @@
 #include "MeshFilesLoader.h"
 
+#include <array>
+
 #include "Utility/FileHelper.h"
 #include "Utility/StringHelper.h"
 
@@ -18,7 +20,7 @@ namespace
 		buffer += MeshFilesLoader::STL_HEADER_SIZE;
 
 		auto numberOfTriangles = *reinterpret_cast<const uint32_t*>(buffer);
-		auto correctBinaryFileSize = numberOfTriangles * 12llu * sizeof(float) + MeshFilesLoader::STL_HEADER_SIZE + sizeof(uint16_t);
+		auto correctBinaryFileSize = numberOfTriangles * 50 + 84;
 
 		return correctBinaryFileSize == fileContent.size();
 	}
@@ -76,17 +78,25 @@ namespace
 		const char* buffer = fileContent.c_str();
 		buffer += MeshFilesLoader::STL_HEADER_SIZE;
 
-		uint32_t numberOfTriangles = *reinterpret_cast<const uint32_t*>(buffer);
+		auto facesCount = *reinterpret_cast<const uint32_t*>(buffer);
 		buffer += sizeof(uint32_t);
 
 		MeshCore::Mesh mesh;
 
-		for (size_t idx = 0; idx < 3llu * numberOfTriangles; ++idx)
+		for (int faceIdx = 0; faceIdx < facesCount; ++faceIdx)
 		{
-			MeshCore::Vertex vertex{};
-			readCoordinatesFromBuffer(vertex.normal, buffer);
-			readCoordinatesFromBuffer(vertex.pos, buffer);
-			mesh.addVertex(vertex);
+			glm::vec3 faceNormal{};
+			readCoordinatesFromBuffer(faceNormal, buffer);
+
+			for (int vertexIdx = 0; vertexIdx < 3; ++vertexIdx)
+			{
+				MeshCore::Vertex vertex{};
+				vertex.normal = faceNormal;
+				readCoordinatesFromBuffer(vertex.pos, buffer);
+				mesh.addVertex(vertex);
+			}
+
+			buffer += 2;
 		}
 
 		return mesh;

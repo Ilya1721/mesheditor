@@ -2,6 +2,8 @@
 
 #include "glm/glm.hpp"
 
+#include <string>
+
 namespace RenderSystem
 {
 	const glm::vec4 BACKGROUND_COLOR = glm::vec4(0.09f, 0.42f, 0.69f, 1.0f);
@@ -23,4 +25,6 @@ namespace RenderSystem
 	constexpr float ORBIT_SPEED_KOEF = 3.0f;
 	constexpr int CAMERA_DIST_TO_BBOX_KOEF = 4;
 	constexpr int LIGHT_SHININESS = 32;
+
+	const inline std::string WINDOW_TITLE = "Mesh Editor";
 }

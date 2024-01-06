@@ -16,11 +16,10 @@ namespace RenderSystem
 		mNearPlaneDistance(NEAR_PLANE_DISTANCE),
 		mFarPlaneDistance(FAR_PLANE_DISTANCE),
 		mPos(x, y),
-		mDimensions(width, height),
-		mProjectionType(PROJECTION_TYPE::PERSPECTIVE),
-		mProjectionMatrix(1.0f)
+		mDimensions(width, height)
 	{
 		setGLViewport();
+		setProjectionType(PROJECTION_TYPE::PERSPECTIVE);
 	}
 
 	void Viewport::setGLViewport()

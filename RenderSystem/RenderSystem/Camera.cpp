@@ -18,7 +18,7 @@ namespace RenderSystem
 {
 	Camera::Camera() :
 		mTarget(CAMERA_TARGET),
-		mPos(CAMERA_POSITION),
+		mEye(CAMERA_POSITION),
 		mUp(CAMERA_UP),
 		mRight(CAMERA_RIGHT)
 	{
@@ -32,7 +32,7 @@ namespace RenderSystem
 
 	glm::mat4 Camera::createViewMatrix() const
 	{
-		return glm::lookAt(mPos, mTarget, mUp);
+		return glm::lookAt(mEye, mTarget, mUp);
 	}
 
 	const glm::vec3& Camera::getTarget() const
@@ -42,7 +42,7 @@ namespace RenderSystem
 
 	const glm::vec3& Camera::getPosition() const
 	{
-		return mPos;
+		return mEye;
 	}
 
 	const glm::vec3& Camera::getUp() const
@@ -57,7 +57,7 @@ namespace RenderSystem
 
 	glm::vec3 Camera::getNormalizedDirection() const
 	{
-		return glm::normalize(mTarget - mPos);
+		return glm::normalize(mTarget - mEye);
 	}
 
 	void Camera::setPositionTargetUp(const glm::vec3& newPosition, const glm::vec3& newTarget, const glm::vec3& newUp)
@@ -72,51 +72,45 @@ namespace RenderSystem
 			throw std::exception("Target must never be equal to the position of the Camera");
 		}
 
-		mPos = newPosition;
+		mEye = newPosition;
 		mTarget = newTarget;
 		mUp = newUp;
 		mRight = calcRight();
 		mViewMatrix = createViewMatrix();
 	}
 
-	void Camera::pan(const glm::vec3& firstPoint, const glm::vec3& secondPoint)
+	void Camera::pan(const glm::vec3& unProjectedStartPoint, const glm::vec3& unProjectedEndPoint)
 	{
-		Ray firstRay(firstPoint, firstPoint - mPos);
-		Ray secondRay(secondPoint, secondPoint - mPos);
-		auto targetPlane = getTargetPlane();
-		auto firstIntersectionPoint = firstRay.findIntersection(targetPlane);
-		auto secondIntersectionPoint = secondRay.findIntersection(targetPlane);
-		auto movement = firstIntersectionPoint - secondIntersectionPoint;
-		translate(movement);
-		mViewMatrix = createViewMatrix();
+		Ray startRay(unProjectedStartPoint, unProjectedStartPoint - mEye);
+		Ray endRay(unProjectedEndPoint, unProjectedEndPoint - mEye);
+		translate(startRay.findIntersection(getTargetPlane()) - endRay.findIntersection(getTargetPlane()));
 	}
 
-	void Camera::orbit(const glm::vec3& firstPoint, const glm::vec3& secondPoint)
+	void Camera::orbit(const glm::vec3& unProjectedStartPoint, const glm::vec3& unProjectedEndPoint)
 	{
-		auto firstArcballPoint = getPointOnArcball(firstPoint);
-		auto secondArcballPoint = getPointOnArcball(secondPoint);
-		auto rotationAngle = glm::angle(firstArcballPoint, secondArcballPoint) * glm::length(mTarget - mPos) * 0.0075f;
+		auto firstArcballPoint = getPointOnArcball(unProjectedStartPoint);
+		auto secondArcballPoint = getPointOnArcball(unProjectedEndPoint);
+		auto rotationAngle = glm::angle(firstArcballPoint, secondArcballPoint) * glm::length(mTarget - mEye) * 0.0075f;
 		auto rotationAxis = glm::cross(firstArcballPoint, secondArcballPoint);
 		auto rotationMatrix = glm::inverse(glm::rotate(glm::mat4(1.0f), rotationAngle, rotationAxis));
-		setPositionTargetUp(rotationMatrix * glm::vec4(mPos, 1.0f), rotationMatrix * glm::vec4(mTarget, 1.0f), rotationMatrix * glm::vec4(mUp, 1.0f));
+		setPositionTargetUp(rotationMatrix * glm::vec4(mEye, 1.0f), rotationMatrix * glm::vec4(mTarget, 1.0f), rotationMatrix * glm::vec4(mUp, 1.0f));
 	}
 
-	void Camera::zoomToPoint(const glm::vec3& unProjectedMousePos, float scrollSign, float step)
+	void Camera::zoomToPoint(const glm::vec3& unProjectedCursorPos, float step)
 	{
-		auto newDir = glm::normalize(unProjectedMousePos - mPos);
-		translate(newDir * step * scrollSign);
-		mViewMatrix = createViewMatrix();
+		translate(glm::normalize(unProjectedCursorPos - mEye) * step);
 	}
 
 	void Camera::translate(const glm::vec3& movement)
 	{
-		mPos += movement;
+		mEye += movement;
 		mTarget += movement;
+		mViewMatrix = createViewMatrix();
 	}
 
 	Plane Camera::getTargetPlane() const
 	{
-		return { mTarget, mPos - mTarget };
+		return { mTarget, mEye - mTarget };
 	}
 
 	glm::vec3 Camera::getPointOnArcball(const glm::vec3& mousePosNDC) const
@@ -133,7 +127,7 @@ namespace RenderSystem
 
 	glm::vec3 Camera::calcRight() const
 	{
-		auto direction = glm::normalize(mTarget - mPos);
+		auto direction = glm::normalize(mTarget - mEye);
 		if (glm::epsilonNotEqual(glm::dot(direction, mUp), 0.0f, 1e-5f))
 		{
 			throw std::exception("Camera Up and Direction vectors must be perpendicular to each other");
