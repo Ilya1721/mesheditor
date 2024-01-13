@@ -40,6 +40,7 @@ namespace RenderSystem
 	private:
 		void resizeViewport(int width, int height);
 		glm::vec3 unProject(const glm::vec2& cursorPos) const;
+		glm::vec3 screenCoordinatesToNDC(const glm::vec2& cursorPos) const;
 
 	private:
 		int mWidth;

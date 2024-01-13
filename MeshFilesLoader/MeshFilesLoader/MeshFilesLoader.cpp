@@ -83,7 +83,7 @@ namespace
 
 		MeshCore::Mesh mesh;
 
-		for (int faceIdx = 0; faceIdx < facesCount; ++faceIdx)
+		for (size_t faceIdx = 0; faceIdx < facesCount; ++faceIdx)
 		{
 			glm::vec3 faceNormal{};
 			readCoordinatesFromBuffer(faceNormal, buffer);
@@ -96,7 +96,7 @@ namespace
 				mesh.addVertex(vertex);
 			}
 
-			buffer += 2;
+			buffer += sizeof(uint16_t);
 		}
 
 		return mesh;

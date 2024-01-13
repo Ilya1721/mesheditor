@@ -6,7 +6,7 @@ namespace Utility
 {
 	std::string readFile(const std::filesystem::path& filePath)
 	{
-		std::ifstream file(filePath);
+		std::ifstream file(filePath, std::ios::binary);
 		if (!file.is_open())
 		{
 			throw std::exception("Could not open the file");

@@ -26,9 +26,9 @@ namespace RenderSystem
 		const glm::mat4& getViewMatrix() const;
 
 		void render();
-		void pan(const glm::vec3& unProjectedStartPoint, const glm::vec3& unProjectedEndPoint);
-		void orbit(const glm::vec3& unProjectedStartPoint, const glm::vec3& unProjectedEndPoint);
-		void zoomToPoint(const glm::vec3& unProjectedCursorPos, float yOffset);
+		void pan(const glm::vec3& startPointInWorldSpace, const glm::vec3& endPointInWorldSpace);
+		void orbit(const glm::vec3& startPointInNDC, const glm::vec3& endPointInNDC);
+		void zoomToPoint(const glm::vec3& cursorPosInWorldSpace, float yOffset);
 
 	private:
 		void init();

@@ -8,8 +8,7 @@ namespace RenderSystem
         ShaderTransformationSystem() = default;
 
         void init(int shaderProgram);
-        void setModel(const float* model);
-        void setView(const float* view);
+        void setViewModel(const float* view);
         void setProjection(const float* projection);
 
     private:
@@ -17,8 +16,7 @@ namespace RenderSystem
 
     private:
         int mShaderProgram;
-        int mModel;
-        int mView;
+        int mViewModel;
         int mProjection;
     };
 }

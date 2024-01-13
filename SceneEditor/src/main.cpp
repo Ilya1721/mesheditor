@@ -4,7 +4,7 @@ using namespace RenderSystem;
 
 int main()
 {
-	auto mainWindow = Window::createInstance(1200, 628, R"(D:\3D Models\Cube\Cube.stl)");
+	auto mainWindow = Window::createInstance(1200, 628, R"(D:\3D Models\Cube\CubeText.stl)");
 	mainWindow->render();
 
 	return 0;

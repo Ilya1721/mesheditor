@@ -97,7 +97,7 @@ namespace RenderSystem
 			sInstance->mScene->pan(sInstance->unProject(sInstance->mSavedCursorPosition), sInstance->unProject(currentCursorPosition));
 			break;
 		case MouseButtonPressed::LEFT:
-			sInstance->mScene->orbit(sInstance->unProject(sInstance->mSavedCursorPosition), sInstance->unProject(currentCursorPosition));
+			sInstance->mScene->orbit(sInstance->screenCoordinatesToNDC(sInstance->mSavedCursorPosition), sInstance->screenCoordinatesToNDC(currentCursorPosition));
 			break;
 		}
 
@@ -118,6 +118,16 @@ namespace RenderSystem
 		glm::vec4 viewportData = { mViewport->getPos().x, mViewport->getPos().y, mViewport->getWidth(), mViewport->getHeight() };
 		glm::vec3 cursorPosGL3D(cursorPos.x, mViewport->getHeight() - cursorPos.y, 0.0);
 		return glm::unProject(cursorPosGL3D, mScene->getViewMatrix(), mViewport->getProjectionMatrix(), viewportData);
+	}
+
+	glm::vec3 Window::screenCoordinatesToNDC(const glm::vec2& cursorPos) const
+	{
+		glm::vec3 ndcPos{};
+		ndcPos.x = (2.0 * cursorPos.x) / mViewport->getWidth() - 1.0;
+		ndcPos.y = (mViewport->getHeight() - cursorPos.y) / mViewport->getHeight() * 2.0 - 1.0;
+		ndcPos.z = 0.0;
+
+		return ndcPos;
 	}
 
 	void Window::onMouseButton(GLFWwindow* window, int button, int action, int mods)

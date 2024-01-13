@@ -13,23 +13,25 @@ namespace RenderSystem
 		const glm::mat4& getViewMatrix() const;
 
 		const glm::vec3& getTarget() const;
-		const glm::vec3& getPosition() const;
+		const glm::vec3& getEye() const;
 		const glm::vec3& getUp() const;
 		const glm::vec3& getRight() const;
 		glm::vec3 getNormalizedDirection() const;
 
-		void setPositionTargetUp(const glm::vec3& position, const glm::vec3& target, const glm::vec3& up);
-		void pan(const glm::vec3& unProjectedStartPoint, const glm::vec3& unProjectedEndPoint);
-		void orbit(const glm::vec3& unProjectedStartPoint, const glm::vec3& unProjectedEndPoint);
-		void zoomToPoint(const glm::vec3& unProjectedCursorPos, float step);
+		void setEyeTargetUp(const glm::vec3& eye, const glm::vec3& target, const glm::vec3& up);
+		void pan(const glm::vec3& startPointInWorldSpace, const glm::vec3& endPointInWorldSpace);
+		void orbit(const glm::vec3& startPointInNDC, const glm::vec3& endPointInNDC);
+		void zoomToPoint(const glm::vec3& cursorPosInWorldSpace, float step);
 		void adjust(const MeshCore::AABBox& bbox, float fov);
 
 	private:
 		glm::vec3 calcRight() const;
 		glm::mat4 createViewMatrix() const;
 		void translate(const glm::vec3& movement);
+		glm::mat4 calculateViewMatrixWithTargetAtOrigin() const;
 		GeometryCore::Plane getTargetPlane() const;
-		glm::vec3 getPointOnArcball(const glm::vec3& cursorPosNDC) const;
+		glm::vec3 getCursorPosInNDCWithZ(const glm::vec3& cursorPosInNDC) const;
+		glm::mat4 getOrbitTransform(const glm::vec3& startPosInNDCWithZ, const glm::vec3& endPosInNDCWithZ) const;
 
 	private:
 		glm::vec3 mTarget;

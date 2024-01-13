@@ -14,6 +14,16 @@
 
 using namespace GeometryCore;
 
+namespace Utils
+{
+	using namespace RenderSystem;
+
+	static glm::mat4 createViewMatrix(const glm::vec3& eye, const glm::vec3& target, const glm::vec3& up)
+	{
+		return glm::lookAt(eye, target, up);
+	}
+}
+
 namespace RenderSystem
 {
 	Camera::Camera() :
@@ -32,7 +42,7 @@ namespace RenderSystem
 
 	glm::mat4 Camera::createViewMatrix() const
 	{
-		return glm::lookAt(mEye, mTarget, mUp);
+		return Utils::createViewMatrix(mEye, mTarget, mUp);
 	}
 
 	const glm::vec3& Camera::getTarget() const
@@ -40,7 +50,7 @@ namespace RenderSystem
 		return mTarget;
 	}
 
-	const glm::vec3& Camera::getPosition() const
+	const glm::vec3& Camera::getEye() const
 	{
 		return mEye;
 	}
@@ -60,45 +70,47 @@ namespace RenderSystem
 		return glm::normalize(mTarget - mEye);
 	}
 
-	void Camera::setPositionTargetUp(const glm::vec3& newPosition, const glm::vec3& newTarget, const glm::vec3& newUp)
+	void Camera::setEyeTargetUp(const glm::vec3& eye, const glm::vec3& target, const glm::vec3& up)
 	{
-		if (newUp == glm::vec3(0.0f, 0.0f, 0.0f))
+		if (up == glm::vec3(0.0f, 0.0f, 0.0f))
 		{
 			throw std::exception("The Camera Up vector must never be equal to null vector");
 		}
 
-		if (mTarget == newPosition)
+		if (mTarget == eye)
 		{
 			throw std::exception("Target must never be equal to the position of the Camera");
 		}
 
-		mEye = newPosition;
-		mTarget = newTarget;
-		mUp = newUp;
+		mEye = eye;
+		mTarget = target;
+		mUp = glm::normalize(up);
 		mRight = calcRight();
 		mViewMatrix = createViewMatrix();
 	}
 
-	void Camera::pan(const glm::vec3& unProjectedStartPoint, const glm::vec3& unProjectedEndPoint)
+	void Camera::pan(const glm::vec3& startPointInWorldSpace, const glm::vec3& endPointInWorldSpace)
 	{
-		Ray startRay(unProjectedStartPoint, unProjectedStartPoint - mEye);
-		Ray endRay(unProjectedEndPoint, unProjectedEndPoint - mEye);
-		translate(startRay.findIntersection(getTargetPlane()) - endRay.findIntersection(getTargetPlane()));
+		Ray startRay(startPointInWorldSpace, startPointInWorldSpace - mEye);
+		Ray endRay(endPointInWorldSpace, endPointInWorldSpace - mEye);
+		auto targetPlane = getTargetPlane();
+		translate(startRay.findIntersection(targetPlane) - endRay.findIntersection(targetPlane));
 	}
 
-	void Camera::orbit(const glm::vec3& unProjectedStartPoint, const glm::vec3& unProjectedEndPoint)
+	void Camera::orbit(const glm::vec3& startPointInNDC, const glm::vec3& endPointInNDC)
 	{
-		auto firstArcballPoint = getPointOnArcball(unProjectedStartPoint);
-		auto secondArcballPoint = getPointOnArcball(unProjectedEndPoint);
-		auto rotationAngle = glm::angle(firstArcballPoint, secondArcballPoint) * glm::length(mTarget - mEye) * 0.0075f;
-		auto rotationAxis = glm::cross(firstArcballPoint, secondArcballPoint);
-		auto rotationMatrix = glm::inverse(glm::rotate(glm::mat4(1.0f), rotationAngle, rotationAxis));
-		setPositionTargetUp(rotationMatrix * glm::vec4(mEye, 1.0f), rotationMatrix * glm::vec4(mTarget, 1.0f), rotationMatrix * glm::vec4(mUp, 1.0f));
+		auto startPointInNDCWithZ = getCursorPosInNDCWithZ(startPointInNDC);
+		auto endPointInNDCWithZ = getCursorPosInNDCWithZ(endPointInNDC);
+		auto orbitTransform = getOrbitTransform(startPointInNDCWithZ, endPointInNDCWithZ);
+
+		auto eye = glm::vec3(orbitTransform * glm::vec4(mEye - mTarget, 1.0f));
+		auto up = glm::vec3(orbitTransform * glm::vec4(mUp, 0.0f));
+		setEyeTargetUp(eye + mTarget, mTarget, up);
 	}
 
-	void Camera::zoomToPoint(const glm::vec3& unProjectedCursorPos, float step)
+	void Camera::zoomToPoint(const glm::vec3& cursorPosInWorldSpace, float step)
 	{
-		translate(glm::normalize(unProjectedCursorPos - mEye) * step);
+		translate(glm::normalize(cursorPosInWorldSpace - mEye) * step);
 	}
 
 	void Camera::translate(const glm::vec3& movement)
@@ -108,39 +120,52 @@ namespace RenderSystem
 		mViewMatrix = createViewMatrix();
 	}
 
+	glm::mat4 Camera::calculateViewMatrixWithTargetAtOrigin() const
+	{
+		return Utils::createViewMatrix(mEye - mTarget, glm::vec3(0.0, 0.0, 0.0), mUp);
+	}
+
 	Plane Camera::getTargetPlane() const
 	{
 		return { mTarget, mEye - mTarget };
 	}
 
-	glm::vec3 Camera::getPointOnArcball(const glm::vec3& mousePosNDC) const
+	glm::vec3 Camera::getCursorPosInNDCWithZ(const glm::vec3& cursorPosInNDC) const
 	{
-		auto trasnformedMousePos = glm::inverse(mViewMatrix) * glm::vec4(mousePosNDC, 1.0f);
-		auto lengthSquared = glm::length2(trasnformedMousePos);
-		if (lengthSquared > 1.0f)
-		{
-			return glm::normalize(trasnformedMousePos);
-		}
+		glm::vec3 cursorPosInNDCWithZ = cursorPosInNDC;
+		auto lengthSquared = std::powf(cursorPosInNDC.x, 2) + std::powf(cursorPosInNDC.y, 2);
+		auto validZ = std::abs(sqrtf(1 - std::powf(cursorPosInNDC.x, 2) - std::powf(cursorPosInNDC.y, 2)));
+		cursorPosInNDCWithZ.z = lengthSquared > 1.0 ? 0.0 : validZ;
 
-		return glm::vec3(trasnformedMousePos.x, trasnformedMousePos.y, sqrt(1.0f - lengthSquared));
+		return cursorPosInNDCWithZ;
+	}
+
+	glm::mat4 Camera::getOrbitTransform(const glm::vec3& startPosInNDCWithZ, const glm::vec3& endPosInNDCWithZ) const
+	{
+		auto rotationAngle = glm::angle(glm::normalize(startPosInNDCWithZ), glm::normalize(endPosInNDCWithZ));
+		auto rotationAxisInNDC = glm::cross(startPosInNDCWithZ, endPosInNDCWithZ);
+		auto rotationAxisInCameraSpace = glm::inverse(calculateViewMatrixWithTargetAtOrigin()) * glm::vec4(rotationAxisInNDC, 0.0f);
+		auto unitRotationAxisInCameraSpace = glm::normalize(glm::vec3(rotationAxisInCameraSpace));
+
+		return glm::rotate(-rotationAngle * ORBIT_SPEED_KOEF, unitRotationAxisInCameraSpace);
 	}
 
 	glm::vec3 Camera::calcRight() const
 	{
-		auto direction = glm::normalize(mTarget - mEye);
-		if (glm::epsilonNotEqual(glm::dot(direction, mUp), 0.0f, 1e-5f))
+		auto directionNormalized = getNormalizedDirection();
+		if (glm::epsilonNotEqual(glm::dot(directionNormalized, mUp), 0.0f, 1e-5f))
 		{
 			throw std::exception("Camera Up and Direction vectors must be perpendicular to each other");
 		}
 
-		return glm::normalize(glm::cross(direction, mUp));
+		return glm::cross(directionNormalized, mUp);
 	}
 
 	void Camera::adjust(const MeshCore::AABBox& bbox, float fov)
 	{
 		auto distanceToCamera = bbox.getHeight() / (2.0f * glm::tan(glm::radians(fov / 2.0f)));
 		auto bboxCenter = bbox.getCenter();
-		glm::vec3 position(bboxCenter.x, bboxCenter.y, bbox.getMax().z + distanceToCamera * CAMERA_DIST_TO_BBOX_KOEF);
-		setPositionTargetUp(position, bboxCenter, mUp);
+		glm::vec3 eye(bboxCenter.x, bboxCenter.y, bbox.getMax().z + distanceToCamera * CAMERA_DIST_TO_BBOX_KOEF);
+		setEyeTargetUp(eye, bboxCenter, mUp);
 	}
 }

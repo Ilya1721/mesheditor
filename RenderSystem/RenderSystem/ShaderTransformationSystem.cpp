@@ -15,19 +15,13 @@ namespace RenderSystem
 
 	void ShaderTransformationSystem::initUniformLocations()
 	{
-		mModel = glGetUniformLocation(mShaderProgram, "model");
-		mView = glGetUniformLocation(mShaderProgram, "view");
+		mViewModel = glGetUniformLocation(mShaderProgram, "viewModel");
 		mProjection = glGetUniformLocation(mShaderProgram, "projection");
 	}
 
-	void ShaderTransformationSystem::setModel(const float* model)
+	void ShaderTransformationSystem::setViewModel(const float* view)
 	{
-		glUniformMatrix4fv(mModel, 1, false, model);
-	}
-
-	void ShaderTransformationSystem::setView(const float* view)
-	{
-		glUniformMatrix4fv(mView, 1, false, view);
+		glUniformMatrix4fv(mViewModel, 1, false, view);
 	}
 
 	void ShaderTransformationSystem::setProjection(const float* projection)
