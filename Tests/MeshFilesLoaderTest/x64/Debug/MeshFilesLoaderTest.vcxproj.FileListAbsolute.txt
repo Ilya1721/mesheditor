@@ -1,1 +1,0 @@
-D:\Projects\Cpp_Projects\MeshEditor\MeshEditorRepo\Tests\MeshFilesLoaderTest\x64\Debug\MeshFilesLoaderTest.vcxproj.CopyComplete

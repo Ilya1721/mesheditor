@@ -108,9 +108,10 @@ namespace RenderSystem
 		setEyeTargetUp(eye + mTarget, mTarget, up);
 	}
 
-	void Camera::zoomToPoint(const glm::vec3& cursorPosInWorldSpace, float step)
+	void Camera::zoom(float step)
 	{
-		translate(glm::normalize(cursorPosInWorldSpace - mEye) * step);
+		mEye += glm::normalize(mTarget - mEye) * step;
+		mViewMatrix = createViewMatrix();
 	}
 
 	void Camera::translate(const glm::vec3& movement)

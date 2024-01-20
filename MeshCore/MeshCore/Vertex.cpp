@@ -2,6 +2,11 @@
 
 namespace MeshCore
 {
+	bool Vertex::operator==(const Vertex& other) const
+	{
+		return pos == other.pos;
+	}
+
 	Vertex operator*(const glm::mat4& transform, const Vertex& vertex)
 	{
 		Vertex newVertex{};

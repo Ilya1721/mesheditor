@@ -8,9 +8,10 @@ using namespace std::filesystem;
 
 MeshCore::Mesh getDefaultMesh()
 {
-	MeshCore::Mesh mesh;
-	mesh.addVertex(defaultVertex);
-	return mesh;
+	std::vector<MeshCore::Vertex> vertices;
+	vertices.push_back(defaultVertex);
+
+	return { vertices };
 }
 
 MeshCore::Object3D getDefaultObject3D()

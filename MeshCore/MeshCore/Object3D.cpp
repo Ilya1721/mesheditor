@@ -9,17 +9,6 @@ namespace MeshCore
 		mTransform(1.0f)
 	{}
 
-	Object3D::Object3D(Object3D* parent, const Mesh& mesh) :
-		mParent(parent),
-		mMesh(mesh),
-		mTransform(1.0f)
-	{
-		if (parent)
-		{
-			parent->appendChild(this);
-		}
-	}
-
 	Object3D::Object3D(Object3D* parent, Mesh&& mesh) :
 		mParent(parent),
 		mMesh(std::move(mesh)),

@@ -12,14 +12,6 @@ namespace Mesh
 		EXPECT_TRUE(vertices[0] == mesh.getVertices()[0]);
 	}
 
-	TEST(Methods, AddVertex)
-	{
-		auto mesh = getDefaultMesh();
-		const auto& meshVertices = mesh.getVertices();
-		EXPECT_TRUE(defaultVertex.pos == meshVertices[0].pos);
-		EXPECT_TRUE(defaultVertex.normal == glm::normalize(meshVertices[0].normal));
-	}
-
 	TEST(Methods, GetRenderData)
 	{
 		auto mesh = getDefaultMesh();

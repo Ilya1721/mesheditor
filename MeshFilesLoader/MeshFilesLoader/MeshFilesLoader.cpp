@@ -48,8 +48,8 @@ namespace
 		auto contentString = fileContent.data();
 		auto delimiters = MeshFilesLoader::STL_DELIMITERS.c_str();
 
-		MeshCore::Mesh mesh;
 		std::vector<MeshCore::Vertex> vertices;
+		glm::vec3 faceNormal{};
 
 		char* nextToken = nullptr;
 		char* currentToken = strtok_s(contentString, delimiters, &nextToken);
@@ -58,19 +58,19 @@ namespace
 		{
 			if (Utility::isEqual(currentToken, MeshFilesLoader::KEYWORD_NORMAL))
 			{
-				vertices.emplace_back();
-				readTokenAsVector(currentToken, delimiters, nextToken, vertices.back().normal);
+				readTokenAsVector(currentToken, delimiters, nextToken, faceNormal);
 			}
 			else if (Utility::isEqual(currentToken, MeshFilesLoader::KEYWORD_VERTEX))
 			{
+				vertices.emplace_back();
 				readTokenAsVector(currentToken, delimiters, nextToken, vertices.back().pos);
-				mesh.addVertex(vertices.back());
+				vertices.back().normal = faceNormal;
 			}
 
 			currentToken = strtok_s(nullptr, delimiters, &nextToken);
 		}
 
-		return mesh;
+		return { vertices };
 	}
 
 	MeshCore::Mesh readBinary(const std::string& fileContent)
@@ -81,7 +81,7 @@ namespace
 		auto facesCount = *reinterpret_cast<const uint32_t*>(buffer);
 		buffer += sizeof(uint32_t);
 
-		MeshCore::Mesh mesh;
+		std::vector<MeshCore::Vertex> vertices;
 
 		for (size_t faceIdx = 0; faceIdx < facesCount; ++faceIdx)
 		{
@@ -93,13 +93,13 @@ namespace
 				MeshCore::Vertex vertex{};
 				vertex.normal = faceNormal;
 				readCoordinatesFromBuffer(vertex.pos, buffer);
-				mesh.addVertex(vertex);
+				vertices.push_back(vertex);
 			}
 
 			buffer += sizeof(uint16_t);
 		}
 
-		return mesh;
+		return { vertices };
 	}
 }
 

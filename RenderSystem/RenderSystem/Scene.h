@@ -28,7 +28,7 @@ namespace RenderSystem
 		void render();
 		void pan(const glm::vec3& startPointInWorldSpace, const glm::vec3& endPointInWorldSpace);
 		void orbit(const glm::vec3& startPointInNDC, const glm::vec3& endPointInNDC);
-		void zoomToPoint(const glm::vec3& cursorPosInWorldSpace, float yOffset);
+		void zoom(float yOffset);
 
 	private:
 		void init();

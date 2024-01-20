@@ -109,6 +109,9 @@ namespace RenderSystem
 
 	void Window::resizeViewport(int width, int height)
 	{
+		if (width == 0 || height == 0)
+			return;
+
 		mViewport->resize(width, height);
 		mScene->setProjectionMatrix(mViewport->getProjectionMatrix());
 	}
@@ -159,7 +162,7 @@ namespace RenderSystem
 
 	void Window::onMouseScroll(GLFWwindow* window, double xOffset, double yOffset)
 	{
-		sInstance->mScene->zoomToPoint(sInstance->unProject(sInstance->getCursorPos()), yOffset);
+		sInstance->mScene->zoom(yOffset);
 	}
 
 	void Window::onFramebufferSizeChanged(GLFWwindow* window, int width, int height)

@@ -23,8 +23,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UtilityTest", "Tests\Utilit
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MeshCoreTest", "Tests\MeshCoreTest\MeshCoreTest.vcxproj", "{36CD5647-A393-4FFA-9AC9-029EEFB45316}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MeshFilesLoaderTest", "Tests\MeshFilesLoaderTest\MeshFilesLoaderTest.vcxproj", "{B4F99CBA-AA51-488F-8E86-A629EC3677AE}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -105,14 +103,6 @@ Global
 		{36CD5647-A393-4FFA-9AC9-029EEFB45316}.Release|x64.Build.0 = Release|x64
 		{36CD5647-A393-4FFA-9AC9-029EEFB45316}.Release|x86.ActiveCfg = Release|Win32
 		{36CD5647-A393-4FFA-9AC9-029EEFB45316}.Release|x86.Build.0 = Release|Win32
-		{B4F99CBA-AA51-488F-8E86-A629EC3677AE}.Debug|x64.ActiveCfg = Debug|x64
-		{B4F99CBA-AA51-488F-8E86-A629EC3677AE}.Debug|x64.Build.0 = Debug|x64
-		{B4F99CBA-AA51-488F-8E86-A629EC3677AE}.Debug|x86.ActiveCfg = Debug|Win32
-		{B4F99CBA-AA51-488F-8E86-A629EC3677AE}.Debug|x86.Build.0 = Debug|Win32
-		{B4F99CBA-AA51-488F-8E86-A629EC3677AE}.Release|x64.ActiveCfg = Release|x64
-		{B4F99CBA-AA51-488F-8E86-A629EC3677AE}.Release|x64.Build.0 = Release|x64
-		{B4F99CBA-AA51-488F-8E86-A629EC3677AE}.Release|x86.ActiveCfg = Release|Win32
-		{B4F99CBA-AA51-488F-8E86-A629EC3677AE}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -121,7 +111,6 @@ Global
 		{B9A9A809-5810-4200-A577-F0C2EE36BA38} = {F8BF39D0-9138-4B7A-9A42-FCF2B6202302}
 		{FDD57FBA-6543-4127-8941-7E04700112F8} = {F8BF39D0-9138-4B7A-9A42-FCF2B6202302}
 		{36CD5647-A393-4FFA-9AC9-029EEFB45316} = {F8BF39D0-9138-4B7A-9A42-FCF2B6202302}
-		{B4F99CBA-AA51-488F-8E86-A629EC3677AE} = {F8BF39D0-9138-4B7A-9A42-FCF2B6202302}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5C2FB54D-18CA-446A-B4D2-9E487FD5C483}

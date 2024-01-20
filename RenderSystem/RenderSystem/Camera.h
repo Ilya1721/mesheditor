@@ -21,7 +21,7 @@ namespace RenderSystem
 		void setEyeTargetUp(const glm::vec3& eye, const glm::vec3& target, const glm::vec3& up);
 		void pan(const glm::vec3& startPointInWorldSpace, const glm::vec3& endPointInWorldSpace);
 		void orbit(const glm::vec3& startPointInNDC, const glm::vec3& endPointInNDC);
-		void zoomToPoint(const glm::vec3& cursorPosInWorldSpace, float step);
+		void zoom(float step);
 		void adjust(const MeshCore::AABBox& bbox, float fov);
 
 	private:

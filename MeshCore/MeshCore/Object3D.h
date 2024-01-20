@@ -12,7 +12,6 @@ namespace MeshCore
 	{
 	public:
 		Object3D();
-		Object3D(Object3D* parent, const Mesh& mesh);
 		Object3D(Object3D* parent, Mesh&& mesh);
 		Object3D(const Object3D& other) = delete;
 		Object3D(Object3D&& other) noexcept = default;

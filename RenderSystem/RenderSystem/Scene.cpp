@@ -98,11 +98,11 @@ namespace RenderSystem
 		mRenderer.getShaderTransformationSystem().setViewModel(glm::value_ptr(mCamera.getViewMatrix() * mRootObject.getTransform()));
 	}
 
-	void Scene::zoomToPoint(const glm::vec3& cursorPosInWorldSpace, float yOffset)
+	void Scene::zoom(float yOffset)
 	{
 		MeshCore::AABBox rootObjectBBox;
 		rootObjectBBox.setFromObject(mRootObject);
-		mCamera.zoomToPoint(cursorPosInWorldSpace, yOffset * rootObjectBBox.getHeight() * ZOOM_STEP_KOEF);
+		mCamera.zoom(yOffset * rootObjectBBox.getHeight() * ZOOM_STEP_KOEF);
 		mRenderer.getShaderTransformationSystem().setViewModel(glm::value_ptr(mCamera.getViewMatrix() * mRootObject.getTransform()));
 	}
 
