@@ -1,23 +1,48 @@
 #include "Mesh.h"
 
+#include <numeric>
+
 #include "Constants.h"
+
+namespace
+{
+	using namespace MeshCore;
+
+	glm::vec3 calcAverage(const std::unordered_set<glm::vec3>& vecSet)
+	{
+		glm::vec3 result{};
+		
+		for (const auto& vec : vecSet)
+		{
+			result += vec;
+		}
+
+		return result / static_cast<float>(vecSet.size());
+	}
+}
 
 namespace MeshCore
 {
 	Mesh::Mesh(const std::vector<Vertex>& vertices)
-		: mVertices(vertices)
+		: mOriginalVertices(vertices)
 	{
-		for (size_t vertexIdx = 2; vertexIdx < mVertices.size(); vertexIdx += 3)
+		for (size_t vertexIdx = 2; vertexIdx < mOriginalVertices.size(); vertexIdx += 3)
 		{
 			createFace(vertexIdx);
 		}
 
 		setupTwinsForHalfEdges();
+
+		if (SMOOTHING_ENABLED)
+		{
+			averageFaceNormals();
+			createVerticesToRender();
+		}
 	}
 
 	const std::vector<Vertex>& Mesh::getVertices() const
 	{
-		return mVertices;
+		return mVerticesToRender;
 	}
 
 	void Mesh::createHalfEdgesForFace(size_t lastVertexIdx)
@@ -75,26 +100,36 @@ namespace MeshCore
 
 	Vertex* Mesh::getUniqueVertex(size_t vertexIdx)
 	{
-		auto& vertex = mVertices[vertexIdx];
-		auto vertexMapIt = mVerticesMap.find(vertex);
-		if (vertexMapIt != mVerticesMap.end())
+		const auto& vertex = mOriginalVertices[vertexIdx];
+		auto vertexMapIt = mUniqueVerticesMap.find(vertex);
+
+		if (vertexMapIt != mUniqueVerticesMap.end())
 		{
-			return vertexMapIt->second;
+			vertexMapIt->second.adjacentFacesNormals.insert(vertex.normal);
+			return &vertexMapIt->second.vertex;
 		}
 
-		mVerticesMap.insert({ vertex, &vertex });
+		auto insertedVertexWithExtraData = mUniqueVerticesMap.insert({ vertex, {vertex, {vertex.normal}} });
 
-		return &vertex;
+		return &insertedVertexWithExtraData.first->second.vertex;
 	}
 
 	void Mesh::createFace(size_t lastVertexIdx)
 	{
+		mFaces.push_back(std::make_unique<Face>());
 		createHalfEdgesForFace(lastVertexIdx);
+		connectHalfEdgesToFace();
+	}
 
-		const auto& firstHalfEdgeOfFace = mHalfEdges[mHalfEdges.size() - 3];
-		auto face = std::make_unique<Face>();
-		face->halfEdge = firstHalfEdgeOfFace.get();
-		mFaces.push_back(std::move(face));
+	void Mesh::connectHalfEdgesToFace()
+	{
+		auto& lastFace = mFaces[mFaces.size() - 1];
+		lastFace->halfEdge = mHalfEdges[mHalfEdges.size() - 3].get();
+
+		for (size_t halfEdgeOffset = 1; halfEdgeOffset <= 3; ++halfEdgeOffset)
+		{
+			mHalfEdges[mHalfEdges.size() - halfEdgeOffset]->face = lastFace.get();
+		}
 	}
 
 	void Mesh::setupTwinsForHalfEdges()
@@ -113,12 +148,42 @@ namespace MeshCore
 		}
 	}
 
+	void Mesh::averageFaceNormals()
+	{
+		for (auto& [origVertex, vertexWithExtraData] : mUniqueVerticesMap)
+		{
+			vertexWithExtraData.vertex.normal = glm::normalize(calcAverage(vertexWithExtraData.adjacentFacesNormals));
+		}
+	}
+
+	bool Mesh::canRenderOriginalVertices() const
+	{
+		return !SMOOTHING_ENABLED;
+	}
+
+	void Mesh::createVerticesToRender()
+	{
+		mVerticesToRender.clear();
+		for (const auto& face : mFaces)
+		{
+			auto origHalfEdge = face->halfEdge;
+			auto currentHalfEdge = origHalfEdge;
+
+			do {
+				mVerticesToRender.push_back(*currentHalfEdge->vertex);
+				currentHalfEdge = currentHalfEdge->next;
+			} while (currentHalfEdge != origHalfEdge);
+		}
+	}
+
 	RenderData Mesh::getRenderData() const
 	{
-		RenderData renderData;
-		renderData.reserveMemory(mVertices.size() * COORDINATES_PER_VERTEX);
+		auto& verticesToRender = canRenderOriginalVertices() ? mOriginalVertices : mVerticesToRender;
 
-		for (const auto& vertex : mVertices)
+		RenderData renderData;
+		renderData.reserveMemory(verticesToRender.size() * COORDINATES_PER_VERTEX);
+
+		for (const auto& vertex : verticesToRender)
 		{
 			for (int coordIdx = 0; coordIdx < COORDINATES_PER_VERTEX; ++coordIdx)
 			{

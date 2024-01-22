@@ -40,12 +40,17 @@ namespace MeshCore
 		void connectVertexAndHalfEdge(Vertex* vertex, const std::unique_ptr<HalfEdge>& halfEdge);
 		void setupTwinsForHalfEdges();
 		Vertex* getUniqueVertex(size_t vertexIdx);
+		void averageFaceNormals();
+		void connectHalfEdgesToFace();
+		void createVerticesToRender();
+		bool canRenderOriginalVertices() const;
 
 	private:
-		std::vector<Vertex> mVertices;
+		std::vector<Vertex> mOriginalVertices;
+		std::vector<Vertex> mVerticesToRender;
 		std::vector<std::unique_ptr<HalfEdge>> mHalfEdges;
 		std::vector<std::unique_ptr<Face>> mFaces;
 		std::unordered_map<HalfEdgeVerticesPair, HalfEdge*> mHalfEdgeVerticesMap;
-		std::unordered_map<Vertex, Vertex*> mVerticesMap;
+		std::unordered_map<Vertex, VertexWithExtraData> mUniqueVerticesMap;
 	};
 }

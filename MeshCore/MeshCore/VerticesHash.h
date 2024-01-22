@@ -1,7 +1,5 @@
 #pragma once
 
-#include <glm/gtx/hash.hpp>
-
 #include "Vertex.h"
 
 namespace std
