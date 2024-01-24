@@ -29,6 +29,7 @@ namespace MeshCore
 		RenderData getRenderData() const;
 
 	private:
+		void init();
 		void createFace(size_t lastVertexIdx);
 		void createHalfEdgesForFace(size_t lastVertexIdx);
 		void createHalfEdgeVerticesMap(const std::unique_ptr<HalfEdge>& firstHalfEdge,

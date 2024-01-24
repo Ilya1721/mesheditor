@@ -2,14 +2,37 @@
 
 #include <numeric>
 
+namespace
+{
+	glm::vec3 getMinVector(const glm::vec3& left, const glm::vec3& right)
+	{
+		glm::vec3 result{};
+		result.x = std::min(left.x, right.x);
+		result.y = std::min(left.y, right.y);
+		result.z = std::min(left.z, right.z);
+
+		return result;
+	}
+
+	glm::vec3 getMaxVector(const glm::vec3& left, const glm::vec3& right)
+	{
+		glm::vec3 result{};
+		result.x = std::max(left.x, right.x);
+		result.y = std::max(left.y, right.y);
+		result.z = std::max(left.z, right.z);
+
+		return result;
+	}
+}
+
 namespace MeshCore
 {
 	AABBox::AABBox()
 	{
-		init();
+		clear();
 	}
 
-	void AABBox::setFromMesh(const Mesh& mesh, const glm::mat4& meshTransform)
+	void AABBox::applyMesh(const Mesh& mesh, const glm::mat4& meshTransform)
 	{
 		for (const auto& vertex : mesh.getVertices())
 		{
@@ -26,16 +49,7 @@ namespace MeshCore
 		}
 	}
 
-	void AABBox::setFromObject(const Object3D& object)
-	{
-		setFromMesh(object.getMesh(), object.getTransform());
-		for (const auto& child : object.getChildren())
-		{
-			setFromObject(*child);
-		}
-	}
-
-	void AABBox::init()
+	void AABBox::clear()
 	{
 		constexpr auto floatMax = std::numeric_limits<float>::max();
 		constexpr auto floatMin = -floatMax;
@@ -47,6 +61,12 @@ namespace MeshCore
 	{
 		mMin = transform * glm::vec4(mMin, 1.0f);
 		mMax = transform * glm::vec4(mMax, 1.0f);
+	}
+
+	void AABBox::applyOtherBBox(const AABBox& other)
+	{
+		mMin = getMinVector(mMin, other.mMin);
+		mMax = getMaxVector(mMax, other.mMax);
 	}
 
 	glm::vec3 AABBox::getCenter() const

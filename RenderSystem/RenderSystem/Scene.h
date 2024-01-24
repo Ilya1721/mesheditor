@@ -4,7 +4,6 @@
 #include <string>
 
 #include "MeshCore/Object3D.h"
-#include "MeshCore/AABBox.h"
 
 #include "Camera.h"
 #include "Renderer.h"
@@ -35,10 +34,8 @@ namespace RenderSystem
 		void initRenderBuffer();
 		void initLighting();
 		void initShaderTransformationSystem();
-		void adjustCamera(const MeshCore::AABBox& bbox, float fov);
-		void adjustLightPos(const MeshCore::AABBox& bbox);
-		void moveRootObjectToOrigin();
-		void adjustCameraAndLight();
+		void adjustCamera();
+		void adjustLightPos();
 
 	private:
 		Window* mParentWindow;

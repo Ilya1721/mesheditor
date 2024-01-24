@@ -26,6 +26,11 @@ namespace MeshCore
 	Mesh::Mesh(const std::vector<Vertex>& vertices)
 		: mOriginalVertices(vertices)
 	{
+		init();
+	}
+
+	void Mesh::init()
+	{
 		for (size_t vertexIdx = 2; vertexIdx < mOriginalVertices.size(); vertexIdx += 3)
 		{
 			createFace(vertexIdx);
@@ -42,7 +47,7 @@ namespace MeshCore
 
 	const std::vector<Vertex>& Mesh::getVertices() const
 	{
-		return mVerticesToRender;
+		return canRenderOriginalVertices() ? mOriginalVertices : mVerticesToRender;
 	}
 
 	void Mesh::createHalfEdgesForFace(size_t lastVertexIdx)

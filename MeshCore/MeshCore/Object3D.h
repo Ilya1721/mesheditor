@@ -5,10 +5,11 @@
 
 #include "GeometryCore/Matrix.h"
 #include "Mesh.h"
+#include "AABBox.h"
 
 namespace MeshCore 
 {
-	class Object3D final
+	class Object3D
 	{
 	public:
 		Object3D();
@@ -20,25 +21,31 @@ namespace MeshCore
 
 		bool operator==(const Object3D& other) const = default;
 
+		void init();
 		Object3D* getParent() const;
 		const std::unordered_set<Object3D*>& getChildren() const;
-		void appendChild(Object3D* object);
-		void removeChild(Object3D* object);
+		void appendChild(Object3D* child);
+		void removeChild(Object3D* child);
 
 		const Mesh& getMesh() const;
 		RenderData getRenderData() const;
 		const glm::mat4& getTransform() const;
 		void setTransform(const glm::mat4& transform);
+		const AABBox& getBBox() const;
 
 	private:
+		void calculateBBox(const Object3D* object);
 		RenderData getRenderData(const Object3D* object) const;
 		void setParent(Object3D* parent);
+		void updateParentBBox(Object3D* parent) const;
+		void recalcParentBBox(Object3D* parent) const;
 
 	private:
 		Object3D* mParent;
 		std::unordered_set<Object3D*> mChildren;
 		Mesh mMesh;
 		glm::mat4 mTransform;
+		AABBox mBBox;
 	};
 }
 

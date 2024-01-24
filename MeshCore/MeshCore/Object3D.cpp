@@ -14,9 +14,16 @@ namespace MeshCore
 		mMesh(std::move(mesh)),
 		mTransform(1.0f)
 	{
-		if (parent)
+		init();
+	}
+
+	void Object3D::init()
+	{
+		calculateBBox(this);
+
+		if (mParent)
 		{
-			parent->appendChild(this);
+			mParent->appendChild(this);
 		}
 	}
 
@@ -67,22 +74,62 @@ namespace MeshCore
 		mTransform = transform;
 	}
 
-	void Object3D::appendChild(Object3D* object)
+	const AABBox& Object3D::getBBox() const
 	{
-		if (object)
+		return mBBox;
+	}
+
+	void Object3D::calculateBBox(const Object3D* object)
+	{
+		mBBox.applyMesh(object->getMesh(), object->getTransform());
+		for (const auto& child : object->getChildren())
 		{
-			mChildren.insert(object);
-			object->setParent(this);
+			calculateBBox(child);
 		}
 	}
 
-	void Object3D::removeChild(Object3D* object)
+	void Object3D::appendChild(Object3D* child)
 	{
-		auto childIt = mChildren.find(object);
+		if (!child)
+		{
+			return;
+		}
+
+		mChildren.insert(child);
+		child->setParent(this);
+		child->updateParentBBox(child->mParent);
+	}
+
+	void Object3D::removeChild(Object3D* child)
+	{
+		auto childIt = mChildren.find(child);
 		if (childIt != mChildren.end())
 		{
 			mChildren.erase(childIt);
-			object->setParent(nullptr);
+			child->setParent(nullptr);
+			child->recalcParentBBox(child->mParent);
 		}
+	}
+
+	void Object3D::updateParentBBox(Object3D* parent) const
+	{
+		if (!parent)
+		{
+			return;
+		}
+
+		parent->mBBox.applyOtherBBox(this->mBBox);
+		parent->updateParentBBox(parent->mParent);
+	}
+
+	void Object3D::recalcParentBBox(Object3D* parent) const
+	{
+		if (!parent)
+		{
+			return;
+		}
+
+		parent->calculateBBox(parent);
+		recalcParentBBox(parent->mParent);
 	}
 }

@@ -8,7 +8,6 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "MeshFilesLoader/MeshFilesLoader.h"
-#include "MeshCore/AABBox.h"
 
 #include "Window.h"
 #include "Constants.h"
@@ -26,11 +25,11 @@ namespace RenderSystem
 
 	void Scene::init()
 	{
-		moveRootObjectToOrigin();
 		initRenderBuffer();
 		initLighting();
 		initShaderTransformationSystem();
-		adjustCameraAndLight();
+		adjustCamera();
+		adjustLightPos();
 	}
 
 	void Scene::initRenderBuffer()
@@ -51,7 +50,7 @@ namespace RenderSystem
 	void Scene::initShaderTransformationSystem()
 	{
 		auto& shaderTransformationSystem = mRenderer.getShaderTransformationSystem();
-		shaderTransformationSystem.setViewModel(glm::value_ptr(getViewMatrix() * mRootObject.getTransform()));
+		shaderTransformationSystem.setViewModel(glm::value_ptr(getViewMatrix()));
 		shaderTransformationSystem.setProjection(glm::value_ptr(mParentWindow->getViewport()->getProjectionMatrix()));
 	}
 
@@ -60,50 +59,39 @@ namespace RenderSystem
 		mRenderer.render();
 	}
 
-	void Scene::adjustCameraAndLight()
+	void Scene::adjustLightPos()
 	{
-		MeshCore::AABBox rootObjectBBox;
-		rootObjectBBox.setFromObject(mRootObject);
-		adjustCamera(rootObjectBBox, mParentWindow->getViewport()->getFov());
-		adjustLightPos(rootObjectBBox);
-	}
-
-	void Scene::adjustLightPos(const MeshCore::AABBox& bbox)
-	{
-		auto cameraXYVec = (mCamera.getRight() + mCamera.getUp()) * bbox.getHeight() * 0.25f;
+		auto cameraXYVec = (mCamera.getRight() + mCamera.getUp()) * mRootObject.getBBox().getHeight() * 0.25f;
 		auto cameraZVec = -mCamera.getNormalizedDirection() * LIGHT_SOURCE_TO_CAMERA_DISTANCE;
 		auto lightPos = mCamera.getEye() + cameraXYVec + cameraZVec;
-		glm::vec3 lightPosInCameraSpace = mCamera.getViewMatrix() * mRootObject.getTransform() * glm::vec4(lightPos, 1.0f);
+		glm::vec3 lightPosInCameraSpace = mCamera.getViewMatrix() * glm::vec4(lightPos, 1.0f);
 		mRenderer.getLighting().setLightPos(glm::value_ptr(lightPosInCameraSpace));
 	}
 
-	void Scene::adjustCamera(const MeshCore::AABBox& bbox, float fov)
+	void Scene::adjustCamera()
 	{
-		mCamera.adjust(bbox, fov);
-		const auto modelView = mCamera.getViewMatrix() * mRootObject.getTransform();
-		mRenderer.getShaderTransformationSystem().setViewModel(glm::value_ptr(modelView));
-		glm::vec3 cameraPosInCameraSpace = modelView * glm::vec4(mCamera.getEye(), 1.0f);
+		mCamera.adjust(mRootObject.getBBox(), mParentWindow->getViewport()->getFov());
+		mRenderer.getShaderTransformationSystem().setViewModel(glm::value_ptr(mCamera.getViewMatrix()));
+		glm::vec3 cameraPosInCameraSpace = mCamera.getViewMatrix() * glm::vec4(mCamera.getEye(), 1.0f);
 		mRenderer.getLighting().setCameraPos(glm::value_ptr(cameraPosInCameraSpace));
 	}
 
 	void Scene::pan(const glm::vec3& startPointInWorldSpace, const glm::vec3& endPointInWorldSpace)
 	{
 		mCamera.pan(startPointInWorldSpace, endPointInWorldSpace);
-		mRenderer.getShaderTransformationSystem().setViewModel(glm::value_ptr(mCamera.getViewMatrix() * mRootObject.getTransform()));
+		mRenderer.getShaderTransformationSystem().setViewModel(glm::value_ptr(mCamera.getViewMatrix()));
 	}
 
 	void Scene::orbit(const glm::vec3& startPointInNDC, const glm::vec3& endPointInNDC)
 	{
 		mCamera.orbit(startPointInNDC, endPointInNDC);
-		mRenderer.getShaderTransformationSystem().setViewModel(glm::value_ptr(mCamera.getViewMatrix() * mRootObject.getTransform()));
+		mRenderer.getShaderTransformationSystem().setViewModel(glm::value_ptr(mCamera.getViewMatrix()));
 	}
 
 	void Scene::zoom(float yOffset)
 	{
-		MeshCore::AABBox rootObjectBBox;
-		rootObjectBBox.setFromObject(mRootObject);
-		mCamera.zoom(yOffset * rootObjectBBox.getHeight() * ZOOM_STEP_KOEF);
-		mRenderer.getShaderTransformationSystem().setViewModel(glm::value_ptr(mCamera.getViewMatrix() * mRootObject.getTransform()));
+		mCamera.zoom(yOffset * mRootObject.getBBox().getHeight() * ZOOM_STEP_KOEF);
+		mRenderer.getShaderTransformationSystem().setViewModel(glm::value_ptr(mCamera.getViewMatrix()));
 	}
 
 	void Scene::setProjectionMatrix(const glm::mat4& projectionMatrix)
@@ -114,12 +102,5 @@ namespace RenderSystem
 	const glm::mat4& Scene::getViewMatrix() const
 	{
 		return mCamera.getViewMatrix();
-	}
-
-	void Scene::moveRootObjectToOrigin()
-	{
-		MeshCore::AABBox rootObjectBBox;
-		rootObjectBBox.setFromObject(mRootObject);
-		mRootObject.setTransform(glm::translate(glm::mat4(1.0f), -rootObjectBBox.getCenter()));
 	}
 }
