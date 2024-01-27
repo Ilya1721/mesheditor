@@ -26,7 +26,6 @@ namespace RenderSystem
 	void Scene::init()
 	{
 		initRenderBuffer();
-		initLighting();
 		initShaderTransformationSystem();
 		adjustCamera();
 		adjustLightPos();
@@ -35,16 +34,6 @@ namespace RenderSystem
 	void Scene::initRenderBuffer()
 	{
 		mRenderer.getRenderBuffer().setRenderData(mRootObject.getRenderData());
-	}
-
-	void Scene::initLighting()
-	{
-		auto& lighting = mRenderer.getLighting();
-		lighting.setObjectColor(glm::value_ptr(OBJECT_COLOR));
-		lighting.setLightColor(glm::value_ptr(LIGHT_COLOR));
-		lighting.setAmbientStrength(AMBIENT_STRENGTH);
-		lighting.setSpecularStrength(SPECULAR_STRENGTH);
-		lighting.setShininess(LIGHT_SHININESS);
 	}
 
 	void Scene::initShaderTransformationSystem()

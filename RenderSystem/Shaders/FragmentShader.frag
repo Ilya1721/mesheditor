@@ -5,11 +5,25 @@ in vec3 vertexNormalInCameraSpace;
 
 uniform vec3 lightPosInCameraSpace;
 uniform vec3 cameraPosInCameraSpace;
-uniform vec3 objectColor;
-uniform vec3 lightColor;
-uniform float ambientStrength;
-uniform float specularStrength;
-uniform int shininess;
+
+struct Material 
+{
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+    float shininess;
+}; 
+  
+uniform Material material;
+
+struct Light 
+{
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+};
+
+uniform Light light;
 
 out vec4 fragColor;
 
@@ -17,15 +31,15 @@ void main()
 {
     vec3 reversedLightUnitDir = normalize(lightPosInCameraSpace - vertexPosInCameraSpace);
     float diffuseStrength = max(dot(vertexNormalInCameraSpace, reversedLightUnitDir), 0.0);
-    vec3 diffuse = diffuseStrength * lightColor;
+    vec3 diffuse = diffuseStrength * light.diffuse * material.diffuse;
 
     vec3 reversedCameraUnitDir = normalize(cameraPosInCameraSpace - vertexPosInCameraSpace);
     vec3 reflectDir = reflect(-reversedLightUnitDir, vertexNormalInCameraSpace);  
 
-    float specValue = pow(max(dot(reversedCameraUnitDir, reflectDir), 0.0), shininess);
-    vec3 specular = specularStrength * specValue * lightColor;
+    float specValue = pow(max(dot(reversedCameraUnitDir, reflectDir), 0.0), material.shininess);
+    vec3 specular = specValue * light.specular * material.specular;
 
-    vec3 ambient = ambientStrength * lightColor;
-    vec3 result = (ambient + diffuse + specular) * objectColor;
+    vec3 ambient = light.ambient * material.ambient;
+    vec3 result = ambient + diffuse + specular;
     fragColor = vec4(result, 1.0);
 }

@@ -5,18 +5,9 @@
 #endif
 #include "glad.h"
 
+#include <glm/gtc/type_ptr.hpp>
+
 #include "Constants.h"
-
-namespace
-{
-	using namespace RenderSystem;
-
-	void setupSettings()
-	{
-		glClearColor(BACKGROUND_COLOR.r, BACKGROUND_COLOR.g, BACKGROUND_COLOR.b, BACKGROUND_COLOR.a);
-		glEnable(GL_DEPTH_TEST);
-	}
-}
 
 namespace RenderSystem
 {
@@ -25,6 +16,20 @@ namespace RenderSystem
 		mShaderProgram = shaderProgram;
 		initUniformLocations();
 		setupSettings();
+	}
+
+	void Lighting::setupSettings()
+	{
+		glClearColor(BACKGROUND_COLOR.r, BACKGROUND_COLOR.g, BACKGROUND_COLOR.b, BACKGROUND_COLOR.a);
+		glEnable(GL_DEPTH_TEST);
+
+		setLightAmbient(glm::value_ptr(DefaultLight::AMBIENT));
+		setLightDiffuse(glm::value_ptr(DefaultLight::DIFFUSE));
+		setLightSpecular(glm::value_ptr(DefaultLight::SPECULAR));
+		setMaterialAmbient(glm::value_ptr(GoldMaterial::AMBIENT));
+		setMaterialDiffuse(glm::value_ptr(GoldMaterial::DIFFUSE));
+		setMaterialSpecular(glm::value_ptr(GoldMaterial::SPECULAR));
+		setMaterialShininess(GoldMaterial::SHININESS);
 	}
 
 	int Lighting::getUniformLocation(const char* name) const
@@ -36,11 +41,13 @@ namespace RenderSystem
 	{
 		mLightPos = getUniformLocation("lightPos");
 		mCameraPos = getUniformLocation("cameraPos");
-		mObjectColor = getUniformLocation("objectColor");
-		mLightColor = getUniformLocation("lightColor");
-		mAmbientStrength = getUniformLocation("ambientStrength");
-		mSpecularStrength = getUniformLocation("specularStrength");
-		mShininess = getUniformLocation("shininess");
+		mLightAmbient = getUniformLocation("light.ambient");
+		mLightDiffuse = getUniformLocation("light.diffuse");
+		mLightSpecular = getUniformLocation("light.specular");
+		mMaterialAmbient = getUniformLocation("material.ambient");
+		mMaterialDiffuse = getUniformLocation("material.diffuse");
+		mMaterialSpecular = getUniformLocation("material.specular");
+		mMaterialShininess = getUniformLocation("material.shininess");
 	}
 
 	void Lighting::setLightPos(const float* lightPos)
@@ -48,33 +55,43 @@ namespace RenderSystem
 		glUniform3fv(mLightPos, 1, lightPos);
 	}
 
-	void Lighting::setObjectColor(const float* color)
-	{
-		glUniform3fv(mObjectColor, 1, color);
-	}
-
-	void Lighting::setLightColor(const float* color)
-	{
-		glUniform3fv(mLightColor, 1, color);
-	}
-
 	void Lighting::setCameraPos(const float* pos)
 	{
 		glUniform3fv(mCameraPos, 1, pos);
 	}
 
-	void Lighting::setAmbientStrength(float strength)
+	void Lighting::setLightAmbient(const float* ambient)
 	{
-		glUniform1f(mAmbientStrength, strength);
+		glUniform3fv(mLightAmbient, 1, ambient);
 	}
 
-	void Lighting::setSpecularStrength(float strength)
+	void Lighting::setLightDiffuse(const float* diffuse)
 	{
-		glUniform1f(mSpecularStrength, strength);
+		glUniform3fv(mLightDiffuse, 1, diffuse);
 	}
 
-	void Lighting::setShininess(int shininess)
+	void Lighting::setLightSpecular(const float* specular)
 	{
-		glUniform1i(mShininess, shininess);
+		glUniform3fv(mLightSpecular, 1, specular);
+	}
+
+	void Lighting::setMaterialAmbient(const float* ambient)
+	{
+		glUniform3fv(mMaterialAmbient, 1, ambient);
+	}
+
+	void Lighting::setMaterialDiffuse(const float* diffuse)
+	{
+		glUniform3fv(mMaterialDiffuse, 1, diffuse);
+	}
+
+	void Lighting::setMaterialSpecular(const float* specular)
+	{
+		glUniform3fv(mMaterialSpecular, 1, specular);
+	}
+
+	void Lighting::setMaterialShininess(float shininess)
+	{
+		glUniform1f(mMaterialShininess, shininess);
 	}
 }

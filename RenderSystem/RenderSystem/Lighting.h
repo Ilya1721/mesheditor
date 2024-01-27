@@ -9,26 +9,31 @@ namespace RenderSystem
 
 		void init(int shaderProgram);
 		void setLightPos(const float* lightPos);
-		void setObjectColor(const float* color);
-		void setLightColor(const float* color);
 		void setCameraPos(const float* pos);
-		void setAmbientStrength(float strength);
-		void setSpecularStrength(float strength);
-		void setShininess(int shininess);
+		void setLightAmbient(const float* ambient);
+		void setLightDiffuse(const float* diffuse);
+		void setLightSpecular(const float* specular);
+		void setMaterialAmbient(const float* ambient);
+		void setMaterialDiffuse(const float* diffuse);
+		void setMaterialSpecular(const float* specular);
+		void setMaterialShininess(float shininess);
 
 	private:
 		void initUniformLocations();
 		int getUniformLocation(const char* name) const;
+		void setupSettings();
 
 	private:
 		int mShaderProgram;
 		int mLightPos;
-		int mObjectColor;
-		int mLightColor;
-		int mAmbientStrength;
-		int mSpecularStrength;
-		int mShininess;
 		int mCameraPos;
+		int mLightAmbient;
+		int mLightDiffuse;
+		int mLightSpecular;
+		int mMaterialAmbient;
+		int mMaterialDiffuse;
+		int mMaterialSpecular;
+		int mMaterialShininess;
 	};
 }
 
