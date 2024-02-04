@@ -14,6 +14,14 @@ namespace RenderSystem
 		static inline constexpr float SHININESS = 2.0f;
 	};
 
+	struct RubyMaterial
+	{
+		static inline constexpr glm::vec3 AMBIENT = glm::vec3(0.1745f, 0.01175f, 0.01175f);
+		static inline constexpr glm::vec3 DIFFUSE = glm::vec3(0.61424f, 0.04136f, 0.04136f);
+		static inline constexpr glm::vec3 SPECULAR = glm::vec3(0.727811f, 0.626959f, 0.626959f);
+		static inline constexpr float SHININESS = 2.0f;
+	};
+
 	struct DefaultLight
 	{
 		static inline constexpr glm::vec3 AMBIENT = glm::vec3(0.7f, 0.7f, 0.7f);
@@ -35,6 +43,8 @@ namespace RenderSystem
 	constexpr float ZOOM_STEP_KOEF = 0.5f;
 	constexpr float ORBIT_SPEED_KOEF = 4.0f;
 	constexpr int CAMERA_DIST_TO_BBOX_KOEF = 4;
+
+	constexpr bool HIGHLIGHT_HOVERED_FACE = true;
 
 	inline const std::string WINDOW_TITLE = "Mesh Editor";
 }

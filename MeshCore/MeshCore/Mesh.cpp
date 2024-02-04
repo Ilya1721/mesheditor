@@ -198,4 +198,20 @@ namespace MeshCore
 
 		return renderData;
 	}
+
+	RayFaceIntersection Mesh::getClosestToCameraIntersectedFace(const GeometryCore::Ray& ray, const glm::vec3& cameraPos) const
+	{
+		RayFaceIntersection rayFaceIntersection;
+
+		for (const auto& face : mFaces)
+		{
+			auto intersectionPoint = face->getIntersectionPoint(ray);
+			if (intersectionPoint.has_value())
+			{
+				rayFaceIntersection.setClosest({ face.get(), intersectionPoint.value() }, cameraPos);
+			}
+		}
+
+		return rayFaceIntersection;
+	}
 }

@@ -112,6 +112,7 @@
     <ClInclude Include="MeshCore\Constants.h" />
     <ClInclude Include="MeshCore\Face.h" />
     <ClInclude Include="MeshCore\HalfEdge.h" />
+    <ClInclude Include="MeshCore\Intersection.h" />
     <ClInclude Include="MeshCore\Mesh.h" />
     <ClInclude Include="MeshCore\Object3D.h" />
     <ClInclude Include="MeshCore\RenderData.h" />
@@ -120,6 +121,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MeshCore\AABBox.cpp" />
+    <ClCompile Include="MeshCore\Face.cpp" />
+    <ClCompile Include="MeshCore\Intersection.cpp" />
     <ClCompile Include="MeshCore\Mesh.cpp" />
     <ClCompile Include="MeshCore\Object3D.cpp" />
     <ClCompile Include="MeshCore\RenderData.cpp" />

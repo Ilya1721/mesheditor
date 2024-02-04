@@ -7,7 +7,6 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/epsilon.hpp>
 
-#include "GeometryCore/Ray.h"
 #include "GeometryCore/Constants.h"
 
 #include "Constants.h"
@@ -70,6 +69,11 @@ namespace RenderSystem
 		return glm::normalize(mTarget - mEye);
 	}
 
+	Ray Camera::getCameraRay(const glm::vec3& cursorPosInWorldSpace) const
+	{
+		return { mEye, cursorPosInWorldSpace - mEye };
+	}
+
 	void Camera::setEyeTargetUp(const glm::vec3& eye, const glm::vec3& target, const glm::vec3& up)
 	{
 		if (up == glm::vec3(0.0f, 0.0f, 0.0f))
@@ -94,7 +98,7 @@ namespace RenderSystem
 		Ray startRay(startPointInWorldSpace, startPointInWorldSpace - mEye);
 		Ray endRay(endPointInWorldSpace, endPointInWorldSpace - mEye);
 		auto targetPlane = getTargetPlane();
-		translate(startRay.findIntersection(targetPlane) - endRay.findIntersection(targetPlane));
+		translate(startRay.findIntersection(targetPlane).value() - endRay.findIntersection(targetPlane).value());
 	}
 
 	void Camera::orbit(const glm::vec3& startPointInNDC, const glm::vec3& endPointInNDC)
@@ -154,7 +158,7 @@ namespace RenderSystem
 	glm::vec3 Camera::calcRight() const
 	{
 		auto directionNormalized = getNormalizedDirection();
-		if (glm::epsilonNotEqual(glm::dot(directionNormalized, mUp), 0.0f, 1e-5f))
+		if (glm::epsilonNotEqual(glm::dot(directionNormalized, mUp), 0.0f, EPSILON))
 		{
 			throw std::exception("Camera Up and Direction vectors must be perpendicular to each other");
 		}

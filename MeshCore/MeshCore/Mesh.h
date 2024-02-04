@@ -4,11 +4,14 @@
 #include <memory>
 #include <unordered_map>
 
+#include "GeometryCore/Ray.h"
+
 #include "Vertex.h"
 #include "HalfEdge.h"
 #include "Face.h"
 #include "RenderData.h"
 #include "VerticesHash.h"
+#include "Intersection.h"
 
 namespace MeshCore
 {
@@ -27,6 +30,7 @@ namespace MeshCore
 
 		const std::vector<Vertex>& getVertices() const;
 		RenderData getRenderData() const;
+		RayFaceIntersection getClosestToCameraIntersectedFace(const GeometryCore::Ray& ray, const glm::vec3& cameraPos) const;
 
 	private:
 		void init();

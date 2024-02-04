@@ -28,6 +28,7 @@ namespace RenderSystem
 		void pan(const glm::vec3& startPointInWorldSpace, const glm::vec3& endPointInWorldSpace);
 		void orbit(const glm::vec3& startPointInNDC, const glm::vec3& endPointInNDC);
 		void zoom(float yOffset);
+		void highlightHoveredFace(const glm::vec3& cursorPosInWorldSpace);
 
 	private:
 		void init();

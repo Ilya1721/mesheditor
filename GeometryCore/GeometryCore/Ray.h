@@ -1,5 +1,7 @@
 #pragma once
 
+#include <optional>
+
 #include "Plane.h"
 
 namespace GeometryCore
@@ -9,7 +11,7 @@ namespace GeometryCore
 		glm::vec3 point;
 		glm::vec3 direction;
 
-		glm::vec3 findIntersection(const Plane& plane) const;
+		std::optional<glm::vec3> findIntersection(const Plane& plane) const;
 	};
 }
 

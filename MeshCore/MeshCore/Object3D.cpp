@@ -1,6 +1,10 @@
 #include "Object3D.h"
 
+#include "GeometryCore/Numeric.h"
+
 #include "Constants.h"
+
+using namespace GeometryCore;
 
 namespace MeshCore
 {
@@ -77,6 +81,21 @@ namespace MeshCore
 	const AABBox& Object3D::getBBox() const
 	{
 		return mBBox;
+	}
+
+	Face* Object3D::getClosestToCameraIntersectedFace(const GeometryCore::Ray& ray, const glm::vec3& cameraPos) const
+	{
+		auto currentClosestIntersection = mMesh.getClosestToCameraIntersectedFace(ray, cameraPos);
+		for (const auto& child : mChildren)
+		{
+			auto childClosestIntersection = child->mMesh.getClosestToCameraIntersectedFace(ray, cameraPos);
+			if (!currentClosestIntersection.face || isCloser(childClosestIntersection.point, currentClosestIntersection.point, cameraPos))
+			{
+				currentClosestIntersection = childClosestIntersection;
+			}
+		}
+
+		return currentClosestIntersection.face;
 	}
 
 	void Object3D::calculateBBox(const Object3D* object)

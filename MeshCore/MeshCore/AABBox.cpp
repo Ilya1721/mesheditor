@@ -27,46 +27,65 @@ namespace
 
 namespace MeshCore
 {
+	using namespace GeometryCore;
+
 	AABBox::AABBox()
 	{
+		init();
+	}
+
+	void AABBox::init()
+	{
 		clear();
+		calcBBoxPlanes();
+	}
+
+	void AABBox::setMinMax(const glm::vec3& min, const glm::vec3& max)
+	{
+		mMin = min;
+		mMax = max;
+		calcBBoxPlanes();
 	}
 
 	void AABBox::applyMesh(const Mesh& mesh, const glm::mat4& meshTransform)
 	{
+		glm::vec3 min = mMin;
+		glm::vec3 max = mMax;
+
 		for (const auto& vertex : mesh.getVertices())
 		{
 			auto transformedVertex = meshTransform * vertex;
 
-			mMin.x = std::min(mMin.x, transformedVertex.pos.x);
-			mMax.x = std::max(mMax.x, transformedVertex.pos.x);
+			min.x = std::min(min.x, transformedVertex.pos.x);
+			max.x = std::max(max.x, transformedVertex.pos.x);
 
-			mMin.y = std::min(mMin.y, transformedVertex.pos.y);
-			mMax.y = std::max(mMax.y, transformedVertex.pos.y);
+			min.y = std::min(min.y, transformedVertex.pos.y);
+			max.y = std::max(max.y, transformedVertex.pos.y);
 
-			mMin.z = std::min(mMin.z, transformedVertex.pos.z);
-			mMax.z = std::max(mMax.z, transformedVertex.pos.z);
+			min.z = std::min(min.z, transformedVertex.pos.z);
+			max.z = std::max(max.z, transformedVertex.pos.z);
 		}
+
+		setMinMax(min, max);
 	}
 
 	void AABBox::clear()
 	{
 		constexpr auto floatMax = std::numeric_limits<float>::max();
 		constexpr auto floatMin = -floatMax;
-		mMax = glm::vec3(floatMin, floatMin, floatMin);
-		mMin = glm::vec3(floatMax, floatMax, floatMax);
+		glm::vec3 min(floatMax, floatMax, floatMax);
+		glm::vec3 max(floatMin, floatMin, floatMin);
+		setMinMax(min, max);
 	}
 
 	void AABBox::applyTransform(const glm::mat4& transform)
 	{
-		mMin = transform * glm::vec4(mMin, 1.0f);
-		mMax = transform * glm::vec4(mMax, 1.0f);
+		setMinMax(transform * glm::vec4(mMin, 1.0f), transform * glm::vec4(mMax, 1.0f));
 	}
 
 	void AABBox::applyOtherBBox(const AABBox& other)
 	{
-		mMin = getMinVector(mMin, other.mMin);
-		mMax = getMaxVector(mMax, other.mMax);
+		setMinMax(getMinVector(mMin, other.mMin), getMaxVector(mMax, other.mMax));
 	}
 
 	glm::vec3 AABBox::getCenter() const
@@ -87,5 +106,43 @@ namespace MeshCore
 	float AABBox::getHeight() const
 	{
 		return mMax.y - mMin.y;
+	}
+
+	bool AABBox::checkIntersectionWithRay(const GeometryCore::Ray& ray) const
+	{
+		for (const auto& bboxPlane : mBBoxPlanes)
+		{
+			auto intersectionPoint = ray.findIntersection(bboxPlane);
+			if (intersectionPoint.has_value() && isPointInsideBBox(intersectionPoint.value()))
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	bool AABBox::isPointInsideBBox(const glm::vec3& point) const
+	{
+		for (int coordIdx = 0; coordIdx < 3; ++coordIdx)
+		{
+			if (point[coordIdx] < mMin[coordIdx] || point[coordIdx] > mMax[coordIdx])
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	void AABBox::calcBBoxPlanes()
+	{
+		mBBoxPlanes.clear();
+		mBBoxPlanes.push_back({ mMin, {-1.0f, 0.0f, 0.0f} });
+		mBBoxPlanes.push_back({ mMin, {0.0f, -1.0f, 0.0f} });
+		mBBoxPlanes.push_back({ mMin, {0.0f, 0.0f, -1.0f} });
+		mBBoxPlanes.push_back({ mMax, {1.0f, 0.0f, 0.0f} });
+		mBBoxPlanes.push_back({ mMax, {0.0f, 1.0f, 0.0f} });
+		mBBoxPlanes.push_back({ mMax, {0.0f, 0.0f, 1.0f} });
 	}
 }

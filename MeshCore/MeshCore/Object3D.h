@@ -3,7 +3,6 @@
 #include <memory>
 #include <unordered_set>
 
-#include "GeometryCore/Matrix.h"
 #include "Mesh.h"
 #include "AABBox.h"
 
@@ -32,6 +31,7 @@ namespace MeshCore
 		const glm::mat4& getTransform() const;
 		void setTransform(const glm::mat4& transform);
 		const AABBox& getBBox() const;
+		Face* getClosestToCameraIntersectedFace(const GeometryCore::Ray& ray, const glm::vec3& cameraPos) const;
 
 	private:
 		void calculateBBox(const Object3D* object);

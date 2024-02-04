@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GeometryCore/Plane.h"
+#include "GeometryCore/Ray.h"
 #include "MeshCore/AABBox.h"
 
 namespace RenderSystem
@@ -11,12 +11,12 @@ namespace RenderSystem
 		Camera();
 
 		const glm::mat4& getViewMatrix() const;
-
 		const glm::vec3& getTarget() const;
 		const glm::vec3& getEye() const;
 		const glm::vec3& getUp() const;
 		const glm::vec3& getRight() const;
 		glm::vec3 getNormalizedDirection() const;
+		GeometryCore::Ray getCameraRay(const glm::vec3& cursorPosInWorldSpace) const;
 
 		void setEyeTargetUp(const glm::vec3& eye, const glm::vec3& target, const glm::vec3& up);
 		void pan(const glm::vec3& startPointInWorldSpace, const glm::vec3& endPointInWorldSpace);

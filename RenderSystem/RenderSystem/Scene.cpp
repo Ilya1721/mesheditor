@@ -12,6 +12,8 @@
 #include "Window.h"
 #include "Constants.h"
 
+#include <iostream>
+
 using namespace GeometryCore;
 
 namespace RenderSystem
@@ -81,6 +83,22 @@ namespace RenderSystem
 	{
 		mCamera.zoom(yOffset * mRootObject.getBBox().getHeight() * ZOOM_STEP_KOEF);
 		mRenderer.getShaderTransformationSystem().setViewModel(glm::value_ptr(mCamera.getViewMatrix()));
+	}
+
+	void Scene::highlightHoveredFace(const glm::vec3& cursorPosInWorldSpace)
+	{
+		auto cameraRay = mCamera.getCameraRay(cursorPosInWorldSpace);
+		if (!mRootObject.getBBox().checkIntersectionWithRay(cameraRay))
+		{
+			return;
+		}
+
+		if (!mRootObject.getClosestToCameraIntersectedFace(cameraRay, mCamera.getEye()))
+		{
+			return;
+		}
+
+		std::cout << "Intersection with the face" << std::endl;
 	}
 
 	void Scene::setProjectionMatrix(const glm::mat4& projectionMatrix)

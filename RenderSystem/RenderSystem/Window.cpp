@@ -105,6 +105,11 @@ namespace RenderSystem
 		{
 			sInstance->mSavedCursorPosition = currentCursorPosition;
 		}
+
+		if (HIGHLIGHT_HOVERED_FACE)
+		{
+			sInstance->mScene->highlightHoveredFace(sInstance->unProject(currentCursorPosition));
+		}
 	}
 
 	void Window::resizeViewport(int width, int height)
