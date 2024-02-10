@@ -1,5 +1,8 @@
 #pragma once
 
+#include "Material.h"
+#include "Light.h"
+
 namespace RenderSystem
 {
 	class Lighting
@@ -10,6 +13,10 @@ namespace RenderSystem
 		void init(int shaderProgram);
 		void setLightPos(const float* lightPos);
 		void setCameraPos(const float* pos);
+		void setMaterial(const Material& material);
+		void setLight(const Light& light);
+
+	private:
 		void setLightAmbient(const float* ambient);
 		void setLightDiffuse(const float* diffuse);
 		void setLightSpecular(const float* specular);
@@ -18,10 +25,10 @@ namespace RenderSystem
 		void setMaterialSpecular(const float* specular);
 		void setMaterialShininess(float shininess);
 
-	private:
 		void initUniformLocations();
-		int getUniformLocation(const char* name) const;
 		void setupSettings();
+
+		int getUniformLocation(const char* name) const;
 
 	private:
 		int mShaderProgram;

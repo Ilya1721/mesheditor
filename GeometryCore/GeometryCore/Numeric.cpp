@@ -8,7 +8,7 @@ namespace GeometryCore
 {
     bool isEqual(double left, double right)
     {
-        return std::abs(left - right) < EPSILON;
+        return std::abs(left - right) < 1e-6f;
     }
 
     bool isCloser(const glm::vec3& left, const glm::vec3& right, const glm::vec3& reference)

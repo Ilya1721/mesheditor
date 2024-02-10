@@ -203,12 +203,12 @@ namespace MeshCore
 	{
 		RayFaceIntersection rayFaceIntersection;
 
-		for (const auto& face : mFaces)
+		for (int faceIdx = 0; faceIdx < mFaces.size(); ++faceIdx)
 		{
-			auto intersectionPoint = face->getIntersectionPoint(ray);
+			auto intersectionPoint = mFaces[faceIdx]->getIntersectionPoint(ray);
 			if (intersectionPoint.has_value())
 			{
-				rayFaceIntersection.setClosest({ face.get(), intersectionPoint.value() }, cameraPos);
+				rayFaceIntersection.setClosest({ faceIdx, intersectionPoint.value() }, cameraPos);
 			}
 		}
 

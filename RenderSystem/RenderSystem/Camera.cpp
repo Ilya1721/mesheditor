@@ -158,7 +158,7 @@ namespace RenderSystem
 	glm::vec3 Camera::calcRight() const
 	{
 		auto directionNormalized = getNormalizedDirection();
-		if (glm::epsilonNotEqual(glm::dot(directionNormalized, mUp), 0.0f, EPSILON))
+		if (glm::epsilonNotEqual(glm::dot(directionNormalized, mUp), 0.0f, 1e-5f))
 		{
 			throw std::exception("Camera Up and Direction vectors must be perpendicular to each other");
 		}

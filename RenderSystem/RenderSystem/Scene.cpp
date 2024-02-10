@@ -90,15 +90,11 @@ namespace RenderSystem
 		auto cameraRay = mCamera.getCameraRay(cursorPosInWorldSpace);
 		if (!mRootObject.getBBox().checkIntersectionWithRay(cameraRay))
 		{
+			mRenderer.setHighlightedFaceIdx(-1);
 			return;
 		}
 
-		if (!mRootObject.getClosestToCameraIntersectedFace(cameraRay, mCamera.getEye()))
-		{
-			return;
-		}
-
-		std::cout << "Intersection with the face" << std::endl;
+		mRenderer.setHighlightedFaceIdx(mRootObject.getClosestToCameraIntersectedFaceIndex(cameraRay, mCamera.getEye()));
 	}
 
 	void Scene::setProjectionMatrix(const glm::mat4& projectionMatrix)

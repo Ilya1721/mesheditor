@@ -57,6 +57,6 @@ namespace Vec
 		auto result = glm::vec3(invertedPoint) / invertedPoint.w;
 
 		auto expected = glm::unProject(cursorPoint, modelView, projection, viewport);
-		EXPECT_TRUE(glm::all(glm::equal(result, expected, EPSILON)));
+		EXPECT_TRUE(glm::all(glm::equal(result, expected, 1e-6f)));
 	}
 }

@@ -6,9 +6,9 @@ namespace MeshCore
 {
     void RayFaceIntersection::setClosest(const RayFaceIntersection& other, const glm::vec3& referencePoint)
     {
-        if (!face || GeometryCore::isCloser(other.point, point, referencePoint))
+        if (faceIdx == -1 || GeometryCore::isCloser(other.point, point, referencePoint))
         {
-            face = other.face;
+            faceIdx = other.faceIdx;
             point = other.point;
         }
     }

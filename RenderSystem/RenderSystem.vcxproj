@@ -140,7 +140,9 @@
     <ClInclude Include="RenderSystem\Constants.h" />
     <ClInclude Include="RenderSystem\glad.h" />
     <ClInclude Include="RenderSystem\khrplatform.h" />
+    <ClInclude Include="RenderSystem\Light.h" />
     <ClInclude Include="RenderSystem\Lighting.h" />
+    <ClInclude Include="RenderSystem\Material.h" />
     <ClInclude Include="RenderSystem\RenderBuffer.h" />
     <ClInclude Include="RenderSystem\Renderer.h" />
     <ClInclude Include="RenderSystem\RenderLogger.h" />

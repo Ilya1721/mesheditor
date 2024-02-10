@@ -43,7 +43,7 @@ bool matrixEqualMatArray(const glm::mat4& matrix, const Matrix4DArray& matArray)
 	auto matrixPtr = glm::value_ptr(matrix);
 	for (glm::size_t matIdx = 0; matIdx < 16; ++matIdx)
 	{
-		if (glm::epsilonNotEqual(matrixPtr[matIdx], matArray[matIdx], EPSILON))
+		if (glm::epsilonNotEqual(matrixPtr[matIdx], matArray[matIdx], 1e-6f))
 			return false;
 	}
 	return true;

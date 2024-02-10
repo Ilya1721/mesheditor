@@ -4,30 +4,30 @@
 
 #include <string>
 
+#include "Material.h"
+#include "Light.h"
+
 namespace RenderSystem
 {
-	struct GoldMaterial
-	{
-		static inline constexpr glm::vec3 AMBIENT = glm::vec3(0.24725f, 0.1995f, 0.0745f);
-		static inline constexpr glm::vec3 DIFFUSE = glm::vec3(0.75164f, 0.60648f, 0.22648f);
-		static inline constexpr glm::vec3 SPECULAR = glm::vec3(0.628281f, 0.555802f, 0.366065f);
-		static inline constexpr float SHININESS = 2.0f;
-	};
+	static inline constexpr Material GOLD_MATERIAL(
+		glm::vec3(0.24725f, 0.1995f, 0.0745f),
+		glm::vec3(0.75164f, 0.60648f, 0.22648f),
+		glm::vec3(0.628281f, 0.555802f, 0.366065f),
+		2.0f
+	);
 
-	struct RubyMaterial
-	{
-		static inline constexpr glm::vec3 AMBIENT = glm::vec3(0.1745f, 0.01175f, 0.01175f);
-		static inline constexpr glm::vec3 DIFFUSE = glm::vec3(0.61424f, 0.04136f, 0.04136f);
-		static inline constexpr glm::vec3 SPECULAR = glm::vec3(0.727811f, 0.626959f, 0.626959f);
-		static inline constexpr float SHININESS = 2.0f;
-	};
+	static inline constexpr Material RUBY_MATERIAL(
+		glm::vec3(0.1745f, 0.01175f, 0.01175f),
+		glm::vec3(0.61424f, 0.04136f, 0.04136f),
+		glm::vec3(0.727811f, 0.626959f, 0.626959f),
+		2.0f
+	);
 
-	struct DefaultLight
-	{
-		static inline constexpr glm::vec3 AMBIENT = glm::vec3(0.7f, 0.7f, 0.7f);
-		static inline constexpr glm::vec3 DIFFUSE = glm::vec3(1.0f, 1.0f, 1.0f);
-		static inline constexpr glm::vec3 SPECULAR = glm::vec3(0.1f, 0.1f, 0.1f);
-	};
+	static inline constexpr Light DEFAULT_LIGHT(
+		glm::vec3(0.7f, 0.7f, 0.7f),
+		glm::vec3(1.0f, 1.0f, 1.0f),
+		glm::vec3(0.1f, 0.1f, 0.1f)
+	);
 
 	constexpr glm::vec4 BACKGROUND_COLOR = glm::vec4(0.725f, 0.9f, 1.0f, 1.0f);
 	constexpr glm::vec3 CAMERA_POSITION = glm::vec3(0.0f, 0.0f, 5.0f);
@@ -43,8 +43,6 @@ namespace RenderSystem
 	constexpr float ZOOM_STEP_KOEF = 0.5f;
 	constexpr float ORBIT_SPEED_KOEF = 4.0f;
 	constexpr int CAMERA_DIST_TO_BBOX_KOEF = 4;
-
 	constexpr bool HIGHLIGHT_HOVERED_FACE = true;
-
 	inline const std::string WINDOW_TITLE = "Mesh Editor";
 }

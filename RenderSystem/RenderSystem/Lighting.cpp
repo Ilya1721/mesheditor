@@ -22,14 +22,8 @@ namespace RenderSystem
 	{
 		glClearColor(BACKGROUND_COLOR.r, BACKGROUND_COLOR.g, BACKGROUND_COLOR.b, BACKGROUND_COLOR.a);
 		glEnable(GL_DEPTH_TEST);
-
-		setLightAmbient(glm::value_ptr(DefaultLight::AMBIENT));
-		setLightDiffuse(glm::value_ptr(DefaultLight::DIFFUSE));
-		setLightSpecular(glm::value_ptr(DefaultLight::SPECULAR));
-		setMaterialAmbient(glm::value_ptr(GoldMaterial::AMBIENT));
-		setMaterialDiffuse(glm::value_ptr(GoldMaterial::DIFFUSE));
-		setMaterialSpecular(glm::value_ptr(GoldMaterial::SPECULAR));
-		setMaterialShininess(GoldMaterial::SHININESS);
+		setLight(DEFAULT_LIGHT);
+		setMaterial(GOLD_MATERIAL);
 	}
 
 	int Lighting::getUniformLocation(const char* name) const
@@ -48,6 +42,21 @@ namespace RenderSystem
 		mMaterialDiffuse = getUniformLocation("material.diffuse");
 		mMaterialSpecular = getUniformLocation("material.specular");
 		mMaterialShininess = getUniformLocation("material.shininess");
+	}
+
+	void Lighting::setMaterial(const Material& material)
+	{
+		setMaterialAmbient(glm::value_ptr(material.ambient));
+		setMaterialDiffuse(glm::value_ptr(material.diffuse));
+		setMaterialSpecular(glm::value_ptr(material.specular));
+		setMaterialShininess(material.shininess);
+	}
+
+	void Lighting::setLight(const Light& light)
+	{
+		setLightAmbient(glm::value_ptr(light.ambient));
+		setLightDiffuse(glm::value_ptr(light.diffuse));
+		setLightSpecular(glm::value_ptr(light.specular));
 	}
 
 	void Lighting::setLightPos(const float* lightPos)

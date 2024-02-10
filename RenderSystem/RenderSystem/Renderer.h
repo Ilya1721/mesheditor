@@ -14,7 +14,8 @@ namespace RenderSystem
 		Renderer();
 		~Renderer();
 
-		void render() const;
+		void render();
+		void setHighlightedFaceIdx(int faceIdx);
 
 		ShaderTransformationSystem& getShaderTransformationSystem();
 		Lighting& getLighting();
@@ -25,11 +26,16 @@ namespace RenderSystem
 		void init();
 		void initShaders();
 		void initShaderProgram();
+		void renderHighlightedFace();
+		void renderScene();
+		void makeMaterialForSceneActive();
+		void makeMaterialForHighlightActive();
 
 	private:
 		int mVertexShader;
 		int mFragmentShader;
 		int mShaderProgram;
+		int mHighlightedFaceIdx;
 
 		ShaderTransformationSystem mShaderTransformationSystem;
 		Lighting mLighting;

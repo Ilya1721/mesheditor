@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include <glm/gtc/type_ptr.hpp>
+
 #include "Utility/FileHelper.h"
 
 #include "Constants.h"
@@ -32,6 +34,7 @@ namespace RenderSystem
 		mVertexShader(),
 		mFragmentShader(),
 		mShaderProgram(),
+		mHighlightedFaceIdx(-1),
 		mLighting(),
 		mRenderBuffer()
 	{
@@ -71,10 +74,42 @@ namespace RenderSystem
 		glUseProgram(mShaderProgram);
 	}
 
-	void Renderer::render() const
+	void Renderer::renderHighlightedFace()
+	{
+		if (mHighlightedFaceIdx != -1)
+		{
+			makeMaterialForHighlightActive();
+			glClear(GL_DEPTH_BUFFER_BIT);
+			glDrawArrays(GL_TRIANGLES, mHighlightedFaceIdx * 3, 3);
+			makeMaterialForSceneActive();
+		}
+	}
+
+	void Renderer::renderScene()
+	{
+		glDrawArrays(GL_TRIANGLES, 0, mRenderBuffer.getVertexCount());
+	}
+
+	void Renderer::makeMaterialForSceneActive()
+	{
+		mLighting.setMaterial(GOLD_MATERIAL);
+	}
+
+	void Renderer::makeMaterialForHighlightActive()
+	{
+		mLighting.setMaterial(RUBY_MATERIAL);
+	}
+
+	void Renderer::render()
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glDrawArrays(GL_TRIANGLES, 0, mRenderBuffer.getVertexCount());
+		renderScene();
+		renderHighlightedFace();
+	}
+
+	void Renderer::setHighlightedFaceIdx(int faceIdx)
+	{
+		mHighlightedFaceIdx = faceIdx;
 	}
 
 	int Renderer::loadShader(const std::string& shaderPath, int shaderType)

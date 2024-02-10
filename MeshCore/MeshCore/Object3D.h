@@ -31,7 +31,7 @@ namespace MeshCore
 		const glm::mat4& getTransform() const;
 		void setTransform(const glm::mat4& transform);
 		const AABBox& getBBox() const;
-		Face* getClosestToCameraIntersectedFace(const GeometryCore::Ray& ray, const glm::vec3& cameraPos) const;
+		int getClosestToCameraIntersectedFaceIndex(const GeometryCore::Ray& ray, const glm::vec3& cameraPos) const;
 
 	private:
 		void calculateBBox(const Object3D* object);
