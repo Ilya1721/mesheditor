@@ -50,6 +50,11 @@ namespace MeshCore
 		return canRenderOriginalVertices() ? mOriginalVertices : mVerticesToRender;
 	}
 
+	int Mesh::getNumberOfFaces() const
+	{
+		return mFaces.size();
+	}
+
 	void Mesh::createHalfEdgesForFace(size_t lastVertexIdx)
 	{
 		auto thirdVertex = getUniqueVertex(lastVertexIdx);
@@ -199,7 +204,7 @@ namespace MeshCore
 		return renderData;
 	}
 
-	RayFaceIntersection Mesh::getClosestToCameraIntersectedFace(const GeometryCore::Ray& ray, const glm::vec3& cameraPos) const
+	RayFaceIntersection Mesh::getClosestToCameraFaceIntersection(const GeometryCore::Ray& ray, const glm::vec3& cameraPos, int passedFacesCount) const
 	{
 		RayFaceIntersection rayFaceIntersection;
 
@@ -208,7 +213,7 @@ namespace MeshCore
 			auto intersectionPoint = mFaces[faceIdx]->getIntersectionPoint(ray);
 			if (intersectionPoint.has_value())
 			{
-				rayFaceIntersection.setClosest({ faceIdx, intersectionPoint.value() }, cameraPos);
+				rayFaceIntersection.setClosest({ faceIdx + passedFacesCount, intersectionPoint.value() }, cameraPos);
 			}
 		}
 

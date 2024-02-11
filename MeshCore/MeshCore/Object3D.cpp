@@ -83,19 +83,19 @@ namespace MeshCore
 		return mBBox;
 	}
 
-	int Object3D::getClosestToCameraIntersectedFaceIndex(const GeometryCore::Ray& ray, const glm::vec3& cameraPos) const
+	RayFaceIntersection Object3D::getClosestToCameraFaceIntersection(const GeometryCore::Ray& ray, const glm::vec3& cameraPos, int passedFacesCount) const
 	{
-		auto currentClosestIntersection = mMesh.getClosestToCameraIntersectedFace(ray, cameraPos);
+		auto currentClosestIntersection = mMesh.getClosestToCameraFaceIntersection(ray, cameraPos, passedFacesCount);
 		for (const auto& child : mChildren)
 		{
-			auto childClosestIntersection = child->mMesh.getClosestToCameraIntersectedFace(ray, cameraPos);
+			auto childClosestIntersection = child->getClosestToCameraFaceIntersection(ray, cameraPos, passedFacesCount + mMesh.getNumberOfFaces());
 			if (currentClosestIntersection.faceIdx == -1 || isCloser(childClosestIntersection.point, currentClosestIntersection.point, cameraPos))
 			{
 				currentClosestIntersection = childClosestIntersection;
 			}
 		}
 
-		return currentClosestIntersection.faceIdx;
+		return currentClosestIntersection;
 	}
 
 	void Object3D::calculateBBox(const Object3D* object)

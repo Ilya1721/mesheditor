@@ -94,7 +94,8 @@ namespace RenderSystem
 			return;
 		}
 
-		mRenderer.setHighlightedFaceIdx(mRootObject.getClosestToCameraIntersectedFaceIndex(cameraRay, mCamera.getEye()));
+		auto faceIntersection = mRootObject.getClosestToCameraFaceIntersection(cameraRay, mCamera.getEye());
+		mRenderer.setHighlightedFaceIdx(faceIntersection.faceIdx);
 	}
 
 	void Scene::setProjectionMatrix(const glm::mat4& projectionMatrix)

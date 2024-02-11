@@ -5,6 +5,7 @@
 
 #include "Mesh.h"
 #include "AABBox.h"
+#include "Intersection.h"
 
 namespace MeshCore 
 {
@@ -31,7 +32,7 @@ namespace MeshCore
 		const glm::mat4& getTransform() const;
 		void setTransform(const glm::mat4& transform);
 		const AABBox& getBBox() const;
-		int getClosestToCameraIntersectedFaceIndex(const GeometryCore::Ray& ray, const glm::vec3& cameraPos) const;
+		RayFaceIntersection getClosestToCameraFaceIntersection(const GeometryCore::Ray& ray, const glm::vec3& cameraPos, int passedFacesCount = 0) const;
 
 	private:
 		void calculateBBox(const Object3D* object);

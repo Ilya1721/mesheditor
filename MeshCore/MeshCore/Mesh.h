@@ -22,15 +22,14 @@ namespace MeshCore
 		Mesh(const std::vector<Vertex>& vertices);
 		Mesh(const Mesh& other) = delete;
 		Mesh(Mesh&& other) = default;
-
 		Mesh& operator=(const Mesh& other) = delete;
 		Mesh& operator=(Mesh&& other) = default;
-
 		bool operator==(const Mesh& other) const = default;
 
 		const std::vector<Vertex>& getVertices() const;
+		int getNumberOfFaces() const;
 		RenderData getRenderData() const;
-		RayFaceIntersection getClosestToCameraIntersectedFace(const GeometryCore::Ray& ray, const glm::vec3& cameraPos) const;
+		RayFaceIntersection getClosestToCameraFaceIntersection(const GeometryCore::Ray& ray, const glm::vec3& cameraPos, int passedFacesCount = 0) const;
 
 	private:
 		void init();
