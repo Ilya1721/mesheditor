@@ -115,7 +115,9 @@
     <ClInclude Include="MeshCore\Intersection.h" />
     <ClInclude Include="MeshCore\Mesh.h" />
     <ClInclude Include="MeshCore\Object3D.h" />
+    <ClInclude Include="MeshCore\OutgoingEdgeFinder.h" />
     <ClInclude Include="MeshCore\RenderData.h" />
+    <ClInclude Include="MeshCore\Surface.h" />
     <ClInclude Include="MeshCore\Vertex.h" />
     <ClInclude Include="MeshCore\VerticesHash.h" />
   </ItemGroup>
@@ -125,7 +127,9 @@
     <ClCompile Include="MeshCore\Intersection.cpp" />
     <ClCompile Include="MeshCore\Mesh.cpp" />
     <ClCompile Include="MeshCore\Object3D.cpp" />
+    <ClCompile Include="MeshCore\OutgoingEdgeFinder.cpp" />
     <ClCompile Include="MeshCore\RenderData.cpp" />
+    <ClCompile Include="MeshCore\Surface.cpp" />
     <ClCompile Include="MeshCore\Vertex.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

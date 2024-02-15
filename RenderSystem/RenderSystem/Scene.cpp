@@ -85,7 +85,7 @@ namespace RenderSystem
 		mRenderer.getShaderTransformationSystem().setViewModel(glm::value_ptr(mCamera.getViewMatrix()));
 	}
 
-	void Scene::highlightHoveredFace(const glm::vec3& cursorPosInWorldSpace)
+	void Scene::highlightHoveredSurface(const glm::vec3& cursorPosInWorldSpace)
 	{
 		auto cameraRay = mCamera.getCameraRay(cursorPosInWorldSpace);
 		if (!mRootObject.getBBox().checkIntersectionWithRay(cameraRay))

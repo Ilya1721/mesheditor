@@ -106,9 +106,9 @@ namespace RenderSystem
 			sInstance->mSavedCursorPosition = currentCursorPosition;
 		}
 
-		if (HIGHLIGHT_HOVERED_FACE)
+		if (HIGHLIGHT_HOVERED_SURFACE)
 		{
-			sInstance->mScene->highlightHoveredFace(sInstance->unProject(currentCursorPosition));
+			sInstance->mScene->highlightHoveredSurface(sInstance->unProject(currentCursorPosition));
 		}
 	}
 
