@@ -4,18 +4,16 @@
 
 #include <glm/glm.hpp>
 
+#include "Surface.h"
+
 namespace MeshCore
 {
-    struct RayFaceIntersection
+    struct RaySurfaceIntersection
     {
-        int faceIdx = -1;
+        Surface intersectedSurface;
+        std::vector<int> surfaceIndices;
         glm::vec3 point {};
 
-        void setClosest(const RayFaceIntersection& other, const glm::vec3& referencePoint);
-    };
-
-    struct RaySurfaceIntersection : RayFaceIntersection
-    {
-        std::vector<int> surfaceFacesIndices;
+        void setClosest(const RaySurfaceIntersection& other, const glm::vec3& referencePoint);
     };
 }

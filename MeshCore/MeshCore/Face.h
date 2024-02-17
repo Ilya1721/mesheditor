@@ -19,7 +19,7 @@ namespace MeshCore
         bool isPointInside(const glm::vec3& point, const glm::vec3& faceNormal) const;
         std::vector<glm::vec3> getAllGeometryEdges() const;
         std::vector<HalfEdge*> getAllEdges() const;
-        std::unordered_set<Face*> getAdjacentFaces(const glm::vec3* normalPtr = nullptr, bool filterByNormal = false) const;
+        std::unordered_set<Face*> getAdjacentFaces(bool filterByNormal = false, const glm::vec3* normalPtr = nullptr) const;
         HalfEdge* findOutgoingEdge(const Vertex* vertex) const;
 
     private:

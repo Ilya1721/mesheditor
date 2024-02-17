@@ -12,6 +12,7 @@
 #include "RenderData.h"
 #include "VerticesHash.h"
 #include "Intersection.h"
+#include "Surface.h"
 
 namespace MeshCore
 {
@@ -29,7 +30,7 @@ namespace MeshCore
 		const std::vector<Vertex>& getVertices() const;
 		int getNumberOfFaces() const;
 		RenderData getRenderData() const;
-		RayFaceIntersection getClosestToCameraFaceIntersection(const GeometryCore::Ray& ray, const glm::vec3& cameraPos, int passedFacesCount = 0) const;
+		RaySurfaceIntersection getClosestIntersection(const GeometryCore::Ray& ray, bool intersectSurface, int passedFacesCount = 0) const;
 
 	private:
 		void init();
@@ -48,6 +49,7 @@ namespace MeshCore
 		void connectHalfEdgesToFace();
 		void createVerticesToRender();
 		bool canRenderOriginalVertices() const;
+		std::vector<int> getIntersectedSurfaceIndices(const Surface& surface) const;
 
 	private:
 		std::vector<Vertex> mOriginalVertices;

@@ -86,14 +86,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="GeometryCore\Constants.h" />
-    <ClInclude Include="GeometryCore\Logger.h" />
     <ClInclude Include="GeometryCore\Numeric.h" />
     <ClInclude Include="GeometryCore\Plane.h" />
     <ClInclude Include="GeometryCore\Ray.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GeometryCore\Logger.cpp" />
     <ClCompile Include="GeometryCore\Numeric.cpp" />
     <ClCompile Include="GeometryCore\Ray.cpp" />
   </ItemGroup>

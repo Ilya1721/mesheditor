@@ -84,7 +84,7 @@ namespace MeshCore
         return edges;
     }
 
-    std::unordered_set<Face*> Face::getAdjacentFaces(const glm::vec3* normalPtr, bool filterByNormal) const
+    std::unordered_set<Face*> Face::getAdjacentFaces(bool filterByNormal, const glm::vec3* normalPtr) const
     {
         auto surfaceNormal = normalPtr ? *normalPtr : calcNormal();
         std::unordered_set<Face*> uniqueAdjacentFaces;

@@ -4,22 +4,18 @@
 
 namespace
 {
-	glm::vec3 getMinVector(const glm::vec3& left, const glm::vec3& right)
+	enum class MinMaxOption
+	{
+		MIN,
+		MAX
+	};
+
+	glm::vec3 getMinMaxVector(const glm::vec3& left, const glm::vec3& right, MinMaxOption minMaxOption)
 	{
 		glm::vec3 result{};
-		result.x = std::min(left.x, right.x);
-		result.y = std::min(left.y, right.y);
-		result.z = std::min(left.z, right.z);
-
-		return result;
-	}
-
-	glm::vec3 getMaxVector(const glm::vec3& left, const glm::vec3& right)
-	{
-		glm::vec3 result{};
-		result.x = std::max(left.x, right.x);
-		result.y = std::max(left.y, right.y);
-		result.z = std::max(left.z, right.z);
+		result.x = minMaxOption == MinMaxOption::MIN ? std::min(left.x, right.x) : std::max(left.x, right.x);
+		result.y = minMaxOption == MinMaxOption::MIN ? std::min(left.y, right.y) : std::max(left.y, right.y);
+		result.z = minMaxOption == MinMaxOption::MIN ? std::min(left.z, right.z) : std::max(left.z, right.z);
 
 		return result;
 	}
@@ -85,7 +81,7 @@ namespace MeshCore
 
 	void AABBox::applyOtherBBox(const AABBox& other)
 	{
-		setMinMax(getMinVector(mMin, other.mMin), getMaxVector(mMax, other.mMax));
+		setMinMax(getMinMaxVector(mMin, other.mMin, MinMaxOption::MIN), getMinMaxVector(mMax, other.mMax, MinMaxOption::MAX));
 	}
 
 	glm::vec3 AABBox::getCenter() const

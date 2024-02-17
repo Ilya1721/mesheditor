@@ -7,8 +7,6 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/epsilon.hpp>
 
-#include "GeometryCore/Constants.h"
-
 #include "Constants.h"
 
 using namespace GeometryCore;

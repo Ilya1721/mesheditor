@@ -5,14 +5,14 @@
 #endif
 #include "glad.h"
 
+#include <iostream>
+
 #include <glm/gtc/type_ptr.hpp>
 
 #include "MeshFilesLoader/MeshFilesLoader.h"
 
 #include "Window.h"
 #include "Constants.h"
-
-#include <iostream>
 
 using namespace GeometryCore;
 
@@ -94,8 +94,8 @@ namespace RenderSystem
 			return;
 		}
 
-		auto faceIntersection = mRootObject.getClosestToCameraFaceIntersection(cameraRay, mCamera.getEye());
-		mRenderer.setHighlightedFaceIdx(faceIntersection.faceIdx);
+		auto faceIntersection = mRootObject.getClosestIntersection(cameraRay, false);
+		mRenderer.setHighlightedFaceIdx(faceIntersection.surfaceIndices[0]);
 	}
 
 	void Scene::setProjectionMatrix(const glm::mat4& projectionMatrix)

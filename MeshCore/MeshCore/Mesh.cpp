@@ -3,6 +3,7 @@
 #include <numeric>
 
 #include "Constants.h"
+#include "Surface.h"
 
 namespace
 {
@@ -204,19 +205,27 @@ namespace MeshCore
 		return renderData;
 	}
 
-	RayFaceIntersection Mesh::getClosestToCameraFaceIntersection(const GeometryCore::Ray& ray, const glm::vec3& cameraPos, int passedFacesCount) const
+	RaySurfaceIntersection Mesh::getClosestIntersection(const GeometryCore::Ray& ray, bool intersectSurface, int passedFacesCount) const
 	{
-		RayFaceIntersection rayFaceIntersection;
+		RaySurfaceIntersection rayFaceIntersection;
 
 		for (int faceIdx = 0; faceIdx < mFaces.size(); ++faceIdx)
 		{
-			auto intersectionPoint = mFaces[faceIdx]->getIntersectionPoint(ray);
+			auto& face = mFaces[faceIdx];
+			auto intersectionPoint = face->getIntersectionPoint(ray);
 			if (intersectionPoint.has_value())
 			{
-				rayFaceIntersection.setClosest({ faceIdx + passedFacesCount, intersectionPoint.value() }, cameraPos);
+				Surface surface(face.get(), intersectSurface);
+				auto facesIndices = intersectSurface ? getIntersectedSurfaceIndices(surface) : std::vector<int>{ faceIdx + passedFacesCount };
+				rayFaceIntersection.setClosest({ std::move(surface), facesIndices, intersectionPoint.value()}, ray.origin);
 			}
 		}
 
 		return rayFaceIntersection;
+	}
+
+	std::vector<int> Mesh::getIntersectedSurfaceIndices(const Surface& surface) const
+	{
+		return {};
 	}
 }

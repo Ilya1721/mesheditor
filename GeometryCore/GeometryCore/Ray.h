@@ -8,7 +8,7 @@ namespace GeometryCore
 {
 	struct Ray
 	{
-		glm::vec3 point;
+		glm::vec3 origin;
 		glm::vec3 direction;
 
 		std::optional<glm::vec3> findIntersection(const Plane& plane) const;

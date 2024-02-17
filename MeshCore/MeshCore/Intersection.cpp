@@ -4,11 +4,12 @@
 
 namespace MeshCore
 {
-    void RayFaceIntersection::setClosest(const RayFaceIntersection& other, const glm::vec3& referencePoint)
+    void RaySurfaceIntersection::setClosest(const RaySurfaceIntersection& other, const glm::vec3& referencePoint)
     {
-        if (faceIdx == -1 || GeometryCore::isCloser(other.point, point, referencePoint))
+        if (surfaceIndices.empty() || GeometryCore::isCloser(other.point, point, referencePoint))
         {
-            faceIdx = other.faceIdx;
+            intersectedSurface = other.intersectedSurface;
+            surfaceIndices = other.surfaceIndices;
             point = other.point;
         }
     }

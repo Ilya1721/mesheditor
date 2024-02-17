@@ -10,7 +10,8 @@ namespace MeshCore
 
     struct Surface
     {
-        Surface(Face* initialFace);
+        Surface() = default;
+        Surface(Face* initialFace, bool collectAdjacentFaces = true);
 
         std::unordered_set<Face*> faces;
         glm::vec3 normal{};
