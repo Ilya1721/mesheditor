@@ -127,9 +127,16 @@ namespace MeshCore
 
 	void Mesh::createFace(size_t lastVertexIdx)
 	{
-		mFaces.push_back(std::make_unique<Face>());
+		addFace();
 		createHalfEdgesForFace(lastVertexIdx);
 		connectHalfEdgesToFace();
+	}
+
+	void Mesh::addFace()
+	{
+		mFaces.push_back(std::make_unique<Face>());
+		int faceIdx = mFaces.size() - 1;
+		mFaceIndexMap.insert({ mFaces[faceIdx].get(), faceIdx });
 	}
 
 	void Mesh::connectHalfEdgesToFace()
@@ -224,6 +231,17 @@ namespace MeshCore
 
 	std::vector<int> Mesh::getIntersectedSurfaceIndices(const Surface& surface) const
 	{
-		return {};
+		std::vector<int> indices;
+		for (const auto& face : surface.faces)
+		{
+			const auto& faceIndexMapIt = mFaceIndexMap.find(face);
+			if (faceIndexMapIt != mFaceIndexMap.end())
+			{
+				const auto& [facePtr, faceIdx] = *faceIndexMapIt;
+				indices.push_back(faceIdx);
+			}
+		}
+		
+		return indices;
 	}
 }

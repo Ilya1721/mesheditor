@@ -90,12 +90,12 @@ namespace RenderSystem
 		auto cameraRay = mCamera.getCameraRay(cursorPosInWorldSpace);
 		if (!mRootObject.getBBox().checkIntersectionWithRay(cameraRay))
 		{
-			mRenderer.setHighlightedFaceIdx(-1);
+			mRenderer.setHighlightedFaces({});
 			return;
 		}
 
-		auto faceIntersection = mRootObject.getClosestIntersection(cameraRay, false);
-		mRenderer.setHighlightedFaceIdx(faceIntersection.surfaceIndices[0]);
+		auto faceIntersection = mRootObject.getClosestIntersection(cameraRay, true);
+		mRenderer.setHighlightedFaces(faceIntersection.surfaceIndices);
 	}
 
 	void Scene::setProjectionMatrix(const glm::mat4& projectionMatrix)

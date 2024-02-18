@@ -50,6 +50,7 @@ namespace MeshCore
 		void createVerticesToRender();
 		bool canRenderOriginalVertices() const;
 		std::vector<int> getIntersectedSurfaceIndices(const Surface& surface) const;
+		void addFace();
 
 	private:
 		std::vector<Vertex> mOriginalVertices;
@@ -58,5 +59,6 @@ namespace MeshCore
 		std::vector<std::unique_ptr<Face>> mFaces;
 		std::unordered_map<HalfEdgeVerticesPair, HalfEdge*> mHalfEdgeVerticesMap;
 		std::unordered_map<Vertex, VertexWithExtraData> mUniqueVerticesMap;
+		std::unordered_map<Face*, int> mFaceIndexMap;
 	};
 }

@@ -15,7 +15,7 @@ namespace RenderSystem
 		~Renderer();
 
 		void render();
-		void setHighlightedFaceIdx(int faceIdx);
+		void setHighlightedFaces(const std::vector<int>& facesIndices);
 
 		ShaderTransformationSystem& getShaderTransformationSystem();
 		Lighting& getLighting();
@@ -26,7 +26,7 @@ namespace RenderSystem
 		void init();
 		void initShaders();
 		void initShaderProgram();
-		void renderHighlightedFace();
+		void renderHighlightedFaces();
 		void renderScene();
 		void makeMaterialForSceneActive();
 		void makeMaterialForHighlightActive();
@@ -35,7 +35,7 @@ namespace RenderSystem
 		int mVertexShader;
 		int mFragmentShader;
 		int mShaderProgram;
-		int mHighlightedFaceIdx;
+		std::vector<int> mHighlightedFacesIndices;
 
 		ShaderTransformationSystem mShaderTransformationSystem;
 		Lighting mLighting;
