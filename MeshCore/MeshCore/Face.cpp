@@ -7,6 +7,7 @@
 #include "HalfEdge.h"
 #include "Vertex.h"
 #include "OutgoingEdgeFinder.h"
+#include "EdgeWalker.h"
 
 using namespace GeometryCore;
 
@@ -57,14 +58,11 @@ namespace MeshCore
     std::vector<glm::vec3> Face::getAllGeometryEdges() const
     {
         std::vector<glm::vec3> edges;
-
-        auto startHalfEdge = halfEdge;
-        auto currentHalfEdge = startHalfEdge;
-        do
+        EdgeWalker edgeWalker(halfEdge);
+        edgeWalker.forEach([&edges](HalfEdge* edge)
         {
-            edges.emplace_back(currentHalfEdge->next->vertex->pos - currentHalfEdge->vertex->pos);
-            currentHalfEdge = currentHalfEdge->next;
-        } while (currentHalfEdge != startHalfEdge);
+            edges.emplace_back(edge->next->vertex->pos - edge->vertex->pos);
+        });
 
         return edges;
     }
@@ -72,14 +70,11 @@ namespace MeshCore
     std::vector<HalfEdge*> Face::getAllEdges() const
     {
         std::vector<HalfEdge*> edges;
-
-        auto startHalfEdge = halfEdge;
-        auto currentHalfEdge = startHalfEdge;
-        do
+        EdgeWalker edgeWalker(halfEdge);
+        edgeWalker.forEach([&edges](HalfEdge* edge)
         {
-            edges.push_back(currentHalfEdge);
-            currentHalfEdge = currentHalfEdge->next;
-        } while (currentHalfEdge != startHalfEdge);
+            edges.push_back(edge);
+        });
 
         return edges;
     }
@@ -114,30 +109,28 @@ namespace MeshCore
 
     HalfEdge* Face::findOutgoingEdge(const Vertex* vertex) const
     {
-        auto startHalfEdge = halfEdge;
-        auto currentHalfEdge = startHalfEdge;
-        do
+        EdgeWalker edgeWalker(halfEdge);
+        HalfEdge* outgoingEdge = nullptr;
+        edgeWalker.forEach([&outgoingEdge, &vertex](HalfEdge* halfEdge)
         {
-            if (currentHalfEdge->vertex == vertex)
+            if (halfEdge->vertex == vertex)
             {
-                return currentHalfEdge;
+                outgoingEdge = halfEdge;
+                return;
             }
-        } while (currentHalfEdge != startHalfEdge);
+        });
 
-        return nullptr;
+        return outgoingEdge;
     }
 
     std::vector<glm::vec3> Face::getAllVerticesToPointVectors(const glm::vec3& point) const
     {
         std::vector<glm::vec3> verticesToPointVectors;
-
-        auto startHalfEdge = halfEdge;
-        auto currentHalfEdge = startHalfEdge;
-        do
+        EdgeWalker edgeWalker(halfEdge);
+        edgeWalker.forEach([&verticesToPointVectors, &point](HalfEdge* edge)
         {
-            verticesToPointVectors.emplace_back(point - currentHalfEdge->vertex->pos);
-            currentHalfEdge = currentHalfEdge->next;
-        } while (currentHalfEdge != startHalfEdge);
+            verticesToPointVectors.emplace_back(point - edge->vertex->pos);
+        });
 
         return verticesToPointVectors;
     }

@@ -4,6 +4,7 @@
 
 #include "Constants.h"
 #include "Surface.h"
+#include "EdgeWalker.h"
 
 namespace
 {
@@ -11,8 +12,7 @@ namespace
 
 	glm::vec3 calcAverage(const std::unordered_set<glm::vec3>& vecSet)
 	{
-		glm::vec3 result{};
-		
+		glm::vec3 result{};	
 		for (const auto& vec : vecSet)
 		{
 			result += vec;
@@ -177,13 +177,11 @@ namespace MeshCore
 		mVerticesToRender.clear();
 		for (const auto& face : mFaces)
 		{
-			auto origHalfEdge = face->halfEdge;
-			auto currentHalfEdge = origHalfEdge;
-
-			do {
-				mVerticesToRender.push_back(*currentHalfEdge->vertex);
-				currentHalfEdge = currentHalfEdge->next;
-			} while (currentHalfEdge != origHalfEdge);
+			EdgeWalker edgeWalker(face->halfEdge);
+			edgeWalker.forEach([this](HalfEdge* edge)
+			{
+				mVerticesToRender.push_back(*edge->vertex);
+			});
 		}
 	}
 

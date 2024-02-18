@@ -110,6 +110,7 @@
   <ItemGroup>
     <ClInclude Include="MeshCore\AABBox.h" />
     <ClInclude Include="MeshCore\Constants.h" />
+    <ClInclude Include="MeshCore\EdgeWalker.h" />
     <ClInclude Include="MeshCore\Face.h" />
     <ClInclude Include="MeshCore\HalfEdge.h" />
     <ClInclude Include="MeshCore\Intersection.h" />
@@ -123,6 +124,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MeshCore\AABBox.cpp" />
+    <ClCompile Include="MeshCore\EdgeWalker.cpp" />
     <ClCompile Include="MeshCore\Face.cpp" />
     <ClCompile Include="MeshCore\Intersection.cpp" />
     <ClCompile Include="MeshCore\Mesh.cpp" />

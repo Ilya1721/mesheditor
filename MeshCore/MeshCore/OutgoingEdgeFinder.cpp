@@ -3,6 +3,7 @@
 #include "Face.h"
 #include "HalfEdge.h"
 #include "Vertex.h"
+#include "EdgeWalker.h"
 
 namespace MeshCore
 {
@@ -18,23 +19,20 @@ namespace MeshCore
 
     void OutgoingEdgeFinder::collectNextOutgoing(HalfEdge* currentOutgoing)
     {
-        auto startHalfEdge = currentOutgoing->twin;
-        auto currentHalfEdge = startHalfEdge;
-        do
+        EdgeWalker edgeWalker(currentOutgoing->twin);
+        edgeWalker.forEach([this](HalfEdge* edge)
         {
-            if (currentHalfEdge == mStartOutgoingEdge)
+            if (edge == mStartOutgoingEdge)
             {
                 return;
             }
 
-            if (isOutgoing(currentHalfEdge))
+            if (isOutgoing(edge))
             {
-                addOutgoing(currentHalfEdge);
-                collectNextOutgoing(currentHalfEdge);
+                addOutgoing(edge);
+                collectNextOutgoing(edge);
             }
-
-            currentHalfEdge = currentHalfEdge->next;
-        } while (currentHalfEdge != startHalfEdge);
+        });
     }
 
     bool OutgoingEdgeFinder::isOutgoing(HalfEdge* halfEdge) const
