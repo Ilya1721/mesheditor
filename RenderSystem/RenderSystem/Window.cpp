@@ -49,6 +49,7 @@ namespace RenderSystem
 	{
 		mViewport = std::make_unique<Viewport>(VIEWPORT_POSITION.x, VIEWPORT_POSITION.y, mWidth, mHeight);
 		mScene = std::make_unique<Scene>(meshFilePath, this);
+		mOperationsDispatcher = std::make_unique<OperationsDispatcher>(mScene.get());
 	}
 
 	void Window::setCallbacks()
@@ -57,6 +58,7 @@ namespace RenderSystem
 		glfwSetMouseButtonCallback(mWindow, onMouseButton);
 		glfwSetScrollCallback(mWindow, onMouseScroll);
 		glfwSetFramebufferSizeCallback(mWindow, onFramebufferSizeChanged);
+		glfwSetKeyCallback(mWindow, onKey);
 	}
 
 	Window* Window::createInstance(int width, int height, const std::string& meshFilePath)
@@ -101,14 +103,11 @@ namespace RenderSystem
 			break;
 		}
 
+		sInstance->mOperationsDispatcher->onMouseMove(sInstance->mSavedCursorPosition, currentCursorPosition);
+
 		if (sInstance->mMouseButtonPressed != MouseButtonPressed::NONE)
 		{
 			sInstance->mSavedCursorPosition = currentCursorPosition;
-		}
-
-		if (HIGHLIGHT_HOVERED_SURFACE)
-		{
-			sInstance->mScene->highlightHoveredSurface(sInstance->unProject(currentCursorPosition));
 		}
 	}
 
@@ -149,9 +148,12 @@ namespace RenderSystem
 		if (action != GLFW_PRESS)
 			return;
 
+		sInstance->mSavedCursorPosition = sInstance->getCursorPos();
+
 		switch (button)
 		{
 			case GLFW_MOUSE_BUTTON_LEFT:
+				sInstance->mOperationsDispatcher->onMouseClick(sInstance->mSavedCursorPosition);
 				sInstance->mMouseButtonPressed = MouseButtonPressed::LEFT;
 				break;
 			case GLFW_MOUSE_BUTTON_RIGHT:
@@ -161,8 +163,6 @@ namespace RenderSystem
 				sInstance->mMouseButtonPressed = MouseButtonPressed::MIDDLE;
 				break;
 		}
-
-		sInstance->mSavedCursorPosition = sInstance->getCursorPos();
 	}
 
 	void Window::onMouseScroll(GLFWwindow* window, double xOffset, double yOffset)
@@ -173,5 +173,13 @@ namespace RenderSystem
 	void Window::onFramebufferSizeChanged(GLFWwindow* window, int width, int height)
 	{
 		sInstance->resizeViewport(width, height);
+	}
+
+	void Window::onKey(GLFWwindow* window, int key, int scancode, int action, int mods)
+	{
+		if (action == GLFW_PRESS)
+		{
+			sInstance->mOperationsDispatcher->toggle(key);
+		}
 	}
 }

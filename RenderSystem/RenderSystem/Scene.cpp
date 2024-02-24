@@ -85,17 +85,20 @@ namespace RenderSystem
 		mRenderer.getShaderTransformationSystem().setViewModel(glm::value_ptr(mCamera.getViewMatrix()));
 	}
 
-	void Scene::highlightHoveredSurface(const glm::vec3& cursorPosInWorldSpace)
+	void Scene::highlightFaces(const std::vector<int>& facesIndices)
+	{
+		mRenderer.setHighlightedFaces(facesIndices);
+	}
+
+	MeshCore::RaySurfaceIntersection Scene::getSurfaceIntersection(const glm::vec3& cursorPosInWorldSpace, bool faceOnly)
 	{
 		auto cameraRay = mCamera.getCameraRay(cursorPosInWorldSpace);
 		if (!mRootObject.getBBox().checkIntersectionWithRay(cameraRay))
 		{
-			mRenderer.setHighlightedFaces({});
-			return;
+			return {};
 		}
 
-		auto faceIntersection = mRootObject.getClosestIntersection(cameraRay, true);
-		mRenderer.setHighlightedFaces(faceIntersection.surfaceIndices);
+		return mRootObject.getClosestIntersection(cameraRay, faceOnly);
 	}
 
 	void Scene::setProjectionMatrix(const glm::mat4& projectionMatrix)
@@ -106,5 +109,10 @@ namespace RenderSystem
 	const glm::mat4& Scene::getViewMatrix() const
 	{
 		return mCamera.getViewMatrix();
+	}
+
+	const Window* Scene::getParentWindow() const
+	{
+		return mParentWindow;
 	}
 }

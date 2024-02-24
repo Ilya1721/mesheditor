@@ -43,6 +43,5 @@ namespace RenderSystem
 	constexpr float ZOOM_STEP_KOEF = 0.5f;
 	constexpr float ORBIT_SPEED_KOEF = 4.0f;
 	constexpr int CAMERA_DIST_TO_BBOX_KOEF = 4;
-	constexpr bool HIGHLIGHT_HOVERED_SURFACE = true;
 	inline const std::string WINDOW_TITLE = "Mesh Editor";
 }

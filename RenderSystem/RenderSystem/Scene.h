@@ -23,12 +23,14 @@ namespace RenderSystem
 
 		void setProjectionMatrix(const glm::mat4& projectionMatrix);
 		const glm::mat4& getViewMatrix() const;
+		const Window* getParentWindow() const;
 
 		void render();
 		void pan(const glm::vec3& startPointInWorldSpace, const glm::vec3& endPointInWorldSpace);
 		void orbit(const glm::vec3& startPointInNDC, const glm::vec3& endPointInNDC);
 		void zoom(float yOffset);
-		void highlightHoveredSurface(const glm::vec3& cursorPosInWorldSpace);
+		void highlightFaces(const std::vector<int>& facesIndices);
+		MeshCore::RaySurfaceIntersection getSurfaceIntersection(const glm::vec3& cursorPosInWorldSpace, bool faceOnly = false);
 
 	private:
 		void init();
