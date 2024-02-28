@@ -67,6 +67,12 @@ namespace RenderSystem
 		return glm::normalize(mTarget - mEye);
 	}
 
+	glm::vec3 Camera::projectToTargetPlane(const glm::vec3& cursorPosInWorldSpace) const
+	{
+		Ray cursorRay(cursorPosInWorldSpace, cursorPosInWorldSpace - mEye);
+		return cursorRay.findIntersection(getTargetPlane()).value();
+	}
+
 	Ray Camera::getCameraRay(const glm::vec3& cursorPosInWorldSpace) const
 	{
 		return { mEye, cursorPosInWorldSpace - mEye };
@@ -93,10 +99,7 @@ namespace RenderSystem
 
 	void Camera::pan(const glm::vec3& startPointInWorldSpace, const glm::vec3& endPointInWorldSpace)
 	{
-		Ray startRay(startPointInWorldSpace, startPointInWorldSpace - mEye);
-		Ray endRay(endPointInWorldSpace, endPointInWorldSpace - mEye);
-		auto targetPlane = getTargetPlane();
-		translate(startRay.findIntersection(targetPlane).value() - endRay.findIntersection(targetPlane).value());
+		translate(projectToTargetPlane(startPointInWorldSpace) - projectToTargetPlane(endPointInWorldSpace));
 	}
 
 	void Camera::orbit(const glm::vec3& startPointInNDC, const glm::vec3& endPointInNDC)

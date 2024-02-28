@@ -13,6 +13,7 @@ namespace RenderSystem
     public:
         SurfaceHighlighter(Scene* scene);
 
+        void toggle() override;
         void onMouseMove(const glm::vec2& startCursorPos, const glm::vec2& endCursorPos) override;
         void onMouseClick(const glm::vec2& cursorPos) override {};
     };

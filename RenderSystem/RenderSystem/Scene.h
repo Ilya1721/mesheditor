@@ -22,19 +22,20 @@ namespace RenderSystem
 		Scene& operator=(Scene&& scene) = delete;
 
 		void setProjectionMatrix(const glm::mat4& projectionMatrix);
+		const Camera& getCamera() const;
 		const glm::mat4& getViewMatrix() const;
 		const Window* getParentWindow() const;
+		MeshCore::RaySurfaceIntersection getClosestIntersection(const glm::vec3& cursorPosInWorldSpace, bool intersectSurface = true);
 
 		void render();
 		void pan(const glm::vec3& startPointInWorldSpace, const glm::vec3& endPointInWorldSpace);
 		void orbit(const glm::vec3& startPointInNDC, const glm::vec3& endPointInNDC);
 		void zoom(float yOffset);
 		void highlightFaces(const std::vector<int>& facesIndices);
-		MeshCore::RaySurfaceIntersection getSurfaceIntersection(const glm::vec3& cursorPosInWorldSpace, bool faceOnly = false);
+		void updateRenderData();
 
 	private:
 		void init();
-		void initRenderBuffer();
 		void initShaderTransformationSystem();
 		void adjustCamera();
 		void adjustLightPos();

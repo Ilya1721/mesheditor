@@ -2,7 +2,12 @@
 
 #include "Face.h"
 
+#include <algorithm>
+#include <array>
+
 #include <glm/gtx/vector_query.hpp>
+
+#include "GeometryCore/Numeric.h"
 
 #include "HalfEdge.h"
 #include "Vertex.h"
@@ -37,22 +42,33 @@ namespace MeshCore
 
     bool Face::isPointInside(const glm::vec3& point, const glm::vec3& faceNormal) const
     {
-        auto faceEdges = getAllGeometryEdges();
-        auto pointToVerticesVectors = getAllVerticesToPointVectors(point);
-        std::vector<bool> directionSigns;
+        auto verticesPositions = getVerticesPositions();
+        std::array<std::array<glm::vec3, 3>, 3> vertexPointEdges{};
+        vertexPointEdges[0] = { point - verticesPositions[1], point - verticesPositions[0], verticesPositions[1] - verticesPositions[0] };
+        vertexPointEdges[1] = { point - verticesPositions[2], point - verticesPositions[0], verticesPositions[2] - verticesPositions[0] };
+        vertexPointEdges[2] = { point - verticesPositions[1], point - verticesPositions[2], verticesPositions[2] - verticesPositions[1] };
 
-        for (int edgeIdx = 0; edgeIdx < 3; ++edgeIdx)
+        std::array<std::array<float, 3>, 3> vertexPointEdgesLengths{};
+        for (int triangleIdx = 0; triangleIdx < 3; ++triangleIdx)
         {
-            auto crossProduct = glm::cross(faceEdges[edgeIdx], pointToVerticesVectors[edgeIdx]);
-            auto sign = glm::dot(crossProduct, faceNormal) > 0.0f;
-            if (directionSigns.size() > 0 && directionSigns.back() != sign)
+            for (int edgeIdx = 0; edgeIdx < 3; ++edgeIdx)
             {
-                return false;
+                vertexPointEdgesLengths[triangleIdx][edgeIdx] = glm::length(vertexPointEdges[triangleIdx][edgeIdx]);
             }
-            directionSigns.push_back(sign);
         }
 
-        return true;
+        float trianglesSquaresSum = 0.0f;
+
+        for (int triangleIdx = 0; triangleIdx < 3; ++triangleIdx)
+        {
+            auto crossProduct = glm::cross(vertexPointEdges[triangleIdx][1], vertexPointEdges[triangleIdx][2]);
+            if (!glm::all(glm::epsilonEqual(crossProduct, glm::vec3(0.0f, 0.0f, 0.0f), 1e-6f)))
+            {
+                trianglesSquaresSum += getTriangleSquare(vertexPointEdgesLengths[triangleIdx]);
+            }
+        }
+
+        return glm::epsilonEqual(trianglesSquaresSum, getSquare(), 1e-3f);
     }
 
     std::vector<glm::vec3> Face::getAllGeometryEdges() const
@@ -123,15 +139,35 @@ namespace MeshCore
         return outgoingEdge;
     }
 
-    std::vector<glm::vec3> Face::getAllVerticesToPointVectors(const glm::vec3& point) const
+    float Face::getSquare() const
     {
-        std::vector<glm::vec3> verticesToPointVectors;
+        auto edges = getAllGeometryEdges();
+        return getTriangleSquare({ glm::length(edges[0]), glm::length(edges[1]), glm::length(edges[2]) });
+    }
+
+    void Face::move(const glm::vec3& movement, std::unordered_set<Vertex*>& alreadyChangedVertices)
+    {
         EdgeWalker edgeWalker(halfEdge);
-        edgeWalker.forEach([&verticesToPointVectors, &point](HalfEdge* edge)
+        edgeWalker.forEach([&movement, &alreadyChangedVertices](HalfEdge* halfEdge)
         {
-            verticesToPointVectors.emplace_back(point - edge->vertex->pos);
+            auto& halfEdgeVertex = halfEdge->vertex;
+            if (alreadyChangedVertices.find(halfEdgeVertex) == alreadyChangedVertices.end())
+            {
+                halfEdge->vertex->pos += movement;
+                alreadyChangedVertices.insert(halfEdge->vertex);
+            }
+        });
+    }
+
+    std::vector<glm::vec3> Face::getVerticesPositions() const
+    {
+        std::vector<glm::vec3> verticesPositions;
+        EdgeWalker edgeWalker(halfEdge);
+        edgeWalker.forEach([&verticesPositions](HalfEdge* edge)
+        {
+            verticesPositions.emplace_back(edge->vertex->pos);
         });
 
-        return verticesToPointVectors;
+        return verticesPositions;
     }
 }

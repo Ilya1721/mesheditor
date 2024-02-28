@@ -27,15 +27,10 @@ namespace RenderSystem
 
 	void Scene::init()
 	{
-		initRenderBuffer();
+		updateRenderData();
 		initShaderTransformationSystem();
 		adjustCamera();
 		adjustLightPos();
-	}
-
-	void Scene::initRenderBuffer()
-	{
-		mRenderer.getRenderBuffer().setRenderData(mRootObject.getRenderData());
 	}
 
 	void Scene::initShaderTransformationSystem()
@@ -90,7 +85,12 @@ namespace RenderSystem
 		mRenderer.setHighlightedFaces(facesIndices);
 	}
 
-	MeshCore::RaySurfaceIntersection Scene::getSurfaceIntersection(const glm::vec3& cursorPosInWorldSpace, bool faceOnly)
+	void Scene::updateRenderData()
+	{
+		mRenderer.getRenderBuffer().setRenderData(mRootObject.getOnlyRootRenderData());
+	}
+
+	MeshCore::RaySurfaceIntersection Scene::getClosestIntersection(const glm::vec3& cursorPosInWorldSpace, bool intersectSurface)
 	{
 		auto cameraRay = mCamera.getCameraRay(cursorPosInWorldSpace);
 		if (!mRootObject.getBBox().checkIntersectionWithRay(cameraRay))
@@ -98,12 +98,17 @@ namespace RenderSystem
 			return {};
 		}
 
-		return mRootObject.getClosestIntersection(cameraRay, faceOnly);
+		return mRootObject.getClosestIntersection(cameraRay, intersectSurface);
 	}
 
 	void Scene::setProjectionMatrix(const glm::mat4& projectionMatrix)
 	{
 		mRenderer.getShaderTransformationSystem().setProjection(glm::value_ptr(projectionMatrix));
+	}
+
+	const Camera& Scene::getCamera() const
+	{
+		return mCamera;
 	}
 
 	const glm::mat4& Scene::getViewMatrix() const

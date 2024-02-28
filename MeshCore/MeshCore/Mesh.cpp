@@ -3,7 +3,6 @@
 #include <numeric>
 
 #include "Constants.h"
-#include "Surface.h"
 #include "EdgeWalker.h"
 
 namespace
@@ -25,14 +24,14 @@ namespace
 namespace MeshCore
 {
 	Mesh::Mesh(const std::vector<Vertex>& vertices)
-		: mOriginalVertices(vertices)
+		: mVertices(vertices)
 	{
 		init();
 	}
 
 	void Mesh::init()
 	{
-		for (size_t vertexIdx = 2; vertexIdx < mOriginalVertices.size(); vertexIdx += 3)
+		for (size_t vertexIdx = 2; vertexIdx < mVertices.size(); vertexIdx += 3)
 		{
 			createFace(vertexIdx);
 		}
@@ -42,13 +41,46 @@ namespace MeshCore
 		if (SMOOTHING_ENABLED)
 		{
 			averageFaceNormals();
-			createVerticesToRender();
+			updateVertices();
 		}
+
+		prepareRenderData();
+	}
+
+	void Mesh::prepareRenderData()
+	{
+		mRenderData.reserveMemory(mVertices.size() * COORDINATES_PER_VERTEX);
+
+		for (const auto& vertex : mVertices)
+		{
+			for (int coordIdx = 0; coordIdx < COORDINATES_PER_VERTEX; ++coordIdx)
+			{
+				mRenderData.append(vertex.pos[coordIdx], vertex.normal[coordIdx]);
+			}
+		}
+	}
+
+	void Mesh::updateVertices(const std::unordered_set<Vertex*>& vertices)
+	{
+		std::vector<std::pair<int, Vertex*>> vertexIndexArray;
+
+		for (const auto& vertex : vertices)
+		{
+			auto vertexIndexIt = mVertexIndexMap.find(vertex);
+			if (vertexIndexIt != mVertexIndexMap.end())
+			{
+				auto& [vertexPtr, vertexIdx] = *vertexIndexIt;
+				mVertices[vertexIdx] = *vertexPtr;
+				vertexIndexArray.emplace_back(vertexIdx, vertexPtr);
+			}
+		}
+
+		mRenderData.updateVertices(vertexIndexArray);
 	}
 
 	const std::vector<Vertex>& Mesh::getVertices() const
 	{
-		return canRenderOriginalVertices() ? mOriginalVertices : mVerticesToRender;
+		return mVertices;
 	}
 
 	int Mesh::getNumberOfFaces() const
@@ -58,9 +90,13 @@ namespace MeshCore
 
 	void Mesh::createHalfEdgesForFace(size_t lastVertexIdx)
 	{
-		auto thirdVertex = getUniqueVertex(lastVertexIdx);
-		auto secondVertex = getUniqueVertex(lastVertexIdx - 1);
 		auto firstVertex = getUniqueVertex(lastVertexIdx - 2);
+		auto secondVertex = getUniqueVertex(lastVertexIdx - 1);
+		auto thirdVertex = getUniqueVertex(lastVertexIdx);
+
+		mVertexIndexMap.insert({ firstVertex, lastVertexIdx - 2 });
+		mVertexIndexMap.insert({ secondVertex, lastVertexIdx - 1 });
+		mVertexIndexMap.insert({ thirdVertex, lastVertexIdx });
 
 		auto firstHalfEdge = std::make_unique<HalfEdge>();
 		auto secondHalfEdge = std::make_unique<HalfEdge>();
@@ -111,7 +147,7 @@ namespace MeshCore
 
 	Vertex* Mesh::getUniqueVertex(size_t vertexIdx)
 	{
-		const auto& vertex = mOriginalVertices[vertexIdx];
+		const auto& vertex = mVertices[vertexIdx];
 		auto vertexMapIt = mUniqueVerticesMap.find(vertex);
 
 		if (vertexMapIt != mUniqueVerticesMap.end())
@@ -134,7 +170,7 @@ namespace MeshCore
 
 	void Mesh::addFace()
 	{
-		mFaces.push_back(std::make_unique<Face>());
+		mFaces.push_back(std::make_unique<Face>(this));
 		int faceIdx = mFaces.size() - 1;
 		mFaceIndexMap.insert({ mFaces[faceIdx].get(), faceIdx });
 	}
@@ -174,40 +210,22 @@ namespace MeshCore
 		}
 	}
 
-	bool Mesh::canRenderOriginalVertices() const
+	void Mesh::updateVertices()
 	{
-		return !SMOOTHING_ENABLED;
-	}
-
-	void Mesh::createVerticesToRender()
-	{
-		mVerticesToRender.clear();
-		for (const auto& face : mFaces)
+		for (auto& vertex : mVertices)
 		{
-			EdgeWalker edgeWalker(face->halfEdge);
-			edgeWalker.forEach([this](HalfEdge* edge)
+			auto updatedVertexIt = mUniqueVerticesMap.find(vertex);
+			if (updatedVertexIt != mUniqueVerticesMap.end())
 			{
-				mVerticesToRender.push_back(*edge->vertex);
-			});
-		}
-	}
-
-	RenderData Mesh::getRenderData() const
-	{
-		auto& verticesToRender = canRenderOriginalVertices() ? mOriginalVertices : mVerticesToRender;
-
-		RenderData renderData;
-		renderData.reserveMemory(verticesToRender.size() * COORDINATES_PER_VERTEX);
-
-		for (const auto& vertex : verticesToRender)
-		{
-			for (int coordIdx = 0; coordIdx < COORDINATES_PER_VERTEX; ++coordIdx)
-			{
-				renderData.append(vertex.pos[coordIdx], vertex.normal[coordIdx]);
+				auto& [key, updatedVertexWithExtraData] = *updatedVertexIt;
+				vertex = updatedVertexWithExtraData.vertex;
 			}
 		}
+	}
 
-		return renderData;
+	const RenderData& Mesh::getRenderData() const
+	{
+		return mRenderData;
 	}
 
 	RaySurfaceIntersection Mesh::getClosestIntersection(const GeometryCore::Ray& ray, bool intersectSurface, int passedFacesCount) const

@@ -51,6 +51,11 @@ namespace MeshCore
 		return mChildren;
 	}
 
+	const RenderData& Object3D::getOnlyRootRenderData() const
+	{
+		return mMesh.getRenderData();
+	}
+
 	RenderData Object3D::getRenderData() const
 	{
 		return getRenderData(this);
@@ -58,8 +63,7 @@ namespace MeshCore
 
 	RenderData Object3D::getRenderData(const Object3D* object) const
 	{
-		RenderData renderData;
-		renderData.append(object->getMesh().getRenderData());
+		RenderData renderData = object->getMesh().getRenderData();
 		for (const auto& child : object->getChildren())
 		{
 			renderData.append(getRenderData(child));

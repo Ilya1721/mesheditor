@@ -127,6 +127,11 @@ namespace RenderSystem
 		return glm::unProject(cursorPosGL3D, mScene->getViewMatrix(), mViewport->getProjectionMatrix(), viewportData);
 	}
 
+	glm::vec3 Window::unProjectToCameraTargetPlane(const glm::vec2& cursorPos) const
+	{
+		return sInstance->mScene->getCamera().projectToTargetPlane(sInstance->unProject(cursorPos));
+	}
+
 	glm::vec3 Window::screenCoordinatesToNDC(const glm::vec2& cursorPos) const
 	{
 		glm::vec3 ndcPos{};

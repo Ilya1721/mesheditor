@@ -12,8 +12,7 @@ namespace RenderSystem
         Operation(Scene* scene);
         virtual ~Operation() = default;
 
-        void toggle();
-
+        virtual void toggle() = 0;
         virtual void onMouseMove(const glm::vec2& startCursorPos, const glm::vec2& endCursorPos) = 0;
         virtual void onMouseClick(const glm::vec2& cursorPos) = 0;
 

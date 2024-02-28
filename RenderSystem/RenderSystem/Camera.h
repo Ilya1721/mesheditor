@@ -16,6 +16,7 @@ namespace RenderSystem
 		const glm::vec3& getUp() const;
 		const glm::vec3& getRight() const;
 		glm::vec3 getNormalizedDirection() const;
+		glm::vec3 projectToTargetPlane(const glm::vec3& cursorPosInWorldSpace) const;
 		GeometryCore::Ray getCameraRay(const glm::vec3& cursorPosInWorldSpace) const;
 
 		void setEyeTargetUp(const glm::vec3& eye, const glm::vec3& target, const glm::vec3& up);

@@ -9,12 +9,22 @@ namespace RenderSystem
         Operation(scene)
     {}
 
+    void SurfaceHighlighter::toggle()
+    {
+        mEnabled = !mEnabled;
+
+        if (!mEnabled) 
+        {
+            mScene->highlightFaces({});
+        }
+    }
+
     void SurfaceHighlighter::onMouseMove(const glm::vec2& startCursorPos, const glm::vec2& endCursorPos)
     {
         if (mEnabled)
         {
             auto cursorPos = mScene->getParentWindow()->getCursorPos();
-            auto surfaceIntersection = mScene->getSurfaceIntersection(unProject(cursorPos));
+            auto surfaceIntersection = mScene->getClosestIntersection(unProject(cursorPos), false);
             mScene->highlightFaces(surfaceIntersection.surfaceIndices);
         }
     }

@@ -28,6 +28,7 @@ namespace MeshCore
 		void removeChild(Object3D* child);
 
 		const Mesh& getMesh() const;
+		const RenderData& getOnlyRootRenderData() const;
 		RenderData getRenderData() const;
 		const glm::mat4& getTransform() const;
 		void setTransform(const glm::mat4& transform);

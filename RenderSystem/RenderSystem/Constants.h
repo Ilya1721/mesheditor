@@ -42,6 +42,7 @@ namespace RenderSystem
 	constexpr float LIGHT_SOURCE_TO_CAMERA_DISTANCE = 25.0f;
 	constexpr float ZOOM_STEP_KOEF = 0.5f;
 	constexpr float ORBIT_SPEED_KOEF = 4.0f;
+	constexpr float SURFACE_EXTRUCTION_SPEED_KOEF = 1.0f;
 	constexpr int CAMERA_DIST_TO_BBOX_KOEF = 4;
 	inline const std::string WINDOW_TITLE = "Mesh Editor";
 }

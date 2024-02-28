@@ -20,7 +20,7 @@ namespace RenderSystem
 	void RenderBuffer::setRenderData(const MeshCore::RenderData& renderData)
 	{
 		mVertexCount = renderData.positions.size() / MeshCore::COORDINATES_PER_VERTEX;
-		auto compactData = renderData.getCompactData();
+		const auto& compactData = renderData.getCompactData();
 
 		glBufferData(GL_ARRAY_BUFFER, compactData.size() * sizeof(float), compactData.data(), GL_STATIC_DRAW);
 		glEnableVertexAttribArray(0);

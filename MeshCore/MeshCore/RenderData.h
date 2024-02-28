@@ -4,6 +4,8 @@
 
 namespace MeshCore
 {
+	struct Vertex;
+
 	struct RenderData
 	{
 		std::vector<float> positions;
@@ -13,7 +15,14 @@ namespace MeshCore
 
 		void append(const RenderData& other);
 		void append(float posCoord, float normalCoord);
+		void updateVertices(const std::vector<std::pair<int, Vertex*>>& vertexIndexArray);
 		void reserveMemory(size_t numberOfElements);
-		std::vector<float> getCompactData() const;
+		const std::vector<float>& getCompactData() const;
+
+	private:
+		void prepareCompactData();
+
+	private:
+		std::vector<float> mCompactData;
 	};
 }

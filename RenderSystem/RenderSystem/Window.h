@@ -28,6 +28,7 @@ namespace RenderSystem
 		const std::unique_ptr<Viewport>& getViewport() const;
 		glm::vec2 getCursorPos() const;
 		glm::vec3 unProject(const glm::vec2& cursorPos) const;
+		glm::vec3 unProjectToCameraTargetPlane(const glm::vec2& cursorPos) const;
 		glm::vec3 screenCoordinatesToNDC(const glm::vec2& cursorPos) const;
 
 	private:

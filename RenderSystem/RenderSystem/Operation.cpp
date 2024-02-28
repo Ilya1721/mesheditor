@@ -9,11 +9,6 @@ namespace RenderSystem
         mScene(scene)
     {}
 
-    void Operation::toggle()
-    {
-        mEnabled = !mEnabled;
-    }
-
     glm::vec3 Operation::unProject(const glm::vec2& cursorPos) const
     {
         auto parentWindow = mScene->getParentWindow();
