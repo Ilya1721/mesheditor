@@ -24,7 +24,7 @@ namespace MeshCore
         GeometryCore::Plane facePlane(halfEdge->vertex->pos, faceNormal);
 
         auto rayPlaneIntersectionPoint = ray.findIntersection(facePlane);
-        if (rayPlaneIntersectionPoint.has_value() && isPointInside(rayPlaneIntersectionPoint.value(), faceNormal))
+        if (rayPlaneIntersectionPoint.has_value() && isPointInside(rayPlaneIntersectionPoint.value()))
         {
             return rayPlaneIntersectionPoint;
         }
@@ -40,7 +40,7 @@ namespace MeshCore
         return glm::cross(firstEdge, secondEdge);
     }
 
-    bool Face::isPointInside(const glm::vec3& point, const glm::vec3& faceNormal) const
+    bool Face::isPointInside(const glm::vec3& point) const
     {
         auto verticesPositions = getVerticesPositions();
         std::array<std::array<glm::vec3, 3>, 3> vertexPointEdges{};
@@ -68,7 +68,7 @@ namespace MeshCore
             }
         }
 
-        return glm::epsilonEqual(trianglesSquaresSum, getSquare(), 1e-3f);
+        return glm::epsilonEqual(std::roundf(trianglesSquaresSum), std::roundf(getSquare()), 1e-6f);
     }
 
     std::vector<glm::vec3> Face::getAllGeometryEdges() const

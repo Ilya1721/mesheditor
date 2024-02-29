@@ -22,7 +22,7 @@ namespace RenderSystem
 
     void SurfaceExtruder::onMouseMove(const glm::vec2& startCursorPos, const glm::vec2& endCursorPos)
     {
-        if (mSurfaceIntersection.surfaceIndices.empty())
+        if (!mEnabled || mSurfaceIntersection.surfaceIndices.empty())
         {
             return;
         }
@@ -48,7 +48,10 @@ namespace RenderSystem
 
     void SurfaceExtruder::onMouseClick(const glm::vec2& cursorPos)
     {
-        mSurfaceIntersection = mScene->getClosestIntersection(unProject(cursorPos));
-        mScene->highlightFaces(mSurfaceIntersection.surfaceIndices);
+        if (mEnabled)
+        {
+            mSurfaceIntersection = mScene->getClosestIntersection(unProject(cursorPos));
+            mScene->highlightFaces(mSurfaceIntersection.surfaceIndices);
+        }
     }
 }
