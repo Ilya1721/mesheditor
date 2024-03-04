@@ -43,7 +43,7 @@ namespace
 		}
 	}
 
-	MeshCore::Mesh readText(std::string& fileContent)
+	std::unique_ptr<MeshCore::Mesh> readText(std::string& fileContent)
 	{
 		auto contentString = fileContent.data();
 		auto delimiters = MeshFilesLoader::STL_DELIMITERS.c_str();
@@ -63,17 +63,19 @@ namespace
 			else if (Utility::isEqual(currentToken, MeshFilesLoader::KEYWORD_VERTEX))
 			{
 				vertices.emplace_back();
-				readTokenAsVector(currentToken, delimiters, nextToken, vertices.back().pos);
-				vertices.back().normal = faceNormal;
+				glm::vec3 pos{};
+				readTokenAsVector(currentToken, delimiters, nextToken, pos);
+				vertices.back().setNormal(faceNormal);
+				vertices.back().setPos(pos);
 			}
 
 			currentToken = strtok_s(nullptr, delimiters, &nextToken);
 		}
 
-		return { vertices };
+		return std::make_unique<MeshCore::Mesh>(vertices);
 	}
 
-	MeshCore::Mesh readBinary(const std::string& fileContent)
+	std::unique_ptr<MeshCore::Mesh> readBinary(const std::string& fileContent)
 	{
 		const char* buffer = fileContent.c_str();
 		buffer += MeshFilesLoader::STL_HEADER_SIZE;
@@ -91,21 +93,23 @@ namespace
 			for (int vertexIdx = 0; vertexIdx < 3; ++vertexIdx)
 			{
 				MeshCore::Vertex vertex{};
-				vertex.normal = faceNormal;
-				readCoordinatesFromBuffer(vertex.pos, buffer);
+				vertex.setNormal(faceNormal);
+				glm::vec3 pos{};
+				readCoordinatesFromBuffer(pos, buffer);
+				vertex.setPos(pos);
 				vertices.push_back(vertex);
 			}
 
 			buffer += sizeof(uint16_t);
 		}
 
-		return { vertices };
+		return std::make_unique<MeshCore::Mesh>(vertices);
 	}
 }
 
 namespace MeshFilesLoader
 {
-	MeshCore::Mesh loadSTL(const std::filesystem::path& filePath)
+	std::unique_ptr<MeshCore::Mesh> loadSTL(const std::filesystem::path& filePath)
 	{
 		if (!Utility::isEqual(filePath.extension().string(), ".stl"))
 		{

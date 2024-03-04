@@ -30,6 +30,7 @@ namespace RenderSystem
 		glm::vec3 unProject(const glm::vec2& cursorPos) const;
 		glm::vec3 unProjectToCameraTargetPlane(const glm::vec2& cursorPos) const;
 		glm::vec3 screenCoordinatesToNDC(const glm::vec2& cursorPos) const;
+		void enableSceneMovement(bool isEnabled);
 
 	private:
 		Window(int width, int height, const std::string& meshFilePath);
@@ -48,6 +49,7 @@ namespace RenderSystem
 	private:
 		int mWidth;
 		int mHeight;
+		bool mSceneMovementEnabled = true;
 
 		MouseButtonPressed mMouseButtonPressed;
 		glm::vec2 mSavedCursorPosition;

@@ -2,7 +2,7 @@
 
 namespace MeshCore
 {
-    struct Vertex;
+    struct UniqueVertex;
     struct Face;
 
     struct HalfEdge
@@ -11,7 +11,7 @@ namespace MeshCore
         HalfEdge* next = nullptr;
         HalfEdge* twin = nullptr;
 
-        Vertex* vertex = nullptr;
+        UniqueVertex* vertex = nullptr;
         Face* face = nullptr;
     };
 }

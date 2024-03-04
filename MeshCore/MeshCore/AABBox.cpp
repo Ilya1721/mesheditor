@@ -48,18 +48,18 @@ namespace MeshCore
 		glm::vec3 min = mMin;
 		glm::vec3 max = mMax;
 
-		for (const auto& vertex : mesh.getVertices())
+		for (const auto& [vertex, uniqueVertex] : mesh.getVertices())
 		{
 			auto transformedVertex = meshTransform * vertex;
 
-			min.x = std::min(min.x, transformedVertex.pos.x);
-			max.x = std::max(max.x, transformedVertex.pos.x);
+			min.x = std::min(min.x, transformedVertex.pos().x);
+			max.x = std::max(max.x, transformedVertex.pos().x);
 
-			min.y = std::min(min.y, transformedVertex.pos.y);
-			max.y = std::max(max.y, transformedVertex.pos.y);
+			min.y = std::min(min.y, transformedVertex.pos().y);
+			max.y = std::max(max.y, transformedVertex.pos().y);
 
-			min.z = std::min(min.z, transformedVertex.pos.z);
-			max.z = std::max(max.z, transformedVertex.pos.z);
+			min.z = std::min(min.z, transformedVertex.pos().z);
+			max.z = std::max(max.z, transformedVertex.pos().z);
 		}
 
 		setMinMax(min, max);

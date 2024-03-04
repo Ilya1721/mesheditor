@@ -8,7 +8,7 @@
 namespace MeshCore
 {
     struct HalfEdge;
-    struct Vertex;
+    struct UniqueVertex;
     class Mesh;
 
     struct Face
@@ -22,9 +22,10 @@ namespace MeshCore
         std::vector<glm::vec3> getAllGeometryEdges() const;
         std::vector<HalfEdge*> getAllEdges() const;
         std::unordered_set<Face*> getAdjacentFaces(bool filterByNormal = false, const glm::vec3* normalPtr = nullptr) const;
-        HalfEdge* findOutgoingEdge(const Vertex* vertex) const;
+        HalfEdge* findOutgoingEdge(const UniqueVertex* vertex) const;
         float getSquare() const;
         std::vector<glm::vec3> getVerticesPositions() const;
-        void move(const glm::vec3& movement, std::unordered_set<Vertex*>& alreadyChangedVertices);
+
+        void move(const glm::vec3& movement, std::unordered_set<UniqueVertex*>& alreadyChangedVertices);
     };
 }

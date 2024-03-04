@@ -13,7 +13,7 @@ namespace MeshCore
 		mTransform(1.0f)
 	{}
 
-	Object3D::Object3D(Object3D* parent, Mesh&& mesh) :
+	Object3D::Object3D(Object3D* parent, std::unique_ptr<Mesh> mesh) :
 		mParent(parent),
 		mMesh(std::move(mesh)),
 		mTransform(1.0f)
@@ -38,7 +38,7 @@ namespace MeshCore
 
 	const Mesh& Object3D::getMesh() const
 	{
-		return mMesh;
+		return *mMesh;
 	}
 
 	Object3D* Object3D::getParent() const 
@@ -53,7 +53,7 @@ namespace MeshCore
 
 	const RenderData& Object3D::getOnlyRootRenderData() const
 	{
-		return mMesh.getRenderData();
+		return mMesh->getRenderData();
 	}
 
 	RenderData Object3D::getRenderData() const
@@ -89,10 +89,10 @@ namespace MeshCore
 
 	RaySurfaceIntersection Object3D::getClosestIntersection(const GeometryCore::Ray& ray, bool intersectSurface, int passedFacesCount) const
 	{
-		auto currentClosestIntersection = mMesh.getClosestIntersection(ray, intersectSurface, passedFacesCount);
+		auto currentClosestIntersection = mMesh->getClosestIntersection(ray, intersectSurface, passedFacesCount);
 		for (const auto& child : mChildren)
 		{
-			auto childClosestIntersection = child->getClosestIntersection(ray, intersectSurface, passedFacesCount + mMesh.getNumberOfFaces());
+			auto childClosestIntersection = child->getClosestIntersection(ray, intersectSurface, passedFacesCount + mMesh->getNumberOfFaces());
 			if (currentClosestIntersection.surfaceIndices.empty() || isCloser(childClosestIntersection.point, currentClosestIntersection.point, ray.origin))
 			{
 				currentClosestIntersection = childClosestIntersection;

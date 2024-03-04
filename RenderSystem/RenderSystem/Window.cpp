@@ -93,14 +93,17 @@ namespace RenderSystem
 	{
 		glm::vec2 currentCursorPosition(cursorX, cursorY);
 
-		switch (sInstance->mMouseButtonPressed)
+		if (sInstance->mSceneMovementEnabled)
 		{
-		case MouseButtonPressed::MIDDLE:
-			sInstance->mScene->pan(sInstance->unProject(sInstance->mSavedCursorPosition), sInstance->unProject(currentCursorPosition));
-			break;
-		case MouseButtonPressed::LEFT:
-			sInstance->mScene->orbit(sInstance->screenCoordinatesToNDC(sInstance->mSavedCursorPosition), sInstance->screenCoordinatesToNDC(currentCursorPosition));
-			break;
+			switch (sInstance->mMouseButtonPressed)
+			{
+			case MouseButtonPressed::MIDDLE:
+				sInstance->mScene->pan(sInstance->unProject(sInstance->mSavedCursorPosition), sInstance->unProject(currentCursorPosition));
+				break;
+			case MouseButtonPressed::LEFT:
+				sInstance->mScene->orbit(sInstance->screenCoordinatesToNDC(sInstance->mSavedCursorPosition), sInstance->screenCoordinatesToNDC(currentCursorPosition));
+				break;
+			}
 		}
 
 		sInstance->mOperationsDispatcher->onMouseMove(sInstance->mSavedCursorPosition, currentCursorPosition);
@@ -140,6 +143,11 @@ namespace RenderSystem
 		ndcPos.z = 0.0;
 
 		return ndcPos;
+	}
+
+	void Window::enableSceneMovement(bool isEnabled)
+	{
+		mSceneMovementEnabled = isEnabled;
 	}
 
 	void Window::onMouseButton(GLFWwindow* window, int button, int action, int mods)

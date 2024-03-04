@@ -13,7 +13,7 @@ namespace MeshCore
 	{
 	public:
 		Object3D();
-		Object3D(Object3D* parent, Mesh&& mesh);
+		Object3D(Object3D* parent, std::unique_ptr<Mesh> mesh);
 		Object3D(const Object3D& other) = delete;
 		Object3D(Object3D&& other) noexcept = default;
 		Object3D& operator=(const Object3D& other) = delete;
@@ -45,7 +45,7 @@ namespace MeshCore
 	private:
 		Object3D* mParent;
 		std::unordered_set<Object3D*> mChildren;
-		Mesh mMesh;
+		std::unique_ptr<Mesh> mMesh;
 		glm::mat4 mTransform;
 		AABBox mBBox;
 	};

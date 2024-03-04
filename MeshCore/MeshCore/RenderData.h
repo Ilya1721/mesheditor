@@ -2,6 +2,8 @@
 
 #include <vector>
 
+#include "Vertex.h"
+
 namespace MeshCore
 {
 	struct Vertex;
@@ -15,7 +17,7 @@ namespace MeshCore
 
 		void append(const RenderData& other);
 		void append(float posCoord, float normalCoord);
-		void updateVertices(const std::vector<std::pair<int, Vertex*>>& vertexIndexArray);
+		void updateVertex(const OriginalVertexData& vertexData);
 		void reserveMemory(size_t numberOfElements);
 		const std::vector<float>& getCompactData() const;
 

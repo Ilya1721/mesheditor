@@ -41,7 +41,6 @@ namespace MeshCore
 		if (SMOOTHING_ENABLED)
 		{
 			averageFaceNormals();
-			updateVertices();
 		}
 
 		prepareRenderData();
@@ -55,32 +54,25 @@ namespace MeshCore
 		{
 			for (int coordIdx = 0; coordIdx < COORDINATES_PER_VERTEX; ++coordIdx)
 			{
-				mRenderData.append(vertex.pos[coordIdx], vertex.normal[coordIdx]);
+				mRenderData.append(vertex.pos()[coordIdx], vertex.normal()[coordIdx]);
 			}
 		}
 	}
 
-	void Mesh::updateVertices(const std::unordered_set<Vertex*>& vertices)
+	void Mesh::updateVertices(const std::unordered_set<UniqueVertex*>& vertices)
 	{
-		std::vector<std::pair<int, Vertex*>> vertexIndexArray;
-
-		for (const auto& vertex : vertices)
+		for (auto& vertex : vertices)
 		{
-			auto vertexIndexIt = mVertexIndexMap.find(vertex);
-			if (vertexIndexIt != mVertexIndexMap.end())
+			for (auto& originalVertexData : vertex->originalVertices)
 			{
-				auto& [vertexPtr, vertexIdx] = *vertexIndexIt;
-				mVertices[vertexIdx] = *vertexPtr;
-				vertexIndexArray.emplace_back(vertexIdx, vertexPtr);
+				mRenderData.updateVertex(originalVertexData);
 			}
 		}
-
-		mRenderData.updateVertices(vertexIndexArray);
 	}
 
-	const std::vector<Vertex>& Mesh::getVertices() const
+	const std::unordered_map<Vertex, UniqueVertex>& Mesh::getVertices() const
 	{
-		return mVertices;
+		return mUniqueVerticesMap;
 	}
 
 	int Mesh::getNumberOfFaces() const
@@ -90,75 +82,70 @@ namespace MeshCore
 
 	void Mesh::createHalfEdgesForFace(size_t lastVertexIdx)
 	{
-		auto firstVertex = getUniqueVertex(lastVertexIdx - 2);
-		auto secondVertex = getUniqueVertex(lastVertexIdx - 1);
-		auto thirdVertex = getUniqueVertex(lastVertexIdx);
-
-		mVertexIndexMap.insert({ firstVertex, lastVertexIdx - 2 });
-		mVertexIndexMap.insert({ secondVertex, lastVertexIdx - 1 });
-		mVertexIndexMap.insert({ thirdVertex, lastVertexIdx });
+		auto firstUniqueVertex = getUniqueVertex(lastVertexIdx - 2);
+		auto secondUniqueVertex = getUniqueVertex(lastVertexIdx - 1);
+		auto thirdUniqueVertex = getUniqueVertex(lastVertexIdx);
 
 		auto firstHalfEdge = std::make_unique<HalfEdge>();
 		auto secondHalfEdge = std::make_unique<HalfEdge>();
 		auto thirdHalfEdge = std::make_unique<HalfEdge>();
 
-		connectVertexAndHalfEdge(firstVertex, firstHalfEdge);
-		connectVertexAndHalfEdge(secondVertex, secondHalfEdge);
-		connectVertexAndHalfEdge(thirdVertex, thirdHalfEdge);
+		connectVertexAndHalfEdge(firstUniqueVertex, firstHalfEdge);
+		connectVertexAndHalfEdge(secondUniqueVertex, secondHalfEdge);
+		connectVertexAndHalfEdge(thirdUniqueVertex, thirdHalfEdge);
 
-		createHalfEdgeLoop(firstHalfEdge, secondHalfEdge, thirdHalfEdge);
-		createHalfEdgeVerticesMap(firstHalfEdge, secondHalfEdge, thirdHalfEdge);
+		createHalfEdgeLoop({ firstHalfEdge.get(), secondHalfEdge.get(), thirdHalfEdge.get() });
+		createHalfEdgeVerticesMap({ firstHalfEdge.get(), secondHalfEdge.get(), thirdHalfEdge.get() });
 
 		mHalfEdges.push_back(std::move(firstHalfEdge));
 		mHalfEdges.push_back(std::move(secondHalfEdge));
 		mHalfEdges.push_back(std::move(thirdHalfEdge));
 	}
 
-	void Mesh::createHalfEdgeVerticesMap(const std::unique_ptr<HalfEdge>& firstHalfEdge,
-										 const std::unique_ptr<HalfEdge>& secondHalfEdge,
-										 const std::unique_ptr<HalfEdge>& thirdHalfEdge)
+	void Mesh::createHalfEdgeVerticesMap(const std::array<HalfEdge*, 3>& halfEdges)
 	{
-		auto firstVerticesPair = std::make_pair(*firstHalfEdge->vertex, *secondHalfEdge->vertex);
-		auto secondVerticesPair = std::make_pair(*secondHalfEdge->vertex, *thirdHalfEdge->vertex);
-		auto thirdVerticesPair = std::make_pair(*thirdHalfEdge->vertex, *firstHalfEdge->vertex);
+		auto firstVerticesPair = std::make_pair(*halfEdges[0]->vertex, *halfEdges[1]->vertex);
+		auto secondVerticesPair = std::make_pair(*halfEdges[1]->vertex, *halfEdges[2]->vertex);
+		auto thirdVerticesPair = std::make_pair(*halfEdges[2]->vertex, *halfEdges[0]->vertex);
 
-		mHalfEdgeVerticesMap.insert({ firstVerticesPair, firstHalfEdge.get() });
-		mHalfEdgeVerticesMap.insert({ secondVerticesPair, secondHalfEdge.get() });
-		mHalfEdgeVerticesMap.insert({ thirdVerticesPair, thirdHalfEdge.get() });
+		mHalfEdgeVerticesMap.insert({ firstVerticesPair, halfEdges[0] });
+		mHalfEdgeVerticesMap.insert({ secondVerticesPair, halfEdges[1] });
+		mHalfEdgeVerticesMap.insert({ thirdVerticesPair, halfEdges[2] });
 	}
 
-	void Mesh::createHalfEdgeLoop(const std::unique_ptr<HalfEdge>& firstHalfEdge,
-								  const std::unique_ptr<HalfEdge>& secondHalfEdge,
-								  const std::unique_ptr<HalfEdge>& thirdHalfEdge)
+	void Mesh::createHalfEdgeLoop(const std::array<HalfEdge*, 3>& halfEdges)
 	{
-		firstHalfEdge->next = secondHalfEdge.get();
-		firstHalfEdge->prev = thirdHalfEdge.get();
-		secondHalfEdge->next = thirdHalfEdge.get();
-		secondHalfEdge->prev = firstHalfEdge.get();
-		thirdHalfEdge->next = firstHalfEdge.get();
-		thirdHalfEdge->prev = secondHalfEdge.get();
+		halfEdges[0]->next = halfEdges[1];
+		halfEdges[0]->prev = halfEdges[2];
+		halfEdges[1]->next = halfEdges[2];
+		halfEdges[1]->prev = halfEdges[0];
+		halfEdges[2]->next = halfEdges[0];
+		halfEdges[2]->prev = halfEdges[1];
 	}
 
-	void Mesh::connectVertexAndHalfEdge(Vertex* vertex, const std::unique_ptr<HalfEdge>& halfEdge)
+	void Mesh::connectVertexAndHalfEdge(UniqueVertex* vertex, const std::unique_ptr<HalfEdge>& halfEdge)
 	{
 		vertex->halfEdge = halfEdge.get();
 		halfEdge->vertex = vertex;
 	}
 
-	Vertex* Mesh::getUniqueVertex(size_t vertexIdx)
+	UniqueVertex* Mesh::getUniqueVertex(int vertexIdx)
 	{
-		const auto& vertex = mVertices[vertexIdx];
+		auto& vertex = mVertices[vertexIdx];
 		auto vertexMapIt = mUniqueVerticesMap.find(vertex);
 
-		if (vertexMapIt != mUniqueVerticesMap.end())
+		if (vertexMapIt == mUniqueVerticesMap.end())
 		{
-			vertexMapIt->second.adjacentFacesNormals.insert(vertex.normal);
-			return &vertexMapIt->second.vertex;
+			UniqueVertex uniqueVertex(vertex, vertexIdx);
+			auto& [vertexKey, insertedUniqueVertex] = *mUniqueVerticesMap.insert({ vertex, std::move(uniqueVertex) }).first;
+			return &insertedUniqueVertex;
 		}
 
-		auto insertedVertexWithExtraData = mUniqueVerticesMap.insert({ vertex, {vertex, {vertex.normal}} });
+		auto& [vertexKey, uniqueVertex] = *vertexMapIt;
+		uniqueVertex.adjacentFacesNormals.insert(vertex.normal());
+		uniqueVertex.originalVertices.emplace_back(&vertex, vertexIdx);
 
-		return &insertedVertexWithExtraData.first->second.vertex;
+		return &uniqueVertex;
 	}
 
 	void Mesh::createFace(size_t lastVertexIdx)
@@ -204,22 +191,9 @@ namespace MeshCore
 
 	void Mesh::averageFaceNormals()
 	{
-		for (auto& [origVertex, vertexWithExtraData] : mUniqueVerticesMap)
+		for (auto& [origVertex, uniqueVertex] : mUniqueVerticesMap)
 		{
-			vertexWithExtraData.vertex.normal = glm::normalize(calcAverage(vertexWithExtraData.adjacentFacesNormals));
-		}
-	}
-
-	void Mesh::updateVertices()
-	{
-		for (auto& vertex : mVertices)
-		{
-			auto updatedVertexIt = mUniqueVerticesMap.find(vertex);
-			if (updatedVertexIt != mUniqueVerticesMap.end())
-			{
-				auto& [key, updatedVertexWithExtraData] = *updatedVertexIt;
-				vertex = updatedVertexWithExtraData.vertex;
-			}
+			uniqueVertex.setNormal(glm::normalize(calcAverage(uniqueVertex.adjacentFacesNormals)));
 		}
 	}
 

@@ -21,7 +21,7 @@ namespace MeshCore
     std::optional<glm::vec3> Face::getIntersectionPoint(const GeometryCore::Ray& ray) const
     {
         auto faceNormal = calcNormal();
-        GeometryCore::Plane facePlane(halfEdge->vertex->pos, faceNormal);
+        GeometryCore::Plane facePlane(halfEdge->vertex->pos(), faceNormal);
 
         auto rayPlaneIntersectionPoint = ray.findIntersection(facePlane);
         if (rayPlaneIntersectionPoint.has_value() && isPointInside(rayPlaneIntersectionPoint.value()))
@@ -34,8 +34,8 @@ namespace MeshCore
 
     glm::vec3 Face::calcNormal() const
     {
-        auto firstEdge = halfEdge->next->vertex->pos - halfEdge->vertex->pos;
-        auto secondEdge = halfEdge->prev->vertex->pos - halfEdge->next->vertex->pos;
+        auto firstEdge = halfEdge->next->vertex->pos() - halfEdge->vertex->pos();
+        auto secondEdge = halfEdge->prev->vertex->pos() - halfEdge->next->vertex->pos();
 
         return glm::cross(firstEdge, secondEdge);
     }
@@ -77,7 +77,7 @@ namespace MeshCore
         EdgeWalker edgeWalker(halfEdge);
         edgeWalker.forEach([&edges](HalfEdge* edge)
         {
-            edges.emplace_back(edge->next->vertex->pos - edge->vertex->pos);
+            edges.emplace_back(edge->next->vertex->pos() - edge->vertex->pos());
         });
 
         return edges;
@@ -123,7 +123,7 @@ namespace MeshCore
         return uniqueAdjacentFaces;
     }
 
-    HalfEdge* Face::findOutgoingEdge(const Vertex* vertex) const
+    HalfEdge* Face::findOutgoingEdge(const UniqueVertex* vertex) const
     {
         EdgeWalker edgeWalker(halfEdge);
         HalfEdge* outgoingEdge = nullptr;
@@ -145,7 +145,7 @@ namespace MeshCore
         return getTriangleSquare({ glm::length(edges[0]), glm::length(edges[1]), glm::length(edges[2]) });
     }
 
-    void Face::move(const glm::vec3& movement, std::unordered_set<Vertex*>& alreadyChangedVertices)
+    void Face::move(const glm::vec3& movement, std::unordered_set<UniqueVertex*>& alreadyChangedVertices)
     {
         EdgeWalker edgeWalker(halfEdge);
         edgeWalker.forEach([&movement, &alreadyChangedVertices](HalfEdge* halfEdge)
@@ -153,7 +153,7 @@ namespace MeshCore
             auto& halfEdgeVertex = halfEdge->vertex;
             if (alreadyChangedVertices.find(halfEdgeVertex) == alreadyChangedVertices.end())
             {
-                halfEdge->vertex->pos += movement;
+                halfEdge->vertex->setPos(halfEdge->vertex->pos() + movement);
                 alreadyChangedVertices.insert(halfEdge->vertex);
             }
         });
@@ -165,7 +165,7 @@ namespace MeshCore
         EdgeWalker edgeWalker(halfEdge);
         edgeWalker.forEach([&verticesPositions](HalfEdge* edge)
         {
-            verticesPositions.emplace_back(edge->vertex->pos);
+            verticesPositions.emplace_back(edge->vertex->pos());
         });
 
         return verticesPositions;

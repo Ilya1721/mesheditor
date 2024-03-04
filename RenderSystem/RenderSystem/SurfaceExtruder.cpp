@@ -14,9 +14,14 @@ namespace RenderSystem
     {
         mEnabled = !mEnabled;
 
-        if (!mEnabled)
+        if (mEnabled)
+        {
+            mScene->getParentWindow()->enableSceneMovement(false);
+        }
+        else
         {
             mScene->highlightFaces({});
+            mScene->getParentWindow()->enableSceneMovement(true);
         }
     }
 
@@ -31,9 +36,10 @@ namespace RenderSystem
         auto endPosOnTargetPlane = mScene->getParentWindow()->unProjectToCameraTargetPlane(endCursorPos);
         auto unitMouseMoveVector = glm::normalize(endPosOnTargetPlane - startPosOnTargetPlane);
 
-        glm::vec3 surfaceNormal = mScene->getViewMatrix() * glm::vec4(mSurfaceIntersection.intersectedSurface.normal, 1.0f);
-        auto surfaceMoveVector = surfaceNormal * glm::dot(surfaceNormal, unitMouseMoveVector) * SURFACE_EXTRUCTION_SPEED_KOEF;
-        std::unordered_set<MeshCore::Vertex*> changedVertices;
+        auto surfaceNormalInCameraSpace = mScene->getViewMatrix() * glm::vec4(mSurfaceIntersection.intersectedSurface.normal, 1.0f);
+        glm::vec3 unitSurfaceNormal = glm::normalize(surfaceNormalInCameraSpace);
+        auto surfaceMoveVector = unitSurfaceNormal * glm::dot(unitSurfaceNormal, unitMouseMoveVector) * SURFACE_EXTRUCTION_SPEED_KOEF;
+        std::unordered_set<MeshCore::UniqueVertex*> changedVertices;
         auto& surfaceFaces = mSurfaceIntersection.intersectedSurface.faces;
         
         for (auto& face : surfaceFaces)

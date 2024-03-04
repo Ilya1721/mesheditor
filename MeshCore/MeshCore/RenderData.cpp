@@ -18,16 +18,12 @@ namespace MeshCore
 		prepareCompactData();
 	}
 
-	void RenderData::updateVertices(const std::vector<std::pair<int, Vertex*>>& vertexIndexArray)
+	void RenderData::updateVertex(const OriginalVertexData& vertexData)
 	{
-		for (auto& [vertexIndex, vertexPtr] : vertexIndexArray)
+		for (int compactDataIdx = vertexData.index * 3, coordIdx = 0; coordIdx < 3; ++compactDataIdx, ++coordIdx)
 		{
-			auto startCoordIdx = vertexIndex * 3;
-			for (int coordIdx = startCoordIdx; coordIdx < startCoordIdx + 3; ++coordIdx)
-			{
-				mCompactData[coordIdx] = vertexPtr->pos[coordIdx];
-				mCompactData[coordIdx + positions.size()] = vertexPtr->normal[coordIdx];
-			}
+			mCompactData[compactDataIdx] = vertexData.vertex->pos()[coordIdx];
+			mCompactData[compactDataIdx + positions.size()] = vertexData.vertex->normal()[coordIdx];
 		}
 	}
 

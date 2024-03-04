@@ -13,17 +13,38 @@ namespace MeshCore
 	{
 		HalfEdge* halfEdge = nullptr;
 
-		glm::vec3 pos {};
-		glm::vec3 normal {};
+		void setPos(const glm::vec3& pos);
+		void setNormal(const glm::vec3& normal);
+
+		const glm::vec3& pos() const;
+		const glm::vec3& normal() const;
 
 		bool operator==(const Vertex& other) const;
 		friend Vertex operator*(const glm::mat4& transform, const Vertex& vertex);
+
+	protected:
+		glm::vec3 mPos{};
+		glm::vec3 mNormal{};
 	};
 
-	struct VertexWithExtraData
+	struct OriginalVertexData
 	{
-		Vertex vertex;
+		Vertex* vertex;
+		int index;
+	};
+
+	struct UniqueVertex : Vertex
+	{
+		UniqueVertex(Vertex& originalVertex, int originalVertexIndex);
+
+		void setPos(const glm::vec3& pos);
+		void setNormal(const glm::vec3& normal);
+
+		std::vector<OriginalVertexData> originalVertices;
 		std::unordered_set<glm::vec3> adjacentFacesNormals;
+
+	private:
+		void updateOriginalVertices();
 	};
 
 	using HalfEdgeVerticesPair = std::pair<Vertex, Vertex>;

@@ -116,7 +116,7 @@ namespace RenderSystem
 		return mCamera.getViewMatrix();
 	}
 
-	const Window* Scene::getParentWindow() const
+	Window* Scene::getParentWindow() const
 	{
 		return mParentWindow;
 	}

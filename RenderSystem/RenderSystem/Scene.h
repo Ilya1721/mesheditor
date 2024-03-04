@@ -24,7 +24,7 @@ namespace RenderSystem
 		void setProjectionMatrix(const glm::mat4& projectionMatrix);
 		const Camera& getCamera() const;
 		const glm::mat4& getViewMatrix() const;
-		const Window* getParentWindow() const;
+		Window* getParentWindow() const;
 		MeshCore::RaySurfaceIntersection getClosestIntersection(const glm::vec3& cursorPosInWorldSpace, bool intersectSurface = true);
 
 		void render();

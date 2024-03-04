@@ -6,5 +6,5 @@
 
 namespace MeshFilesLoader
 {
-	MeshCore::Mesh loadSTL(const std::filesystem::path& filePath);
+	std::unique_ptr<MeshCore::Mesh> loadSTL(const std::filesystem::path& filePath);
 }

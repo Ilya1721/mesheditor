@@ -5,7 +5,7 @@
 namespace MeshCore
 {
     struct HalfEdge;
-    struct Vertex;
+    struct UniqueVertex;
     struct Face;
 
     class OutgoingEdgeFinder
@@ -24,7 +24,7 @@ namespace MeshCore
 
     private:
         HalfEdge* mStartOutgoingEdge;
-        Vertex* mVertex;
+        UniqueVertex* mVertex;
         std::vector<Face*> mOutgoingEdgesFaces;
         std::vector<HalfEdge*> mOutgoingEdges;
     };
