@@ -14,6 +14,9 @@ namespace
 {
 	using namespace RenderSystem;
 
+	constexpr Material MAIN_MATERIAL = GOLD_MATERIAL;
+	constexpr Material HIGHLIGHT_MATERIAL = RUBY_MATERIAL;
+
 	void checkShaderOrProgramStatus(GetShaderIV getShaderIVFunc, int shaderOrProgram, int statusToCheck,
 									SHADER_TYPE shaderType, const std::string& failedMessage)
 	{
@@ -36,7 +39,8 @@ namespace RenderSystem
 		mShaderProgram(),
 		mHighlightedFacesIndices(),
 		mLighting(),
-		mRenderBuffer()
+		mRenderBuffer(),
+		mDebugRenderBuffer()
 	{
 		init();
 	}
@@ -55,6 +59,7 @@ namespace RenderSystem
 		mShaderTransformationSystem.init(mShaderProgram);
 		mLighting.init(mShaderProgram);
 		mRenderBuffer.init();
+		mDebugRenderBuffer.init();
 	}
 
 	void Renderer::initShaders()
@@ -81,13 +86,13 @@ namespace RenderSystem
 			return;
 		}
 
-		makeMaterialForHighlightActive();
+		makeMaterialActive(HIGHLIGHT_MATERIAL);
 		glClear(GL_DEPTH_BUFFER_BIT);
 		for (const auto& faceIdx : mHighlightedFacesIndices)
 		{
 			glDrawArrays(GL_TRIANGLES, faceIdx * 3, 3);
 		}
-		makeMaterialForSceneActive();
+		makeMaterialActive(MAIN_MATERIAL);
 	}
 
 	void Renderer::renderScene()
@@ -95,14 +100,16 @@ namespace RenderSystem
 		glDrawArrays(GL_TRIANGLES, 0, mRenderBuffer.getVertexCount());
 	}
 
-	void Renderer::makeMaterialForSceneActive()
+	void Renderer::makeMaterialActive(const Material& material)
 	{
-		mLighting.setMaterial(GOLD_MATERIAL);
+		mLighting.setMaterial(material);
 	}
 
-	void Renderer::makeMaterialForHighlightActive()
+	void Renderer::invokeDebugRenderAction(const std::function<void()>& action)
 	{
-		mLighting.setMaterial(RUBY_MATERIAL);
+		mDebugRenderBuffer.bind();
+		action();
+		mRenderBuffer.bind();
 	}
 
 	void Renderer::render()
@@ -112,9 +119,36 @@ namespace RenderSystem
 		renderHighlightedFaces();
 	}
 
+	void Renderer::renderDebug()
+	{
+		if (!DEBUG_RENDER)
+		{
+			return;
+		}
+
+		invokeDebugRenderAction([this]() {
+			int startIndex = 0;
+			for (const auto& debugPrimitive : mDebugPrimitives)
+			{
+				makeMaterialActive(debugPrimitive.material);
+				glDrawArrays(debugPrimitive.renderMode, startIndex, debugPrimitive.getVertexCount());
+				startIndex += debugPrimitive.getVertexCount();
+			}
+			makeMaterialActive(MAIN_MATERIAL);
+		});
+	}
+
 	void Renderer::setHighlightedFaces(const std::vector<int>& facesIndices)
 	{
 		mHighlightedFacesIndices = facesIndices;
+	}
+
+	void Renderer::addDebugPrimitive(const RenderPrimitive& primitive)
+	{
+		mDebugPrimitives.push_back(primitive);
+		invokeDebugRenderAction([this, &primitive]() {
+			mDebugRenderBuffer.appendRenderData(primitive.renderData);
+		});
 	}
 
 	int Renderer::loadShader(const std::string& shaderPath, int shaderType)

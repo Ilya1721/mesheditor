@@ -52,10 +52,7 @@ namespace MeshCore
 
 		for (const auto& vertex : mVertices)
 		{
-			for (int coordIdx = 0; coordIdx < COORDINATES_PER_VERTEX; ++coordIdx)
-			{
-				mRenderData.append(vertex.pos()[coordIdx], vertex.normal()[coordIdx]);
-			}
+			mRenderData.append(vertex);
 		}
 	}
 

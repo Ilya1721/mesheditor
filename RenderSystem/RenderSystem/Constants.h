@@ -23,6 +23,13 @@ namespace RenderSystem
 		2.0f
 	);
 
+	static inline constexpr Material EMERALD_MATERIAL(
+		glm::vec3(0.0215f, 0.1745f, 0.0215f),
+		glm::vec3(0.07568f, 0.61424f, 0.07568f),
+		glm::vec3(0.633f, 0.727811f, 0.633f),
+		0.6f
+	);
+
 	static inline constexpr Light DEFAULT_LIGHT(
 		glm::vec3(0.7f, 0.7f, 0.7f),
 		glm::vec3(1.0f, 1.0f, 1.0f),
@@ -45,4 +52,6 @@ namespace RenderSystem
 	constexpr float SURFACE_EXTRUCTION_SPEED_KOEF = 1.0f;
 	constexpr int CAMERA_DIST_TO_BBOX_KOEF = 4;
 	inline const std::string WINDOW_TITLE = "Mesh Editor";
+
+	constexpr bool DEBUG_RENDER = true;
 }

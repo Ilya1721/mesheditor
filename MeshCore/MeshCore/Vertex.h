@@ -11,6 +11,9 @@ namespace MeshCore
 
 	struct Vertex
 	{
+		Vertex() = default;
+		Vertex(const glm::vec3& pos, const glm::vec3& normal);
+
 		HalfEdge* halfEdge = nullptr;
 
 		void setPos(const glm::vec3& pos);

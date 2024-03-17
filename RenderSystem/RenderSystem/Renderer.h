@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include "RenderPrimitive.h"
+
 #include "Lighting.h"
 #include "RenderBuffer.h"
 #include "ShaderTransformationSystem.h"
@@ -15,7 +17,9 @@ namespace RenderSystem
 		~Renderer();
 
 		void render();
+		void renderDebug();
 		void setHighlightedFaces(const std::vector<int>& facesIndices);
+		void addDebugPrimitive(const RenderPrimitive& primitive);
 
 		ShaderTransformationSystem& getShaderTransformationSystem();
 		Lighting& getLighting();
@@ -28,8 +32,8 @@ namespace RenderSystem
 		void initShaderProgram();
 		void renderHighlightedFaces();
 		void renderScene();
-		void makeMaterialForSceneActive();
-		void makeMaterialForHighlightActive();
+		void makeMaterialActive(const Material& material);
+		void invokeDebugRenderAction(const std::function<void()>& action);
 
 	private:
 		int mVertexShader;
@@ -40,6 +44,9 @@ namespace RenderSystem
 		ShaderTransformationSystem mShaderTransformationSystem;
 		Lighting mLighting;
 		RenderBuffer mRenderBuffer;
+
+		std::vector<RenderPrimitive> mDebugPrimitives;
+		RenderBuffer mDebugRenderBuffer;
 	};
 }
 

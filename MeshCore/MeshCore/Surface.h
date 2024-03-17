@@ -4,6 +4,8 @@
 
 #include <glm/glm.hpp>
 
+#include "GeometryCore/Plane.h"
+
 namespace MeshCore
 {
     struct Face;
@@ -13,7 +15,12 @@ namespace MeshCore
         Surface() = default;
         Surface(Face* initialFace, bool collectAdjacentFaces = true);
 
+        GeometryCore::Plane getPerpendicularPlane() const;
+
         std::unordered_set<Face*> faces;
         glm::vec3 normal{};
+
+    private:
+        Face* mInitialFace = nullptr;
     };
 }

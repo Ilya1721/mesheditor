@@ -2,6 +2,10 @@
 
 namespace MeshCore
 {
+	Vertex::Vertex(const glm::vec3& pos, const glm::vec3& normal) :
+		mPos(pos), mNormal(normal)
+	{}
+
 	bool Vertex::operator==(const Vertex& other) const
 	{
 		return mPos == other.mPos;

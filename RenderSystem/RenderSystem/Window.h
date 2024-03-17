@@ -30,6 +30,7 @@ namespace RenderSystem
 		glm::vec3 unProject(const glm::vec2& cursorPos) const;
 		glm::vec3 unProjectToCameraTargetPlane(const glm::vec2& cursorPos) const;
 		glm::vec3 screenCoordinatesToNDC(const glm::vec2& cursorPos) const;
+		glm::vec3 pointOnScreenToPointInWorldSpace(const glm::vec2& pointOnScreen, float depth) const;
 		void enableSceneMovement(bool isEnabled);
 
 	private:

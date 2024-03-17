@@ -6,7 +6,7 @@
 namespace MeshCore
 {
     Surface::Surface(Face* initialFace, bool collectAdjacentFaces) :
-        normal(initialFace->calcNormal())
+        mInitialFace(initialFace), normal(initialFace->calcNormal())
     {
         if (collectAdjacentFaces)
         {
@@ -14,5 +14,13 @@ namespace MeshCore
         }
 
         faces.insert(initialFace);
+    }
+
+    GeometryCore::Plane Surface::getPerpendicularPlane() const
+    {
+        auto facePoints = mInitialFace->getVerticesPositions();
+        auto planeNormal = glm::normalize(glm::cross(facePoints[1] - facePoints[0], normal));
+
+        return { facePoints[0], planeNormal };
     }
 }

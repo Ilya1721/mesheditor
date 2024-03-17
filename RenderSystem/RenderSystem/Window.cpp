@@ -145,6 +145,16 @@ namespace RenderSystem
 		return ndcPos;
 	}
 
+	glm::vec3 Window::pointOnScreenToPointInWorldSpace(const glm::vec2& pointOnScreen, float depth) const
+	{
+		auto unprojectedPoint = unProject(pointOnScreen);
+		auto inverseMVP = glm::inverse(sInstance->mViewport->getProjectionMatrix() * sInstance->mScene->getViewMatrix());
+		glm::vec4 screenPoint(pointOnScreen, depth, 1.0f);
+		auto pointInWorldSpace = inverseMVP * screenPoint;
+		
+		return pointInWorldSpace / pointInWorldSpace.w;
+	}
+
 	void Window::enableSceneMovement(bool isEnabled)
 	{
 		mSceneMovementEnabled = isEnabled;

@@ -6,6 +6,8 @@ namespace GeometryCore
 {
 	struct Plane
 	{
+		glm::vec3 projectPoint(const glm::vec3& point) const;
+
 		glm::vec3 origin;
 		glm::vec3 normal;
 	};

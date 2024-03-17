@@ -1,6 +1,7 @@
 #include "RenderData.h"
 
 #include "Vertex.h"
+#include "Constants.h"
 
 namespace MeshCore
 {
@@ -11,10 +12,13 @@ namespace MeshCore
 		prepareCompactData();
 	}
 
-	void RenderData::append(float posCoord, float normalCoord)
+	void RenderData::append(const Vertex& vertex)
 	{
-		positions.emplace_back(posCoord);
-		normals.emplace_back(normalCoord);
+		for (int coordIdx = 0; coordIdx < COORDINATES_PER_VERTEX; ++coordIdx)
+		{
+			positions.emplace_back(vertex.pos()[coordIdx]);
+			normals.emplace_back(vertex.normal()[coordIdx]);
+		}
 		prepareCompactData();
 	}
 
@@ -43,5 +47,14 @@ namespace MeshCore
 	const std::vector<float>& RenderData::getCompactData() const
 	{
 		return mCompactData;
+	}
+
+	RenderData RenderData::createRenderData(const GeometryCore::Ray& ray, float length)
+	{
+		RenderData renderData;
+		renderData.append({ ray.origin, ray.direction });
+		renderData.append({ ray.origin + ray.direction * length, ray.direction });
+		
+		return renderData;
 	}
 }

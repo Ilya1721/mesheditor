@@ -131,6 +131,7 @@
     <ClCompile Include="RenderSystem\RenderBuffer.cpp" />
     <ClCompile Include="RenderSystem\Renderer.cpp" />
     <ClCompile Include="RenderSystem\RenderLogger.cpp" />
+    <ClCompile Include="RenderSystem\RenderPrimitive.cpp" />
     <ClCompile Include="RenderSystem\Scene.cpp" />
     <ClCompile Include="RenderSystem\ShaderTransformationSystem.cpp" />
     <ClCompile Include="RenderSystem\SurfaceExtruder.cpp" />
@@ -152,6 +153,7 @@
     <ClInclude Include="RenderSystem\RenderBuffer.h" />
     <ClInclude Include="RenderSystem\Renderer.h" />
     <ClInclude Include="RenderSystem\RenderLogger.h" />
+    <ClInclude Include="RenderSystem\RenderPrimitive.h" />
     <ClInclude Include="RenderSystem\Scene.h" />
     <ClInclude Include="RenderSystem\ShaderTransformationSystem.h" />
     <ClInclude Include="RenderSystem\SurfaceExtruder.h" />

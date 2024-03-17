@@ -32,12 +32,13 @@ namespace RenderSystem
             return;
         }
 
-        auto startPosOnTargetPlane = mScene->getParentWindow()->unProjectToCameraTargetPlane(startCursorPos);
-        auto endPosOnTargetPlane = mScene->getParentWindow()->unProjectToCameraTargetPlane(endCursorPos);
-        auto unitMouseMoveVector = glm::normalize(endPosOnTargetPlane - startPosOnTargetPlane);
+        auto window = mScene->getParentWindow();
+        auto perpendicularPlane = mSurfaceIntersection.intersectedSurface.getPerpendicularPlane();
+        auto startPosOnPlane = perpendicularPlane.projectPoint(window->pointOnScreenToPointInWorldSpace(startCursorPos, 1.0f));
+        auto endPosOnPlane = perpendicularPlane.projectPoint(window->pointOnScreenToPointInWorldSpace(endCursorPos, 1.0f));
+        auto unitMouseMoveVector = glm::normalize(endPosOnPlane - startPosOnPlane);
 
-        auto surfaceNormalInCameraSpace = mScene->getViewMatrix() * glm::vec4(mSurfaceIntersection.intersectedSurface.normal, 1.0f);
-        glm::vec3 unitSurfaceNormal = glm::normalize(surfaceNormalInCameraSpace);
+        auto unitSurfaceNormal = glm::normalize(mSurfaceIntersection.intersectedSurface.normal);
         auto surfaceMoveVector = unitSurfaceNormal * glm::dot(unitSurfaceNormal, unitMouseMoveVector) * SURFACE_EXTRUCTION_SPEED_KOEF;
         std::unordered_set<MeshCore::UniqueVertex*> changedVertices;
         auto& surfaceFaces = mSurfaceIntersection.intersectedSurface.faces;

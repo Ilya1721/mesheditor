@@ -13,6 +13,7 @@
 
 #include "Window.h"
 #include "Constants.h"
+#include "RenderPrimitive.h"
 
 using namespace GeometryCore;
 
@@ -27,10 +28,13 @@ namespace RenderSystem
 
 	void Scene::init()
 	{
-		updateRenderData();
+		initRenderBuffer();
 		initShaderTransformationSystem();
 		adjustCamera();
 		adjustLightPos();
+		//
+		Ray ray{ glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f) };
+		mRenderer.addDebugPrimitive(RenderPrimitive::createPrimitive(ray, 100.0f, EMERALD_MATERIAL));
 	}
 
 	void Scene::initShaderTransformationSystem()
@@ -40,9 +44,16 @@ namespace RenderSystem
 		shaderTransformationSystem.setProjection(glm::value_ptr(mParentWindow->getViewport()->getProjectionMatrix()));
 	}
 
+	void Scene::initRenderBuffer()
+	{
+		mRenderer.getRenderBuffer().bind();
+		updateRenderData();
+	}
+
 	void Scene::render()
 	{
 		mRenderer.render();
+		mRenderer.renderDebug();
 	}
 
 	void Scene::adjustLightPos()

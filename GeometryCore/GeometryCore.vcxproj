@@ -92,6 +92,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GeometryCore\Numeric.cpp" />
+    <ClCompile Include="GeometryCore\Plane.cpp" />
     <ClCompile Include="GeometryCore\Ray.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
