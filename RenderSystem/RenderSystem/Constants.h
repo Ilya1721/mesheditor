@@ -30,8 +30,29 @@ namespace RenderSystem
 		0.6f
 	);
 
+	static inline constexpr Material RED_MATERIAL(
+		glm::vec3(1.0f, 0.0f, 0.0f),
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		0.6f
+	);
+
+	static inline constexpr Material GREEN_MATERIAL(
+		glm::vec3(0.0f, 1.0f, 0.0f),
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		0.6f
+	);
+
+	static inline constexpr Material BLUE_MATERIAL(
+		glm::vec3(0.0f, 0.0f, 1.0f),
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		0.6f
+	);
+
 	static inline constexpr Light DEFAULT_LIGHT(
-		glm::vec3(0.7f, 0.7f, 0.7f),
+		glm::vec3(1.0f, 1.0f, 1.0f),
 		glm::vec3(1.0f, 1.0f, 1.0f),
 		glm::vec3(0.1f, 0.1f, 0.1f)
 	);

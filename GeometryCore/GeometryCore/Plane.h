@@ -10,5 +10,7 @@ namespace GeometryCore
 
 		glm::vec3 origin;
 		glm::vec3 normal;
+
+		glm::mat4 getPlaneToPlaneTransform(const Plane& source) const;
 	};
 }

@@ -8,6 +8,7 @@ namespace RenderSystem
 	{
 	public:
 		RenderBuffer() = default;
+		~RenderBuffer();
 
 		void init();
 		void bind();

@@ -1,6 +1,9 @@
 #include "Plane.h"
 
 #include <glm/gtc/epsilon.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/vector_angle.hpp>
+#include <glm/gtx/transform.hpp>
 
 #include "Ray.h"
 
@@ -20,5 +23,15 @@ namespace GeometryCore
         Ray ray{ point, rayDirection };
 
         return ray.findIntersection(*this).value();
+    }
+
+    glm::mat4 Plane::getPlaneToPlaneTransform(const Plane& source) const
+    {
+        auto rotationAxis = glm::cross(normal, source.normal);
+        auto rotationAngle = glm::angle(glm::normalize(normal), glm::normalize(source.normal));
+        auto rotationTransform = glm::rotate(rotationAngle, rotationAxis);
+        auto translationTransform = glm::translate(origin - source.origin);
+        
+        return translationTransform * rotationTransform;
     }
 }

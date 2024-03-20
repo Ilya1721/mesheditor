@@ -9,6 +9,12 @@
 
 namespace RenderSystem
 {
+	RenderBuffer::~RenderBuffer()
+	{
+		glDeleteBuffers(1, &mVBO);
+		glDeleteVertexArrays(1, &mVAO);
+	}
+
 	void RenderBuffer::init()
 	{
 		glGenBuffers(1, &mVBO);

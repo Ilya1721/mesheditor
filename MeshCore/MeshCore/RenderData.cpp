@@ -57,4 +57,27 @@ namespace MeshCore
 		
 		return renderData;
 	}
+
+	RenderData RenderData::createRenderData(const GeometryCore::Plane& plane, float length, float width)
+	{
+		std::vector<Vertex> vertices;
+		vertices.emplace_back(glm::vec3(width*0.5f, length*0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		vertices.emplace_back(glm::vec3(-width*0.5f, length*0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		vertices.emplace_back(glm::vec3(-width*0.5f, -length*0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		vertices.emplace_back(glm::vec3(-width*0.5f, -length*0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		vertices.emplace_back(glm::vec3(width*0.5f, -length*0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		vertices.emplace_back(glm::vec3(width*0.5f, length*0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+
+		GeometryCore::Plane defaultPlane{ glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f) };
+		const auto& planeTransform = plane.getPlaneToPlaneTransform(defaultPlane);
+
+		RenderData renderData;
+		for (auto& vertex : vertices)
+		{
+			vertex = planeTransform * vertex;
+			renderData.append(vertex);
+		}
+
+		return renderData;
+	}
 }

@@ -24,6 +24,7 @@ namespace MeshCore
 		const std::vector<float>& getCompactData() const;
 
 		static RenderData createRenderData(const GeometryCore::Ray& ray, float length);
+		static RenderData createRenderData(const GeometryCore::Plane& plane, float length, float width);
 
 	private:
 		void prepareCompactData();
