@@ -3,6 +3,23 @@
 #include "Vertex.h"
 #include "Constants.h"
 
+namespace
+{
+	using namespace MeshCore;
+
+	RenderData getRenderData(std::vector<Vertex>& vertices, const glm::mat4& transform)
+	{
+		RenderData renderData;
+		for (auto& vertex : vertices)
+		{
+			vertex = transform * vertex;
+			renderData.append(vertex);
+		}
+
+		return renderData;
+	}
+}
+
 namespace MeshCore
 {
 	void RenderData::append(const RenderData& other)
@@ -58,26 +75,43 @@ namespace MeshCore
 		return renderData;
 	}
 
-	RenderData RenderData::createRenderData(const GeometryCore::Plane& plane, float length, float width)
+	RenderData RenderData::createRenderData(const GeometryCore::Line line, bool withArrowHead)
 	{
 		std::vector<Vertex> vertices;
-		vertices.emplace_back(glm::vec3(width*0.5f, length*0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		vertices.emplace_back(glm::vec3(-width*0.5f, length*0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		vertices.emplace_back(glm::vec3(-width*0.5f, -length*0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		vertices.emplace_back(glm::vec3(-width*0.5f, -length*0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		vertices.emplace_back(glm::vec3(width*0.5f, -length*0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		vertices.emplace_back(glm::vec3(width*0.5f, length*0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		auto halfLength = glm::length(line.end - line.start) * 0.5f;
+		GeometryCore::Line defaultLine{ glm::vec3(0.0f, -halfLength, 0.0f), glm::vec3(0.0f, halfLength, 0.0f) };
+		vertices.emplace_back(defaultLine.start, glm::vec3(0.0f, 0.0f, 1.0f));
+		vertices.emplace_back(defaultLine.end, glm::vec3(0.0f, 0.0f, 1.0f));
 
-		GeometryCore::Plane defaultPlane{ glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f) };
-		const auto& planeTransform = plane.getPlaneToPlaneTransform(defaultPlane);
-
-		RenderData renderData;
-		for (auto& vertex : vertices)
+		if (withArrowHead) 
 		{
-			vertex = planeTransform * vertex;
-			renderData.append(vertex);
+			auto tangent = glm::tan(glm::radians(ARROW_HEAD_ANGLE));
+			auto x = tangent * halfLength * ARROW_HEAD_LENGTH_KOEF;
+			auto y = defaultLine.end.y - (x / tangent);
+			vertices.emplace_back(defaultLine.end, glm::vec3(0.0f, 0.0f, 1.0f));
+			vertices.emplace_back(glm::vec3(-x, y, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+			vertices.emplace_back(defaultLine.end, glm::vec3(0.0f, 0.0f, 1.0f));
+			vertices.emplace_back(glm::vec3(x, y, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 		}
 
-		return renderData;
+		return getRenderData(vertices, line.getLineToLineTransform(defaultLine));
+	}
+
+	RenderData RenderData::createRenderData(const GeometryCore::Plane& plane, float width, float length)
+	{
+		std::vector<Vertex> vertices;
+		auto halfWidth = width * 0.5f;
+		auto halfLength = length * 0.5f;
+		vertices.emplace_back(glm::vec3(halfWidth, halfLength, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		vertices.emplace_back(glm::vec3(-halfWidth, halfLength, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		vertices.emplace_back(glm::vec3(-halfWidth, -halfLength, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		vertices.emplace_back(glm::vec3(-halfWidth, -halfLength, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		vertices.emplace_back(glm::vec3(halfWidth, -halfLength, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		vertices.emplace_back(glm::vec3(halfWidth, halfLength, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+
+		GeometryCore::Plane defaultPlane{ glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f) };
+		auto planeTransform = plane.getPlaneToPlaneTransform(defaultPlane);
+
+		return getRenderData(vertices, planeTransform);
 	}
 }

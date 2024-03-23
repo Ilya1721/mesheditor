@@ -7,6 +7,19 @@
 
 #include "MeshCore/Constants.h"
 
+namespace
+{
+    using namespace RenderSystem;
+
+    RenderPrimitive getBaseRenderPrimitive(const Material& material)
+    {
+        RenderPrimitive primitive;
+        primitive.material = material;
+
+        return primitive;
+    }
+}
+
 namespace RenderSystem
 {
     int RenderPrimitive::getVertexCount() const
@@ -16,10 +29,27 @@ namespace RenderSystem
 
     RenderPrimitive RenderPrimitive::createPrimitive(const GeometryCore::Ray& ray, float length, const Material& material)
     {
-        RenderPrimitive primitive;
+        auto primitive = getBaseRenderPrimitive(material);
         primitive.renderData = MeshCore::RenderData::createRenderData(ray, length);
-        primitive.material = material;
         primitive.renderMode = GL_LINES;
+
+        return primitive;
+    }
+
+    RenderPrimitive RenderPrimitive::createPrimitive(const GeometryCore::Line& line, bool withArrowHead, const Material& material)
+    {
+        auto primitive = getBaseRenderPrimitive(material);
+        primitive.renderData = MeshCore::RenderData::createRenderData(line, withArrowHead);
+        primitive.renderMode = GL_LINES;
+
+        return primitive;
+    }
+
+    RenderPrimitive RenderPrimitive::createPrimitive(const GeometryCore::Plane& plane, float width, float length, const Material& material)
+    {
+        auto primitive = getBaseRenderPrimitive(material);
+        primitive.renderData = MeshCore::RenderData::createRenderData(plane, width, length);
+        primitive.renderMode = GL_TRIANGLES;
 
         return primitive;
     }

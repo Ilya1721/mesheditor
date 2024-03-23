@@ -33,14 +33,9 @@ namespace RenderSystem
 		adjustCamera();
 		adjustLightPos();
 		//
-		Ray x{ glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f) };
-		mRenderer.addDebugPrimitive(RenderPrimitive::createPrimitive(x, 100.0f, GREEN_MATERIAL));
-
-		Ray y{ glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f) };
-		mRenderer.addDebugPrimitive(RenderPrimitive::createPrimitive(y, 100.0f, BLUE_MATERIAL));
-
-		Ray z{ glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f) };
-		mRenderer.addDebugPrimitive(RenderPrimitive::createPrimitive(z, 100.0f, RED_MATERIAL));
+		Line line{ glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(5.0f, 0.0f, 0.0f) };
+		auto linePrimitive = RenderPrimitive::createPrimitive(line, true, GREEN_MATERIAL);
+		mRenderer.addDebugPrimitive(linePrimitive);
 	}
 
 	void Scene::initShaderTransformationSystem()

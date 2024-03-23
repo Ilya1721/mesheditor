@@ -1,11 +1,9 @@
 #include "Plane.h"
 
-#include <glm/gtc/epsilon.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/vector_angle.hpp>
-#include <glm/gtx/transform.hpp>
 
 #include "Ray.h"
+#include "Transforms.h"
 
 namespace GeometryCore
 {
@@ -29,8 +27,8 @@ namespace GeometryCore
     {
         auto rotationAxis = glm::cross(normal, source.normal);
         auto rotationAngle = glm::angle(glm::normalize(normal), glm::normalize(source.normal));
-        auto rotationTransform = glm::rotate(rotationAngle, rotationAxis);
-        auto translationTransform = glm::translate(origin - source.origin);
+        auto rotationTransform = getRotationTransform(rotationAngle, rotationAxis);
+        auto translationTransform = getTranslationTransform(origin, source.origin);
         
         return translationTransform * rotationTransform;
     }

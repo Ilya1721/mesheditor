@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "GeometryCore/Ray.h"
+#include "GeometryCore/Line.h"
 
 #include "Vertex.h"
 
@@ -24,7 +25,8 @@ namespace MeshCore
 		const std::vector<float>& getCompactData() const;
 
 		static RenderData createRenderData(const GeometryCore::Ray& ray, float length);
-		static RenderData createRenderData(const GeometryCore::Plane& plane, float length, float width);
+		static RenderData createRenderData(const GeometryCore::Line, bool withArrowHead);
+		static RenderData createRenderData(const GeometryCore::Plane& plane, float width, float length);
 
 	private:
 		void prepareCompactData();
