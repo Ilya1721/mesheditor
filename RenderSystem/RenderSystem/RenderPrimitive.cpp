@@ -6,6 +6,9 @@
 #include "glad.h"
 
 #include "MeshCore/Constants.h"
+#include "GeometryCore/Ray.h"
+#include "GeometryCore/Line.h"
+#include "GeometryCore/Plane.h"
 
 namespace
 {

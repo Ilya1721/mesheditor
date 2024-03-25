@@ -1,8 +1,7 @@
 #pragma once
 
 #include <string>
-
-#include "RenderPrimitive.h"
+#include <functional>
 
 #include "Lighting.h"
 #include "RenderBuffer.h"
@@ -10,6 +9,8 @@
 
 namespace RenderSystem
 {
+	struct RenderPrimitive;
+
 	class Renderer
 	{
 	public:

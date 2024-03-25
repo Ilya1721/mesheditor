@@ -3,6 +3,7 @@
 #include <glm/gtc/epsilon.hpp>
 
 #include "Numeric.h"
+#include "Plane.h"
 
 namespace GeometryCore
 {

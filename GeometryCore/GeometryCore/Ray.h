@@ -1,11 +1,12 @@
 #pragma once
 
+#include <glm/glm.hpp>
 #include <optional>
-
-#include "Plane.h"
 
 namespace GeometryCore
 {
+	struct Plane;
+
 	struct Ray
 	{
 		glm::vec3 origin;

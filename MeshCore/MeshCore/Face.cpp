@@ -8,6 +8,8 @@
 #include <glm/gtx/vector_query.hpp>
 
 #include "GeometryCore/Numeric.h"
+#include "GeometryCore/Plane.h"
+#include "GeometryCore/Ray.h"
 
 #include "HalfEdge.h"
 #include "Vertex.h"

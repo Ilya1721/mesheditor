@@ -2,6 +2,11 @@
 
 #include <numeric>
 
+#include "GeometryCore/Ray.h"
+#include "GeometryCore/Plane.h"
+#include "Mesh.h"
+#include "Vertex.h"
+
 namespace
 {
 	enum class MinMaxOption
@@ -29,6 +34,8 @@ namespace MeshCore
 	{
 		init();
 	}
+
+	AABBox::~AABBox() = default;
 
 	void AABBox::init()
 	{

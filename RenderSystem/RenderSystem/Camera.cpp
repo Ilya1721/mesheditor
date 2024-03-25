@@ -7,6 +7,10 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/epsilon.hpp>
 
+#include "GeometryCore/Ray.h"
+#include "GeometryCore/Plane.h"
+#include "MeshCore/AABBox.h"
+
 #include "Constants.h"
 
 using namespace GeometryCore;

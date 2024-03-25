@@ -5,23 +5,27 @@
 #include <unordered_map>
 #include <array>
 
-#include "GeometryCore/Ray.h"
-
-#include "Vertex.h"
-#include "HalfEdge.h"
-#include "Face.h"
-#include "Surface.h"
-#include "RenderData.h"
 #include "VerticesHash.h"
-#include "Intersection.h"
-#include "Surface.h"
+#include "RenderData.h"
+
+namespace GeometryCore
+{
+	struct Ray;
+}
 
 namespace MeshCore
 {
+	struct UniqueVertex;
+	struct HalfEdge;
+	struct Face;
+	struct Surface;
+	struct RaySurfaceIntersection;
+
 	class Mesh
 	{
 	public:
 		Mesh() = default;
+		~Mesh();
 		Mesh(const std::vector<Vertex>& vertices);
 		Mesh(const Mesh& other) = delete;
 		Mesh(Mesh&& other) = default;

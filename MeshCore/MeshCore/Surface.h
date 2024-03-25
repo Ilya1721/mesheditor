@@ -1,10 +1,12 @@
 #pragma once
 
 #include <unordered_set>
-
 #include <glm/glm.hpp>
 
-#include "GeometryCore/Plane.h"
+namespace GeometryCore
+{
+    struct Plane;
+}
 
 namespace MeshCore
 {

@@ -1,7 +1,6 @@
 #include "Renderer.h"
 
 #include <iostream>
-
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Utility/FileHelper.h"
@@ -9,6 +8,7 @@
 #include "Constants.h"
 #include "RenderLogger.h"
 #include "Typedefs.h"
+#include "RenderPrimitive.h"
 
 namespace
 {

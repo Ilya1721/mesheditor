@@ -1,9 +1,16 @@
 #include "Mesh.h"
 
 #include <numeric>
+#include <chrono>
 
+#include "GeometryCore/Ray.h"
+
+#include "Face.h"
+#include "HalfEdge.h"
+#include "Surface.h"
 #include "Constants.h"
 #include "EdgeWalker.h"
+#include "Intersection.h"
 
 namespace
 {
@@ -28,6 +35,8 @@ namespace MeshCore
 	{
 		init();
 	}
+
+	Mesh::~Mesh() = default;
 
 	void Mesh::init()
 	{

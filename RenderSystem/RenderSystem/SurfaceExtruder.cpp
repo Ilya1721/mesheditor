@@ -1,5 +1,10 @@
 #include "SurfaceExtruder.h"
 
+#include "MeshCore/Vertex.h"
+#include "MeshCore/Face.h"
+#include "MeshCore/Mesh.h"
+#include "GeometryCore/Plane.h"
+
 #include "Constants.h"
 #include "Scene.h"
 #include "Window.h"

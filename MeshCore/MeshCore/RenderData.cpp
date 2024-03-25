@@ -1,5 +1,9 @@
 #include "RenderData.h"
 
+#include "GeometryCore/Plane.h"
+#include "GeometryCore/Ray.h"
+#include "GeometryCore/Line.h"
+
 #include "Vertex.h"
 #include "Constants.h"
 
@@ -75,7 +79,7 @@ namespace MeshCore
 		return renderData;
 	}
 
-	RenderData RenderData::createRenderData(const GeometryCore::Line line, bool withArrowHead)
+	RenderData RenderData::createRenderData(const GeometryCore::Line& line, bool withArrowHead)
 	{
 		std::vector<Vertex> vertices;
 		auto halfLength = glm::length(line.end - line.start) * 0.5f;

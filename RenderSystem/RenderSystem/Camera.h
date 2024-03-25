@@ -1,7 +1,17 @@
 #pragma once
 
-#include "GeometryCore/Ray.h"
-#include "MeshCore/AABBox.h"
+#include <glm/glm.hpp>
+
+namespace GeometryCore
+{
+	struct Ray;
+	struct Plane;
+}
+
+namespace MeshCore
+{
+	class AABBox;
+}
 
 namespace RenderSystem
 {

@@ -1,15 +1,17 @@
 #pragma once
 
+#include <string>
+#include <memory>
+
 #include <glfw/glfw3.h>
-
-#include "MeshCore/Mesh.h"
-
-#include "Scene.h"
-#include "Viewport.h"
-#include "OperationsDispatcher.h"
+#include <glm/glm.hpp>
 
 namespace RenderSystem
 {
+	class Scene;
+	class Viewport;
+	class OperationsDispatcher;
+
 	enum class MouseButtonPressed
 	{
 		LEFT,

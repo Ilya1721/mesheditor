@@ -2,7 +2,10 @@
 
 #include <filesystem>
 
-#include <MeshCore/Mesh.h>
+namespace MeshCore
+{
+	class Mesh;
+}
 
 namespace MeshFilesLoader
 {

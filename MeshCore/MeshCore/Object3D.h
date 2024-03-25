@@ -3,16 +3,24 @@
 #include <memory>
 #include <unordered_set>
 
-#include "Mesh.h"
 #include "AABBox.h"
-#include "Intersection.h"
+
+namespace GeometryCore
+{
+	struct Ray;
+}
 
 namespace MeshCore 
 {
+	class Mesh;
+	struct RaySurfaceIntersection;
+	struct RenderData;
+
 	class Object3D
 	{
 	public:
 		Object3D();
+		~Object3D();
 		Object3D(Object3D* parent, std::unique_ptr<Mesh> mesh);
 		Object3D(const Object3D& other) = delete;
 		Object3D(Object3D&& other) noexcept = default;

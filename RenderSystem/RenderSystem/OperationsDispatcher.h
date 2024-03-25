@@ -4,16 +4,18 @@
 #include <memory>
 #include <concepts>
 
-#include "MeshCore/Intersection.h"
-
-#include "Operation.h"
+#include <glm/glm.hpp>
 
 namespace RenderSystem
 {
+    class Operation;
+    class Scene;
+
     class OperationsDispatcher
     {
     public:
         OperationsDispatcher(Scene* scene);
+        ~OperationsDispatcher();
 
         void toggle(int key);
         void onMouseMove(const glm::vec2& startCursorPos, const glm::vec2& endCursorPos);

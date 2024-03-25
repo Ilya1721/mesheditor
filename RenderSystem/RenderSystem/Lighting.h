@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Material.h"
-#include "Light.h"
-
 namespace RenderSystem
 {
+	struct Material;
+	struct Light;
+
 	class Lighting
 	{
 	public:

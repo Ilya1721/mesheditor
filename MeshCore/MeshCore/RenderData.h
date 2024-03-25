@@ -2,14 +2,17 @@
 
 #include <vector>
 
-#include "GeometryCore/Ray.h"
-#include "GeometryCore/Line.h"
-
-#include "Vertex.h"
+namespace GeometryCore
+{
+	struct Ray;
+	struct Line;
+	struct Plane;
+}
 
 namespace MeshCore
 {
 	struct Vertex;
+	struct OriginalVertexData;
 
 	struct RenderData
 	{
@@ -25,7 +28,7 @@ namespace MeshCore
 		const std::vector<float>& getCompactData() const;
 
 		static RenderData createRenderData(const GeometryCore::Ray& ray, float length);
-		static RenderData createRenderData(const GeometryCore::Line, bool withArrowHead);
+		static RenderData createRenderData(const GeometryCore::Line& line, bool withArrowHead);
 		static RenderData createRenderData(const GeometryCore::Plane& plane, float width, float length);
 
 	private:

@@ -7,10 +7,12 @@
 #include <glfw/glfw3.h>
 
 #include <glm/ext/matrix_projection.hpp>
-
 #include <iostream>
 
 #include "Constants.h"
+#include "Scene.h"
+#include "Viewport.h"
+#include "OperationsDispatcher.h"
 
 namespace RenderSystem
 {

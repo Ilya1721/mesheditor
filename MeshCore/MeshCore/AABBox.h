@@ -1,17 +1,23 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <vector>
 
-#include "GeometryCore/Ray.h"
-
-#include "Mesh.h"
+namespace GeometryCore
+{
+	struct Ray;
+	struct Plane;
+}
 
 namespace MeshCore
 {
+	class Mesh;
+
 	class AABBox
 	{
 	public:
 		AABBox();
+		~AABBox();
 		AABBox(const AABBox& box) = default;
 		AABBox(AABBox&& box) noexcept = default;
 		AABBox& operator=(const AABBox& box) = default;

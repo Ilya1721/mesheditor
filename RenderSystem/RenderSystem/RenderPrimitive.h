@@ -1,10 +1,15 @@
 #pragma once
 
 #include "MeshCore/RenderData.h"
-#include "GeometryCore/Ray.h"
-#include "GeometryCore/Line.h"
 
 #include "Material.h"
+
+namespace GeometryCore
+{
+    struct Ray;
+    struct Line;
+    struct Plane;
+}
 
 namespace RenderSystem
 {

@@ -4,6 +4,7 @@
 
 #include "SurfaceHighlighter.h"
 #include "SurfaceExtruder.h"
+#include "Operation.h"
 
 namespace RenderSystem
 {
@@ -12,6 +13,8 @@ namespace RenderSystem
     {
         initSurfaceOperations();
     }
+
+    OperationsDispatcher::~OperationsDispatcher() = default;
 
     void OperationsDispatcher::toggle(int key)
     {

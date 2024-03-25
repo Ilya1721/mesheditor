@@ -1,5 +1,7 @@
 #include "Surface.h"
 
+#include "GeometryCore/Plane.h"
+
 #include "Face.h"
 #include "Mesh.h"
 

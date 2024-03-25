@@ -1,5 +1,7 @@
 #include "SurfaceHighlighter.h"
 
+#include "MeshCore/Intersection.h"
+
 #include "Scene.h"
 #include "Window.h"
 

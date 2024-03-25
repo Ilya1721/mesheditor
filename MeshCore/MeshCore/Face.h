@@ -1,9 +1,14 @@
 #pragma once
 
+#include <glm/glm.hpp>
 #include <vector>
+#include <optional>
 #include <unordered_set>
 
-#include "GeometryCore/Ray.h"
+namespace GeometryCore
+{
+    struct Ray;
+}
 
 namespace MeshCore
 {

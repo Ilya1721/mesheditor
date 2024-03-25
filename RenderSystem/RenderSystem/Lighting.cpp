@@ -8,6 +8,8 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Constants.h"
+#include "Material.h"
+#include "Light.h"
 
 namespace RenderSystem
 {

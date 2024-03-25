@@ -9,9 +9,14 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
+#include "GeometryCore/Ray.h"
+#include "GeometryCore/Line.h"
 #include "MeshFilesLoader/MeshFilesLoader.h"
+#include "MeshCore/Intersection.h"
+#include "MeshCore/Mesh.h"
 
 #include "Window.h"
+#include "Viewport.h"
 #include "Constants.h"
 #include "RenderPrimitive.h"
 

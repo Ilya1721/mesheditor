@@ -1,8 +1,12 @@
 #include "Object3D.h"
 
 #include "GeometryCore/Numeric.h"
+#include "GeometryCore/Ray.h"
 
+#include "Mesh.h"
 #include "Constants.h"
+#include "Intersection.h"
+#include "RenderData.h"
 
 using namespace GeometryCore;
 
@@ -12,6 +16,8 @@ namespace MeshCore
 		mParent(nullptr),
 		mTransform(1.0f)
 	{}
+
+	Object3D::~Object3D() = default;
 
 	Object3D::Object3D(Object3D* parent, std::unique_ptr<Mesh> mesh) :
 		mParent(parent),

@@ -2,6 +2,7 @@
 
 #include <array>
 
+#include "MeshCore/Mesh.h"
 #include "Utility/FileHelper.h"
 #include "Utility/StringHelper.h"
 

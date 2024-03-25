@@ -1,7 +1,5 @@
 #pragma once
 
-#include "MeshCore/Intersection.h"
-
 #include "Operation.h"
 
 namespace RenderSystem
