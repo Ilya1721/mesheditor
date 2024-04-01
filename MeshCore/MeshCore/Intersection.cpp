@@ -4,9 +4,9 @@
 
 namespace MeshCore
 {
-    void RaySurfaceIntersection::setClosest(const RaySurfaceIntersection& other, const glm::vec3& referencePoint)
+    void RaySurfaceIntersection::setClosest(const RaySurfaceIntersection& other, const Point3D& referencePoint)
     {
-        if (surfaceIndices.empty() || GeometryCore::isCloser(other.point, point, referencePoint))
+        if (surfaceIndices.empty() || isCloser(other.point, point, referencePoint))
         {
             intersectedSurface = other.intersectedSurface;
             surfaceIndices = other.surfaceIndices;

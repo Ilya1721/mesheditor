@@ -6,8 +6,12 @@
 
 #include <glm/glm.hpp>
 
+#include "GeometryCore/Typedefs.h"
+
 namespace RenderSystem
 {
+    using namespace GeometryCore;
+
     class Operation;
     class Scene;
 
@@ -18,8 +22,8 @@ namespace RenderSystem
         ~OperationsDispatcher();
 
         void toggle(int key);
-        void onMouseMove(const glm::vec2& startCursorPos, const glm::vec2& endCursorPos);
-        void onMouseClick(const glm::vec2& cursorPos);
+        void onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos);
+        void onMouseClick(const Point2D& cursorPos);
 
     private:
         void initSurfaceOperations();

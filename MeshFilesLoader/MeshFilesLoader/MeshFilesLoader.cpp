@@ -2,6 +2,7 @@
 
 #include <array>
 
+#include "GeometryCore/Typedefs.h"
 #include "MeshCore/Mesh.h"
 #include "Utility/FileHelper.h"
 #include "Utility/StringHelper.h"
@@ -10,6 +11,8 @@
 
 namespace
 {
+	using namespace GeometryCore;
+
 	bool isBinaryFile(const std::string& fileContent)
 	{
 		if (fileContent.empty())
@@ -50,7 +53,7 @@ namespace
 		auto delimiters = MeshFilesLoader::STL_DELIMITERS.c_str();
 
 		std::vector<MeshCore::Vertex> vertices;
-		glm::vec3 faceNormal{};
+		Vector3D faceNormal{};
 
 		char* nextToken = nullptr;
 		char* currentToken = strtok_s(contentString, delimiters, &nextToken);
@@ -64,7 +67,7 @@ namespace
 			else if (Utility::isEqual(currentToken, MeshFilesLoader::KEYWORD_VERTEX))
 			{
 				vertices.emplace_back();
-				glm::vec3 pos{};
+				Point3D pos{};
 				readTokenAsVector(currentToken, delimiters, nextToken, pos);
 				vertices.back().setNormal(faceNormal);
 				vertices.back().setPos(pos);
@@ -88,14 +91,14 @@ namespace
 
 		for (size_t faceIdx = 0; faceIdx < facesCount; ++faceIdx)
 		{
-			glm::vec3 faceNormal{};
+			Vector3D faceNormal{};
 			readCoordinatesFromBuffer(faceNormal, buffer);
 
 			for (int vertexIdx = 0; vertexIdx < 3; ++vertexIdx)
 			{
 				MeshCore::Vertex vertex{};
 				vertex.setNormal(faceNormal);
-				glm::vec3 pos{};
+				Point3D pos{};
 				readCoordinatesFromBuffer(pos, buffer);
 				vertex.setPos(pos);
 				vertices.push_back(vertex);

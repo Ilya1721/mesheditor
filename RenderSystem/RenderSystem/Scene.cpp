@@ -38,7 +38,7 @@ namespace RenderSystem
 		adjustCamera();
 		adjustLightPos();
 		//
-		Line line{ glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(5.0f, 0.0f, 0.0f) };
+		Line line{ Point3D(0.0f, 0.0f, 0.0f), Point3D(5.0f, 0.0f, 0.0f) };
 		auto linePrimitive = RenderPrimitive::createPrimitive(line, true, GREEN_MATERIAL);
 		mRenderer.addDebugPrimitive(linePrimitive);
 	}
@@ -67,7 +67,7 @@ namespace RenderSystem
 		auto cameraXYVec = (mCamera.getRight() + mCamera.getUp()) * mRootObject.getBBox().getHeight() * 0.25f;
 		auto cameraZVec = -mCamera.getNormalizedDirection() * LIGHT_SOURCE_TO_CAMERA_DISTANCE;
 		auto lightPos = mCamera.getEye() + cameraXYVec + cameraZVec;
-		glm::vec3 lightPosInCameraSpace = mCamera.getViewMatrix() * glm::vec4(lightPos, 1.0f);
+		Point3D lightPosInCameraSpace = mCamera.getViewMatrix() * Point4D(lightPos, 1.0f);
 		mRenderer.getLighting().setLightPos(glm::value_ptr(lightPosInCameraSpace));
 	}
 
@@ -75,17 +75,17 @@ namespace RenderSystem
 	{
 		mCamera.adjust(mRootObject.getBBox(), mParentWindow->getViewport()->getFov());
 		mRenderer.getShaderTransformationSystem().setViewModel(glm::value_ptr(mCamera.getViewMatrix()));
-		glm::vec3 cameraPosInCameraSpace = mCamera.getViewMatrix() * glm::vec4(mCamera.getEye(), 1.0f);
+		Point3D cameraPosInCameraSpace = mCamera.getViewMatrix() * Point4D(mCamera.getEye(), 1.0f);
 		mRenderer.getLighting().setCameraPos(glm::value_ptr(cameraPosInCameraSpace));
 	}
 
-	void Scene::pan(const glm::vec3& startPointInWorldSpace, const glm::vec3& endPointInWorldSpace)
+	void Scene::pan(const Point3D& startPointInWorldSpace, const Point3D& endPointInWorldSpace)
 	{
 		mCamera.pan(startPointInWorldSpace, endPointInWorldSpace);
 		mRenderer.getShaderTransformationSystem().setViewModel(glm::value_ptr(mCamera.getViewMatrix()));
 	}
 
-	void Scene::orbit(const glm::vec3& startPointInNDC, const glm::vec3& endPointInNDC)
+	void Scene::orbit(const Point3D& startPointInNDC, const Point3D& endPointInNDC)
 	{
 		mCamera.orbit(startPointInNDC, endPointInNDC);
 		mRenderer.getShaderTransformationSystem().setViewModel(glm::value_ptr(mCamera.getViewMatrix()));
@@ -107,7 +107,7 @@ namespace RenderSystem
 		mRenderer.getRenderBuffer().setRenderData(mRootObject.getOnlyRootRenderData());
 	}
 
-	MeshCore::RaySurfaceIntersection Scene::getClosestIntersection(const glm::vec3& cursorPosInWorldSpace, bool intersectSurface)
+	MeshCore::RaySurfaceIntersection Scene::getClosestIntersection(const Point3D& cursorPosInWorldSpace, bool intersectSurface)
 	{
 		auto cameraRay = mCamera.getCameraRay(cursorPosInWorldSpace);
 		if (!mRootObject.getBBox().checkIntersectionWithRay(cameraRay))

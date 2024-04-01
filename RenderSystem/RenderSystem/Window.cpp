@@ -84,7 +84,7 @@ namespace RenderSystem
 		return mViewport;
 	}
 
-	glm::vec2 Window::getCursorPos() const
+	Point2D Window::getCursorPos() const
 	{
 		double mousePosX, mousePosY;
 		glfwGetCursorPos(mWindow, &mousePosX, &mousePosY);
@@ -93,7 +93,7 @@ namespace RenderSystem
 
 	void Window::onMouseMove(GLFWwindow* window, double cursorX, double cursorY)
 	{
-		glm::vec2 currentCursorPosition(cursorX, cursorY);
+		Point2D currentCursorPosition(cursorX, cursorY);
 
 		if (sInstance->mSceneMovementEnabled)
 		{
@@ -125,21 +125,21 @@ namespace RenderSystem
 		mScene->setProjectionMatrix(mViewport->getProjectionMatrix());
 	}
 
-	glm::vec3 Window::unProject(const glm::vec2& cursorPos) const
+	Point3D Window::unProject(const Point2D& cursorPos) const
 	{
 		glm::vec4 viewportData = { mViewport->getPos().x, mViewport->getPos().y, mViewport->getWidth(), mViewport->getHeight() };
-		glm::vec3 cursorPosGL3D(cursorPos.x, mViewport->getHeight() - cursorPos.y, 0.0);
+		Point3D cursorPosGL3D(cursorPos.x, mViewport->getHeight() - cursorPos.y, 0.0);
 		return glm::unProject(cursorPosGL3D, mScene->getViewMatrix(), mViewport->getProjectionMatrix(), viewportData);
 	}
 
-	glm::vec3 Window::unProjectToCameraTargetPlane(const glm::vec2& cursorPos) const
+	Point3D Window::unProjectToCameraTargetPlane(const Point2D& cursorPos) const
 	{
 		return sInstance->mScene->getCamera().projectToTargetPlane(sInstance->unProject(cursorPos));
 	}
 
-	glm::vec3 Window::screenCoordinatesToNDC(const glm::vec2& cursorPos) const
+	Point3D Window::screenCoordinatesToNDC(const Point2D& cursorPos) const
 	{
-		glm::vec3 ndcPos{};
+		Point3D ndcPos{};
 		ndcPos.x = (2.0 * cursorPos.x) / mViewport->getWidth() - 1.0;
 		ndcPos.y = (mViewport->getHeight() - cursorPos.y) / mViewport->getHeight() * 2.0 - 1.0;
 		ndcPos.z = 0.0;
@@ -147,11 +147,11 @@ namespace RenderSystem
 		return ndcPos;
 	}
 
-	glm::vec3 Window::pointOnScreenToPointInWorldSpace(const glm::vec2& pointOnScreen, float depth) const
+	Point3D Window::pointOnScreenToPointInWorldSpace(const Point2D& pointOnScreen, float depth) const
 	{
 		auto unprojectedPoint = unProject(pointOnScreen);
 		auto inverseMVP = glm::inverse(sInstance->mViewport->getProjectionMatrix() * sInstance->mScene->getViewMatrix());
-		glm::vec4 screenPoint(pointOnScreen, depth, 1.0f);
+		Point4D screenPoint(pointOnScreen, depth, 1.0f);
 		auto pointInWorldSpace = inverseMVP * screenPoint;
 		
 		return pointInWorldSpace / pointInWorldSpace.w;

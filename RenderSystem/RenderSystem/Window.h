@@ -6,8 +6,12 @@
 #include <glfw/glfw3.h>
 #include <glm/glm.hpp>
 
+#include "GeometryCore/Typedefs.h"
+
 namespace RenderSystem
 {
+	using namespace GeometryCore;
+
 	class Scene;
 	class Viewport;
 	class OperationsDispatcher;
@@ -28,11 +32,11 @@ namespace RenderSystem
 		void render();
 
 		const std::unique_ptr<Viewport>& getViewport() const;
-		glm::vec2 getCursorPos() const;
-		glm::vec3 unProject(const glm::vec2& cursorPos) const;
-		glm::vec3 unProjectToCameraTargetPlane(const glm::vec2& cursorPos) const;
-		glm::vec3 screenCoordinatesToNDC(const glm::vec2& cursorPos) const;
-		glm::vec3 pointOnScreenToPointInWorldSpace(const glm::vec2& pointOnScreen, float depth) const;
+		Point2D getCursorPos() const;
+		Point3D unProject(const Point2D& cursorPos) const;
+		Point3D unProjectToCameraTargetPlane(const Point2D& cursorPos) const;
+		Point3D screenCoordinatesToNDC(const Point2D& cursorPos) const;
+		Point3D pointOnScreenToPointInWorldSpace(const Point2D& pointOnScreen, float depth) const;
 		void enableSceneMovement(bool isEnabled);
 
 	private:
@@ -55,7 +59,7 @@ namespace RenderSystem
 		bool mSceneMovementEnabled = true;
 
 		MouseButtonPressed mMouseButtonPressed;
-		glm::vec2 mSavedCursorPosition;
+		Point2D mSavedCursorPosition;
 
 		GLFWwindow* mWindow;
 		std::unique_ptr<Scene> mScene;

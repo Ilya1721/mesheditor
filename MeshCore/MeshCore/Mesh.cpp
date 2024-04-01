@@ -12,13 +12,15 @@
 #include "EdgeWalker.h"
 #include "Intersection.h"
 
+using namespace GeometryCore;
+
 namespace
 {
 	using namespace MeshCore;
 
-	glm::vec3 calcAverage(const std::unordered_set<glm::vec3>& vecSet)
+	Vector3D calcAverage(const std::unordered_set<Vector3D>& vecSet)
 	{
-		glm::vec3 result{};	
+		Vector3D result{};	
 		for (const auto& vec : vecSet)
 		{
 			result += vec;
@@ -208,7 +210,7 @@ namespace MeshCore
 		return mRenderData;
 	}
 
-	RaySurfaceIntersection Mesh::getClosestIntersection(const GeometryCore::Ray& ray, bool intersectSurface, int passedFacesCount) const
+	RaySurfaceIntersection Mesh::getClosestIntersection(const Ray& ray, bool intersectSurface, int passedFacesCount) const
 	{
 		RaySurfaceIntersection rayFaceIntersection;
 

@@ -5,29 +5,33 @@
 #include <glm/gtx/hash.hpp>
 #include <glm/glm.hpp>
 
+#include "GeometryCore/Typedefs.h"
+
 namespace MeshCore
 {
+	using namespace GeometryCore;
+
 	struct HalfEdge;
 
 	struct Vertex
 	{
 		Vertex() = default;
-		Vertex(const glm::vec3& pos, const glm::vec3& normal);
+		Vertex(const Point3D& pos, const Vector3D& normal);
 
 		HalfEdge* halfEdge = nullptr;
 
-		void setPos(const glm::vec3& pos);
-		void setNormal(const glm::vec3& normal);
+		void setPos(const Point3D& pos);
+		void setNormal(const Vector3D& normal);
 
-		const glm::vec3& pos() const;
-		const glm::vec3& normal() const;
+		const Point3D& pos() const;
+		const Vector3D& normal() const;
 
 		bool operator==(const Vertex& other) const;
 		friend Vertex operator*(const glm::mat4& transform, const Vertex& vertex);
 
 	protected:
-		glm::vec3 mPos{};
-		glm::vec3 mNormal{};
+		Point3D mPos{};
+		Vector3D mNormal{};
 	};
 
 	struct OriginalVertexData
@@ -40,11 +44,11 @@ namespace MeshCore
 	{
 		UniqueVertex(Vertex& originalVertex, int originalVertexIndex);
 
-		void setPos(const glm::vec3& pos);
-		void setNormal(const glm::vec3& normal);
+		void setPos(const Point3D& pos);
+		void setNormal(const Vector3D& normal);
 
 		std::vector<OriginalVertexData> originalVertices;
-		std::unordered_set<glm::vec3> adjacentFacesNormals;
+		std::unordered_set<Vector3D> adjacentFacesNormals;
 
 	private:
 		void updateOriginalVertices();

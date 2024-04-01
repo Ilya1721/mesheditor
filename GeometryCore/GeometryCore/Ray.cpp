@@ -7,7 +7,7 @@
 
 namespace GeometryCore
 {
-	std::optional<glm::vec3> Ray::findIntersection(const Plane& plane) const
+	std::optional<Point3D> Ray::findIntersection(const Plane& plane) const
 	{
 		if (glm::epsilonEqual(glm::dot(plane.normal, direction), 0.0f, 1e-6f))
 		{

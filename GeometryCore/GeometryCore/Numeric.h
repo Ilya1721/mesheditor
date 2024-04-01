@@ -3,8 +3,10 @@
 #include <array>
 #include <glm/glm.hpp>
 
+#include "Typedefs.h"
+
 namespace GeometryCore
 {
-    bool isCloser(const glm::vec3& left, const glm::vec3& right, const glm::vec3& reference);
+    bool isCloser(const Point3D& left, const Point3D& right, const Point3D& reference);
     float getTriangleSquare(const std::array<float, 3>& edgesLengths);
 }

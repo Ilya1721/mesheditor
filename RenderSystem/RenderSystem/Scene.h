@@ -4,12 +4,15 @@
 #include <string>
 
 #include "MeshCore/Object3D.h"
+#include "GeometryCore/Typedefs.h"
 
 #include "Camera.h"
 #include "Renderer.h"
 
 namespace RenderSystem
 {
+	using namespace GeometryCore;
+
 	class Window;
 
 	class Scene
@@ -25,11 +28,11 @@ namespace RenderSystem
 		const Camera& getCamera() const;
 		const glm::mat4& getViewMatrix() const;
 		Window* getParentWindow() const;
-		MeshCore::RaySurfaceIntersection getClosestIntersection(const glm::vec3& cursorPosInWorldSpace, bool intersectSurface = true);
+		MeshCore::RaySurfaceIntersection getClosestIntersection(const Point3D& cursorPosInWorldSpace, bool intersectSurface = true);
 
 		void render();
-		void pan(const glm::vec3& startPointInWorldSpace, const glm::vec3& endPointInWorldSpace);
-		void orbit(const glm::vec3& startPointInNDC, const glm::vec3& endPointInNDC);
+		void pan(const Point3D& startPointInWorldSpace, const Point3D& endPointInWorldSpace);
+		void orbit(const Point3D& startPointInNDC, const Point3D& endPointInNDC);
 		void zoom(float yOffset);
 		void highlightFaces(const std::vector<int>& facesIndices);
 		void updateRenderData();

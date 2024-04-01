@@ -26,7 +26,7 @@ namespace RenderSystem
         }
     }
 
-    void OperationsDispatcher::onMouseMove(const glm::vec2& startCursorPos, const glm::vec2& endCursorPos)
+    void OperationsDispatcher::onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos)
     {
         for (auto& [key, operation] : mKeyOperationMap)
         {
@@ -34,7 +34,7 @@ namespace RenderSystem
         }
     }
 
-    void OperationsDispatcher::onMouseClick(const glm::vec2& cursorPos)
+    void OperationsDispatcher::onMouseClick(const Point2D& cursorPos)
     {
         for (auto& [key, operation] : mKeyOperationMap)
         {

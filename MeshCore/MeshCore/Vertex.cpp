@@ -2,7 +2,7 @@
 
 namespace MeshCore
 {
-	Vertex::Vertex(const glm::vec3& pos, const glm::vec3& normal) :
+	Vertex::Vertex(const Point3D& pos, const Vector3D& normal) :
 		mPos(pos), mNormal(normal)
 	{}
 
@@ -20,22 +20,22 @@ namespace MeshCore
 		return newVertex;
 	}
 
-	void Vertex::setPos(const glm::vec3& pos)
+	void Vertex::setPos(const Point3D& pos)
 	{
 		mPos = pos;
 	}
 
-	void Vertex::setNormal(const glm::vec3& normal)
+	void Vertex::setNormal(const Vector3D& normal)
 	{
 		mNormal = normal;
 	}
 
-	const glm::vec3& Vertex::pos() const
+	const Point3D& Vertex::pos() const
 	{
 		return mPos;
 	}
 
-	const glm::vec3& Vertex::normal() const
+	const Vector3D& Vertex::normal() const
 	{
 		return mNormal;
 	}
@@ -56,13 +56,13 @@ namespace MeshCore
 		}
 	}
 
-	void UniqueVertex::setPos(const glm::vec3& pos)
+	void UniqueVertex::setPos(const Point3D& pos)
 	{
 		Vertex::setPos(pos);
 		updateOriginalVertices();
 	}
 
-	void UniqueVertex::setNormal(const glm::vec3& normal)
+	void UniqueVertex::setNormal(const Vector3D& normal)
 	{
 		Vertex::setNormal(normal);
 		updateOriginalVertices();

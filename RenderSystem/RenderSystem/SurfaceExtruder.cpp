@@ -30,7 +30,7 @@ namespace RenderSystem
         }
     }
 
-    void SurfaceExtruder::onMouseMove(const glm::vec2& startCursorPos, const glm::vec2& endCursorPos)
+    void SurfaceExtruder::onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos)
     {
         if (!mEnabled || mSurfaceIntersection.surfaceIndices.empty())
         {
@@ -58,7 +58,7 @@ namespace RenderSystem
         mScene->updateRenderData();
     }
 
-    void SurfaceExtruder::onMouseClick(const glm::vec2& cursorPos)
+    void SurfaceExtruder::onMouseClick(const Point2D& cursorPos)
     {
         if (mEnabled)
         {

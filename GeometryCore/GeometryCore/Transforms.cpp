@@ -5,9 +5,9 @@
 
 namespace GeometryCore
 {
-    glm::mat4 getRotationTransform(float rotationAngle, const glm::vec3& rotationAxis)
+    glm::mat4 getRotationTransform(float rotationAngle, const Vector3D& rotationAxis)
     {
-        if (glm::all(glm::epsilonEqual(rotationAxis, glm::vec3(0.0f, 0.0f, 0.0f), 1e-6f)))
+        if (glm::all(glm::epsilonEqual(rotationAxis, Vector3D(0.0f, 0.0f, 0.0f), 1e-6f)))
         {
             return glm::mat4(1.0f);
         }
@@ -15,7 +15,7 @@ namespace GeometryCore
         return glm::rotate(rotationAngle, rotationAxis);
     }
 
-    glm::mat4 getTranslationTransform(const glm::vec3& destinationPoint, const glm::vec3& sourcePoint)
+    glm::mat4 getTranslationTransform(const Point3D& destinationPoint, const Point3D& sourcePoint)
     {
         if (glm::all(glm::epsilonEqual(destinationPoint, sourcePoint, 1e-6f)))
         {

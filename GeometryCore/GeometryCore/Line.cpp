@@ -6,7 +6,7 @@
 
 namespace GeometryCore
 {
-    glm::mat4 Line::getLineToLineTransform(const Line& source) const
+    glm::mat4 Line::getTransformToSelf(const Line& source) const
     {
         auto lineDir = end - start;
         auto sourceLineDir = source.end - source.start;

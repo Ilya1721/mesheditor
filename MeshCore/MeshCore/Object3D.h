@@ -44,8 +44,8 @@ namespace MeshCore
 		RaySurfaceIntersection getClosestIntersection(const GeometryCore::Ray& ray, bool intersectSurface, int passedFacesCount = 0) const;
 
 	private:
-		void calculateBBox(const Object3D* object);
 		RenderData getRenderData(const Object3D* object) const;
+		void calculateBBox(const Object3D* object);
 		void setParent(Object3D* parent);
 		void updateParentBBox(Object3D* parent) const;
 		void recalcParentBBox(Object3D* parent) const;

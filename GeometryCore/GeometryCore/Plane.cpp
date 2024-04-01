@@ -7,7 +7,7 @@
 
 namespace GeometryCore
 {
-    glm::vec3 Plane::projectPoint(const glm::vec3& point) const
+    Point3D Plane::projectPoint(const Point3D& point) const
     {
         auto pointToOriginVec = origin - point;
         auto dotProduct = glm::dot(pointToOriginVec, normal);
@@ -23,7 +23,7 @@ namespace GeometryCore
         return ray.findIntersection(*this).value();
     }
 
-    glm::mat4 Plane::getPlaneToPlaneTransform(const Plane& source) const
+    glm::mat4 Plane::getTransformToSelf(const Plane& source) const
     {
         auto rotationAxis = glm::cross(normal, source.normal);
         auto rotationAngle = glm::angle(glm::normalize(normal), glm::normalize(source.normal));

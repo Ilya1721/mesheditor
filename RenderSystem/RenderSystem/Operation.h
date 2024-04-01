@@ -2,8 +2,12 @@
 
 #include <glm/glm.hpp>
 
+#include "GeometryCore/Typedefs.h"
+
 namespace RenderSystem
 {
+    using namespace GeometryCore;
+
     class Scene;
 
     class Operation
@@ -13,11 +17,11 @@ namespace RenderSystem
         virtual ~Operation() = default;
 
         virtual void toggle() = 0;
-        virtual void onMouseMove(const glm::vec2& startCursorPos, const glm::vec2& endCursorPos) = 0;
-        virtual void onMouseClick(const glm::vec2& cursorPos) = 0;
+        virtual void onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos) = 0;
+        virtual void onMouseClick(const Point2D& cursorPos) = 0;
 
     protected:
-        glm::vec3 unProject(const glm::vec2& cursorPos) const;
+        Point3D unProject(const Point2D& cursorPos) const;
 
     protected:
         bool mEnabled = false;

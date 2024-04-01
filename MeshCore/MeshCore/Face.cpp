@@ -20,10 +20,10 @@ using namespace GeometryCore;
 
 namespace MeshCore
 {
-    std::optional<glm::vec3> Face::getIntersectionPoint(const GeometryCore::Ray& ray) const
+    std::optional<Point3D> Face::getIntersectionPoint(const Ray& ray) const
     {
         auto faceNormal = calcNormal();
-        GeometryCore::Plane facePlane(halfEdge->vertex->pos(), faceNormal);
+        Plane facePlane(halfEdge->vertex->pos(), faceNormal);
 
         auto rayPlaneIntersectionPoint = ray.findIntersection(facePlane);
         if (rayPlaneIntersectionPoint.has_value() && isPointInside(rayPlaneIntersectionPoint.value()))
@@ -34,7 +34,7 @@ namespace MeshCore
         return {};
     }
 
-    glm::vec3 Face::calcNormal() const
+    Vector3D Face::calcNormal() const
     {
         auto firstEdge = halfEdge->next->vertex->pos() - halfEdge->vertex->pos();
         auto secondEdge = halfEdge->prev->vertex->pos() - halfEdge->next->vertex->pos();
@@ -42,10 +42,10 @@ namespace MeshCore
         return glm::cross(firstEdge, secondEdge);
     }
 
-    bool Face::isPointInside(const glm::vec3& point) const
+    bool Face::isPointInside(const Point3D& point) const
     {
         auto verticesPositions = getVerticesPositions();
-        std::array<std::array<glm::vec3, 3>, 3> vertexPointEdges{};
+        std::array<std::array<Vector3D, 3>, 3> vertexPointEdges{};
         vertexPointEdges[0] = { point - verticesPositions[1], point - verticesPositions[0], verticesPositions[1] - verticesPositions[0] };
         vertexPointEdges[1] = { point - verticesPositions[2], point - verticesPositions[0], verticesPositions[2] - verticesPositions[0] };
         vertexPointEdges[2] = { point - verticesPositions[1], point - verticesPositions[2], verticesPositions[2] - verticesPositions[1] };
@@ -64,7 +64,7 @@ namespace MeshCore
         for (int triangleIdx = 0; triangleIdx < 3; ++triangleIdx)
         {
             auto crossProduct = glm::cross(vertexPointEdges[triangleIdx][1], vertexPointEdges[triangleIdx][2]);
-            if (!glm::all(glm::epsilonEqual(crossProduct, glm::vec3(0.0f, 0.0f, 0.0f), 1e-6f)))
+            if (!glm::all(glm::epsilonEqual(crossProduct, Vector3D(0.0f, 0.0f, 0.0f), 1e-6f)))
             {
                 trianglesSquaresSum += getTriangleSquare(vertexPointEdgesLengths[triangleIdx]);
             }
@@ -73,9 +73,9 @@ namespace MeshCore
         return glm::epsilonEqual(std::roundf(trianglesSquaresSum), std::roundf(getSquare()), 1e-6f);
     }
 
-    std::vector<glm::vec3> Face::getAllGeometryEdges() const
+    std::vector<Vector3D> Face::getAllGeometryEdges() const
     {
-        std::vector<glm::vec3> edges;
+        std::vector<Vector3D> edges;
         EdgeWalker edgeWalker(halfEdge);
         edgeWalker.forEach([&edges](HalfEdge* edge)
         {
@@ -97,7 +97,7 @@ namespace MeshCore
         return edges;
     }
 
-    std::unordered_set<Face*> Face::getAdjacentFaces(bool filterByNormal, const glm::vec3* normalPtr) const
+    std::unordered_set<Face*> Face::getAdjacentFaces(bool filterByNormal, const Vector3D* normalPtr) const
     {
         auto surfaceNormal = normalPtr ? *normalPtr : calcNormal();
         std::unordered_set<Face*> uniqueAdjacentFaces;
@@ -147,7 +147,7 @@ namespace MeshCore
         return getTriangleSquare({ glm::length(edges[0]), glm::length(edges[1]), glm::length(edges[2]) });
     }
 
-    void Face::move(const glm::vec3& movement, std::unordered_set<UniqueVertex*>& alreadyChangedVertices)
+    void Face::move(const Vector3D& movement, std::unordered_set<UniqueVertex*>& alreadyChangedVertices)
     {
         EdgeWalker edgeWalker(halfEdge);
         edgeWalker.forEach([&movement, &alreadyChangedVertices](HalfEdge* halfEdge)
@@ -161,9 +161,9 @@ namespace MeshCore
         });
     }
 
-    std::vector<glm::vec3> Face::getVerticesPositions() const
+    std::vector<Point3D> Face::getVerticesPositions() const
     {
-        std::vector<glm::vec3> verticesPositions;
+        std::vector<Point3D> verticesPositions;
         EdgeWalker edgeWalker(halfEdge);
         edgeWalker.forEach([&verticesPositions](HalfEdge* edge)
         {

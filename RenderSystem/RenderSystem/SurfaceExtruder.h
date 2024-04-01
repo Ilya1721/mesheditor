@@ -1,11 +1,14 @@
 #pragma once
 
 #include "MeshCore/Intersection.h"
+#include "GeometryCore/Typedefs.h"
 
 #include "Operation.h"
 
 namespace RenderSystem
 {
+    using namespace GeometryCore;
+
     class Scene;
 
     class SurfaceExtruder : public Operation
@@ -14,8 +17,8 @@ namespace RenderSystem
         SurfaceExtruder(Scene* scene);
 
         void toggle() override;
-        void onMouseMove(const glm::vec2& startCursorPos, const glm::vec2& endCursorPos) override;
-        void onMouseClick(const glm::vec2& cursorPos) override;
+        void onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos) override;
+        void onMouseClick(const Point2D& cursorPos) override;
 
     private:
         MeshCore::RaySurfaceIntersection mSurfaceIntersection;

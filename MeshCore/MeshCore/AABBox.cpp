@@ -7,6 +7,8 @@
 #include "Mesh.h"
 #include "Vertex.h"
 
+using namespace GeometryCore;
+
 namespace
 {
 	enum class MinMaxOption
@@ -15,9 +17,9 @@ namespace
 		MAX
 	};
 
-	glm::vec3 getMinMaxVector(const glm::vec3& left, const glm::vec3& right, MinMaxOption minMaxOption)
+	Point3D getMinMaxPoint(const Point3D& left, const Point3D& right, MinMaxOption minMaxOption)
 	{
-		glm::vec3 result{};
+		Point3D result{};
 		result.x = minMaxOption == MinMaxOption::MIN ? std::min(left.x, right.x) : std::max(left.x, right.x);
 		result.y = minMaxOption == MinMaxOption::MIN ? std::min(left.y, right.y) : std::max(left.y, right.y);
 		result.z = minMaxOption == MinMaxOption::MIN ? std::min(left.z, right.z) : std::max(left.z, right.z);
@@ -28,8 +30,6 @@ namespace
 
 namespace MeshCore
 {
-	using namespace GeometryCore;
-
 	AABBox::AABBox()
 	{
 		init();
@@ -43,7 +43,7 @@ namespace MeshCore
 		calcBBoxPlanes();
 	}
 
-	void AABBox::setMinMax(const glm::vec3& min, const glm::vec3& max)
+	void AABBox::setMinMax(const Point3D& min, const Point3D& max)
 	{
 		mMin = min;
 		mMax = max;
@@ -52,8 +52,8 @@ namespace MeshCore
 
 	void AABBox::applyMesh(const Mesh& mesh, const glm::mat4& meshTransform)
 	{
-		glm::vec3 min = mMin;
-		glm::vec3 max = mMax;
+		Point3D min = mMin;
+		Point3D max = mMax;
 
 		for (const auto& [vertex, uniqueVertex] : mesh.getVertices())
 		{
@@ -76,32 +76,32 @@ namespace MeshCore
 	{
 		constexpr auto floatMax = std::numeric_limits<float>::max();
 		constexpr auto floatMin = -floatMax;
-		glm::vec3 min(floatMax, floatMax, floatMax);
-		glm::vec3 max(floatMin, floatMin, floatMin);
+		Point3D min(floatMax, floatMax, floatMax);
+		Point3D max(floatMin, floatMin, floatMin);
 		setMinMax(min, max);
 	}
 
 	void AABBox::applyTransform(const glm::mat4& transform)
 	{
-		setMinMax(transform * glm::vec4(mMin, 1.0f), transform * glm::vec4(mMax, 1.0f));
+		setMinMax(transform * Point4D(mMin, 1.0f), transform * Point4D(mMax, 1.0f));
 	}
 
 	void AABBox::applyOtherBBox(const AABBox& other)
 	{
-		setMinMax(getMinMaxVector(mMin, other.mMin, MinMaxOption::MIN), getMinMaxVector(mMax, other.mMax, MinMaxOption::MAX));
+		setMinMax(getMinMaxPoint(mMin, other.mMin, MinMaxOption::MIN), getMinMaxPoint(mMax, other.mMax, MinMaxOption::MAX));
 	}
 
-	glm::vec3 AABBox::getCenter() const
+	Point3D AABBox::getCenter() const
 	{
 		return (mMin + mMax) * 0.5f;
 	}
 
-	const glm::vec3& AABBox::getMin() const
+	const Point3D& AABBox::getMin() const
 	{
 		return mMin;
 	}
 
-	const glm::vec3& AABBox::getMax() const
+	const Point3D& AABBox::getMax() const
 	{
 		return mMax;
 	}
@@ -111,7 +111,7 @@ namespace MeshCore
 		return mMax.y - mMin.y;
 	}
 
-	bool AABBox::checkIntersectionWithRay(const GeometryCore::Ray& ray) const
+	bool AABBox::checkIntersectionWithRay(const Ray& ray) const
 	{
 		for (const auto& bboxPlane : mBBoxPlanes)
 		{
@@ -125,7 +125,7 @@ namespace MeshCore
 		return false;
 	}
 
-	bool AABBox::isPointInsideBBox(const glm::vec3& point) const
+	bool AABBox::isPointInsideBBox(const Point3D& point) const
 	{
 		for (int coordIdx = 0; coordIdx < 3; ++coordIdx)
 		{

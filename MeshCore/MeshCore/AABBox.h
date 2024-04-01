@@ -3,6 +3,8 @@
 #include <glm/glm.hpp>
 #include <vector>
 
+#include "GeometryCore/Typedefs.h"
+
 namespace GeometryCore
 {
 	struct Ray;
@@ -11,6 +13,8 @@ namespace GeometryCore
 
 namespace MeshCore
 {
+	using namespace GeometryCore;
+
 	class Mesh;
 
 	class AABBox
@@ -28,22 +32,22 @@ namespace MeshCore
 		void applyOtherBBox(const AABBox& other);
 		void clear();
 
-		glm::vec3 getCenter() const;
-		const glm::vec3& getMin() const;
-		const glm::vec3& getMax() const;
+		Point3D getCenter() const;
+		const Point3D& getMin() const;
+		const Point3D& getMax() const;
 		float getHeight() const;
-		bool checkIntersectionWithRay(const GeometryCore::Ray& ray) const;
-		bool isPointInsideBBox(const glm::vec3& point) const;
+		bool checkIntersectionWithRay(const Ray& ray) const;
+		bool isPointInsideBBox(const Point3D& point) const;
 
 	private:
 		void calcBBoxPlanes();
 		void init();
-		void setMinMax(const glm::vec3& min, const glm::vec3& max);
+		void setMinMax(const Point3D& min, const Point3D& max);
 
 	private:
-		glm::vec3 mMin;
-		glm::vec3 mMax;
-		std::vector<GeometryCore::Plane> mBBoxPlanes;
+		Point3D mMin;
+		Point3D mMax;
+		std::vector<Plane> mBBoxPlanes;
 	};
 }
 

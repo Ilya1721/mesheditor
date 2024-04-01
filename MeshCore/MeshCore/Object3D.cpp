@@ -93,7 +93,7 @@ namespace MeshCore
 		return mBBox;
 	}
 
-	RaySurfaceIntersection Object3D::getClosestIntersection(const GeometryCore::Ray& ray, bool intersectSurface, int passedFacesCount) const
+	RaySurfaceIntersection Object3D::getClosestIntersection(const Ray& ray, bool intersectSurface, int passedFacesCount) const
 	{
 		auto currentClosestIntersection = mMesh->getClosestIntersection(ray, intersectSurface, passedFacesCount);
 		for (const auto& child : mChildren)

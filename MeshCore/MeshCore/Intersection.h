@@ -3,16 +3,19 @@
 #include <vector>
 #include <glm/glm.hpp>
 
+#include "GeometryCore/Typedefs.h"
 #include "Surface.h"
 
 namespace MeshCore
 {
+    using namespace GeometryCore;
+
     struct RaySurfaceIntersection
     {
         Surface intersectedSurface;
         std::vector<int> surfaceIndices;
-        glm::vec3 point {};
+        Point3D point {};
 
-        void setClosest(const RaySurfaceIntersection& other, const glm::vec3& referencePoint);
+        void setClosest(const RaySurfaceIntersection& other, const Point3D& referencePoint);
     };
 }

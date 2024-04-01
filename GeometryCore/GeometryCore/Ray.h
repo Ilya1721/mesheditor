@@ -3,16 +3,18 @@
 #include <glm/glm.hpp>
 #include <optional>
 
+#include "Typedefs.h"
+
 namespace GeometryCore
 {
 	struct Plane;
 
 	struct Ray
 	{
-		glm::vec3 origin;
-		glm::vec3 direction;
+		Point3D origin;
+		Vector3D direction;
 
-		std::optional<glm::vec3> findIntersection(const Plane& plane) const;
+		std::optional<Point3D> findIntersection(const Plane& plane) const;
 	};
 }
 

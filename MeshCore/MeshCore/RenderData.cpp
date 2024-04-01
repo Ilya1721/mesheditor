@@ -3,6 +3,7 @@
 #include "GeometryCore/Plane.h"
 #include "GeometryCore/Ray.h"
 #include "GeometryCore/Line.h"
+#include "GeometryCore/Typedefs.h"
 
 #include "Vertex.h"
 #include "Constants.h"
@@ -26,6 +27,8 @@ namespace
 
 namespace MeshCore
 {
+	using namespace GeometryCore;
+
 	void RenderData::append(const RenderData& other)
 	{
 		positions.insert(std::end(positions), std::cbegin(other.positions), std::cend(other.positions));
@@ -70,7 +73,7 @@ namespace MeshCore
 		return mCompactData;
 	}
 
-	RenderData RenderData::createRenderData(const GeometryCore::Ray& ray, float length)
+	RenderData RenderData::createRenderData(const Ray& ray, float length)
 	{
 		RenderData renderData;
 		renderData.append({ ray.origin, ray.direction });
@@ -79,11 +82,11 @@ namespace MeshCore
 		return renderData;
 	}
 
-	RenderData RenderData::createRenderData(const GeometryCore::Line& line, bool withArrowHead)
+	RenderData RenderData::createRenderData(const Line& line, bool withArrowHead)
 	{
 		std::vector<Vertex> vertices;
 		auto halfLength = glm::length(line.end - line.start) * 0.5f;
-		GeometryCore::Line defaultLine{ glm::vec3(0.0f, -halfLength, 0.0f), glm::vec3(0.0f, halfLength, 0.0f) };
+		Line defaultLine{ glm::vec3(0.0f, -halfLength, 0.0f), glm::vec3(0.0f, halfLength, 0.0f) };
 		vertices.emplace_back(defaultLine.start, glm::vec3(0.0f, 0.0f, 1.0f));
 		vertices.emplace_back(defaultLine.end, glm::vec3(0.0f, 0.0f, 1.0f));
 
@@ -92,29 +95,29 @@ namespace MeshCore
 			auto tangent = glm::tan(glm::radians(ARROW_HEAD_ANGLE));
 			auto x = tangent * halfLength * ARROW_HEAD_LENGTH_KOEF;
 			auto y = defaultLine.end.y - (x / tangent);
-			vertices.emplace_back(defaultLine.end, glm::vec3(0.0f, 0.0f, 1.0f));
-			vertices.emplace_back(glm::vec3(-x, y, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-			vertices.emplace_back(defaultLine.end, glm::vec3(0.0f, 0.0f, 1.0f));
-			vertices.emplace_back(glm::vec3(x, y, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+			vertices.emplace_back(defaultLine.end, Vector3D(0.0f, 0.0f, 1.0f));
+			vertices.emplace_back(Point3D(-x, y, 0.0f), Vector3D(0.0f, 0.0f, 1.0f));
+			vertices.emplace_back(defaultLine.end, Vector3D(0.0f, 0.0f, 1.0f));
+			vertices.emplace_back(Point3D(x, y, 0.0f), Vector3D(0.0f, 0.0f, 1.0f));
 		}
 
-		return getRenderData(vertices, line.getLineToLineTransform(defaultLine));
+		return getRenderData(vertices, line.getTransformToSelf(defaultLine));
 	}
 
-	RenderData RenderData::createRenderData(const GeometryCore::Plane& plane, float width, float length)
+	RenderData RenderData::createRenderData(const Plane& plane, float width, float length)
 	{
 		std::vector<Vertex> vertices;
 		auto halfWidth = width * 0.5f;
 		auto halfLength = length * 0.5f;
-		vertices.emplace_back(glm::vec3(halfWidth, halfLength, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		vertices.emplace_back(glm::vec3(-halfWidth, halfLength, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		vertices.emplace_back(glm::vec3(-halfWidth, -halfLength, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		vertices.emplace_back(glm::vec3(-halfWidth, -halfLength, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		vertices.emplace_back(glm::vec3(halfWidth, -halfLength, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		vertices.emplace_back(glm::vec3(halfWidth, halfLength, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		vertices.emplace_back(Point3D(halfWidth, halfLength, 0.0f), Vector3D(0.0f, 0.0f, 1.0f));
+		vertices.emplace_back(Point3D(-halfWidth, halfLength, 0.0f), Vector3D(0.0f, 0.0f, 1.0f));
+		vertices.emplace_back(Point3D(-halfWidth, -halfLength, 0.0f), Vector3D(0.0f, 0.0f, 1.0f));
+		vertices.emplace_back(Point3D(-halfWidth, -halfLength, 0.0f), Vector3D(0.0f, 0.0f, 1.0f));
+		vertices.emplace_back(Point3D(halfWidth, -halfLength, 0.0f), Vector3D(0.0f, 0.0f, 1.0f));
+		vertices.emplace_back(Point3D(halfWidth, halfLength, 0.0f), Vector3D(0.0f, 0.0f, 1.0f));
 
-		GeometryCore::Plane defaultPlane{ glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f) };
-		auto planeTransform = plane.getPlaneToPlaneTransform(defaultPlane);
+		Plane defaultPlane{ Point3D(0.0f, 0.0f, 0.0f), Vector3D(0.0f, 0.0f, 1.0f) };
+		auto planeTransform = plane.getTransformToSelf(defaultPlane);
 
 		return getRenderData(vertices, planeTransform);
 	}

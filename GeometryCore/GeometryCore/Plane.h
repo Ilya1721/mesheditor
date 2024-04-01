@@ -2,15 +2,16 @@
 
 #include <glm/glm.hpp>
 
+#include "Typedefs.h"
+
 namespace GeometryCore
 {
 	struct Plane
 	{
-		glm::vec3 projectPoint(const glm::vec3& point) const;
+		Point3D origin;
+		Vector3D normal;
 
-		glm::vec3 origin;
-		glm::vec3 normal;
-
-		glm::mat4 getPlaneToPlaneTransform(const Plane& source) const;
+		Point3D projectPoint(const Point3D& point) const;
+		glm::mat4 getTransformToSelf(const Plane& source) const;
 	};
 }

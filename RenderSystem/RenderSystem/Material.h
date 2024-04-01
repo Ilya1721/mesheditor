@@ -1,14 +1,16 @@
 #pragma once
 
-#include "glm/glm.hpp"
+#include <glm/glm.hpp>
+
+#include "Typedefs.h"
 
 namespace RenderSystem
 {
     struct Material
     {
-        glm::vec3 ambient;
-        glm::vec3 diffuse;
-        glm::vec3 specular;
+        RGB ambient;
+        RGB diffuse;
+        RGB specular;
         float shininess;
     };
 }
