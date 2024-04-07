@@ -7,6 +7,7 @@
 #include "Constants.h"
 #include "Intersection.h"
 #include "RenderData.h"
+#include "TreeWalker.h"
 
 using namespace GeometryCore;
 
@@ -47,6 +48,11 @@ namespace MeshCore
 		return *mMesh;
 	}
 
+	Mesh& Object3D::getMesh()
+	{
+		return *mMesh;
+	}
+
 	Object3D* Object3D::getParent() const 
 	{
 		return mParent;
@@ -62,18 +68,13 @@ namespace MeshCore
 		return mMesh->getRenderData();
 	}
 
-	RenderData Object3D::getRenderData() const
+	RenderData Object3D::getRenderData()
 	{
-		return getRenderData(this);
-	}
-
-	RenderData Object3D::getRenderData(const Object3D* object) const
-	{
-		RenderData renderData = object->getMesh().getRenderData();
-		for (const auto& child : object->getChildren())
-		{
-			renderData.append(getRenderData(child));
-		}
+		RenderData renderData;
+		TreeWalker<Object3D> walker(this);
+		walker.forEach([&renderData](Object3D* object) {
+			renderData.append(object->getMesh().getRenderData());
+		});
 
 		return renderData;
 	}
@@ -93,40 +94,52 @@ namespace MeshCore
 		return mBBox;
 	}
 
-	RaySurfaceIntersection Object3D::getClosestIntersection(const Ray& ray, bool intersectSurface, int passedFacesCount) const
+	std::optional<Point3D> Object3D::findIntersection(const Ray& ray)
 	{
-		auto currentClosestIntersection = mMesh->getClosestIntersection(ray, intersectSurface, passedFacesCount);
-		for (const auto& child : mChildren)
-		{
-			auto childClosestIntersection = child->getClosestIntersection(ray, intersectSurface, passedFacesCount + mMesh->getNumberOfFaces());
-			if (currentClosestIntersection.surfaceIndices.empty() || isCloser(childClosestIntersection.point, currentClosestIntersection.point, ray.origin))
+		auto startIntersection = std::make_optional<Point3D>();
+		TreeWalker walker(this);
+		walker.forEach([&ray, &startIntersection](Object3D* object) {
+			auto intersection = object->getMesh().findIntersection(ray);
+			if (intersection && (!startIntersection.has_value() || isCloser(intersection.value(), startIntersection.value(), ray.origin)))
 			{
-				currentClosestIntersection = childClosestIntersection;
+				startIntersection = intersection;
 			}
-		}
+		});
 
-		return currentClosestIntersection;
+		return startIntersection;
+	}
+
+	RaySurfaceIntersection Object3D::findIntersection(const Ray& ray, bool intersectSurface, int passedFacesCount)
+	{
+		RaySurfaceIntersection startIntersection;
+		TreeWalker walker(this);
+		walker.forEach([&ray, &startIntersection, &intersectSurface, &passedFacesCount, this](Object3D* object) {
+			auto intersection = object->getMesh().findIntersection(ray, intersectSurface, passedFacesCount + mMesh->getNumberOfFaces());
+			if (startIntersection.surfaceIndices.empty() || isCloser(intersection.point, startIntersection.point, ray.origin))
+			{
+				startIntersection = intersection;
+			}
+		});
+
+		return startIntersection;
 	}
 
 	void Object3D::calculateBBox(const Object3D* object)
 	{
-		mBBox.applyMesh(object->getMesh(), object->getTransform());
-		for (const auto& child : object->getChildren())
-		{
-			calculateBBox(child);
-		}
+		TreeWalker walker(this);
+		walker.forEach([this](Object3D* object) {
+			mBBox.applyMesh(object->getMesh(), object->getTransform());
+		});
 	}
 
 	void Object3D::appendChild(Object3D* child)
 	{
-		if (!child)
+		if (child)
 		{
-			return;
+			mChildren.insert(child);
+			child->setParent(this);
+			child->updateParentBBox(child->mParent);
 		}
-
-		mChildren.insert(child);
-		child->setParent(this);
-		child->updateParentBBox(child->mParent);
 	}
 
 	void Object3D::removeChild(Object3D* child)
@@ -142,23 +155,19 @@ namespace MeshCore
 
 	void Object3D::updateParentBBox(Object3D* parent) const
 	{
-		if (!parent)
+		if (parent)
 		{
-			return;
+			parent->mBBox.applyOtherBBox(this->mBBox);
+			parent->updateParentBBox(parent->mParent);
 		}
-
-		parent->mBBox.applyOtherBBox(this->mBBox);
-		parent->updateParentBBox(parent->mParent);
 	}
 
 	void Object3D::recalcParentBBox(Object3D* parent) const
 	{
-		if (!parent)
+		if (parent)
 		{
-			return;
+			parent->calculateBBox(parent);
+			recalcParentBBox(parent->mParent);
 		}
-
-		parent->calculateBBox(parent);
-		recalcParentBBox(parent->mParent);
 	}
 }

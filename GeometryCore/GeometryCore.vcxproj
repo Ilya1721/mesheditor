@@ -86,6 +86,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="GeometryCore\Intersectable.h" />
     <ClInclude Include="GeometryCore\Line.h" />
     <ClInclude Include="GeometryCore\Numeric.h" />
     <ClInclude Include="GeometryCore\Plane.h" />
@@ -97,7 +98,6 @@
     <ClCompile Include="GeometryCore\Line.cpp" />
     <ClCompile Include="GeometryCore\Numeric.cpp" />
     <ClCompile Include="GeometryCore\Plane.cpp" />
-    <ClCompile Include="GeometryCore\Ray.cpp" />
     <ClCompile Include="GeometryCore\Transforms.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

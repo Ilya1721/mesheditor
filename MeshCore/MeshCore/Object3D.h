@@ -3,6 +3,8 @@
 #include <memory>
 #include <unordered_set>
 
+#include "GeometryCore/Intersectable.h"
+
 #include "AABBox.h"
 
 namespace GeometryCore
@@ -16,7 +18,7 @@ namespace MeshCore
 	struct RaySurfaceIntersection;
 	struct RenderData;
 
-	class Object3D
+	class Object3D : public ModifiableIntersectable
 	{
 	public:
 		Object3D();
@@ -36,15 +38,16 @@ namespace MeshCore
 		void removeChild(Object3D* child);
 
 		const Mesh& getMesh() const;
+		Mesh& getMesh();
 		const RenderData& getOnlyRootRenderData() const;
-		RenderData getRenderData() const;
+		RenderData getRenderData();
 		const glm::mat4& getTransform() const;
 		void setTransform(const glm::mat4& transform);
 		const AABBox& getBBox() const;
-		RaySurfaceIntersection getClosestIntersection(const GeometryCore::Ray& ray, bool intersectSurface, int passedFacesCount = 0) const;
+		std::optional<Point3D> findIntersection(const Ray& ray) override;
+		RaySurfaceIntersection findIntersection(const GeometryCore::Ray& ray, bool intersectSurface, int passedFacesCount = 0);
 
 	private:
-		RenderData getRenderData(const Object3D* object) const;
 		void calculateBBox(const Object3D* object);
 		void setParent(Object3D* parent);
 		void updateParentBBox(Object3D* parent) const;

@@ -5,6 +5,8 @@
 #include <unordered_map>
 #include <array>
 
+#include "GeometryCore/Intersectable.h"
+
 #include "VerticesHash.h"
 #include "RenderData.h"
 
@@ -21,7 +23,13 @@ namespace MeshCore
 	struct Surface;
 	struct RaySurfaceIntersection;
 
-	class Mesh
+	struct IntersectionTempData
+	{
+		int intersectedFaceIdx;
+		int passedFacesCount;
+	};
+
+	class Mesh : public ModifiableIntersectable
 	{
 	public:
 		Mesh() = default;
@@ -38,7 +46,8 @@ namespace MeshCore
 		const std::unordered_map<Vertex, UniqueVertex>& getVertices() const;
 		int getNumberOfFaces() const;
 		const RenderData& getRenderData() const;
-		RaySurfaceIntersection getClosestIntersection(const GeometryCore::Ray& ray, bool intersectSurface, int passedFacesCount = 0) const;
+		std::optional<Point3D> findIntersection(const Ray& ray) override;
+		RaySurfaceIntersection findIntersection(const Ray& ray, bool intersectSurface, int passedFacesCount = 0);
 
 	private:
 		void init();
@@ -64,5 +73,6 @@ namespace MeshCore
 		std::unordered_map<Vertex, UniqueVertex> mUniqueVerticesMap;
 		std::unordered_map<Face*, int> mFaceIndexMap;
 		RenderData mRenderData;
+		IntersectionTempData mIntersectionTempData;
 	};
 }

@@ -20,12 +20,16 @@ using namespace GeometryCore;
 
 namespace MeshCore
 {
-    std::optional<Point3D> Face::getIntersectionPoint(const Ray& ray) const
+    Face::Face(Mesh* parentMesh, HalfEdge* halfEdge) :
+        parentMesh(parentMesh), halfEdge(halfEdge)
+    {}
+
+    std::optional<Point3D> Face::findIntersection(const Ray& ray) const
     {
         auto faceNormal = calcNormal();
         Plane facePlane(halfEdge->vertex->pos(), faceNormal);
 
-        auto rayPlaneIntersectionPoint = ray.findIntersection(facePlane);
+        auto rayPlaneIntersectionPoint = facePlane.findIntersection(ray);
         if (rayPlaneIntersectionPoint.has_value() && isPointInside(rayPlaneIntersectionPoint.value()))
         {
             return rayPlaneIntersectionPoint;

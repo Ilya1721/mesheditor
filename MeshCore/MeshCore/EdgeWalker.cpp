@@ -8,12 +8,12 @@ namespace MeshCore
         mStartHalfEdge(startHalfEdge)
     {}
 
-    void EdgeWalker::forEach(const EdgeFunction& edgeFunction)
+    void EdgeWalker::forEach(const EdgeFunction& function)
     {
         auto currentHalfEdge = mStartHalfEdge;
         do
         {
-            edgeFunction(currentHalfEdge);
+            function(currentHalfEdge);
             currentHalfEdge = currentHalfEdge->next;
         } while (currentHalfEdge != mStartHalfEdge);
     }

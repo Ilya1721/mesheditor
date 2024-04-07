@@ -4,6 +4,7 @@
 #include <chrono>
 
 #include "GeometryCore/Ray.h"
+#include "GeometryCore/Numeric.h"
 
 #include "Face.h"
 #include "HalfEdge.h"
@@ -33,7 +34,7 @@ namespace
 namespace MeshCore
 {
 	Mesh::Mesh(const std::vector<Vertex>& vertices)
-		: mVertices(vertices)
+		: mVertices(vertices), mIntersectionTempData{-1, 0}
 	{
 		init();
 	}
@@ -210,20 +211,42 @@ namespace MeshCore
 		return mRenderData;
 	}
 
-	RaySurfaceIntersection Mesh::getClosestIntersection(const Ray& ray, bool intersectSurface, int passedFacesCount) const
+	std::optional<Point3D> Mesh::findIntersection(const Ray& ray)
 	{
-		RaySurfaceIntersection rayFaceIntersection;
+		std::optional<Point3D> startIntersection;
 
 		for (int faceIdx = 0; faceIdx < mFaces.size(); ++faceIdx)
 		{
 			auto& face = mFaces[faceIdx];
-			auto intersectionPoint = face->getIntersectionPoint(ray);
-			if (intersectionPoint.has_value())
+			auto intersection = face->findIntersection(ray);
+			if (!intersection)
 			{
-				Surface surface(face.get(), intersectSurface);
-				auto facesIndices = intersectSurface ? getIntersectedSurfaceIndices(surface) : std::vector<int>{ faceIdx + passedFacesCount };
-				rayFaceIntersection.setClosest({ std::move(surface), facesIndices, intersectionPoint.value()}, ray.origin);
+				continue;
 			}
+
+			if (!startIntersection.has_value() || isCloser(intersection.value(), startIntersection.value(), ray.origin))
+			{
+				startIntersection = intersection;
+				mIntersectionTempData.intersectedFaceIdx = faceIdx;
+			}
+		}
+
+		mIntersectionTempData.passedFacesCount += mFaces.size();
+
+		return startIntersection;
+	}
+
+	RaySurfaceIntersection Mesh::findIntersection(const Ray& ray, bool intersectSurface, int passedFacesCount)
+	{
+		RaySurfaceIntersection rayFaceIntersection;
+		auto intersection = findIntersection(ray);
+
+		if (intersection.has_value())
+		{
+			auto faceIdx = mIntersectionTempData.intersectedFaceIdx;
+			Surface surface(mFaces[faceIdx].get(), intersectSurface);
+			auto facesIndices = intersectSurface ? getIntersectedSurfaceIndices(surface) : std::vector<int>{ faceIdx + passedFacesCount };
+			rayFaceIntersection.setClosest({ std::move(surface), facesIndices, intersection.value() }, ray.origin);
 		}
 
 		return rayFaceIntersection;

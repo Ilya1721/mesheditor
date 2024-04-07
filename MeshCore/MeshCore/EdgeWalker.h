@@ -13,7 +13,7 @@ namespace MeshCore
     public:
         EdgeWalker(HalfEdge* startEdge);
 
-        void forEach(const EdgeFunction& edgeFunction);
+        void forEach(const EdgeFunction& function);
 
     private:
         HalfEdge* mStartHalfEdge;

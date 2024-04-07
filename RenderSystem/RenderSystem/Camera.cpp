@@ -74,7 +74,7 @@ namespace RenderSystem
 	Point3D Camera::projectToTargetPlane(const Point3D& cursorPosInWorldSpace) const
 	{
 		Ray cursorRay(cursorPosInWorldSpace, cursorPosInWorldSpace - mEye);
-		return cursorRay.findIntersection(getTargetPlane()).value();
+		return getTargetPlane().findIntersection(cursorRay).value();
 	}
 
 	Ray Camera::getCameraRay(const Point3D& cursorPosInWorldSpace) const

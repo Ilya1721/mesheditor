@@ -6,6 +6,7 @@
 #include <unordered_set>
 
 #include "GeometryCore/Typedefs.h"
+#include "GeometryCore/Intersectable.h"
 
 namespace GeometryCore
 {
@@ -20,12 +21,14 @@ namespace MeshCore
     struct UniqueVertex;
     class Mesh;
 
-    struct Face
+    struct Face : Intersectable
     {
+        Face(Mesh* parentMesh, HalfEdge* halfEdge = nullptr);
+
         Mesh* parentMesh = nullptr;
         HalfEdge* halfEdge = nullptr;
 
-        std::optional<Point3D> getIntersectionPoint(const Ray& ray) const;
+        std::optional<Point3D> findIntersection(const Ray& ray) const override;
         Vector3D calcNormal() const;
         bool isPointInside(const Point3D& point) const;
         std::vector<Vector3D> getAllGeometryEdges() const;

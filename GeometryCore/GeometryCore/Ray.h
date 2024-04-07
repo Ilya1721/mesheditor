@@ -13,8 +13,6 @@ namespace GeometryCore
 	{
 		Point3D origin;
 		Vector3D direction;
-
-		std::optional<Point3D> findIntersection(const Plane& plane) const;
 	};
 }
 

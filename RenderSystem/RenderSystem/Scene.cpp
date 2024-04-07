@@ -110,12 +110,12 @@ namespace RenderSystem
 	MeshCore::RaySurfaceIntersection Scene::getClosestIntersection(const Point3D& cursorPosInWorldSpace, bool intersectSurface)
 	{
 		auto cameraRay = mCamera.getCameraRay(cursorPosInWorldSpace);
-		if (!mRootObject.getBBox().checkIntersectionWithRay(cameraRay))
+		if (!mRootObject.getBBox().findIntersection(cameraRay).has_value())
 		{
 			return {};
 		}
 
-		return mRootObject.getClosestIntersection(cameraRay, intersectSurface);
+		return mRootObject.findIntersection(cameraRay, intersectSurface);
 	}
 
 	void Scene::setProjectionMatrix(const glm::mat4& projectionMatrix)

@@ -111,18 +111,18 @@ namespace MeshCore
 		return mMax.y - mMin.y;
 	}
 
-	bool AABBox::checkIntersectionWithRay(const Ray& ray) const
+	std::optional<Point3D> AABBox::findIntersection(const Ray& ray) const
 	{
-		for (const auto& bboxPlane : mBBoxPlanes)
+		for (auto& bboxPlane : mBBoxPlanes)
 		{
-			auto intersectionPoint = ray.findIntersection(bboxPlane);
+			auto intersectionPoint = bboxPlane.findIntersection(ray);
 			if (intersectionPoint.has_value() && isPointInsideBBox(intersectionPoint.value()))
 			{
-				return true;
+				return intersectionPoint;
 			}
 		}
 
-		return false;
+		return {};
 	}
 
 	bool AABBox::isPointInsideBBox(const Point3D& point) const

@@ -2,16 +2,19 @@
 
 #include <glm/glm.hpp>
 
-#include "Typedefs.h"
+#include "Intersectable.h"
 
 namespace GeometryCore
 {
-	struct Plane
+	struct Plane : Intersectable
 	{
+		Plane(const Point3D& origin, const Vector3D& normal);
+
 		Point3D origin;
 		Vector3D normal;
 
-		Point3D projectPoint(const Point3D& point) const;
+		Point3D projectPoint(const Point3D& point);
 		glm::mat4 getTransformToSelf(const Plane& source) const;
+		std::optional<Point3D> findIntersection(const Ray& ray) const override;
 	};
 }
