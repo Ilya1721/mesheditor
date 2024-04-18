@@ -35,8 +35,6 @@ namespace MeshCore
 		init();
 	}
 
-	AABBox::~AABBox() = default;
-
 	void AABBox::init()
 	{
 		clear();

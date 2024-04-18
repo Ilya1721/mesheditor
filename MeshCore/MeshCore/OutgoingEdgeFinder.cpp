@@ -22,12 +22,7 @@ namespace MeshCore
         EdgeWalker edgeWalker(currentOutgoing->twin);
         edgeWalker.forEach([this](HalfEdge* edge)
         {
-            if (edge == mStartOutgoingEdge)
-            {
-                return;
-            }
-
-            if (isOutgoing(edge))
+            if (edge != mStartOutgoingEdge && isOutgoing(edge))
             {
                 addOutgoing(edge);
                 collectNextOutgoing(edge);

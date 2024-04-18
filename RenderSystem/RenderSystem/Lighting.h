@@ -8,8 +8,6 @@ namespace RenderSystem
 	class Lighting
 	{
 	public:
-		Lighting() = default;
-
 		void init(int shaderProgram);
 		void setLightPos(const float* lightPos);
 		void setCameraPos(const float* pos);

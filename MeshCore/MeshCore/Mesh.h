@@ -29,7 +29,7 @@ namespace MeshCore
 		int passedFacesCount;
 	};
 
-	class Mesh : public ModifiableIntersectable
+	class Mesh : public Intersectable
 	{
 	public:
 		Mesh() = default;
@@ -46,7 +46,7 @@ namespace MeshCore
 		const std::unordered_map<Vertex, UniqueVertex>& getVertices() const;
 		int getNumberOfFaces() const;
 		const RenderData& getRenderData() const;
-		std::optional<Point3D> findIntersection(const Ray& ray) override;
+		std::optional<Point3D> findIntersection(const Ray& ray) const override;
 		RaySurfaceIntersection findIntersection(const Ray& ray, bool intersectSurface, int passedFacesCount = 0);
 
 	private:
@@ -73,6 +73,6 @@ namespace MeshCore
 		std::unordered_map<Vertex, UniqueVertex> mUniqueVerticesMap;
 		std::unordered_map<Face*, int> mFaceIndexMap;
 		RenderData mRenderData;
-		IntersectionTempData mIntersectionTempData;
+		mutable IntersectionTempData mIntersectionTempData;
 	};
 }

@@ -15,6 +15,10 @@ namespace RenderSystem
 	{
 	public:
 		Renderer();
+		Renderer(const Renderer&) = delete;
+		Renderer(Renderer&&) = default;
+		Renderer& operator=(const Renderer&) = delete;
+		Renderer& operator=(Renderer&&) = default;
 		~Renderer();
 
 		void render();

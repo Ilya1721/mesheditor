@@ -8,6 +8,10 @@ namespace RenderSystem
 	{
 	public:
 		RenderBuffer() = default;
+		RenderBuffer(const RenderBuffer&) = delete;
+		RenderBuffer(RenderBuffer&&) = default;
+		RenderBuffer& operator=(const RenderBuffer&) = delete;
+		RenderBuffer& operator=(RenderBuffer&&) = default;
 		~RenderBuffer();
 
 		void init();

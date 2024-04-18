@@ -8,6 +8,8 @@
 #include "GeometryCore/Typedefs.h"
 #include "GeometryCore/Intersectable.h"
 
+#include "Movable.h"
+
 namespace GeometryCore
 {
     struct Ray;
@@ -21,7 +23,7 @@ namespace MeshCore
     struct UniqueVertex;
     class Mesh;
 
-    struct Face : Intersectable
+    struct Face : Intersectable, Movable
     {
         Face(Mesh* parentMesh, HalfEdge* halfEdge = nullptr);
 
@@ -38,6 +40,6 @@ namespace MeshCore
         float getSquare() const;
         std::vector<Point3D> getVerticesPositions() const;
 
-        void move(const Vector3D& movement, std::unordered_set<UniqueVertex*>& alreadyChangedVertices);
+        void move(const Vector3D& movement, std::unordered_set<UniqueVertex*>& alreadyChangedVertices) override;
     };
 }

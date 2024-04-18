@@ -4,10 +4,11 @@
 #include <optional>
 
 #include "Typedefs.h"
-#include "Ray.h"
 
 namespace GeometryCore
 {
+    struct Ray;
+
     struct Intersectable
     {
         virtual ~Intersectable() = default;

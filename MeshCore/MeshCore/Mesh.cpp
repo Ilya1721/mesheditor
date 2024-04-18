@@ -211,7 +211,7 @@ namespace MeshCore
 		return mRenderData;
 	}
 
-	std::optional<Point3D> Mesh::findIntersection(const Ray& ray)
+	std::optional<Point3D> Mesh::findIntersection(const Ray& ray) const
 	{
 		std::optional<Point3D> startIntersection;
 

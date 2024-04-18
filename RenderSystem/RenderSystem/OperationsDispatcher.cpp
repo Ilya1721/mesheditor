@@ -14,8 +14,6 @@ namespace RenderSystem
         initSurfaceOperations();
     }
 
-    OperationsDispatcher::~OperationsDispatcher() = default;
-
     void OperationsDispatcher::toggle(int key)
     {
         auto operationIt = mKeyOperationMap.find(key);

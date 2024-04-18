@@ -8,18 +8,18 @@
 
 #include "GeometryCore/Typedefs.h"
 
+#include "Operation.h"
+
 namespace RenderSystem
 {
     using namespace GeometryCore;
 
-    class Operation;
     class Scene;
 
     class OperationsDispatcher
     {
     public:
         OperationsDispatcher(Scene* scene);
-        ~OperationsDispatcher();
 
         void toggle(int key);
         void onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos);

@@ -5,11 +5,11 @@
 
 #include "GeometryCore/Typedefs.h"
 #include "GeometryCore/Intersectable.h"
+#include "GeometryCore/Plane.h"
 
 namespace GeometryCore
 {
 	struct Ray;
-	struct Plane;
 }
 
 namespace MeshCore
@@ -22,11 +22,6 @@ namespace MeshCore
 	{
 	public:
 		AABBox();
-		~AABBox();
-		AABBox(const AABBox& box) = default;
-		AABBox(AABBox&& box) noexcept = default;
-		AABBox& operator=(const AABBox& box) = default;
-		AABBox& operator=(AABBox&& box) noexcept = default;
 
 		void applyMesh(const Mesh& mesh, const glm::mat4& meshTransform);
 		void applyTransform(const glm::mat4& transform);
