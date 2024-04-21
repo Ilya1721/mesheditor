@@ -53,7 +53,7 @@ namespace MeshCore
 		Point3D min = mMin;
 		Point3D max = mMax;
 
-		for (const auto& [vertex, uniqueVertex] : mesh.getVertices())
+		for (const auto& vertex : mesh.getVertices())
 		{
 			auto transformedVertex = meshTransform * vertex;
 

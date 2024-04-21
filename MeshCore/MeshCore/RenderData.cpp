@@ -33,7 +33,6 @@ namespace MeshCore
 	{
 		positions.insert(std::end(positions), std::cbegin(other.positions), std::cend(other.positions));
 		normals.insert(std::end(normals), std::cbegin(other.normals), std::cend(other.normals));
-		prepareCompactData();
 	}
 
 	void RenderData::append(const Vertex& vertex)
@@ -43,7 +42,6 @@ namespace MeshCore
 			positions.emplace_back(vertex.pos()[coordIdx]);
 			normals.emplace_back(vertex.normal()[coordIdx]);
 		}
-		prepareCompactData();
 	}
 
 	void RenderData::updateVertex(const OriginalVertexData& vertexData)
@@ -55,17 +53,17 @@ namespace MeshCore
 		}
 	}
 
-	void RenderData::reserveMemory(size_t numberOfElements)
+	void RenderData::reserveMemory(size_t verticesCount)
 	{
-		positions.reserve(numberOfElements);
-		normals.reserve(numberOfElements);
+		positions.reserve(verticesCount * 4);
+		normals.reserve(verticesCount * 4);
+		mCompactData.reserve(positions.capacity() + normals.capacity());
 	}
 
 	void RenderData::prepareCompactData()
 	{
-		std::vector<float> data (std::cbegin(positions), std::cend(positions));
-		data.insert(std::end(data), std::cbegin(normals), std::cend(normals));
-		mCompactData = data;
+		mCompactData.insert(std::end(mCompactData), std::cbegin(positions), std::cend(positions));
+		mCompactData.insert(std::end(mCompactData), std::cbegin(normals), std::cend(normals));
 	}
 
 	const std::vector<float>& RenderData::getCompactData() const

@@ -24,15 +24,13 @@ namespace MeshCore
 		void append(const RenderData& other);
 		void append(const Vertex& vertex);
 		void updateVertex(const OriginalVertexData& vertexData);
-		void reserveMemory(size_t numberOfElements);
+		void reserveMemory(size_t verticesCount);
+		void prepareCompactData();
 		const std::vector<float>& getCompactData() const;
 
 		static RenderData createRenderData(const GeometryCore::Ray& ray, float length);
 		static RenderData createRenderData(const GeometryCore::Line& line, bool withArrowHead);
 		static RenderData createRenderData(const GeometryCore::Plane& plane, float width, float length);
-
-	private:
-		void prepareCompactData();
 
 	private:
 		std::vector<float> mCompactData;

@@ -43,6 +43,21 @@ namespace MeshCore
 
 	void Mesh::init()
 	{
+		prepareRenderData();
+		prepareHalfEdgeDataStructure();
+	}
+
+	void Mesh::prepareRenderData()
+	{
+		for (const auto& vertex : mVertices)
+		{
+			mRenderData.append(vertex);
+		}
+		mRenderData.prepareCompactData();
+	}
+
+	void Mesh::prepareHalfEdgeDataStructure()
+	{
 		for (size_t vertexIdx = 2; vertexIdx < mVertices.size(); vertexIdx += 3)
 		{
 			createFace(vertexIdx);
@@ -53,18 +68,6 @@ namespace MeshCore
 		if (SMOOTHING_ENABLED)
 		{
 			averageFaceNormals();
-		}
-
-		prepareRenderData();
-	}
-
-	void Mesh::prepareRenderData()
-	{
-		mRenderData.reserveMemory(mVertices.size() * COORDINATES_PER_VERTEX);
-
-		for (const auto& vertex : mVertices)
-		{
-			mRenderData.append(vertex);
 		}
 	}
 
@@ -79,9 +82,14 @@ namespace MeshCore
 		}
 	}
 
-	const std::unordered_map<Vertex, UniqueVertex>& Mesh::getVertices() const
+	const std::unordered_map<Vertex, UniqueVertex>& Mesh::getUniqueVertices() const
 	{
 		return mUniqueVerticesMap;
+	}
+
+	const std::vector<Vertex>& Mesh::getVertices() const
+	{
+		return mVertices;
 	}
 
 	int Mesh::getNumberOfFaces() const
@@ -113,9 +121,9 @@ namespace MeshCore
 
 	void Mesh::createHalfEdgeVerticesMap(const std::array<HalfEdge*, 3>& halfEdges)
 	{
-		auto firstVerticesPair = std::make_pair(*halfEdges[0]->vertex, *halfEdges[1]->vertex);
-		auto secondVerticesPair = std::make_pair(*halfEdges[1]->vertex, *halfEdges[2]->vertex);
-		auto thirdVerticesPair = std::make_pair(*halfEdges[2]->vertex, *halfEdges[0]->vertex);
+		auto firstVerticesPair = std::make_pair(std::move(*halfEdges[0]->vertex), std::move(*halfEdges[1]->vertex));
+		auto secondVerticesPair = std::make_pair(std::move(*halfEdges[1]->vertex), std::move(*halfEdges[2]->vertex));
+		auto thirdVerticesPair = std::make_pair(std::move(*halfEdges[2]->vertex), std::move(*halfEdges[0]->vertex));
 
 		mHalfEdgeVerticesMap.insert({ firstVerticesPair, halfEdges[0] });
 		mHalfEdgeVerticesMap.insert({ secondVerticesPair, halfEdges[1] });

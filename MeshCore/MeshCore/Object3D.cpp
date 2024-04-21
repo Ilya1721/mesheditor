@@ -75,6 +75,7 @@ namespace MeshCore
 		walker.forEach([&renderData](Object3D* object) {
 			renderData.append(object->getMesh().getRenderData());
 		});
+		renderData.prepareCompactData();
 
 		return renderData;
 	}

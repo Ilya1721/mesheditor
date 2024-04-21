@@ -37,10 +37,6 @@ namespace RenderSystem
 		initShaderTransformationSystem();
 		adjustCamera();
 		adjustLightPos();
-		//
-		Line line{ Point3D(0.0f, 0.0f, 0.0f), Point3D(5.0f, 0.0f, 0.0f) };
-		auto linePrimitive = RenderPrimitive::createPrimitive(line, true, GREEN_MATERIAL);
-		mRenderer.addDebugPrimitive(linePrimitive);
 	}
 
 	void Scene::initShaderTransformationSystem()

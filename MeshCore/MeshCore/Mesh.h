@@ -43,7 +43,8 @@ namespace MeshCore
 
 		void updateVertices(const std::unordered_set<UniqueVertex*>& vertices);
 
-		const std::unordered_map<Vertex, UniqueVertex>& getVertices() const;
+		const std::unordered_map<Vertex, UniqueVertex>& getUniqueVertices() const;
+		const std::vector<Vertex>& getVertices() const;
 		int getNumberOfFaces() const;
 		const RenderData& getRenderData() const;
 		std::optional<Point3D> findIntersection(const Ray& ray) const override;
@@ -52,6 +53,7 @@ namespace MeshCore
 	private:
 		void init();
 		void prepareRenderData();
+		void prepareHalfEdgeDataStructure();
 		void createFace(size_t lastVertexIdx);
 		void createHalfEdgesForFace(size_t lastVertexIdx);
 		void createHalfEdgeVerticesMap(const std::array<HalfEdge*, 3>& halfEdges);
