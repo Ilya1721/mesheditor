@@ -26,6 +26,7 @@ namespace MeshCore
 		void updateVertex(const OriginalVertexData& vertexData);
 		void reserveMemory(size_t verticesCount);
 		void prepareCompactData();
+		void clear();
 		const std::vector<float>& getCompactData() const;
 
 		static RenderData createRenderData(const GeometryCore::Ray& ray, float length);

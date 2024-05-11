@@ -2,6 +2,7 @@
 
 #include <numeric>
 #include <chrono>
+#include <thread>
 
 #include "GeometryCore/Ray.h"
 #include "GeometryCore/Numeric.h"
@@ -44,7 +45,8 @@ namespace MeshCore
 	void Mesh::init()
 	{
 		prepareRenderData();
-		prepareHalfEdgeDataStructure();
+		std::thread secondaryThread(&Mesh::prepareHalfEdgeDataStructure, this);
+		secondaryThread.detach();
 	}
 
 	void Mesh::prepareRenderData()
@@ -68,6 +70,8 @@ namespace MeshCore
 		if (SMOOTHING_ENABLED)
 		{
 			averageFaceNormals();
+			mRenderData.clear();
+			prepareRenderData();
 		}
 	}
 

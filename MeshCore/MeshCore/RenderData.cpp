@@ -66,6 +66,13 @@ namespace MeshCore
 		mCompactData.insert(std::end(mCompactData), std::cbegin(normals), std::cend(normals));
 	}
 
+	void RenderData::clear()
+	{
+		positions.clear();
+		normals.clear();
+		mCompactData.clear();
+	}
+
 	const std::vector<float>& RenderData::getCompactData() const
 	{
 		return mCompactData;
