@@ -138,6 +138,7 @@
     <ClCompile Include="RenderSystem\SurfaceHighlighter.cpp" />
     <ClCompile Include="RenderSystem\Viewport.cpp" />
     <ClCompile Include="RenderSystem\Window.cpp" />
+    <ClCompile Include="RenderSystem\WireframeRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RenderSystem\Camera.h" />
@@ -160,6 +161,7 @@
     <ClInclude Include="RenderSystem\Typedefs.h" />
     <ClInclude Include="RenderSystem\Viewport.h" />
     <ClInclude Include="RenderSystem\Window.h" />
+    <ClInclude Include="RenderSystem\WireframeRenderer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

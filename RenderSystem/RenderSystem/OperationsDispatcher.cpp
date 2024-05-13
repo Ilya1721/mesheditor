@@ -4,6 +4,7 @@
 
 #include "SurfaceHighlighter.h"
 #include "SurfaceExtruder.h"
+#include "WireframeRenderer.h"
 #include "Operation.h"
 
 namespace RenderSystem
@@ -44,5 +45,6 @@ namespace RenderSystem
     {
         addOperation<SurfaceHighlighter>(GLFW_KEY_H);
         addOperation<SurfaceExtruder>(GLFW_KEY_E);
+        addOperation<WireframeRenderer>(GLFW_KEY_W);
     }
 }

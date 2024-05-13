@@ -55,6 +55,13 @@ namespace RenderSystem
 		0.6f
 	);
 
+	static inline constexpr Material BLACK_MATERIAL(
+		RGB(0.0f, 0.0f, 0.0f),
+		RGB(0.0f, 0.0f, 0.0f),
+		RGB(0.0f, 0.0f, 0.0f),
+		0.6f
+	);
+
 	static inline constexpr Light DEFAULT_LIGHT(
 		RGB(1.0f, 1.0f, 1.0f),
 		RGB(1.0f, 1.0f, 1.0f),

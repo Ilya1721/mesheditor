@@ -16,6 +16,7 @@ namespace
 
 	constexpr Material MAIN_MATERIAL = GOLD_MATERIAL;
 	constexpr Material HIGHLIGHT_MATERIAL = RUBY_MATERIAL;
+	constexpr Material WIREFRAME_MATERIAL = BLACK_MATERIAL;
 
 	void checkShaderOrProgramStatus(GetShaderIV getShaderIVFunc, int shaderOrProgram, int statusToCheck,
 									SHADER_TYPE shaderType, const std::string& failedMessage)
@@ -37,6 +38,7 @@ namespace RenderSystem
 		mVertexShader(),
 		mFragmentShader(),
 		mShaderProgram(),
+		mRenderWireframe(false),
 		mHighlightedFacesIndices(),
 		mLighting(),
 		mRenderBuffer(),
@@ -81,18 +83,21 @@ namespace RenderSystem
 
 	void Renderer::renderHighlightedFaces()
 	{
-		if (mHighlightedFacesIndices.empty())
-		{
-			return;
-		}
+		renderExtraPrimitives(!mHighlightedFacesIndices.empty(), HIGHLIGHT_MATERIAL, [this]() {
+			for (const auto& faceIdx : mHighlightedFacesIndices)
+			{
+				glDrawArrays(GL_TRIANGLES, faceIdx * 3, 3);
+			}
+		});
+	}
 
-		makeMaterialActive(HIGHLIGHT_MATERIAL);
-		glClear(GL_DEPTH_BUFFER_BIT);
-		for (const auto& faceIdx : mHighlightedFacesIndices)
-		{
-			glDrawArrays(GL_TRIANGLES, faceIdx * 3, 3);
-		}
-		makeMaterialActive(MAIN_MATERIAL);
+	void Renderer::renderWireframe()
+	{
+		renderExtraPrimitives(mRenderWireframe, WIREFRAME_MATERIAL, [this]() {
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			glDrawArrays(GL_TRIANGLES, 0, mRenderBuffer.getVertexCount());
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		});
 	}
 
 	void Renderer::renderScene()
@@ -112,11 +117,26 @@ namespace RenderSystem
 		mRenderBuffer.bind();
 	}
 
+	void Renderer::renderExtraPrimitives(bool renderCondition, const Material& material, const std::function<void()>& renderFunc)
+	{
+		if (!renderCondition)
+		{
+			return;
+		}
+
+		makeMaterialActive(material);
+		glDepthFunc(GL_LEQUAL);
+		renderFunc();
+		glDepthFunc(GL_LESS);
+		makeMaterialActive(MAIN_MATERIAL);
+	}
+
 	void Renderer::render()
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		renderScene();
 		renderHighlightedFaces();
+		renderWireframe();
 	}
 
 	void Renderer::renderDebug()
@@ -136,6 +156,11 @@ namespace RenderSystem
 			}
 			makeMaterialActive(MAIN_MATERIAL);
 		});
+	}
+
+	void Renderer::toggleWireframe()
+	{
+		mRenderWireframe = !mRenderWireframe;
 	}
 
 	void Renderer::setHighlightedFaces(const std::vector<int>& facesIndices)

@@ -125,9 +125,9 @@ namespace MeshCore
 
 	void Mesh::createHalfEdgeVerticesMap(const std::array<HalfEdge*, 3>& halfEdges)
 	{
-		auto firstVerticesPair = std::make_pair(std::move(*halfEdges[0]->vertex), std::move(*halfEdges[1]->vertex));
-		auto secondVerticesPair = std::make_pair(std::move(*halfEdges[1]->vertex), std::move(*halfEdges[2]->vertex));
-		auto thirdVerticesPair = std::make_pair(std::move(*halfEdges[2]->vertex), std::move(*halfEdges[0]->vertex));
+		auto firstVerticesPair = std::make_pair(*halfEdges[0]->vertex, *halfEdges[1]->vertex);
+		auto secondVerticesPair = std::make_pair(*halfEdges[1]->vertex, *halfEdges[2]->vertex);
+		auto thirdVerticesPair = std::make_pair(*halfEdges[2]->vertex, *halfEdges[0]->vertex);
 
 		mHalfEdgeVerticesMap.insert({ firstVerticesPair, halfEdges[0] });
 		mHalfEdgeVerticesMap.insert({ secondVerticesPair, halfEdges[1] });

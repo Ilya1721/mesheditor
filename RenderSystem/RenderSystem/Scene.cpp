@@ -58,6 +58,11 @@ namespace RenderSystem
 		mRenderer.renderDebug();
 	}
 
+	void Scene::toggleWireframe()
+	{
+		mRenderer.toggleWireframe();
+	}
+
 	void Scene::adjustLightPos()
 	{
 		auto cameraXYVec = (mCamera.getRight() + mCamera.getUp()) * mRootObject.getBBox().getHeight() * 0.25f;

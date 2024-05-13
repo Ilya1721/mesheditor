@@ -35,6 +35,7 @@ namespace RenderSystem
 		void orbit(const Point3D& startPointInNDC, const Point3D& endPointInNDC);
 		void zoom(float yOffset);
 		void highlightFaces(const std::vector<int>& facesIndices);
+		void toggleWireframe();
 		void updateRenderData();
 
 	private:
