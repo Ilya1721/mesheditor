@@ -30,6 +30,7 @@ namespace RenderSystem
 		ShaderTransformationSystem& getShaderTransformationSystem();
 		Lighting& getLighting();
 		RenderBuffer& getRenderBuffer();
+		RenderBuffer& getDebugRenderBuffer();
 
 	private:
 		int loadShader(const std::string& filePath, int shaderType);

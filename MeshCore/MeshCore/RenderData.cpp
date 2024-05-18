@@ -4,6 +4,7 @@
 #include "GeometryCore/Ray.h"
 #include "GeometryCore/Line.h"
 #include "GeometryCore/Typedefs.h"
+#include "GeometryCore/Numeric.h"
 
 #include "Vertex.h"
 #include "Constants.h"
@@ -73,8 +74,13 @@ namespace MeshCore
 		mCompactData.clear();
 	}
 
-	const std::vector<float>& RenderData::getCompactData() const
+	const std::vector<float>& RenderData::getCompactData()
 	{
+		if (mCompactData.empty())
+		{
+			prepareCompactData();
+		}
+
 		return mCompactData;
 	}
 
@@ -89,16 +95,24 @@ namespace MeshCore
 
 	RenderData RenderData::createRenderData(const Line& line, bool withArrowHead)
 	{
+		auto distance = glm::distance(line.start, line.end);
+		auto defaultLineDir = glm::vec3(0.0f, distance, 0.0f);
+		auto lineDir = line.end - line.start;
+		auto crossProduct = glm::cross(defaultLineDir, lineDir);
+		if (isEqual(crossProduct, glm::vec3(0.0f, 0.0f, 0.0f)) && glm::dot(defaultLineDir, lineDir) < 0.0f)
+		{
+			distance = -distance;
+		}
+
 		std::vector<Vertex> vertices;
-		auto halfLength = glm::length(line.end - line.start) * 0.5f;
-		Line defaultLine{ glm::vec3(0.0f, -halfLength, 0.0f), glm::vec3(0.0f, halfLength, 0.0f) };
+		Line defaultLine{ glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, distance, 0.0f) };
 		vertices.emplace_back(defaultLine.start, glm::vec3(0.0f, 0.0f, 1.0f));
 		vertices.emplace_back(defaultLine.end, glm::vec3(0.0f, 0.0f, 1.0f));
 
 		if (withArrowHead) 
 		{
 			auto tangent = glm::tan(glm::radians(ARROW_HEAD_ANGLE));
-			auto x = tangent * halfLength * ARROW_HEAD_LENGTH_KOEF;
+			auto x = tangent * distance * ARROW_HEAD_LENGTH_KOEF;
 			auto y = defaultLine.end.y - (x / tangent);
 			vertices.emplace_back(defaultLine.end, Vector3D(0.0f, 0.0f, 1.0f));
 			vertices.emplace_back(Point3D(-x, y, 0.0f), Vector3D(0.0f, 0.0f, 1.0f));

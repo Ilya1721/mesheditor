@@ -14,6 +14,7 @@
 #include "MeshFilesLoader/MeshFilesLoader.h"
 #include "MeshCore/Intersection.h"
 #include "MeshCore/Mesh.h"
+#include "MeshCore/RenderData.h"
 
 #include "Window.h"
 #include "Viewport.h"
@@ -37,6 +38,7 @@ namespace RenderSystem
 		initShaderTransformationSystem();
 		adjustCamera();
 		adjustLightPos();
+		initDebugPrimitives();
 	}
 
 	void Scene::initShaderTransformationSystem()
@@ -50,6 +52,37 @@ namespace RenderSystem
 	{
 		mRenderer.getRenderBuffer().bind();
 		updateRenderData();
+	}
+
+	void Scene::loadDebugRenderBuffer()
+	{
+		mRenderer.getDebugRenderBuffer().bind();
+		mRenderer.getDebugRenderBuffer().load();
+		mRenderer.getRenderBuffer().bind();
+	}
+
+	void Scene::initDebugPrimitives()
+	{
+		for (const auto& vertex : mRootObject.getMesh().getVertices())
+		{
+			GeometryCore::Line line{ vertex.pos(), vertex.pos() + vertex.normal() * 10.0f };
+			auto linePrimitive = RenderPrimitive::createPrimitive(line, true, GREEN_MATERIAL);
+			mRenderer.addDebugPrimitive(linePrimitive);
+		}
+		loadDebugRenderBuffer();
+	}
+
+	void Scene::addAxesPrimitive()
+	{
+		GeometryCore::Line X { glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.0f, 0.0f, 0.0f) };
+		GeometryCore::Line Y { glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 10.0f, 0.0f) };
+		GeometryCore::Line Z { glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 10.0f) };
+		std::vector<std::pair<Line, Material>> axes{ {X, BLUE_MATERIAL}, {Y, RED_MATERIAL}, {Z, GREEN_MATERIAL} };
+		for (const auto& [axis, material] : axes)
+		{
+			auto axisPrimitive = RenderPrimitive::createPrimitive(axis, true, material);
+			mRenderer.addDebugPrimitive(axisPrimitive);
+		}
 	}
 
 	void Scene::render()

@@ -3,11 +3,13 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/epsilon.hpp>
 
+#include "Numeric.h"
+
 namespace GeometryCore
 {
     glm::mat4 getRotationTransform(float rotationAngle, const Vector3D& rotationAxis)
     {
-        if (glm::all(glm::epsilonEqual(rotationAxis, Vector3D(0.0f, 0.0f, 0.0f), 1e-6f)))
+        if (isEqual(rotationAxis, Vector3D(0.0f, 0.0f, 0.0f)))
         {
             return glm::mat4(1.0f);
         }
@@ -17,7 +19,7 @@ namespace GeometryCore
 
     glm::mat4 getTranslationTransform(const Point3D& destinationPoint, const Point3D& sourcePoint)
     {
-        if (glm::all(glm::epsilonEqual(destinationPoint, sourcePoint, 1e-6f)))
+        if (isEqual(destinationPoint, sourcePoint))
         {
             return glm::mat4(1.0f);
         }

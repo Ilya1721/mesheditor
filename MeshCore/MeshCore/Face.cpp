@@ -68,7 +68,7 @@ namespace MeshCore
         for (int triangleIdx = 0; triangleIdx < 3; ++triangleIdx)
         {
             auto crossProduct = glm::cross(vertexPointEdges[triangleIdx][1], vertexPointEdges[triangleIdx][2]);
-            if (!glm::all(glm::epsilonEqual(crossProduct, Vector3D(0.0f, 0.0f, 0.0f), 1e-6f)))
+            if (!isEqual(crossProduct, Vector3D(0.0f, 0.0f, 0.0f)))
             {
                 trianglesSquaresSum += getTriangleSquare(vertexPointEdgesLengths[triangleIdx]);
             }

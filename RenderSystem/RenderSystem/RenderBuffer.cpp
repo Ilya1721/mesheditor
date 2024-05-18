@@ -42,7 +42,6 @@ namespace RenderSystem
 	void RenderBuffer::appendRenderData(const MeshCore::RenderData& renderData)
 	{
 		mRenderData.append(renderData);
-		load();
 	}
 
 	void RenderBuffer::setRenderData(const MeshCore::RenderData& renderData)

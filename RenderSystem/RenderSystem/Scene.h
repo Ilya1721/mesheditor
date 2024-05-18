@@ -42,6 +42,9 @@ namespace RenderSystem
 		void init();
 		void initShaderTransformationSystem();
 		void initRenderBuffer();
+		void loadDebugRenderBuffer();
+		void initDebugPrimitives();
+		void addAxesPrimitive();
 		void adjustCamera();
 		void adjustLightPos();
 

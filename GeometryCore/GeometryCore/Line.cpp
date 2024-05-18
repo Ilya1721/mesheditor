@@ -13,7 +13,7 @@ namespace GeometryCore
         auto rotationAxis = glm::cross(lineDir, sourceLineDir);
         auto rotationAngle = glm::angle(glm::normalize(lineDir), glm::normalize(sourceLineDir));
 
-        auto rotationTransform = getRotationTransform(rotationAngle, rotationAxis);
+        auto rotationTransform = getRotationTransform(-rotationAngle, rotationAxis);
         auto translationTransform = getTranslationTransform(start, source.start);
 
         return translationTransform * rotationTransform;

@@ -204,4 +204,9 @@ namespace RenderSystem
 	{
 		return mRenderBuffer;
 	}
+
+	RenderBuffer& Renderer::getDebugRenderBuffer()
+	{
+		return mDebugRenderBuffer;
+	}
 }

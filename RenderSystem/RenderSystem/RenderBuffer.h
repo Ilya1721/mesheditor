@@ -16,12 +16,10 @@ namespace RenderSystem
 
 		void init();
 		void bind();
+		void load();
 		void appendRenderData(const MeshCore::RenderData& renderData);
 		void setRenderData(const MeshCore::RenderData& renderData);
 		int getVertexCount() const;
-
-	private:
-		void load();
 
 	private:
 		unsigned int mVBO;
