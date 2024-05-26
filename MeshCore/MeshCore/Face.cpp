@@ -26,10 +26,9 @@ namespace MeshCore
 
     std::optional<Point3D> Face::findIntersection(const Ray& ray) const
     {
-        auto faceNormal = calcNormal();
-        Plane facePlane(halfEdge->vertex->pos(), faceNormal);
-
+        Plane facePlane(halfEdge->vertex->pos, calcNormal());
         auto rayPlaneIntersectionPoint = facePlane.findIntersection(ray);
+
         if (rayPlaneIntersectionPoint.has_value() && isPointInside(rayPlaneIntersectionPoint.value()))
         {
             return rayPlaneIntersectionPoint;
@@ -40,8 +39,8 @@ namespace MeshCore
 
     Vector3D Face::calcNormal() const
     {
-        auto firstEdge = halfEdge->next->vertex->pos() - halfEdge->vertex->pos();
-        auto secondEdge = halfEdge->prev->vertex->pos() - halfEdge->next->vertex->pos();
+        auto firstEdge = halfEdge->next->vertex->pos - halfEdge->vertex->pos;
+        auto secondEdge = halfEdge->prev->vertex->pos - halfEdge->next->vertex->pos;
 
         return glm::cross(firstEdge, secondEdge);
     }
@@ -83,7 +82,7 @@ namespace MeshCore
         EdgeWalker edgeWalker(halfEdge);
         edgeWalker.forEach([&edges](HalfEdge* edge)
         {
-            edges.emplace_back(edge->next->vertex->pos() - edge->vertex->pos());
+            edges.emplace_back(edge->next->vertex->pos - edge->vertex->pos);
         });
 
         return edges;
@@ -103,7 +102,6 @@ namespace MeshCore
 
     std::unordered_set<Face*> Face::getAdjacentFaces(bool filterByNormal, const Vector3D* normalPtr) const
     {
-        auto surfaceNormal = normalPtr ? *normalPtr : calcNormal();
         std::unordered_set<Face*> uniqueAdjacentFaces;
 
         for (const auto& edge : getAllEdges())
@@ -113,6 +111,8 @@ namespace MeshCore
             auto& adjacentFaces = finder.getOutgoingEdgesFaces();
             uniqueAdjacentFaces.insert(adjacentFaces.begin(), adjacentFaces.end());
         }
+
+        auto surfaceNormal = normalPtr ? *normalPtr : calcNormal();
 
         for (auto adjacentFaceIt = uniqueAdjacentFaces.begin(); adjacentFaceIt != uniqueAdjacentFaces.end();)
         {
@@ -159,7 +159,7 @@ namespace MeshCore
             auto& halfEdgeVertex = halfEdge->vertex;
             if (alreadyChangedVertices.find(halfEdgeVertex) == alreadyChangedVertices.end())
             {
-                halfEdge->vertex->setPos(halfEdge->vertex->pos() + movement);
+                halfEdge->vertex->updatePos(halfEdge->vertex->pos + movement);
                 alreadyChangedVertices.insert(halfEdge->vertex);
             }
         });
@@ -171,7 +171,7 @@ namespace MeshCore
         EdgeWalker edgeWalker(halfEdge);
         edgeWalker.forEach([&verticesPositions](HalfEdge* edge)
         {
-            verticesPositions.emplace_back(edge->vertex->pos());
+            verticesPositions.emplace_back(edge->vertex->pos);
         });
 
         return verticesPositions;

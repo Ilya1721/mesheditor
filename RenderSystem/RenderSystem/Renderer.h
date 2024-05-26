@@ -3,6 +3,8 @@
 #include <string>
 #include <functional>
 
+#include "MeshCore/Vertex.h"
+
 #include "Lighting.h"
 #include "RenderBuffer.h"
 #include "ShaderTransformationSystem.h"
@@ -15,39 +17,36 @@ namespace RenderSystem
 	{
 	public:
 		Renderer();
-		Renderer(const Renderer&) = delete;
-		Renderer(Renderer&&) = default;
-		Renderer& operator=(const Renderer&) = delete;
-		Renderer& operator=(Renderer&&) = default;
+		Renderer(Renderer&&) = delete;
 		~Renderer();
-
-		void render();
-		void renderDebug();
-		void toggleWireframe();
-		void setHighlightedFaces(const std::vector<int>& facesIndices);
-		void addDebugPrimitive(const RenderPrimitive& primitive);
 
 		ShaderTransformationSystem& getShaderTransformationSystem();
 		Lighting& getLighting();
 		RenderBuffer& getRenderBuffer();
-		RenderBuffer& getDebugRenderBuffer();
+
+		void render();
+		void toggleWireframe();
+		void setHighlightedFaces(const std::vector<int>& facesIndices);
+		void renderAxes();
+		void renderVerticesNormals(const std::vector<MeshCore::Vertex>& vertices);
 
 	private:
-		int loadShader(const std::string& filePath, int shaderType);
+		void renderDebug();
 		void init();
 		void initShaders();
 		void initShaderProgram();
 		void renderHighlightedFaces();
 		void renderWireframe();
 		void renderScene();
-		void makeMaterialActive(const Material& material);
-		void invokeDebugRenderAction(const std::function<void()>& action);
+		void invokeDebugRenderAction(const std::function<void()>& action, bool loadBuffer = false);
 		void renderExtraPrimitives(bool renderCondition, const Material& material, const std::function<void()>& renderFunc);
+		void addDebugPrimitive(const RenderPrimitive& primitive);
 
 	private:
 		int mVertexShader;
 		int mFragmentShader;
 		int mShaderProgram;
+
 		bool mRenderWireframe;
 		std::vector<int> mHighlightedFacesIndices;
 

@@ -9,7 +9,7 @@ namespace std
 	{
 		std::size_t operator()(const MeshCore::Vertex& vertex) const noexcept
 		{
-			return std::hash<glm::vec3>{}(vertex.pos());
+			return std::hash<glm::vec3>{}(vertex.pos);
 		}
 	};
 

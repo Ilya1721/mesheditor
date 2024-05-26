@@ -27,31 +27,29 @@ namespace RenderSystem
 	class Window
 	{
 	public:
-		static Window* createInstance(int width, int height, const std::string& meshFilePath);
-
-		void render();
+		Window(int width, int height, const std::string& meshFilePath);
+		~Window();
 
 		const std::unique_ptr<Viewport>& getViewport() const;
 		Point2D getCursorPos() const;
 		Point3D unProject(const Point2D& cursorPos) const;
-		Point3D unProjectToCameraTargetPlane(const Point2D& cursorPos) const;
 		Point3D screenCoordinatesToNDC(const Point2D& cursorPos) const;
 		Point3D pointOnScreenToPointInWorldSpace(const Point2D& pointOnScreen, float depth) const;
+
+		void render();
 		void enableSceneMovement(bool isEnabled);
 
-	private:
-		Window(int width, int height, const std::string& meshFilePath);
+		void onMouseMove(double cursorX, double cursorY);
+		void onMouseButton(int button, int action, int mods);
+		void onMouseScroll(double xOffset, double yOffset);
+		void onFramebufferSizeChanged(int width, int height);
+		void onKey(int key, int scancode, int action, int mods);
 
+	private:
 		void initGLFW();
 		void initScene(const std::string& meshFilePath);
 		void resizeViewport(int width, int height);
-
 		void setCallbacks();
-		static void onMouseMove(GLFWwindow* window, double cursorX, double cursorY);
-		static void onMouseButton(GLFWwindow* window, int button, int action, int mods);
-		static void onMouseScroll(GLFWwindow* window, double xOffset, double yOffset);
-		static void onFramebufferSizeChanged(GLFWwindow* window, int width, int height);
-		static void onKey(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 	private:
 		int mWidth;
@@ -65,8 +63,6 @@ namespace RenderSystem
 		std::unique_ptr<Scene> mScene;
 		std::unique_ptr<Viewport> mViewport;
 		std::unique_ptr<OperationsDispatcher> mOperationsDispatcher;
-
-		static std::unique_ptr<Window> sInstance;
 	};
 }
 

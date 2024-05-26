@@ -25,12 +25,8 @@ namespace RenderSystem
 {
 	std::string getShaderInfoLog(int shaderId, SHADER_TYPE shaderType)
 	{
-		if (shaderType == SHADER_TYPE::SHADER)
-		{
-			return getShaderOrProgramInfoLog(glGetShaderiv, glGetShaderInfoLog, shaderId);
-		}
-
-		return getShaderOrProgramInfoLog(glGetProgramiv, glGetProgramInfoLog, shaderId);
+		auto getShaderIVFunc = shaderType == SHADER_TYPE::SHADER ? glGetShaderiv : glGetProgramiv;
+		return getShaderOrProgramInfoLog(getShaderIVFunc, glGetProgramInfoLog, shaderId);
 	}
 
 	void printOpenGLErrorMessage()

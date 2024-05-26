@@ -10,14 +10,18 @@
 #include "GeometryCore/Line.h"
 #include "GeometryCore/Plane.h"
 
+using namespace MeshCore;
+
 namespace
 {
     using namespace RenderSystem;
 
-    RenderPrimitive getBaseRenderPrimitive(const Material& material)
+    RenderPrimitive getBaseRenderPrimitive(const Material& material, int renderMode, const RenderData& renderData)
     {
         RenderPrimitive primitive;
         primitive.material = material;
+        primitive.renderMode = renderMode;
+        primitive.renderData = renderData;
 
         return primitive;
     }
@@ -25,35 +29,18 @@ namespace
 
 namespace RenderSystem
 {
-    int RenderPrimitive::getVertexCount() const
-    {
-        return renderData.positions.size() / MeshCore::COORDINATES_PER_VERTEX;
-    }
-
     RenderPrimitive RenderPrimitive::createPrimitive(const GeometryCore::Ray& ray, float length, const Material& material)
     {
-        auto primitive = getBaseRenderPrimitive(material);
-        primitive.renderData = MeshCore::RenderData::createRenderData(ray, length);
-        primitive.renderMode = GL_LINES;
-
-        return primitive;
+        return getBaseRenderPrimitive(material, GL_LINES, RenderData::createRenderData(ray, length));
     }
 
     RenderPrimitive RenderPrimitive::createPrimitive(const GeometryCore::Line& line, bool withArrowHead, const Material& material)
     {
-        auto primitive = getBaseRenderPrimitive(material);
-        primitive.renderData = MeshCore::RenderData::createRenderData(line, withArrowHead);
-        primitive.renderMode = GL_LINES;
-
-        return primitive;
+        return getBaseRenderPrimitive(material, GL_LINES, RenderData::createRenderData(line, withArrowHead));
     }
 
     RenderPrimitive RenderPrimitive::createPrimitive(const GeometryCore::Plane& plane, float width, float length, const Material& material)
     {
-        auto primitive = getBaseRenderPrimitive(material);
-        primitive.renderData = MeshCore::RenderData::createRenderData(plane, width, length);
-        primitive.renderMode = GL_TRIANGLES;
-
-        return primitive;
+        return getBaseRenderPrimitive(material, GL_TRIANGLES, RenderData::createRenderData(plane, width, length));
     }
 }

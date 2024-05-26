@@ -27,7 +27,8 @@ namespace RenderSystem
 {
 	Scene::Scene(const std::string& meshFilePath, Window* parentWindow) :
 		mParentWindow(parentWindow),
-		mRootObject(MeshCore::Object3D(nullptr, MeshFilesLoader::loadSTL(meshFilePath)))
+		mRootObject(MeshCore::Object3D(nullptr, MeshFilesLoader::loadSTL(meshFilePath))),
+		mCamera(&mRenderer.getShaderTransformationSystem())
 	{
 		init();
 	}
@@ -38,62 +39,17 @@ namespace RenderSystem
 		initShaderTransformationSystem();
 		adjustCamera();
 		adjustLightPos();
-		initDebugPrimitives();
 	}
 
 	void Scene::initShaderTransformationSystem()
 	{
 		auto& shaderTransformationSystem = mRenderer.getShaderTransformationSystem();
-		shaderTransformationSystem.setViewModel(glm::value_ptr(getViewMatrix()));
 		shaderTransformationSystem.setProjection(glm::value_ptr(mParentWindow->getViewport()->getProjectionMatrix()));
 	}
 
 	void Scene::initRenderBuffer()
 	{
-		mRenderer.getRenderBuffer().bind();
-		updateRenderData();
-	}
-
-	void Scene::loadDebugRenderBuffer()
-	{
-		mRenderer.getDebugRenderBuffer().bind();
-		mRenderer.getDebugRenderBuffer().load();
-		mRenderer.getRenderBuffer().bind();
-	}
-
-	void Scene::initDebugPrimitives()
-	{
-		for (const auto& vertex : mRootObject.getMesh().getVertices())
-		{
-			GeometryCore::Line line{ vertex.pos(), vertex.pos() + vertex.normal() * 10.0f };
-			auto linePrimitive = RenderPrimitive::createPrimitive(line, true, GREEN_MATERIAL);
-			mRenderer.addDebugPrimitive(linePrimitive);
-		}
-		loadDebugRenderBuffer();
-	}
-
-	void Scene::addAxesPrimitive()
-	{
-		GeometryCore::Line X { glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.0f, 0.0f, 0.0f) };
-		GeometryCore::Line Y { glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 10.0f, 0.0f) };
-		GeometryCore::Line Z { glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 10.0f) };
-		std::vector<std::pair<Line, Material>> axes{ {X, BLUE_MATERIAL}, {Y, RED_MATERIAL}, {Z, GREEN_MATERIAL} };
-		for (const auto& [axis, material] : axes)
-		{
-			auto axisPrimitive = RenderPrimitive::createPrimitive(axis, true, material);
-			mRenderer.addDebugPrimitive(axisPrimitive);
-		}
-	}
-
-	void Scene::render()
-	{
-		mRenderer.render();
-		mRenderer.renderDebug();
-	}
-
-	void Scene::toggleWireframe()
-	{
-		mRenderer.toggleWireframe();
+		updateRenderBuffer();
 	}
 
 	void Scene::adjustLightPos()
@@ -113,32 +69,9 @@ namespace RenderSystem
 		mRenderer.getLighting().setCameraPos(glm::value_ptr(cameraPosInCameraSpace));
 	}
 
-	void Scene::pan(const Point3D& startPointInWorldSpace, const Point3D& endPointInWorldSpace)
+	void Scene::updateRenderBuffer()
 	{
-		mCamera.pan(startPointInWorldSpace, endPointInWorldSpace);
-		mRenderer.getShaderTransformationSystem().setViewModel(glm::value_ptr(mCamera.getViewMatrix()));
-	}
-
-	void Scene::orbit(const Point3D& startPointInNDC, const Point3D& endPointInNDC)
-	{
-		mCamera.orbit(startPointInNDC, endPointInNDC);
-		mRenderer.getShaderTransformationSystem().setViewModel(glm::value_ptr(mCamera.getViewMatrix()));
-	}
-
-	void Scene::zoom(float yOffset)
-	{
-		mCamera.zoom(yOffset * mRootObject.getBBox().getHeight() * ZOOM_STEP_KOEF);
-		mRenderer.getShaderTransformationSystem().setViewModel(glm::value_ptr(mCamera.getViewMatrix()));
-	}
-
-	void Scene::highlightFaces(const std::vector<int>& facesIndices)
-	{
-		mRenderer.setHighlightedFaces(facesIndices);
-	}
-
-	void Scene::updateRenderData()
-	{
-		mRenderer.getRenderBuffer().setRenderData(mRootObject.getOnlyRootRenderData());
+		mRenderer.getRenderBuffer().setRenderData(mRootObject.getMesh().getRenderData());
 	}
 
 	MeshCore::RaySurfaceIntersection Scene::getClosestIntersection(const Point3D& cursorPosInWorldSpace, bool intersectSurface)
@@ -152,23 +85,23 @@ namespace RenderSystem
 		return mRootObject.findIntersection(cameraRay, intersectSurface);
 	}
 
-	void Scene::setProjectionMatrix(const glm::mat4& projectionMatrix)
-	{
-		mRenderer.getShaderTransformationSystem().setProjection(glm::value_ptr(projectionMatrix));
-	}
-
-	const Camera& Scene::getCamera() const
+	Camera& Scene::getCamera()
 	{
 		return mCamera;
 	}
 
-	const glm::mat4& Scene::getViewMatrix() const
-	{
-		return mCamera.getViewMatrix();
-	}
-
-	Window* Scene::getParentWindow() const
+	Window* Scene::getParentWindow()
 	{
 		return mParentWindow;
+	}
+
+	Renderer& Scene::getRenderer()
+	{
+		return mRenderer;
+	}
+
+	MeshCore::Object3D& Scene::getRootObject()
+	{
+		return mRootObject;
 	}
 }

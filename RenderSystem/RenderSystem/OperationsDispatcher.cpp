@@ -20,7 +20,7 @@ namespace RenderSystem
         auto operationIt = mKeyOperationMap.find(key);
         if (operationIt != mKeyOperationMap.end())
         {
-            auto& [key, operation] = *operationIt;
+            auto& [_, operation] = *operationIt;
             operation->toggle();
         }
     }

@@ -55,17 +55,18 @@ namespace MeshCore
 
 		for (const auto& vertex : mesh.getVertices())
 		{
-			auto transformedVertex = meshTransform * vertex;
+			min.x = std::min(min.x, vertex.pos.x);
+			max.x = std::max(max.x, vertex.pos.x);
 
-			min.x = std::min(min.x, transformedVertex.pos().x);
-			max.x = std::max(max.x, transformedVertex.pos().x);
+			min.y = std::min(min.y, vertex.pos.y);
+			max.y = std::max(max.y, vertex.pos.y);
 
-			min.y = std::min(min.y, transformedVertex.pos().y);
-			max.y = std::max(max.y, transformedVertex.pos().y);
-
-			min.z = std::min(min.z, transformedVertex.pos().z);
-			max.z = std::max(max.z, transformedVertex.pos().z);
+			min.z = std::min(min.z, vertex.pos.z);
+			max.z = std::max(max.z, vertex.pos.z);
 		}
+
+		min = meshTransform * Point4D(min, 1.0f);
+		max = meshTransform * Point4D(max, 1.0f);
 
 		setMinMax(min, max);
 	}

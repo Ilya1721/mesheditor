@@ -2,69 +2,49 @@
 
 namespace MeshCore
 {
-	Vertex::Vertex(const Point3D& pos, const Vector3D& normal) :
-		mPos(pos), mNormal(normal)
+	Vertex::Vertex(const Point3D& otherPos, const Vector3D& otherNormal) :
+		pos(otherPos), normal(otherNormal)
 	{}
 
 	bool Vertex::operator==(const Vertex& other) const
 	{
-		return mPos == other.mPos;
+		return pos == other.pos;
 	}
 
 	Vertex operator*(const glm::mat4& transform, const Vertex& vertex)
 	{
 		Vertex newVertex{};
-		newVertex.mPos = transform * glm::vec4(vertex.mPos, 1.0f);
-		newVertex.mNormal = glm::normalize(transform * glm::vec4(vertex.mNormal, 0.0f));
+		newVertex.pos = transform * glm::vec4(vertex.pos, 1.0f);
+		newVertex.normal = glm::normalize(transform * glm::vec4(vertex.normal, 0.0f));
 
 		return newVertex;
-	}
-
-	void Vertex::setPos(const Point3D& pos)
-	{
-		mPos = pos;
-	}
-
-	void Vertex::setNormal(const Vector3D& normal)
-	{
-		mNormal = normal;
-	}
-
-	const Point3D& Vertex::pos() const
-	{
-		return mPos;
-	}
-
-	const Vector3D& Vertex::normal() const
-	{
-		return mNormal;
 	}
 
 	UniqueVertex::UniqueVertex(Vertex& originalVertex, int originalVertexIndex)
 		: Vertex(originalVertex)
 	{
 		originalVertices.emplace_back(&originalVertex, originalVertexIndex);
-		adjacentFacesNormals.insert(originalVertex.normal());
+		adjacentFacesNormals.insert(originalVertex.normal);
 	}
 
 	void UniqueVertex::updateOriginalVertices()
 	{
 		for (auto& originalVertexData : originalVertices)
 		{
-			originalVertexData.vertex->setPos(mPos);
-			originalVertexData.vertex->setNormal(mNormal);
+			originalVertexData.vertex->pos = pos;
+			originalVertexData.vertex->normal = normal;
 		}
 	}
 
-	void UniqueVertex::setPos(const Point3D& pos)
+	void UniqueVertex::updatePos(const Point3D& otherPos)
 	{
-		Vertex::setPos(pos);
+		pos = otherPos;
 		updateOriginalVertices();
 	}
 
-	void UniqueVertex::setNormal(const Vector3D& normal)
+	void UniqueVertex::updateNormal(const Vector3D& otherNormal)
 	{
-		Vertex::setNormal(normal);
+		normal = otherNormal;
 		updateOriginalVertices();
 	}
 }

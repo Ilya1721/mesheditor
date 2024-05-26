@@ -66,11 +66,9 @@ namespace
 			}
 			else if (Utility::isEqual(currentToken, MeshFilesLoader::KEYWORD_VERTEX))
 			{
-				vertices.emplace_back();
 				Point3D pos{};
 				readTokenAsVector(currentToken, delimiters, nextToken, pos);
-				vertices.back().setNormal(faceNormal);
-				vertices.back().setPos(pos);
+				vertices.push_back({ pos, faceNormal });
 			}
 
 			currentToken = strtok_s(nullptr, delimiters, &nextToken);
@@ -96,11 +94,9 @@ namespace
 
 			for (int vertexIdx = 0; vertexIdx < 3; ++vertexIdx)
 			{
-				MeshCore::Vertex vertex{};
-				vertex.setNormal(faceNormal);
 				Point3D pos{};
 				readCoordinatesFromBuffer(pos, buffer);
-				vertex.setPos(pos);
+				MeshCore::Vertex vertex (pos, faceNormal);
 				vertices.push_back(vertex);
 			}
 

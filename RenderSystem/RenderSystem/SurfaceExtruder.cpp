@@ -25,8 +25,9 @@ namespace RenderSystem
         }
         else
         {
-            mScene->highlightFaces({});
+            mScene->getRenderer().setHighlightedFaces({});
             mScene->getParentWindow()->enableSceneMovement(true);
+            mScene->getRenderer().renderVerticesNormals(mScene->getRootObject().getMesh().getVertices());
         }
     }
 
@@ -55,7 +56,7 @@ namespace RenderSystem
 
         auto& parentMesh = (*surfaceFaces.begin())->parentMesh;
         parentMesh->updateVertices(changedVertices);
-        mScene->updateRenderData();
+        mScene->updateRenderBuffer();
     }
 
     void SurfaceExtruder::onMouseClick(const Point2D& cursorPos)
@@ -63,7 +64,7 @@ namespace RenderSystem
         if (mEnabled)
         {
             mSurfaceIntersection = mScene->getClosestIntersection(unProject(cursorPos));
-            mScene->highlightFaces(mSurfaceIntersection.surfaceIndices);
+            mScene->getRenderer().setHighlightedFaces(mSurfaceIntersection.surfaceIndices);
         }
     }
 }

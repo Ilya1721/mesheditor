@@ -17,7 +17,7 @@ namespace RenderSystem
 
         if (!mEnabled) 
         {
-            mScene->highlightFaces({});
+            mScene->getRenderer().setHighlightedFaces({});
         }
     }
 
@@ -27,7 +27,7 @@ namespace RenderSystem
         {
             auto cursorPos = mScene->getParentWindow()->getCursorPos();
             auto surfaceIntersection = mScene->getClosestIntersection(unProject(cursorPos));
-            mScene->highlightFaces(surfaceIntersection.surfaceIndices);
+            mScene->getRenderer().setHighlightedFaces(surfaceIntersection.surfaceIndices);
         }
     }
 }

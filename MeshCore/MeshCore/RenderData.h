@@ -14,20 +14,14 @@ namespace MeshCore
 	struct Vertex;
 	struct OriginalVertexData;
 
-	struct RenderData
+	class RenderData
 	{
-		std::vector<float> positions;
-		std::vector<float> normals;
-
-		bool operator==(const RenderData& other) const = default;
-
+	public:
 		void append(const RenderData& other);
 		void append(const Vertex& vertex);
 		void updateVertex(const OriginalVertexData& vertexData);
-		void reserveMemory(size_t verticesCount);
-		void prepareCompactData();
-		void clear();
-		const std::vector<float>& getCompactData();
+		const std::vector<float>& getCompactData() const;
+		int getVertexCount() const;
 
 		static RenderData createRenderData(const GeometryCore::Ray& ray, float length);
 		static RenderData createRenderData(const GeometryCore::Line& line, bool withArrowHead);

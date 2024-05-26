@@ -6,6 +6,7 @@
 #include <glm/gtx/vector_angle.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/epsilon.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "GeometryCore/Ray.h"
 #include "GeometryCore/Plane.h"
@@ -15,25 +16,16 @@
 
 using namespace GeometryCore;
 
-namespace Utils
-{
-	using namespace RenderSystem;
-
-	static glm::mat4 createViewMatrix(const Point3D& eye, const Point3D& target, const Vector3D& up)
-	{
-		return glm::lookAt(eye, target, up);
-	}
-}
-
 namespace RenderSystem
 {
-	Camera::Camera() :
+	Camera::Camera(ShaderTransformationSystem* shaderTransformationSystem) :
 		mTarget(CAMERA_TARGET),
 		mEye(CAMERA_POSITION),
 		mUp(CAMERA_UP),
-		mRight(CAMERA_RIGHT)
+		mRight(CAMERA_RIGHT),
+		mShaderTransformationSystem(shaderTransformationSystem)
 	{
-		mViewMatrix = createViewMatrix();
+		invokeEditOperation([]() {});
 	}
 
 	const glm::mat4& Camera::getViewMatrix() const
@@ -43,7 +35,7 @@ namespace RenderSystem
 
 	glm::mat4 Camera::createViewMatrix() const
 	{
-		return Utils::createViewMatrix(mEye, mTarget, mUp);
+		return glm::lookAt(mEye, mTarget, mUp);
 	}
 
 	const Point3D& Camera::getTarget() const
@@ -82,6 +74,13 @@ namespace RenderSystem
 		return { mEye, cursorPosInWorldSpace - mEye };
 	}
 
+	void Camera::invokeEditOperation(const std::function<void()>& action)
+	{
+		action();
+		mViewMatrix = createViewMatrix();
+		mShaderTransformationSystem->setViewModel(glm::value_ptr(mViewMatrix));
+	}
+
 	void Camera::setEyeTargetUp(const Point3D& eye, const Point3D& target, const Vector3D& up)
 	{
 		if (up == Vector3D(0.0f, 0.0f, 0.0f))
@@ -98,41 +97,43 @@ namespace RenderSystem
 		mTarget = target;
 		mUp = glm::normalize(up);
 		mRight = calcRight();
-		mViewMatrix = createViewMatrix();
 	}
 
 	void Camera::pan(const Point3D& startPointInWorldSpace, const Point3D& endPointInWorldSpace)
 	{
-		translate(projectToTargetPlane(startPointInWorldSpace) - projectToTargetPlane(endPointInWorldSpace));
+		invokeEditOperation([&startPointInWorldSpace, &endPointInWorldSpace, this]() {
+			translate(projectToTargetPlane(startPointInWorldSpace) - projectToTargetPlane(endPointInWorldSpace));
+		});
 	}
 
 	void Camera::orbit(const Point3D& startPointInNDC, const Point3D& endPointInNDC)
 	{
-		auto startPointInNDCWithZ = getCursorPosInNDCWithZ(startPointInNDC);
-		auto endPointInNDCWithZ = getCursorPosInNDCWithZ(endPointInNDC);
-		auto orbitTransform = getOrbitTransform(startPointInNDCWithZ, endPointInNDCWithZ);
-
-		auto eye = Point3D(orbitTransform * glm::vec4(mEye - mTarget, 1.0f));
-		auto up = Vector3D(orbitTransform * glm::vec4(mUp, 0.0f));
-		setEyeTargetUp(eye + mTarget, mTarget, up);
+		invokeEditOperation([&startPointInNDC, &endPointInNDC, this]() {
+			auto startPointInNDCWithZ = getCursorPosInNDCWithZ(startPointInNDC);
+			auto endPointInNDCWithZ = getCursorPosInNDCWithZ(endPointInNDC);
+			auto orbitTransform = getOrbitTransform(startPointInNDCWithZ, endPointInNDCWithZ);
+			auto eye = Point3D(orbitTransform * glm::vec4(mEye - mTarget, 1.0f));
+			auto up = Vector3D(orbitTransform * glm::vec4(mUp, 0.0f));
+			setEyeTargetUp(eye + mTarget, mTarget, up);
+		});
 	}
 
 	void Camera::zoom(float step)
 	{
-		mEye += glm::normalize(mTarget - mEye) * step;
-		mViewMatrix = createViewMatrix();
+		invokeEditOperation([&step, this]() {
+			mEye += glm::normalize(mTarget - mEye) * step;
+		});
 	}
 
 	void Camera::translate(const Vector3D& movement)
 	{
 		mEye += movement;
 		mTarget += movement;
-		mViewMatrix = createViewMatrix();
 	}
 
 	glm::mat4 Camera::calculateViewMatrixWithTargetAtOrigin() const
 	{
-		return Utils::createViewMatrix(mEye - mTarget, Point3D(0.0, 0.0, 0.0), mUp);
+		return glm::lookAt(mEye - mTarget, Point3D(0.0, 0.0, 0.0), mUp);
 	}
 
 	Plane Camera::getTargetPlane() const
@@ -173,9 +174,11 @@ namespace RenderSystem
 
 	void Camera::adjust(const MeshCore::AABBox& bbox, float fov)
 	{
-		auto distanceToCamera = bbox.getHeight() / (2.0f * glm::tan(glm::radians(fov / 2.0f)));
-		auto bboxCenter = bbox.getCenter();
-		Point3D eye(bboxCenter.x, bboxCenter.y, bbox.getMax().z + distanceToCamera * CAMERA_DIST_TO_BBOX_KOEF);
-		setEyeTargetUp(eye, bboxCenter, mUp);
+		invokeEditOperation([&bbox, &fov, this]() {
+			auto distanceToCamera = bbox.getHeight() / (2.0f * glm::tan(glm::radians(fov / 2.0f)));
+			auto bboxCenter = bbox.getCenter();
+			Point3D eye(bboxCenter.x, bboxCenter.y, bbox.getMax().z + distanceToCamera * CAMERA_DIST_TO_BBOX_KOEF);
+			setEyeTargetUp(eye, bboxCenter, mUp);
+		});
 	}
 }

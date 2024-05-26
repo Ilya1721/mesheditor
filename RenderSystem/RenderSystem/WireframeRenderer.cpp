@@ -10,6 +10,6 @@ namespace RenderSystem
 
     void WireframeRenderer::toggle()
     {
-        mScene->toggleWireframe();
+        mScene->getRenderer().toggleWireframe();
     }
 }

@@ -19,8 +19,6 @@ namespace RenderSystem
         Material material;
         unsigned int renderMode;
 
-        int getVertexCount() const;
-
         static RenderPrimitive createPrimitive(const GeometryCore::Ray& ray, float length, const Material& material);
         static RenderPrimitive createPrimitive(const GeometryCore::Line& line, bool withArrowHead, const Material& material);
         static RenderPrimitive createPrimitive(const GeometryCore::Plane& plane, float width, float length, const Material& material);

@@ -13,13 +13,6 @@ using namespace GeometryCore;
 
 namespace MeshCore
 {
-	Object3D::Object3D() :
-		mParent(nullptr),
-		mTransform(1.0f)
-	{}
-
-	Object3D::~Object3D() = default;
-
 	Object3D::Object3D(Object3D* parent, std::unique_ptr<Mesh> mesh) :
 		mParent(parent),
 		mMesh(std::move(mesh)),
@@ -28,9 +21,11 @@ namespace MeshCore
 		init();
 	}
 
+	Object3D::~Object3D() = default;
+
 	void Object3D::init()
 	{
-		calculateBBox(this);
+		calculateBBox();
 
 		if (mParent)
 		{
@@ -61,11 +56,6 @@ namespace MeshCore
 	const std::unordered_set<Object3D*>& Object3D::getChildren() const
 	{
 		return mChildren;
-	}
-
-	const RenderData& Object3D::getOnlyRootRenderData() const
-	{
-		return mMesh->getRenderData();
 	}
 
 	RenderData Object3D::getRenderData()
@@ -124,7 +114,7 @@ namespace MeshCore
 		return startIntersection;
 	}
 
-	void Object3D::calculateBBox(const Object3D* object)
+	void Object3D::calculateBBox()
 	{
 		TreeWalker walker(this);
 		walker.forEach([this](Object3D* object) {
@@ -166,7 +156,7 @@ namespace MeshCore
 	{
 		if (parent)
 		{
-			parent->calculateBBox(parent);
+			parent->calculateBBox();
 			recalcParentBBox(parent->mParent);
 		}
 	}

@@ -5,8 +5,6 @@ namespace RenderSystem
     class ShaderTransformationSystem
     {
     public:
-        ShaderTransformationSystem() = default;
-
         void init(int shaderProgram);
         void setViewModel(const float* view);
         void setProjection(const float* projection);

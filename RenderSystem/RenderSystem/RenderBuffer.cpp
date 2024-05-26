@@ -9,10 +9,20 @@
 
 namespace RenderSystem
 {
+	RenderBuffer::RenderBuffer()
+	{
+		init();
+	}
+
 	RenderBuffer::~RenderBuffer()
 	{
 		glDeleteBuffers(1, &mVBO);
 		glDeleteVertexArrays(1, &mVAO);
+	}
+
+	const MeshCore::RenderData& RenderBuffer::getRenderData() const
+	{
+		return mRenderData;
 	}
 
 	void RenderBuffer::init()
@@ -29,14 +39,12 @@ namespace RenderSystem
 
 	void RenderBuffer::load()
 	{
-		mVertexCount = mRenderData.positions.size() / MeshCore::COORDINATES_PER_VERTEX;
 		const auto& compactData = mRenderData.getCompactData();
-
 		glBufferData(GL_ARRAY_BUFFER, compactData.size() * sizeof(float), compactData.data(), GL_STATIC_DRAW);
 		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
 		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, reinterpret_cast<void*>(mRenderData.normals.size() * sizeof(float)));
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
 	}
 
 	void RenderBuffer::appendRenderData(const MeshCore::RenderData& renderData)
@@ -48,10 +56,5 @@ namespace RenderSystem
 	{
 		mRenderData = renderData;
 		load();
-	}
-
-	int RenderBuffer::getVertexCount() const
-	{
-		return mVertexCount;
 	}
 }

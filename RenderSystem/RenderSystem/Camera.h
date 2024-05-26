@@ -1,8 +1,12 @@
 #pragma once
 
+#include <functional>
+
 #include <glm/glm.hpp>
 
 #include "GeometryCore/Typedefs.h"
+
+#include "Renderer.h"
 
 namespace GeometryCore
 {
@@ -22,7 +26,7 @@ namespace RenderSystem
 	class Camera
 	{
 	public:
-		Camera();
+		Camera(ShaderTransformationSystem* shaderTransformationSystem);
 
 		const glm::mat4& getViewMatrix() const;
 		const Point3D& getTarget() const;
@@ -33,13 +37,14 @@ namespace RenderSystem
 		Point3D projectToTargetPlane(const Point3D& cursorPosInWorldSpace) const;
 		Ray getCameraRay(const Point3D& cursorPosInWorldSpace) const;
 
-		void setEyeTargetUp(const Point3D& eye, const Point3D& target, const Vector3D& up);
 		void pan(const Point3D& startPointInWorldSpace, const Point3D& endPointInWorldSpace);
 		void orbit(const Point3D& startPointInNDC, const Point3D& endPointInNDC);
 		void zoom(float step);
 		void adjust(const MeshCore::AABBox& bbox, float fov);
 
 	private:
+		void invokeEditOperation(const std::function<void()>& action);
+		void setEyeTargetUp(const Point3D& eye, const Point3D& target, const Vector3D& up);
 		Vector3D calcRight() const;
 		glm::mat4 createViewMatrix() const;
 		void translate(const Vector3D& movement);
@@ -54,6 +59,7 @@ namespace RenderSystem
 		Vector3D mUp;
 		Vector3D mRight;
 		glm::mat4 mViewMatrix;
+		ShaderTransformationSystem* mShaderTransformationSystem;
 	};
 }
 

@@ -30,6 +30,22 @@ namespace
 
 		return result / static_cast<float>(vecSet.size());
 	}
+
+	void createHalfEdgeLoop(const std::array<HalfEdge*, 3>& halfEdges)
+	{
+		halfEdges[0]->next = halfEdges[1];
+		halfEdges[0]->prev = halfEdges[2];
+		halfEdges[1]->next = halfEdges[2];
+		halfEdges[1]->prev = halfEdges[0];
+		halfEdges[2]->next = halfEdges[0];
+		halfEdges[2]->prev = halfEdges[1];
+	}
+
+	void connectVertexAndHalfEdge(UniqueVertex* vertex, const std::unique_ptr<HalfEdge>& halfEdge)
+	{
+		vertex->halfEdge = halfEdge.get();
+		halfEdge->vertex = vertex;
+	}
 }
 
 namespace MeshCore
@@ -55,7 +71,7 @@ namespace MeshCore
 		{
 			mRenderData.append(vertex);
 		}
-		mRenderData.prepareCompactData();
+		//mRenderData.prepareCompactData();
 	}
 
 	void Mesh::prepareHalfEdgeDataStructure()
@@ -70,8 +86,8 @@ namespace MeshCore
 		if (SMOOTHING_ENABLED)
 		{
 			averageFaceNormals();
-			mRenderData.clear();
-			prepareRenderData();
+			//mRenderData.clear();
+			//prepareRenderData();
 		}
 	}
 
@@ -114,40 +130,29 @@ namespace MeshCore
 		connectVertexAndHalfEdge(firstUniqueVertex, firstHalfEdge);
 		connectVertexAndHalfEdge(secondUniqueVertex, secondHalfEdge);
 		connectVertexAndHalfEdge(thirdUniqueVertex, thirdHalfEdge);
-
 		createHalfEdgeLoop({ firstHalfEdge.get(), secondHalfEdge.get(), thirdHalfEdge.get() });
-		createHalfEdgeVerticesMap({ firstHalfEdge.get(), secondHalfEdge.get(), thirdHalfEdge.get() });
 
 		mHalfEdges.push_back(std::move(firstHalfEdge));
 		mHalfEdges.push_back(std::move(secondHalfEdge));
 		mHalfEdges.push_back(std::move(thirdHalfEdge));
 	}
 
-	void Mesh::createHalfEdgeVerticesMap(const std::array<HalfEdge*, 3>& halfEdges)
+	std::unordered_map<HalfEdgeVerticesPair, HalfEdge*> Mesh::createHalfEdgeVerticesMap() const
 	{
-		auto firstVerticesPair = std::make_pair(*halfEdges[0]->vertex, *halfEdges[1]->vertex);
-		auto secondVerticesPair = std::make_pair(*halfEdges[1]->vertex, *halfEdges[2]->vertex);
-		auto thirdVerticesPair = std::make_pair(*halfEdges[2]->vertex, *halfEdges[0]->vertex);
+		std::unordered_map<HalfEdgeVerticesPair, HalfEdge*> halfEdgeVerticesMap;
 
-		mHalfEdgeVerticesMap.insert({ firstVerticesPair, halfEdges[0] });
-		mHalfEdgeVerticesMap.insert({ secondVerticesPair, halfEdges[1] });
-		mHalfEdgeVerticesMap.insert({ thirdVerticesPair, halfEdges[2] });
-	}
+		for (unsigned int halfEdgeIdx = 0; halfEdgeIdx < mHalfEdges.size(); halfEdgeIdx += 3)
+		{
+			auto firstVerticesPair = std::make_pair(*mHalfEdges[halfEdgeIdx]->vertex, *mHalfEdges[halfEdgeIdx + 1]->vertex);
+			auto secondVerticesPair = std::make_pair(*mHalfEdges[halfEdgeIdx + 1]->vertex, *mHalfEdges[halfEdgeIdx + 2]->vertex);
+			auto thirdVerticesPair = std::make_pair(*mHalfEdges[halfEdgeIdx + 2]->vertex, *mHalfEdges[halfEdgeIdx]->vertex);
 
-	void Mesh::createHalfEdgeLoop(const std::array<HalfEdge*, 3>& halfEdges)
-	{
-		halfEdges[0]->next = halfEdges[1];
-		halfEdges[0]->prev = halfEdges[2];
-		halfEdges[1]->next = halfEdges[2];
-		halfEdges[1]->prev = halfEdges[0];
-		halfEdges[2]->next = halfEdges[0];
-		halfEdges[2]->prev = halfEdges[1];
-	}
+			halfEdgeVerticesMap.insert({ firstVerticesPair, mHalfEdges[halfEdgeIdx].get() });
+			halfEdgeVerticesMap.insert({ secondVerticesPair, mHalfEdges[halfEdgeIdx + 1].get() });
+			halfEdgeVerticesMap.insert({ thirdVerticesPair, mHalfEdges[halfEdgeIdx + 2].get() });
+		}
 
-	void Mesh::connectVertexAndHalfEdge(UniqueVertex* vertex, const std::unique_ptr<HalfEdge>& halfEdge)
-	{
-		vertex->halfEdge = halfEdge.get();
-		halfEdge->vertex = vertex;
+		return halfEdgeVerticesMap;
 	}
 
 	UniqueVertex* Mesh::getUniqueVertex(int vertexIdx)
@@ -163,7 +168,7 @@ namespace MeshCore
 		}
 
 		auto& [vertexKey, uniqueVertex] = *vertexMapIt;
-		uniqueVertex.adjacentFacesNormals.insert(vertex.normal());
+		uniqueVertex.adjacentFacesNormals.insert(vertex.normal);
 		uniqueVertex.originalVertices.emplace_back(&vertex, vertexIdx);
 
 		return &uniqueVertex;
@@ -196,10 +201,12 @@ namespace MeshCore
 
 	void Mesh::setupTwinsForHalfEdges()
 	{
+		auto halfEdgeVerticesMap = createHalfEdgeVerticesMap();
+
 		for (auto& halfEdge : mHalfEdges)
 		{
-			auto twinIt = mHalfEdgeVerticesMap.find(std::make_pair(*halfEdge->next->vertex, *halfEdge->vertex));
-			if (twinIt == mHalfEdgeVerticesMap.end())
+			auto twinIt = halfEdgeVerticesMap.find(std::make_pair(*halfEdge->next->vertex, *halfEdge->vertex));
+			if (twinIt == halfEdgeVerticesMap.end())
 			{
 				throw std::exception("The mesh is not manifold");
 			}
@@ -214,7 +221,7 @@ namespace MeshCore
 	{
 		for (auto& [origVertex, uniqueVertex] : mUniqueVerticesMap)
 		{
-			uniqueVertex.setNormal(glm::normalize(calcAverage(uniqueVertex.adjacentFacesNormals)));
+			uniqueVertex.updateNormal(glm::normalize(calcAverage(uniqueVertex.adjacentFacesNormals)));
 		}
 	}
 

@@ -7,19 +7,19 @@ namespace RenderSystem
 	class RenderBuffer
 	{
 	public:
-		RenderBuffer() = default;
-		RenderBuffer(const RenderBuffer&) = delete;
-		RenderBuffer(RenderBuffer&&) = default;
-		RenderBuffer& operator=(const RenderBuffer&) = delete;
-		RenderBuffer& operator=(RenderBuffer&&) = default;
+		RenderBuffer();
+		RenderBuffer(RenderBuffer&&) = delete;
 		~RenderBuffer();
 
-		void init();
+		const MeshCore::RenderData& getRenderData() const;
+
 		void bind();
 		void load();
 		void appendRenderData(const MeshCore::RenderData& renderData);
 		void setRenderData(const MeshCore::RenderData& renderData);
-		int getVertexCount() const;
+
+	private:
+		void init();
 
 	private:
 		unsigned int mVBO;

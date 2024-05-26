@@ -18,13 +18,8 @@ namespace RenderSystem
 		mPos(x, y),
 		mDimensions(width, height)
 	{
-		setGLViewport();
+		resize(width, height);
 		setProjectionType(PROJECTION_TYPE::PERSPECTIVE);
-	}
-
-	void Viewport::setGLViewport()
-	{
-		glViewport(mPos.x, mPos.y, mDimensions.x, mDimensions.y);
 	}
 
 	glm::mat4 Viewport::createProjectionMatrix() const
@@ -37,20 +32,31 @@ namespace RenderSystem
 		return glm::perspective(glm::radians(mFov), mDimensions.x / mDimensions.y, mNearPlaneDistance, mFarPlaneDistance);
 	}
 
-	void Viewport::updateProjectionMatrix()
+	void Viewport::invokeEditOperation(const std::function<void()>& action)
 	{
+		action();
 		mProjectionMatrix = createProjectionMatrix();
+	}
+
+	void Viewport::setProjectionType(PROJECTION_TYPE projectionType)
+	{
+		invokeEditOperation([this, &projectionType]() {
+			mProjectionType = projectionType;
+		});
+	}
+
+	void Viewport::resize(int width, int height)
+	{
+		invokeEditOperation([this, width, height]() {
+			mDimensions.x = width;
+			mDimensions.y = height;
+			glViewport(mPos.x, mPos.y, mDimensions.x, mDimensions.y);
+		});
 	}
 
 	const glm::mat4& Viewport::getProjectionMatrix() const
 	{
 		return mProjectionMatrix;
-	}
-
-	void Viewport::setProjectionType(PROJECTION_TYPE projectionType)
-	{
-		mProjectionType = projectionType;
-		updateProjectionMatrix();
 	}
 
 	float Viewport::getFov() const
@@ -81,13 +87,5 @@ namespace RenderSystem
 	const glm::ivec2& Viewport::getPos() const
 	{
 		return mPos;
-	}
-
-	void Viewport::resize(int width, int height)
-	{
-		mDimensions.x = width;
-		mDimensions.y = height;
-		setGLViewport();
-		updateProjectionMatrix();
 	}
 }

@@ -7,6 +7,7 @@
 #include <glfw/glfw3.h>
 
 #include <glm/ext/matrix_projection.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
 #include "Constants.h"
@@ -14,18 +15,55 @@
 #include "Viewport.h"
 #include "OperationsDispatcher.h"
 
+namespace
+{
+	using namespace RenderSystem;
+
+	Window* instance = nullptr;
+
+	void onMouseMove(GLFWwindow* window, double cursorX, double cursorY)
+	{
+		instance->onMouseMove(cursorX, cursorY);
+	}
+
+	void onMouseButton(GLFWwindow* window, int button, int action, int mods)
+	{
+		instance->onMouseButton(button, action, mods);
+	}
+
+	void onMouseScroll(GLFWwindow* window, double xOffset, double yOffset)
+	{
+		instance->onMouseScroll(xOffset, yOffset);
+	}
+
+	void onKey(GLFWwindow* window, int key, int scancode, int action, int mods)
+	{
+		instance->onKey(key, scancode, action, mods);
+	}
+
+	void onFramebufferSizeChanged(GLFWwindow* window, int width, int height)
+	{
+		instance->onFramebufferSizeChanged(width, height);
+	}
+}
+
 namespace RenderSystem
 {
-	std::unique_ptr<Window> Window::sInstance {};
-
 	Window::Window(int width, int height, const std::string& meshFilePath) :
 		mWidth(width),
 		mHeight(height),
 		mMouseButtonPressed(MouseButtonPressed::NONE)
 	{
+		instance = this;
 		initGLFW();
 		initScene(meshFilePath);
 		setCallbacks();
+	}
+
+	Window::~Window()
+	{
+		glfwDestroyWindow(mWindow);
+		glfwTerminate();
 	}
 
 	void Window::initGLFW()
@@ -41,9 +79,9 @@ namespace RenderSystem
 		glfwMakeContextCurrent(mWindow);
 		if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
 		{
+			std::cerr << "Failed to init glad" << std::endl;
 			mWindow = nullptr;
 			glfwTerminate();
-			std::cerr << "Failed to init glad" << std::endl;
 		}
 	}
 
@@ -56,24 +94,18 @@ namespace RenderSystem
 
 	void Window::setCallbacks()
 	{
-		glfwSetCursorPosCallback(mWindow, onMouseMove);
-		glfwSetMouseButtonCallback(mWindow, onMouseButton);
-		glfwSetScrollCallback(mWindow, onMouseScroll);
-		glfwSetFramebufferSizeCallback(mWindow, onFramebufferSizeChanged);
-		glfwSetKeyCallback(mWindow, onKey);
-	}
-
-	Window* Window::createInstance(int width, int height, const std::string& meshFilePath)
-	{
-		sInstance = std::move(std::unique_ptr<Window>(new Window(width, height, meshFilePath)));
-		return sInstance.get();
+		glfwSetCursorPosCallback(mWindow, ::onMouseMove);
+		glfwSetMouseButtonCallback(mWindow, ::onMouseButton);
+		glfwSetScrollCallback(mWindow, ::onMouseScroll);
+		glfwSetFramebufferSizeCallback(mWindow, ::onFramebufferSizeChanged);
+		glfwSetKeyCallback(mWindow, ::onKey);
 	}
 
 	void Window::render()
 	{		
 		while (!glfwWindowShouldClose(mWindow))
 		{
-			mScene->render();
+			mScene->getRenderer().render();
 			glfwSwapBuffers(mWindow);
 			glfwWaitEvents();
 		}
@@ -86,55 +118,27 @@ namespace RenderSystem
 
 	Point2D Window::getCursorPos() const
 	{
-		double mousePosX, mousePosY;
-		glfwGetCursorPos(mWindow, &mousePosX, &mousePosY);
-		return { mousePosX, mousePosY };
-	}
-
-	void Window::onMouseMove(GLFWwindow* window, double cursorX, double cursorY)
-	{
-		Point2D currentCursorPosition(cursorX, cursorY);
-
-		if (sInstance->mSceneMovementEnabled)
-		{
-			switch (sInstance->mMouseButtonPressed)
-			{
-			case MouseButtonPressed::MIDDLE:
-				sInstance->mScene->pan(sInstance->unProject(sInstance->mSavedCursorPosition), sInstance->unProject(currentCursorPosition));
-				break;
-			case MouseButtonPressed::LEFT:
-				sInstance->mScene->orbit(sInstance->screenCoordinatesToNDC(sInstance->mSavedCursorPosition), sInstance->screenCoordinatesToNDC(currentCursorPosition));
-				break;
-			}
-		}
-
-		sInstance->mOperationsDispatcher->onMouseMove(sInstance->mSavedCursorPosition, currentCursorPosition);
-
-		if (sInstance->mMouseButtonPressed != MouseButtonPressed::NONE)
-		{
-			sInstance->mSavedCursorPosition = currentCursorPosition;
-		}
+		double x, y;
+		glfwGetCursorPos(mWindow, &x, &y);
+		return { x, y };
 	}
 
 	void Window::resizeViewport(int width, int height)
 	{
-		if (width == 0 || height == 0)
+		if (width <= 0 || height <= 0)
+		{
 			return;
+		}
 
 		mViewport->resize(width, height);
-		mScene->setProjectionMatrix(mViewport->getProjectionMatrix());
+		mScene->getRenderer().getShaderTransformationSystem().setProjection(glm::value_ptr(mViewport->getProjectionMatrix()));
 	}
 
 	Point3D Window::unProject(const Point2D& cursorPos) const
 	{
 		glm::vec4 viewportData = { mViewport->getPos().x, mViewport->getPos().y, mViewport->getWidth(), mViewport->getHeight() };
 		Point3D cursorPosGL3D(cursorPos.x, mViewport->getHeight() - cursorPos.y, 0.0);
-		return glm::unProject(cursorPosGL3D, mScene->getViewMatrix(), mViewport->getProjectionMatrix(), viewportData);
-	}
-
-	Point3D Window::unProjectToCameraTargetPlane(const Point2D& cursorPos) const
-	{
-		return sInstance->mScene->getCamera().projectToTargetPlane(sInstance->unProject(cursorPos));
+		return glm::unProject(cursorPosGL3D, mScene->getCamera().getViewMatrix(), mViewport->getProjectionMatrix(), viewportData);
 	}
 
 	Point3D Window::screenCoordinatesToNDC(const Point2D& cursorPos) const
@@ -150,10 +154,10 @@ namespace RenderSystem
 	Point3D Window::pointOnScreenToPointInWorldSpace(const Point2D& pointOnScreen, float depth) const
 	{
 		auto unprojectedPoint = unProject(pointOnScreen);
-		auto inverseMVP = glm::inverse(sInstance->mViewport->getProjectionMatrix() * sInstance->mScene->getViewMatrix());
+		auto inverseMVP = glm::inverse(mViewport->getProjectionMatrix() * mScene->getCamera().getViewMatrix());
 		Point4D screenPoint(pointOnScreen, depth, 1.0f);
 		auto pointInWorldSpace = inverseMVP * screenPoint;
-		
+
 		return pointInWorldSpace / pointInWorldSpace.w;
 	}
 
@@ -162,49 +166,76 @@ namespace RenderSystem
 		mSceneMovementEnabled = isEnabled;
 	}
 
-	void Window::onMouseButton(GLFWwindow* window, int button, int action, int mods)
+	void Window::onMouseMove(double cursorX, double cursorY)
+	{
+		Point2D currentCursorPosition(cursorX, cursorY);
+
+		if (mSceneMovementEnabled)
+		{
+			switch (mMouseButtonPressed)
+			{
+			case MouseButtonPressed::MIDDLE:
+				mScene->getCamera().pan(unProject(mSavedCursorPosition), unProject(currentCursorPosition));
+				break;
+			case MouseButtonPressed::LEFT:
+				mScene->getCamera().orbit(screenCoordinatesToNDC(mSavedCursorPosition), screenCoordinatesToNDC(currentCursorPosition));
+				break;
+			}
+		}
+
+		mOperationsDispatcher->onMouseMove(mSavedCursorPosition, currentCursorPosition);
+
+		if (mMouseButtonPressed != MouseButtonPressed::NONE)
+		{
+			mSavedCursorPosition = currentCursorPosition;
+		}
+	}
+
+	void Window::onMouseButton(int button, int action, int mods)
 	{
 		if (action == GLFW_RELEASE)
 		{
-			sInstance->mMouseButtonPressed = MouseButtonPressed::NONE;
+			mMouseButtonPressed = MouseButtonPressed::NONE;
 			return;
 		}
 
 		if (action != GLFW_PRESS)
+		{
 			return;
+		}
 
-		sInstance->mSavedCursorPosition = sInstance->getCursorPos();
+		mSavedCursorPosition = getCursorPos();
 
 		switch (button)
 		{
 			case GLFW_MOUSE_BUTTON_LEFT:
-				sInstance->mOperationsDispatcher->onMouseClick(sInstance->mSavedCursorPosition);
-				sInstance->mMouseButtonPressed = MouseButtonPressed::LEFT;
+				mOperationsDispatcher->onMouseClick(mSavedCursorPosition);
+				mMouseButtonPressed = MouseButtonPressed::LEFT;
 				break;
 			case GLFW_MOUSE_BUTTON_RIGHT:
-				sInstance->mMouseButtonPressed = MouseButtonPressed::RIGHT;
+				mMouseButtonPressed = MouseButtonPressed::RIGHT;
 				break;
 			case GLFW_MOUSE_BUTTON_MIDDLE:
-				sInstance->mMouseButtonPressed = MouseButtonPressed::MIDDLE;
+				mMouseButtonPressed = MouseButtonPressed::MIDDLE;
 				break;
 		}
 	}
 
-	void Window::onMouseScroll(GLFWwindow* window, double xOffset, double yOffset)
+	void Window::onMouseScroll(double xOffset, double yOffset)
 	{
-		sInstance->mScene->zoom(yOffset);
+		mScene->getCamera().zoom(yOffset * mScene->getRootObject().getBBox().getHeight() * ZOOM_STEP_KOEF);
 	}
 
-	void Window::onFramebufferSizeChanged(GLFWwindow* window, int width, int height)
+	void Window::onFramebufferSizeChanged(int width, int height)
 	{
-		sInstance->resizeViewport(width, height);
+		resizeViewport(width, height);
 	}
 
-	void Window::onKey(GLFWwindow* window, int key, int scancode, int action, int mods)
+	void Window::onKey(int key, int scancode, int action, int mods)
 	{
 		if (action == GLFW_PRESS)
 		{
-			sInstance->mOperationsDispatcher->toggle(key);
+			mOperationsDispatcher->toggle(key);
 		}
 	}
 }

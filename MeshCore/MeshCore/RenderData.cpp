@@ -13,13 +13,12 @@ namespace
 {
 	using namespace MeshCore;
 
-	RenderData getRenderData(std::vector<Vertex>& vertices, const glm::mat4& transform)
+	RenderData generateRenderData(const std::vector<Vertex>& vertices, const glm::mat4& transform)
 	{
 		RenderData renderData;
-		for (auto& vertex : vertices)
+		for (const auto& vertex : vertices)
 		{
-			vertex = transform * vertex;
-			renderData.append(vertex);
+			renderData.append(transform * vertex);
 		}
 
 		return renderData;
@@ -32,56 +31,38 @@ namespace MeshCore
 
 	void RenderData::append(const RenderData& other)
 	{
-		positions.insert(std::end(positions), std::cbegin(other.positions), std::cend(other.positions));
-		normals.insert(std::end(normals), std::cbegin(other.normals), std::cend(other.normals));
+		mCompactData.insert(std::end(mCompactData), std::cbegin(other.mCompactData), std::cend(other.mCompactData));
 	}
 
 	void RenderData::append(const Vertex& vertex)
 	{
 		for (int coordIdx = 0; coordIdx < COORDINATES_PER_VERTEX; ++coordIdx)
 		{
-			positions.emplace_back(vertex.pos()[coordIdx]);
-			normals.emplace_back(vertex.normal()[coordIdx]);
+			mCompactData.emplace_back(vertex.pos[coordIdx]);
+		}
+		for (int coordIdx = 0; coordIdx < COORDINATES_PER_VERTEX; ++coordIdx)
+		{
+			mCompactData.emplace_back(vertex.normal[coordIdx]);
 		}
 	}
 
 	void RenderData::updateVertex(const OriginalVertexData& vertexData)
 	{
-		for (int compactDataIdx = vertexData.index * 3, coordIdx = 0; coordIdx < 3; ++compactDataIdx, ++coordIdx)
+		for (unsigned int compactDataIdx = vertexData.index * 6, coordIdx = 0; coordIdx < 3; ++compactDataIdx, ++coordIdx)
 		{
-			mCompactData[compactDataIdx] = vertexData.vertex->pos()[coordIdx];
-			mCompactData[compactDataIdx + positions.size()] = vertexData.vertex->normal()[coordIdx];
+			mCompactData[compactDataIdx] = vertexData.vertex->pos[coordIdx];
+			mCompactData[compactDataIdx + 3] = vertexData.vertex->normal[coordIdx];
 		}
 	}
 
-	void RenderData::reserveMemory(size_t verticesCount)
+	const std::vector<float>& RenderData::getCompactData() const
 	{
-		positions.reserve(verticesCount * 4);
-		normals.reserve(verticesCount * 4);
-		mCompactData.reserve(positions.capacity() + normals.capacity());
-	}
-
-	void RenderData::prepareCompactData()
-	{
-		mCompactData.insert(std::end(mCompactData), std::cbegin(positions), std::cend(positions));
-		mCompactData.insert(std::end(mCompactData), std::cbegin(normals), std::cend(normals));
-	}
-
-	void RenderData::clear()
-	{
-		positions.clear();
-		normals.clear();
-		mCompactData.clear();
-	}
-
-	const std::vector<float>& RenderData::getCompactData()
-	{
-		if (mCompactData.empty())
-		{
-			prepareCompactData();
-		}
-
 		return mCompactData;
+	}
+
+	int RenderData::getVertexCount() const
+	{
+		return mCompactData.size() / 6;
 	}
 
 	RenderData RenderData::createRenderData(const Ray& ray, float length)
@@ -120,7 +101,7 @@ namespace MeshCore
 			vertices.emplace_back(Point3D(x, y, 0.0f), Vector3D(0.0f, 0.0f, 1.0f));
 		}
 
-		return getRenderData(vertices, line.getTransformToSelf(defaultLine));
+		return generateRenderData(vertices, line.getTransformToSelf(defaultLine));
 	}
 
 	RenderData RenderData::createRenderData(const Plane& plane, float width, float length)
@@ -138,6 +119,6 @@ namespace MeshCore
 		Plane defaultPlane{ Point3D(0.0f, 0.0f, 0.0f), Vector3D(0.0f, 0.0f, 1.0f) };
 		auto planeTransform = plane.getTransformToSelf(defaultPlane);
 
-		return getRenderData(vertices, planeTransform);
+		return generateRenderData(vertices, planeTransform);
 	}
 }

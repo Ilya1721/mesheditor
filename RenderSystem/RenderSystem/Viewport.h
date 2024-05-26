@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <glm/glm.hpp>
 
 namespace RenderSystem
@@ -27,9 +28,8 @@ namespace RenderSystem
 		const glm::mat4& getProjectionMatrix() const;
 
 	private:
-		void setGLViewport();
+		void invokeEditOperation(const std::function<void()>& action);
 		glm::mat4 createProjectionMatrix() const;
-		void updateProjectionMatrix();
 
 	private:
 		float mFov;

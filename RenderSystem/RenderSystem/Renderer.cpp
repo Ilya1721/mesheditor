@@ -4,6 +4,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Utility/FileHelper.h"
+#include "GeometryCore/Line.h"
 
 #include "Constants.h"
 #include "RenderLogger.h"
@@ -29,6 +30,20 @@ namespace
 			std::cerr << shaderLog << std::endl;
 			throw std::exception(failedMessage.c_str());
 		}
+	}
+
+	int loadShader(const std::string& shaderPath, int shaderType)
+	{
+		auto shaderContent = Utility::readFile(shaderPath);
+		std::vector<const char*> shaderContentVec{ shaderContent.c_str() };
+		std::vector<int> shaderContentLengthVec{ static_cast<int>(shaderContent.size()) };
+
+		auto shader = glCreateShader(shaderType);
+		glShaderSource(shader, 1, shaderContentVec.data(), shaderContentLengthVec.data());
+		glCompileShader(shader);
+		checkShaderOrProgramStatus(glGetShaderiv, shader, GL_COMPILE_STATUS, SHADER_TYPE::SHADER, "Shader was not compiled!");
+
+		return shader;
 	}
 }
 
@@ -60,8 +75,7 @@ namespace RenderSystem
 		initShaders();
 		mShaderTransformationSystem.init(mShaderProgram);
 		mLighting.init(mShaderProgram);
-		mRenderBuffer.init();
-		mDebugRenderBuffer.init();
+		mRenderBuffer.bind();
 	}
 
 	void Renderer::initShaders()
@@ -95,25 +109,24 @@ namespace RenderSystem
 	{
 		renderExtraPrimitives(mRenderWireframe, WIREFRAME_MATERIAL, [this]() {
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-			glDrawArrays(GL_TRIANGLES, 0, mRenderBuffer.getVertexCount());
+			glDrawArrays(GL_TRIANGLES, 0, mRenderBuffer.getRenderData().getVertexCount());
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		});
 	}
 
 	void Renderer::renderScene()
 	{
-		glDrawArrays(GL_TRIANGLES, 0, mRenderBuffer.getVertexCount());
+		glDrawArrays(GL_TRIANGLES, 0, mRenderBuffer.getRenderData().getVertexCount());
 	}
 
-	void Renderer::makeMaterialActive(const Material& material)
-	{
-		mLighting.setMaterial(material);
-	}
-
-	void Renderer::invokeDebugRenderAction(const std::function<void()>& action)
+	void Renderer::invokeDebugRenderAction(const std::function<void()>& action, bool loadBuffer)
 	{
 		mDebugRenderBuffer.bind();
 		action();
+		if (loadBuffer)
+		{
+			mDebugRenderBuffer.load();
+		}
 		mRenderBuffer.bind();
 	}
 
@@ -124,11 +137,11 @@ namespace RenderSystem
 			return;
 		}
 
-		makeMaterialActive(material);
+		mLighting.setMaterial(material);
 		glDepthFunc(GL_LEQUAL);
 		renderFunc();
 		glDepthFunc(GL_LESS);
-		makeMaterialActive(MAIN_MATERIAL);
+		mLighting.setMaterial(MAIN_MATERIAL);
 	}
 
 	void Renderer::render()
@@ -137,24 +150,25 @@ namespace RenderSystem
 		renderScene();
 		renderHighlightedFaces();
 		renderWireframe();
+
+		if (DEBUG_RENDER)
+		{
+			renderDebug();
+		}
 	}
 
 	void Renderer::renderDebug()
 	{
-		if (!DEBUG_RENDER)
-		{
-			return;
-		}
-
 		invokeDebugRenderAction([this]() {
 			int startIndex = 0;
 			for (const auto& debugPrimitive : mDebugPrimitives)
 			{
-				makeMaterialActive(debugPrimitive.material);
-				glDrawArrays(debugPrimitive.renderMode, startIndex, debugPrimitive.getVertexCount());
-				startIndex += debugPrimitive.getVertexCount();
+				auto vertexCount = debugPrimitive.renderData.getVertexCount();
+				mLighting.setMaterial(debugPrimitive.material);
+				glDrawArrays(debugPrimitive.renderMode, startIndex, vertexCount);
+				startIndex += vertexCount;
 			}
-			makeMaterialActive(MAIN_MATERIAL);
+			mLighting.setMaterial(MAIN_MATERIAL);
 		});
 	}
 
@@ -171,23 +185,34 @@ namespace RenderSystem
 	void Renderer::addDebugPrimitive(const RenderPrimitive& primitive)
 	{
 		mDebugPrimitives.push_back(primitive);
-		invokeDebugRenderAction([this, &primitive]() {
-			mDebugRenderBuffer.appendRenderData(primitive.renderData);
-		});
+		mDebugRenderBuffer.appendRenderData(primitive.renderData);
 	}
 
-	int Renderer::loadShader(const std::string& shaderPath, int shaderType)
+	void Renderer::renderAxes()
 	{
-		auto shaderContent = Utility::readFile(shaderPath);
-		std::vector<const char*> shaderContentVec {shaderContent.c_str()};
-		std::vector<int> shaderContentLengthVec {static_cast<int>(shaderContent.size())};
+		invokeDebugRenderAction([this]() {
+			GeometryCore::Line X{ glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.0f, 0.0f, 0.0f) };
+			GeometryCore::Line Y{ glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 10.0f, 0.0f) };
+			GeometryCore::Line Z{ glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 10.0f) };
+			std::vector<std::pair<Line, Material>> axes{ {X, BLUE_MATERIAL}, {Y, RED_MATERIAL}, {Z, GREEN_MATERIAL} };
+			for (const auto& [axis, material] : axes)
+			{
+				auto axisPrimitive = RenderPrimitive::createPrimitive(axis, true, material);
+				addDebugPrimitive(axisPrimitive);
+			}
+		}, true);
+	}
 
-		auto shader = glCreateShader(shaderType);
-		glShaderSource(shader, 1, shaderContentVec.data(), shaderContentLengthVec.data());
-		glCompileShader(shader);
-		checkShaderOrProgramStatus(glGetShaderiv, shader, GL_COMPILE_STATUS, SHADER_TYPE::SHADER, "Shader was not compiled!");
-
-		return shader;
+	void Renderer::renderVerticesNormals(const std::vector<MeshCore::Vertex>& vertices)
+	{
+		invokeDebugRenderAction([this, &vertices]() {
+			for (const auto& vertex : vertices)
+			{
+				GeometryCore::Line line{ vertex.pos, vertex.pos + vertex.normal * 10.0f };
+				auto linePrimitive = RenderPrimitive::createPrimitive(line, true, GREEN_MATERIAL);
+				addDebugPrimitive(linePrimitive);
+			}
+		}, true);
 	}
 
 	ShaderTransformationSystem& Renderer::getShaderTransformationSystem()
@@ -203,10 +228,5 @@ namespace RenderSystem
 	RenderBuffer& Renderer::getRenderBuffer()
 	{
 		return mRenderBuffer;
-	}
-
-	RenderBuffer& Renderer::getDebugRenderBuffer()
-	{
-		return mDebugRenderBuffer;
 	}
 }

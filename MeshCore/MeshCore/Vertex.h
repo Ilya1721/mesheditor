@@ -16,22 +16,14 @@ namespace MeshCore
 	struct Vertex
 	{
 		Vertex() = default;
-		Vertex(const Point3D& pos, const Vector3D& normal);
+		Vertex(const Point3D& otherPos, const Vector3D& otherNormal);
 
+		Point3D pos{};
+		Vector3D normal{};
 		HalfEdge* halfEdge = nullptr;
-
-		void setPos(const Point3D& pos);
-		void setNormal(const Vector3D& normal);
-
-		const Point3D& pos() const;
-		const Vector3D& normal() const;
 
 		bool operator==(const Vertex& other) const;
 		friend Vertex operator*(const glm::mat4& transform, const Vertex& vertex);
-
-	protected:
-		Point3D mPos{};
-		Vector3D mNormal{};
 	};
 
 	struct OriginalVertexData
@@ -44,8 +36,8 @@ namespace MeshCore
 	{
 		UniqueVertex(Vertex& originalVertex, int originalVertexIndex);
 
-		void setPos(const Point3D& pos);
-		void setNormal(const Vector3D& normal);
+		void updatePos(const Point3D& otherPos);
+		void updateNormal(const Vector3D& otherNormal);
 
 		std::vector<OriginalVertexData> originalVertices;
 		std::unordered_set<Vector3D> adjacentFacesNormals;
