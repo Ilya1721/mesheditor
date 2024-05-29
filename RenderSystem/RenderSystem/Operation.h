@@ -18,10 +18,10 @@ namespace RenderSystem
 
         virtual void toggle() = 0;
         virtual void onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos) = 0;
-        virtual void onMouseClick(const Point2D& cursorPos) = 0;
+        virtual void onMouseClick() = 0;
 
     protected:
-        Point3D unProject(const Point2D& cursorPos) const;
+        Point3D unProjectCursorPos() const;
 
     protected:
         bool mEnabled = false;

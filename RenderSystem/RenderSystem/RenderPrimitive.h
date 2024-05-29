@@ -16,8 +16,8 @@ namespace RenderSystem
     struct RenderPrimitive
     {
         MeshCore::RenderData renderData;
-        Material material;
-        unsigned int renderMode;
+        Material material{};
+        unsigned int renderMode{};
 
         static RenderPrimitive createPrimitive(const GeometryCore::Ray& ray, float length, const Material& material);
         static RenderPrimitive createPrimitive(const GeometryCore::Line& line, bool withArrowHead, const Material& material);

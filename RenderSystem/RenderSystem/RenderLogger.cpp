@@ -33,7 +33,7 @@ namespace RenderSystem
 	{
 		GLenum error{};
 
-		while (error = glGetError() && error != GL_NO_ERROR)
+		while ((error = glGetError()) && error != GL_NO_ERROR)
 		{
 			switch (error)
 			{

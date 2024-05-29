@@ -13,7 +13,7 @@ namespace GeometryCore
 		Point3D origin;
 		Vector3D normal;
 
-		Point3D projectPoint(const Point3D& point);
+		Point3D projectPoint(const Point3D& point) const;
 		glm::mat4 getTransformToSelf(const Plane& source) const;
 		std::optional<Point3D> findIntersection(const Ray& ray) const override;
 	};

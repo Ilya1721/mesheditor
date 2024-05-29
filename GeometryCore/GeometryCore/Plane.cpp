@@ -11,7 +11,7 @@ namespace GeometryCore
         origin(origin), normal(normal)
     {}
 
-    Point3D Plane::projectPoint(const Point3D& point)
+    Point3D Plane::projectPoint(const Point3D& point) const
     {
         auto pointToOriginVec = origin - point;
         auto dotProduct = glm::dot(pointToOriginVec, normal);

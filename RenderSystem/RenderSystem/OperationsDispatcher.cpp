@@ -33,11 +33,11 @@ namespace RenderSystem
         }
     }
 
-    void OperationsDispatcher::onMouseClick(const Point2D& cursorPos)
+    void OperationsDispatcher::onMouseClick()
     {
         for (auto& [key, operation] : mKeyOperationMap)
         {
-            operation->onMouseClick(cursorPos);
+            operation->onMouseClick();
         }
     }
 

@@ -21,12 +21,12 @@ namespace RenderSystem
         }
     }
 
-    void SurfaceHighlighter::onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos)
+    void SurfaceHighlighter::onMouseMove([[maybe_unused]] const Point2D& startCursorPos, [[maybe_unused]] const Point2D& endCursorPos)
     {
         if (mEnabled)
         {
             auto cursorPos = mScene->getParentWindow()->getCursorPos();
-            auto surfaceIntersection = mScene->getClosestIntersection(unProject(cursorPos));
+            auto surfaceIntersection = mScene->getClosestIntersection(unProjectCursorPos());
             mScene->getRenderer().setHighlightedFaces(surfaceIntersection.surfaceIndices);
         }
     }

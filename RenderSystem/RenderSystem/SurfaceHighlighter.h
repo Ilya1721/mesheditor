@@ -17,6 +17,6 @@ namespace RenderSystem
 
         void toggle() override;
         void onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos) override;
-        void onMouseClick(const Point2D& cursorPos) override {};
+        void onMouseClick() override {};
     };
 }

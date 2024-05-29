@@ -23,7 +23,7 @@ namespace RenderSystem
 
         void toggle(int key);
         void onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos);
-        void onMouseClick(const Point2D& cursorPos);
+        void onMouseClick();
 
     private:
         void initSurfaceOperations();

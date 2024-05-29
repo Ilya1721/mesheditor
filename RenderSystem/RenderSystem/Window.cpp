@@ -21,27 +21,27 @@ namespace
 
 	Window* instance = nullptr;
 
-	void onMouseMove(GLFWwindow* window, double cursorX, double cursorY)
+	void onMouseMove([[maybe_unused]] GLFWwindow* window, double cursorX, double cursorY)
 	{
 		instance->onMouseMove(cursorX, cursorY);
 	}
 
-	void onMouseButton(GLFWwindow* window, int button, int action, int mods)
+	void onMouseButton([[maybe_unused]] GLFWwindow* window, int button, int action, int mods)
 	{
 		instance->onMouseButton(button, action, mods);
 	}
 
-	void onMouseScroll(GLFWwindow* window, double xOffset, double yOffset)
+	void onMouseScroll([[maybe_unused]] GLFWwindow* window, double xOffset, double yOffset)
 	{
 		instance->onMouseScroll(xOffset, yOffset);
 	}
 
-	void onKey(GLFWwindow* window, int key, int scancode, int action, int mods)
+	void onKey([[maybe_unused]] GLFWwindow* window, int key, int scancode, int action, int mods)
 	{
 		instance->onKey(key, scancode, action, mods);
 	}
 
-	void onFramebufferSizeChanged(GLFWwindow* window, int width, int height)
+	void onFramebufferSizeChanged([[maybe_unused]] GLFWwindow* window, int width, int height)
 	{
 		instance->onFramebufferSizeChanged(width, height);
 	}
@@ -191,7 +191,7 @@ namespace RenderSystem
 		}
 	}
 
-	void Window::onMouseButton(int button, int action, int mods)
+	void Window::onMouseButton(int button, int action, [[maybe_unused]] int mods)
 	{
 		if (action == GLFW_RELEASE)
 		{
@@ -209,7 +209,7 @@ namespace RenderSystem
 		switch (button)
 		{
 			case GLFW_MOUSE_BUTTON_LEFT:
-				mOperationsDispatcher->onMouseClick(mSavedCursorPosition);
+				mOperationsDispatcher->onMouseClick();
 				mMouseButtonPressed = MouseButtonPressed::LEFT;
 				break;
 			case GLFW_MOUSE_BUTTON_RIGHT:
@@ -221,7 +221,7 @@ namespace RenderSystem
 		}
 	}
 
-	void Window::onMouseScroll(double xOffset, double yOffset)
+	void Window::onMouseScroll([[maybe_unused]] double xOffset, double yOffset)
 	{
 		mScene->getCamera().zoom(yOffset * mScene->getRootObject().getBBox().getHeight() * ZOOM_STEP_KOEF);
 	}
@@ -231,7 +231,7 @@ namespace RenderSystem
 		resizeViewport(width, height);
 	}
 
-	void Window::onKey(int key, int scancode, int action, int mods)
+	void Window::onKey(int key, [[maybe_unused]] int scancode, int action, [[maybe_unused]] int mods)
 	{
 		if (action == GLFW_PRESS)
 		{

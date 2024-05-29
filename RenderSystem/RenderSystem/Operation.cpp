@@ -9,7 +9,7 @@ namespace RenderSystem
         mScene(scene)
     {}
 
-    Point3D Operation::unProject(const Point2D& cursorPos) const
+    Point3D Operation::unProjectCursorPos() const
     {
         auto parentWindow = mScene->getParentWindow();
         return parentWindow->unProject(parentWindow->getCursorPos());

@@ -59,11 +59,11 @@ namespace RenderSystem
         mScene->updateRenderBuffer();
     }
 
-    void SurfaceExtruder::onMouseClick(const Point2D& cursorPos)
+    void SurfaceExtruder::onMouseClick()
     {
         if (mEnabled)
         {
-            mSurfaceIntersection = mScene->getClosestIntersection(unProject(cursorPos));
+            mSurfaceIntersection = mScene->getClosestIntersection(unProjectCursorPos());
             mScene->getRenderer().setHighlightedFaces(mSurfaceIntersection.surfaceIndices);
         }
     }
