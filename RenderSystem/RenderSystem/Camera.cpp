@@ -10,6 +10,7 @@
 
 #include "GeometryCore/Ray.h"
 #include "GeometryCore/Plane.h"
+#include "GeometryCore/Numeric.h"
 #include "MeshCore/AABBox.h"
 
 #include "Constants.h"
@@ -83,19 +84,10 @@ namespace RenderSystem
 
 	void Camera::setEyeTargetUp(const Point3D& eye, const Point3D& target, const Vector3D& up)
 	{
-		if (up == Vector3D(0.0f, 0.0f, 0.0f))
-		{
-			throw std::exception("The Camera Up vector must never be equal to null vector");
-		}
-
-		if (mTarget == eye)
-		{
-			throw std::exception("Target must never be equal to the position of the Camera");
-		}
-
 		mEye = eye;
 		mTarget = target;
 		mUp = glm::normalize(up);
+		validateCamera();
 		mRight = calcRight();
 	}
 
@@ -154,11 +146,30 @@ namespace RenderSystem
 	glm::mat4 Camera::getOrbitTransform(const Point3D& startPosInNDCWithZ, const Point3D& endPosInNDCWithZ) const
 	{
 		auto rotationAngle = glm::angle(glm::normalize(startPosInNDCWithZ), glm::normalize(endPosInNDCWithZ));
+		if (glm::epsilonEqual(rotationAngle, 0.0f, 1e-5f))
+		{
+			return glm::mat4(1.0f);
+		}
+
 		auto rotationAxisInNDC = glm::cross(startPosInNDCWithZ, endPosInNDCWithZ);
 		auto rotationAxisInCameraSpace = glm::inverse(calculateViewMatrixWithTargetAtOrigin()) * Vector4D(rotationAxisInNDC, 0.0f);
 		auto unitRotationAxisInCameraSpace = glm::normalize(Vector3D(rotationAxisInCameraSpace));
 
 		return glm::rotate(-rotationAngle * ORBIT_SPEED_KOEF, unitRotationAxisInCameraSpace);
+	}
+
+	void Camera::validateCamera() const
+	{
+		Vector3D nullVector(0.0f, 0.0f, 0.0f);
+		if (isEqual(mEye, nullVector) || isEqual(mTarget, nullVector) || isEqual(mUp, nullVector) || isEqual(mRight, nullVector))
+		{
+			throw std::exception("Some important Camera vector is null vector");
+		}
+
+		if (glm::any(glm::isnan(mEye)) || glm::any(glm::isnan(mTarget)) || glm::any(glm::isnan(mUp)) || glm::any(glm::isnan(mRight)))
+		{
+			throw std::exception("Some important Camera vector contains coordinates that are not numbers");
+		}
 	}
 
 	Vector3D Camera::calcRight() const

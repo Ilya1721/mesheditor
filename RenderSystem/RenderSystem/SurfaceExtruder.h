@@ -21,6 +21,11 @@ namespace RenderSystem
         void onMouseClick() override;
 
     private:
+        void toggleSurfaceMovement(bool isSurfaceIntersected = false);
+        void highlightIntersectedSurface();
+
+    private:
         MeshCore::RaySurfaceIntersection mSurfaceIntersection;
+        bool mSurfaceMovementEnabled;
     };
 }

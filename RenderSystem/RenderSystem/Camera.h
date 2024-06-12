@@ -52,6 +52,7 @@ namespace RenderSystem
 		Plane getTargetPlane() const;
 		Point3D getCursorPosInNDCWithZ(const Point3D& cursorPosInNDC) const;
 		glm::mat4 getOrbitTransform(const Point3D& startPosInNDCWithZ, const Point3D& endPosInNDCWithZ) const;
+		void validateCamera() const;
 
 	private:
 		Point3D mTarget;

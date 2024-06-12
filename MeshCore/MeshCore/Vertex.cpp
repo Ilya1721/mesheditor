@@ -27,24 +27,17 @@ namespace MeshCore
 		adjacentFacesNormals.insert(originalVertex.normal);
 	}
 
-	void UniqueVertex::updateOriginalVertices()
-	{
-		for (auto& originalVertexData : originalVertices)
-		{
-			originalVertexData.vertex->pos = pos;
-			originalVertexData.vertex->normal = normal;
-		}
-	}
-
 	void UniqueVertex::updatePos(const Point3D& otherPos)
 	{
 		pos = otherPos;
-		updateOriginalVertices();
+		for (auto& originalVertexData : originalVertices)
+		{
+			originalVertexData.vertex->pos = pos;
+		}
 	}
 
 	void UniqueVertex::updateNormal(const Vector3D& otherNormal)
 	{
 		normal = otherNormal;
-		updateOriginalVertices();
 	}
 }

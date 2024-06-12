@@ -29,6 +29,7 @@ namespace MeshCore
 		const std::unordered_set<Object3D*>& getChildren() const;
 		void appendChild(Object3D* child);
 		void removeChild(Object3D* child);
+		void calculateBBox();
 
 		const Mesh& getMesh() const;
 		Mesh& getMesh();
@@ -41,7 +42,6 @@ namespace MeshCore
 
 	private:
 		void init();
-		void calculateBBox();
 		void setParent(Object3D* parent);
 		void updateParentBBox(Object3D* parent) const;
 		void recalcParentBBox(Object3D* parent) const;

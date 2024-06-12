@@ -41,9 +41,6 @@ namespace MeshCore
 
 		std::vector<OriginalVertexData> originalVertices;
 		std::unordered_set<Vector3D> adjacentFacesNormals;
-
-	private:
-		void updateOriginalVertices();
 	};
 
 	using HalfEdgeVerticesPair = std::pair<Vertex, Vertex>;

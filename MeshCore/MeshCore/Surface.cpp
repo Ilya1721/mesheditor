@@ -21,7 +21,7 @@ namespace MeshCore
     GeometryCore::Plane Surface::getPerpendicularPlane() const
     {
         auto facePoints = mInitialFace->getVerticesPositions();
-        auto planeNormal = glm::normalize(glm::cross(facePoints[1] - facePoints[0], normal));
+        auto planeNormal = glm::normalize(glm::cross(normal, facePoints[1] - facePoints[0]));
 
         return { facePoints[0], planeNormal };
     }

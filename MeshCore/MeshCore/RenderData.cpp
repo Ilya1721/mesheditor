@@ -55,6 +55,11 @@ namespace MeshCore
 		}
 	}
 
+	void RenderData::clear()
+	{
+		mCompactData.clear();
+	}
+
 	const std::vector<float>& RenderData::getCompactData() const
 	{
 		return mCompactData;

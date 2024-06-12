@@ -55,6 +55,9 @@ namespace RenderSystem
 	void RenderBuffer::setRenderData(const MeshCore::RenderData& renderData)
 	{
 		mRenderData = renderData;
-		load();
+		if (renderData.getVertexCount() > 0)
+		{
+			load();
+		}
 	}
 }

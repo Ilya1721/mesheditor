@@ -144,6 +144,7 @@
     <ClInclude Include="RenderSystem\Camera.h" />
     <ClInclude Include="RenderSystem\Constants.h" />
     <ClInclude Include="RenderSystem\glad.h" />
+    <ClInclude Include="RenderSystem\GladTypedefs.h" />
     <ClInclude Include="RenderSystem\khrplatform.h" />
     <ClInclude Include="RenderSystem\Light.h" />
     <ClInclude Include="RenderSystem\Lighting.h" />
