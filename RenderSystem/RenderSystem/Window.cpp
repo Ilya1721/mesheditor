@@ -137,7 +137,7 @@ namespace RenderSystem
 	Point3D Window::unProject(const Point2D& cursorPos) const
 	{
 		glm::vec4 viewportData = { mViewport->getPos().x, mViewport->getPos().y, mViewport->getWidth(), mViewport->getHeight() };
-		Point3D cursorPosGL3D(cursorPos.x, mViewport->getHeight() - cursorPos.y, 0.0);
+		Point3D cursorPosGL3D(cursorPos.x, mViewport->getHeight() - cursorPos.y, DEFAULT_Z_VALUE);
 		return glm::unProject(cursorPosGL3D, mScene->getCamera().getViewMatrix(), mViewport->getProjectionMatrix(), viewportData);
 	}
 
@@ -145,20 +145,10 @@ namespace RenderSystem
 	{
 		Point3D ndcPos{};
 		ndcPos.x = (2.0 * cursorPos.x) / mViewport->getWidth() - 1.0;
-		ndcPos.y = (mViewport->getHeight() - cursorPos.y) / mViewport->getHeight() * 2.0 - 1.0;
-		ndcPos.z = 0.0;
+		ndcPos.y = 2.0 * (mViewport->getHeight() - cursorPos.y) / mViewport->getHeight() - 1.0;
+		ndcPos.z = DEFAULT_Z_VALUE;
 
 		return ndcPos;
-	}
-
-	Point3D Window::pointOnScreenToPointInWorldSpace(const Point2D& pointOnScreen, float depth) const
-	{
-		auto unprojectedPoint = unProject(pointOnScreen);
-		auto inverseMVP = glm::inverse(mViewport->getProjectionMatrix() * mScene->getCamera().getViewMatrix());
-		Point4D screenPoint(pointOnScreen, depth, 1.0f);
-		auto pointInWorldSpace = inverseMVP * screenPoint;
-
-		return pointInWorldSpace / pointInWorldSpace.w;
 	}
 
 	void Window::enableSceneMovement(bool isEnabled)
@@ -184,11 +174,7 @@ namespace RenderSystem
 		}
 
 		mOperationsDispatcher->onMouseMove(mSavedCursorPosition, currentCursorPosition);
-
-		if (mMouseButtonPressed != MouseButtonPressed::NONE)
-		{
-			mSavedCursorPosition = currentCursorPosition;
-		}
+		mSavedCursorPosition = currentCursorPosition;
 	}
 
 	void Window::onMouseButton(int button, int action, [[maybe_unused]] int mods)
@@ -196,7 +182,6 @@ namespace RenderSystem
 		if (action == GLFW_RELEASE)
 		{
 			mMouseButtonPressed = MouseButtonPressed::NONE;
-			return;
 		}
 
 		if (action != GLFW_PRESS)

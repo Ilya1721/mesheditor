@@ -41,22 +41,12 @@ namespace RenderSystem
 
         auto& surface = mSurfaceIntersection.intersectedSurface;
         auto window = mScene->getParentWindow();
-        auto startCursorPosInWorld = window->pointOnScreenToPointInWorldSpace(startCursorPos, 1.0f);
-        auto endCursorPosInWorld = window->pointOnScreenToPointInWorldSpace(endCursorPos, 1.0f);
+        auto startCursorPosInWorld = window->unProject(startCursorPos);
+        auto endCursorPosInWorld = window->unProject(endCursorPos);
         auto surfaceNormal = glm::normalize(surface.normal);
         auto cursorMovement = glm::normalize(endCursorPosInWorld - startCursorPosInWorld);
         auto surfaceMovement = surfaceNormal * glm::dot(surfaceNormal, cursorMovement);
         std::unordered_set<MeshCore::UniqueVertex*> changedVertices;
-
-        if (isEqual(surfaceMovement, glm::vec3(0.0f, 0.0f, 0.0f)))
-        {
-            return;
-        }
-
-        //
-        mScene->getRenderer().renderLine(mSurfaceIntersection.point, mSurfaceIntersection.point + cursorMovement * 100.0f, GREEN_MATERIAL, true);
-        mScene->getRenderer().renderLine(mSurfaceIntersection.point, mSurfaceIntersection.point + surfaceNormal * 100.0f, RED_MATERIAL, true);
-        //
 
         for (auto& face : surface.faces)
         {
