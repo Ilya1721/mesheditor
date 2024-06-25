@@ -56,7 +56,7 @@ namespace RenderSystem
 	{
 		instance = this;
 		initGLFW();
-		initScene(meshFilePath);
+		initSceneAndViewport(meshFilePath);
 		setCallbacks();
 	}
 
@@ -85,10 +85,12 @@ namespace RenderSystem
 		}
 	}
 
-	void Window::initScene(const std::string& meshFilePath)
+	void Window::initSceneAndViewport(const std::string& meshFilePath)
 	{
-		mViewport = std::make_unique<Viewport>(VIEWPORT_POSITION.x, VIEWPORT_POSITION.y, mWidth, mHeight);
 		mScene = std::make_unique<Scene>(meshFilePath, this);
+		auto shaderTransformationSystemPtr = &mScene->getRenderer().getShaderTransformationSystem();
+		mViewport = std::make_unique<Viewport>(mWidth, mHeight, &mScene->getRootObject().getBBox(), shaderTransformationSystemPtr);
+		mScene->adjustCameraAndLight();
 		mOperationsDispatcher = std::make_unique<OperationsDispatcher>(mScene.get());
 	}
 
@@ -134,19 +136,19 @@ namespace RenderSystem
 		mScene->getRenderer().getShaderTransformationSystem().setProjection(glm::value_ptr(mViewport->getProjectionMatrix()));
 	}
 
-	Point3D Window::unProject(const Point2D& cursorPos) const
+	Point3D Window::unProject(const Point2D& cursorPos, float depth) const
 	{
 		glm::vec4 viewportData = { mViewport->getPos().x, mViewport->getPos().y, mViewport->getWidth(), mViewport->getHeight() };
-		Point3D cursorPosGL3D(cursorPos.x, mViewport->getHeight() - cursorPos.y, DEFAULT_Z_VALUE);
+		Point3D cursorPosGL3D(cursorPos.x, mViewport->getHeight() - cursorPos.y, depth);
 		return glm::unProject(cursorPosGL3D, mScene->getCamera().getViewMatrix(), mViewport->getProjectionMatrix(), viewportData);
 	}
 
-	Point3D Window::screenCoordinatesToNDC(const Point2D& cursorPos) const
+	Point3D Window::screenCoordinatesToNDC(const Point2D& cursorPos, float depth) const
 	{
 		Point3D ndcPos{};
 		ndcPos.x = (2.0 * cursorPos.x) / mViewport->getWidth() - 1.0;
 		ndcPos.y = 2.0 * (mViewport->getHeight() - cursorPos.y) / mViewport->getHeight() - 1.0;
-		ndcPos.z = DEFAULT_Z_VALUE;
+		ndcPos.z = depth;
 
 		return ndcPos;
 	}
@@ -165,7 +167,7 @@ namespace RenderSystem
 			switch (mMouseButtonPressed)
 			{
 			case MouseButtonPressed::MIDDLE:
-				mScene->getCamera().pan(unProject(mSavedCursorPosition), unProject(currentCursorPosition));
+				mScene->getCamera().pan(unProject(mSavedCursorPosition), unProject(currentCursorPosition), mViewport->getProjectionType());
 				break;
 			case MouseButtonPressed::LEFT:
 				mScene->getCamera().orbit(screenCoordinatesToNDC(mSavedCursorPosition), screenCoordinatesToNDC(currentCursorPosition));
@@ -208,7 +210,14 @@ namespace RenderSystem
 
 	void Window::onMouseScroll([[maybe_unused]] double xOffset, double yOffset)
 	{
-		mScene->getCamera().zoom(yOffset * mScene->getRootObject().getBBox().getHeight() * ZOOM_STEP_KOEF);
+		if (mViewport->getProjectionType() == PROJECTION_TYPE::PERSPECTIVE)
+		{
+			mScene->getCamera().zoom(yOffset * mScene->getRootObject().getBBox().getHeight() * ZOOM_STEP_COEF);
+		}
+		else
+		{
+			mViewport->zoom(-yOffset * ORTHO_ZOOM_STEP);
+		}
 	}
 
 	void Window::onFramebufferSizeChanged(int width, int height)

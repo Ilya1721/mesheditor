@@ -6,8 +6,8 @@ namespace RenderSystem
     {
     public:
         void init(int shaderProgram);
-        void setViewModel(const float* view);
-        void setProjection(const float* projection);
+        void setViewModel(const float* view) const;
+        void setProjection(const float* projection) const;
 
     private:
         void initUniformLocations();

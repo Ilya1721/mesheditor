@@ -19,12 +19,12 @@ namespace RenderSystem
 		mProjection = glGetUniformLocation(mShaderProgram, "projection");
 	}
 
-	void ShaderTransformationSystem::setViewModel(const float* view)
+	void ShaderTransformationSystem::setViewModel(const float* view) const
 	{
 		glUniformMatrix4fv(mViewModel, 1, false, view);
 	}
 
-	void ShaderTransformationSystem::setProjection(const float* projection)
+	void ShaderTransformationSystem::setProjection(const float* projection) const
 	{
 		glUniformMatrix4fv(mProjection, 1, false, projection);
 	}

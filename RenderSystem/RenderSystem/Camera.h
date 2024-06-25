@@ -7,6 +7,7 @@
 #include "GeometryCore/Typedefs.h"
 
 #include "Renderer.h"
+#include "Viewport.h"
 
 namespace GeometryCore
 {
@@ -35,24 +36,28 @@ namespace RenderSystem
 		const Vector3D& getRight() const;
 		Vector3D getNormalizedDirection() const;
 		Point3D projectToTargetPlane(const Point3D& cursorPosInWorldSpace) const;
-		Ray getCameraRay(const Point3D& cursorPosInWorldSpace) const;
 
-		void pan(const Point3D& startPointInWorldSpace, const Point3D& endPointInWorldSpace);
+		void pan(const Point3D& startPointInWorldSpace, const Point3D& endPointInWorldSpace, PROJECTION_TYPE projectionType);
 		void orbit(const Point3D& startPointInNDC, const Point3D& endPointInNDC);
 		void zoom(float step);
-		void adjust(const MeshCore::AABBox& bbox, float fov);
+		void perspectiveAdjust(const MeshCore::AABBox& bbox, float fov);
+		void orthoAdjust(const MeshCore::AABBox& bbox);
 
 	private:
 		void invokeEditOperation(const std::function<void()>& action);
 		void setEyeTargetUp(const Point3D& eye, const Point3D& target, const Vector3D& up);
+		void translate(const Vector3D& movement);
+		void adjust(const MeshCore::AABBox& bbox, float fov = 0.0f);
+
 		Vector3D calcRight() const;
 		glm::mat4 createViewMatrix() const;
-		void translate(const Vector3D& movement);
 		glm::mat4 calculateViewMatrixWithTargetAtOrigin() const;
 		Plane getTargetPlane() const;
 		Point3D getCursorPosInNDCWithZ(const Point3D& cursorPosInNDC) const;
 		glm::mat4 getOrbitTransform(const Point3D& startPosInNDCWithZ, const Point3D& endPosInNDCWithZ) const;
 		void validateCamera() const;
+		float calculateDistanceToCamera(const MeshCore::AABBox& bbox, float fov = 0.0f) const;
+		glm::vec3 getPanTranslationVector(const Point3D& startPointInWorldSpace, const Point3D& endPointInWorldSpace, PROJECTION_TYPE projectionType) const;
 
 	private:
 		Point3D mTarget;

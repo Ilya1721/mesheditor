@@ -21,9 +21,6 @@ namespace RenderSystem
         virtual void onMouseClick() = 0;
 
     protected:
-        Point3D unProjectCursorPos() const;
-
-    protected:
         bool mEnabled = false;
         Scene* mScene = nullptr;
     };

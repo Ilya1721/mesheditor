@@ -25,13 +25,13 @@ namespace RenderSystem
 		Window* getParentWindow();
 		Renderer& getRenderer();
 		MeshCore::Object3D& getRootObject();
-		MeshCore::RaySurfaceIntersection getClosestIntersection(const Point3D& cursorPosInWorldSpace, bool intersectSurface = true);
+		MeshCore::RaySurfaceIntersection getClosestIntersection(bool intersectSurface = true);
 
+		void adjustCameraAndLight();
 		void updateRenderBuffer();
 
 	private:
 		void init();
-		void initShaderTransformationSystem();
 		void initRenderBuffer();
 		void adjustCamera();
 		void adjustLightPos();

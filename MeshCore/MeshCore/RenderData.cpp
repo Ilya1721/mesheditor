@@ -98,7 +98,7 @@ namespace MeshCore
 		if (withArrowHead) 
 		{
 			auto tangent = glm::tan(glm::radians(ARROW_HEAD_ANGLE));
-			auto x = tangent * distance * ARROW_HEAD_LENGTH_KOEF;
+			auto x = tangent * distance * ARROW_HEAD_LENGTH_COEF;
 			auto y = defaultLine.end.y - (x / tangent);
 			vertices.emplace_back(defaultLine.end, Vector3D(0.0f, 0.0f, 1.0f));
 			vertices.emplace_back(Point3D(-x, y, 0.0f), Vector3D(0.0f, 0.0f, 1.0f));

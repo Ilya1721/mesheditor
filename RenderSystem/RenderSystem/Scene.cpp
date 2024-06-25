@@ -36,15 +36,12 @@ namespace RenderSystem
 	void Scene::init()
 	{
 		initRenderBuffer();
-		initShaderTransformationSystem();
-		adjustCamera();
-		adjustLightPos();
 	}
 
-	void Scene::initShaderTransformationSystem()
+	void Scene::adjustCameraAndLight()
 	{
-		auto& shaderTransformationSystem = mRenderer.getShaderTransformationSystem();
-		shaderTransformationSystem.setProjection(glm::value_ptr(mParentWindow->getViewport()->getProjectionMatrix()));
+		adjustCamera();
+		adjustLightPos();
 	}
 
 	void Scene::initRenderBuffer()
@@ -63,8 +60,16 @@ namespace RenderSystem
 
 	void Scene::adjustCamera()
 	{
-		mCamera.adjust(mRootObject.getBBox(), mParentWindow->getViewport()->getFov());
-		mRenderer.getShaderTransformationSystem().setViewModel(glm::value_ptr(mCamera.getViewMatrix()));
+		const auto& viewport = mParentWindow->getViewport();
+		if (viewport->getProjectionType() == PROJECTION_TYPE::PERSPECTIVE)
+		{
+			mCamera.perspectiveAdjust(mRootObject.getBBox(), viewport->getFov());
+		}
+		else
+		{
+			mCamera.orthoAdjust(mRootObject.getBBox());
+		}
+
 		Point3D cameraPosInCameraSpace = mCamera.getViewMatrix() * Point4D(mCamera.getEye(), 1.0f);
 		mRenderer.getLighting().setCameraPos(glm::value_ptr(cameraPosInCameraSpace));
 	}
@@ -74,15 +79,17 @@ namespace RenderSystem
 		mRenderer.getRenderBuffer().setRenderData(mRootObject.getMesh().getRenderData());
 	}
 
-	MeshCore::RaySurfaceIntersection Scene::getClosestIntersection(const Point3D& cursorPosInWorldSpace, bool intersectSurface)
+	MeshCore::RaySurfaceIntersection Scene::getClosestIntersection(bool intersectSurface)
 	{
-		auto cameraRay = mCamera.getCameraRay(cursorPosInWorldSpace);
-		if (!mRootObject.getBBox().findIntersection(cameraRay).has_value())
+		auto nearCursorPosInWorldSpace = mParentWindow->unProject(mParentWindow->getCursorPos(), 0.0f);
+		auto farCursorPosInWorldSpace = mParentWindow->unProject(mParentWindow->getCursorPos(), 1.0f);
+		Ray castedRay { nearCursorPosInWorldSpace, farCursorPosInWorldSpace - nearCursorPosInWorldSpace };
+		if (!mRootObject.getBBox().findIntersection(castedRay).has_value())
 		{
 			return {};
 		}
 
-		return mRootObject.findIntersection(cameraRay, intersectSurface);
+		return mRootObject.findIntersection(castedRay, intersectSurface);
 	}
 
 	Camera& Scene::getCamera()

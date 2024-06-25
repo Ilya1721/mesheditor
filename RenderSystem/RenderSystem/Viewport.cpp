@@ -6,36 +6,48 @@
 #include "glad.h"
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "Constants.h"
 
 namespace RenderSystem
 {
-	Viewport::Viewport(int x, int y, int width, int height) :
+	Viewport::Viewport(int width, int height, const MeshCore::AABBox* rootBBox, ShaderTransformationSystem* shaderTransformationSystem) :
 		mFov(FOV),
 		mNearPlaneDistance(NEAR_PLANE_DISTANCE),
 		mFarPlaneDistance(FAR_PLANE_DISTANCE),
-		mPos(x, y),
-		mDimensions(width, height)
+		mPos(VIEWPORT_POSITION.x, VIEWPORT_POSITION.y),
+		mWidth(width),
+		mHeight(height),
+		mProjectionType(PROJECTION_TYPE::PERSPECTIVE),
+		mProjectionMatrix(1.0f),
+		mRootBBox(rootBBox),
+		mShaderTransformationSystem(shaderTransformationSystem),
+		mBBoxViewportGapCoef(BBOX_VIEWPORT_GAP_COEF)
 	{
 		resize(width, height);
-		setProjectionType(PROJECTION_TYPE::PERSPECTIVE);
 	}
 
 	glm::mat4 Viewport::createProjectionMatrix() const
 	{
+		auto aspectRatio = mWidth / mHeight;
+
 		if (mProjectionType == PROJECTION_TYPE::ORTHOGRAPHIC)
 		{
-			return glm::ortho(0.0f, mDimensions.x, 0.0f, mDimensions.y, mNearPlaneDistance, mFarPlaneDistance); // need to fix
+			float halfOrthoHeight = mRootBBox->getHeight() * 0.5f * mBBoxViewportGapCoef;
+			float halfOrthoWidth = mRootBBox->getHeight() * aspectRatio * 0.5f * mBBoxViewportGapCoef;
+
+			return glm::ortho(-halfOrthoWidth, halfOrthoWidth, -halfOrthoHeight, halfOrthoHeight, mNearPlaneDistance, mFarPlaneDistance);
 		}
 
-		return glm::perspective(glm::radians(mFov), mDimensions.x / mDimensions.y, mNearPlaneDistance, mFarPlaneDistance);
+		return glm::perspective(glm::radians(mFov), aspectRatio, mNearPlaneDistance, mFarPlaneDistance);
 	}
 
 	void Viewport::invokeEditOperation(const std::function<void()>& action)
 	{
 		action();
 		mProjectionMatrix = createProjectionMatrix();
+		mShaderTransformationSystem->setProjection(glm::value_ptr(mProjectionMatrix));
 	}
 
 	void Viewport::setProjectionType(PROJECTION_TYPE projectionType)
@@ -48,15 +60,27 @@ namespace RenderSystem
 	void Viewport::resize(int width, int height)
 	{
 		invokeEditOperation([this, width, height]() {
-			mDimensions.x = width;
-			mDimensions.y = height;
-			glViewport(mPos.x, mPos.y, mDimensions.x, mDimensions.y);
+			mWidth = width;
+			mHeight = height;
+			glViewport(mPos.x, mPos.y, mWidth, mHeight);
+		});
+	}
+
+	void Viewport::zoom(float step)
+	{
+		invokeEditOperation([this, &step]() {
+			mBBoxViewportGapCoef += step;
 		});
 	}
 
 	const glm::mat4& Viewport::getProjectionMatrix() const
 	{
 		return mProjectionMatrix;
+	}
+
+	const PROJECTION_TYPE Viewport::getProjectionType() const
+	{
+		return mProjectionType;
 	}
 
 	float Viewport::getFov() const
@@ -76,12 +100,12 @@ namespace RenderSystem
 		 
 	float Viewport::getWidth() const
 	{
-		return mDimensions.x;
+		return mWidth;
 	}
 
 	float Viewport::getHeight() const
 	{
-		return mDimensions.y;
+		return mHeight;
 	}
 
 	const glm::ivec2& Viewport::getPos() const

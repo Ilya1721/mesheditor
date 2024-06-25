@@ -65,7 +65,7 @@ namespace RenderSystem
             return;
         }
 
-        mSurfaceIntersection = mScene->getClosestIntersection(unProjectCursorPos());
+        mSurfaceIntersection = mScene->getClosestIntersection();
         toggleSurfaceMovement(!mSurfaceIntersection.surfaceIndices.empty());
         highlightIntersectedSurface();
     }

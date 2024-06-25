@@ -70,11 +70,6 @@ namespace RenderSystem
 		return getTargetPlane().findIntersection(cursorRay).value();
 	}
 
-	Ray Camera::getCameraRay(const Point3D& cursorPosInWorldSpace) const
-	{
-		return { mEye, cursorPosInWorldSpace - mEye };
-	}
-
 	void Camera::invokeEditOperation(const std::function<void()>& action)
 	{
 		action();
@@ -91,10 +86,10 @@ namespace RenderSystem
 		mRight = calcRight();
 	}
 
-	void Camera::pan(const Point3D& startPointInWorldSpace, const Point3D& endPointInWorldSpace)
+	void Camera::pan(const Point3D& startPointInWorldSpace, const Point3D& endPointInWorldSpace, PROJECTION_TYPE projectionType)
 	{
-		invokeEditOperation([&startPointInWorldSpace, &endPointInWorldSpace, this]() {
-			translate(projectToTargetPlane(startPointInWorldSpace) - projectToTargetPlane(endPointInWorldSpace));
+		invokeEditOperation([this, &startPointInWorldSpace, &endPointInWorldSpace, &projectionType]() {
+			translate(getPanTranslationVector(startPointInWorldSpace, endPointInWorldSpace, projectionType));
 		});
 	}
 
@@ -155,7 +150,7 @@ namespace RenderSystem
 		auto rotationAxisInCameraSpace = glm::inverse(calculateViewMatrixWithTargetAtOrigin()) * Vector4D(rotationAxisInNDC, 0.0f);
 		auto unitRotationAxisInCameraSpace = glm::normalize(Vector3D(rotationAxisInCameraSpace));
 
-		return glm::rotate(-rotationAngle * ORBIT_SPEED_KOEF, unitRotationAxisInCameraSpace);
+		return glm::rotate(-rotationAngle * ORBIT_SPEED_COEF, unitRotationAxisInCameraSpace);
 	}
 
 	void Camera::validateCamera() const
@@ -172,6 +167,26 @@ namespace RenderSystem
 		}
 	}
 
+	float Camera::calculateDistanceToCamera(const MeshCore::AABBox& bbox, float fov) const
+	{
+		if (fov > 0.0f) 
+		{
+			return bbox.getHeight() / (2.0f * glm::tan(glm::radians(fov / 2.0f))) * CAMERA_DIST_TO_BBOX_COEF;
+		}
+
+		return bbox.getHeight() * COS_45;
+	}
+
+	glm::vec3 Camera::getPanTranslationVector(const Point3D& startPointInWorldSpace, const Point3D& endPointInWorldSpace, PROJECTION_TYPE projectionType) const
+	{
+		if (projectionType == PROJECTION_TYPE::PERSPECTIVE)
+		{
+			return projectToTargetPlane(startPointInWorldSpace) - projectToTargetPlane(endPointInWorldSpace);
+		}
+
+		return startPointInWorldSpace - endPointInWorldSpace;
+	}
+
 	Vector3D Camera::calcRight() const
 	{
 		auto directionNormalized = getNormalizedDirection();
@@ -186,10 +201,19 @@ namespace RenderSystem
 	void Camera::adjust(const MeshCore::AABBox& bbox, float fov)
 	{
 		invokeEditOperation([&bbox, &fov, this]() {
-			auto distanceToCamera = bbox.getHeight() / (2.0f * glm::tan(glm::radians(fov / 2.0f)));
 			auto bboxCenter = bbox.getCenter();
-			Point3D eye(bboxCenter.x, bboxCenter.y, bbox.getMax().z + distanceToCamera * CAMERA_DIST_TO_BBOX_KOEF);
+			Point3D eye(bboxCenter.x, bboxCenter.y, bbox.getMax().z + calculateDistanceToCamera(bbox, fov));
 			setEyeTargetUp(eye, bboxCenter, mUp);
 		});
+	}
+
+	void Camera::perspectiveAdjust(const MeshCore::AABBox& bbox, float fov)
+	{
+		adjust(bbox, fov);
+	}
+
+	void Camera::orthoAdjust(const MeshCore::AABBox& bbox)
+	{
+		adjust(bbox);
 	}
 }

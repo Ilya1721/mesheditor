@@ -8,6 +8,8 @@
 
 #include "GeometryCore/Typedefs.h"
 
+#include "Constants.h"
+
 namespace RenderSystem
 {
 	using namespace GeometryCore;
@@ -32,8 +34,8 @@ namespace RenderSystem
 
 		const std::unique_ptr<Viewport>& getViewport() const;
 		Point2D getCursorPos() const;
-		Point3D unProject(const Point2D& cursorPos) const;
-		Point3D screenCoordinatesToNDC(const Point2D& cursorPos) const;
+		Point3D unProject(const Point2D& cursorPos, float depth = DEFAULT_Z_VALUE) const;
+		Point3D screenCoordinatesToNDC(const Point2D& cursorPos, float depth = DEFAULT_Z_VALUE) const;
 
 		void render();
 		void enableSceneMovement(bool isEnabled);
@@ -46,7 +48,7 @@ namespace RenderSystem
 
 	private:
 		void initGLFW();
-		void initScene(const std::string& meshFilePath);
+		void initSceneAndViewport(const std::string& meshFilePath);
 		void resizeViewport(int width, int height);
 		void setCallbacks();
 
