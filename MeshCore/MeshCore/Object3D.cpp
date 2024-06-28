@@ -1,5 +1,7 @@
 #include "Object3D.h"
 
+#include <glm/gtx/transform.hpp>
+
 #include "GeometryCore/Numeric.h"
 #include "GeometryCore/Ray.h"
 
@@ -120,6 +122,7 @@ namespace MeshCore
 		walker.forEach([this](Object3D* object) {
 			mBBox.applyMesh(object->getMesh(), object->getTransform());
 		});
+		setTransform(glm::translate(-mBBox.getCenter()));
 	}
 
 	void Object3D::appendChild(Object3D* child)

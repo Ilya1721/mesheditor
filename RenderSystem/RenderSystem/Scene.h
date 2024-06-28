@@ -32,7 +32,6 @@ namespace RenderSystem
 
 	private:
 		void init();
-		void initRenderBuffer();
 		void adjustCamera();
 		void adjustLightPos();
 

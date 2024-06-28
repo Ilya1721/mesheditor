@@ -7,6 +7,7 @@
 #include "Utility/StringHelper.h"
 #include "GeometryCore/Line.h"
 #include "GeometryCore/Plane.h"
+#include "MeshCore/Object3D.h"
 
 #include "RenderLogger.h"
 #include "GladTypedefs.h"
@@ -19,6 +20,7 @@ namespace
 	constexpr Material MAIN_MATERIAL = GOLD_MATERIAL;
 	constexpr Material HIGHLIGHT_MATERIAL = RUBY_MATERIAL;
 	constexpr Material WIREFRAME_MATERIAL = BLACK_MATERIAL;
+	constexpr Material FLOOR_MATERIAL = PEARL_MATERIAL;
 
 	void checkShaderOrProgramStatus(GetShaderIV getShaderIVFunc, int shaderOrProgram, int statusToCheck,
 									SHADER_TYPE shaderType, const std::string& failedMessage)
@@ -58,10 +60,10 @@ namespace RenderSystem
 		mHighlightedFacesIndices(),
 		mLighting(),
 		mRenderBuffer(),
-		mDebugRenderBuffer()
-	{
-		init();
-	}
+		mExtraRenderBuffer(),
+		mShaderTransformationSystem(),
+		mSceneRootObject(nullptr)
+	{}
 
 	Renderer::~Renderer()
 	{
@@ -71,11 +73,13 @@ namespace RenderSystem
 		glDeleteProgram(mShaderProgram);
 	}
 
-	void Renderer::init()
+	void Renderer::init(const MeshCore::Object3D* sceneRootObject)
 	{
+		mSceneRootObject = sceneRootObject;
 		initShaders();
 		mShaderTransformationSystem.init(mShaderProgram);
 		mLighting.init(mShaderProgram);
+		addInitialExtraPrimitives();
 		mRenderBuffer.bind();
 	}
 
@@ -96,9 +100,22 @@ namespace RenderSystem
 		glUseProgram(mShaderProgram);
 	}
 
+	void Renderer::addInitialExtraPrimitives()
+	{
+		invokeExtraRenderAction([this]() {
+			addSceneFloor();
+		}, true);
+	}
+
+	void Renderer::addSceneFloor()
+	{
+		auto originY = -mSceneRootObject->getBBox().getHeight() * FLOOR_BBOX_HEIGHT_COEF;
+		addPlaneExtraPrimitive(Point3D(0.0f, originY, 0.0f), Vector3D(0.0f, 1.0f, 0.0f), FAR_PLANE_DISTANCE, FAR_PLANE_DISTANCE, FLOOR_MATERIAL);
+	}
+
 	void Renderer::renderHighlightedFaces()
 	{
-		renderExtraPrimitives(!mHighlightedFacesIndices.empty(), HIGHLIGHT_MATERIAL, [this]() {
+		renderOverlayPrimitives(!mHighlightedFacesIndices.empty(), HIGHLIGHT_MATERIAL, [this]() {
 			for (const auto& faceIdx : mHighlightedFacesIndices)
 			{
 				glDrawArrays(GL_TRIANGLES, faceIdx * 3, 3);
@@ -108,7 +125,7 @@ namespace RenderSystem
 
 	void Renderer::renderWireframe()
 	{
-		renderExtraPrimitives(mRenderWireframe, WIREFRAME_MATERIAL, [this]() {
+		renderOverlayPrimitives(mRenderWireframe, WIREFRAME_MATERIAL, [this]() {
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			glDrawArrays(GL_TRIANGLES, 0, mRenderBuffer.getRenderData().getVertexCount());
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -117,21 +134,23 @@ namespace RenderSystem
 
 	void Renderer::renderScene()
 	{
+		mShaderTransformationSystem.setModel(glm::value_ptr(mSceneRootObject->getTransform()));
 		glDrawArrays(GL_TRIANGLES, 0, mRenderBuffer.getRenderData().getVertexCount());
+		mShaderTransformationSystem.setModel(glm::value_ptr(glm::mat4(1.0f)));
 	}
 
-	void Renderer::invokeDebugRenderAction(const std::function<void()>& action, bool loadBuffer)
+	void Renderer::invokeExtraRenderAction(const std::function<void()>& action, bool loadBuffer)
 	{
-		mDebugRenderBuffer.bind();
+		mExtraRenderBuffer.bind();
 		action();
 		if (loadBuffer)
 		{
-			mDebugRenderBuffer.load();
+			mExtraRenderBuffer.load();
 		}
 		mRenderBuffer.bind();
 	}
 
-	void Renderer::renderExtraPrimitives(bool renderCondition, const Material& material, const std::function<void()>& renderFunc)
+	void Renderer::renderOverlayPrimitives(bool renderCondition, const Material& material, const std::function<void()>& renderFunc)
 	{
 		if (!renderCondition)
 		{
@@ -151,22 +170,18 @@ namespace RenderSystem
 		renderScene();
 		renderHighlightedFaces();
 		renderWireframe();
-
-		if (DEBUG_RENDER)
-		{
-			renderDebug();
-		}
+		renderExtra();
 	}
 
-	void Renderer::renderDebug()
+	void Renderer::renderExtra()
 	{
-		invokeDebugRenderAction([this]() {
+		invokeExtraRenderAction([this]() {
 			int startIndex = 0;
-			for (const auto& debugPrimitive : mDebugPrimitives)
+			for (const auto& extraPrimitive : mExtraPrimitives)
 			{
-				auto vertexCount = debugPrimitive.renderData.getVertexCount();
-				mLighting.setMaterial(debugPrimitive.material);
-				glDrawArrays(debugPrimitive.renderMode, startIndex, vertexCount);
+				auto vertexCount = extraPrimitive.renderData.getVertexCount();
+				mLighting.setMaterial(extraPrimitive.material);
+				glDrawArrays(extraPrimitive.renderMode, startIndex, vertexCount);
 				startIndex += vertexCount;
 			}
 			mLighting.setMaterial(MAIN_MATERIAL);
@@ -183,67 +198,72 @@ namespace RenderSystem
 		mHighlightedFacesIndices = facesIndices;
 	}
 
-	void Renderer::addDebugPrimitive(const RenderPrimitive& primitive)
+	void Renderer::addExtraPrimitive(const RenderPrimitive& primitive)
 	{
-		mDebugPrimitives.push_back(primitive);
-		mDebugRenderBuffer.appendRenderData(primitive.renderData);
+		mExtraPrimitives.push_back(primitive);
+		mExtraRenderBuffer.appendRenderData(primitive.renderData);
 	}
 
-	void Renderer::addLineDebugPrimitive(const Point3D& start, const Point3D& end, const Material& material)
+	void Renderer::addLineExtraPrimitive(const Point3D& start, const Point3D& end, const Material& material)
 	{
 		Line line{ start, end };
 		auto linePrimitive = RenderPrimitive::createPrimitive(line, true, material);
-		addDebugPrimitive(linePrimitive);
+		addExtraPrimitive(linePrimitive);
 	}
 
-	void Renderer::renderAxes()
+	void Renderer::addPlaneExtraPrimitive(const Point3D& origin, const Vector3D& normal, float width, float height, const Material& material)
 	{
-		invokeDebugRenderAction([this]() {
-			addLineDebugPrimitive(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.0f, 0.0f, 0.0f), BLUE_MATERIAL);
-			addLineDebugPrimitive(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 10.0f, 0.0f), RED_MATERIAL);
-			addLineDebugPrimitive(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 10.0f), GREEN_MATERIAL);
+		Plane plane{ origin, normal };
+		auto planePrimitive = RenderPrimitive::createPrimitive(plane, width, height, material);
+		addExtraPrimitive(planePrimitive);
+	}
+
+	void Renderer::renderAxes(float length)
+	{
+		invokeExtraRenderAction([this, &length]() {
+			addLineExtraPrimitive(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(length, 0.0f, 0.0f), BLUE_MATERIAL);
+			addLineExtraPrimitive(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, length, 0.0f), RED_MATERIAL);
+			addLineExtraPrimitive(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, length), GREEN_MATERIAL);
 		}, true);
 	}
 
 	void Renderer::renderVerticesNormals(const std::vector<MeshCore::Vertex>& vertices)
 	{
-		invokeDebugRenderAction([this, &vertices]() {
+		invokeExtraRenderAction([this, &vertices]() {
 			for (const auto& vertex : vertices)
 			{
-				addLineDebugPrimitive(vertex.pos, vertex.pos + vertex.normal * 10.0f, GREEN_MATERIAL);
+				addLineExtraPrimitive(vertex.pos, vertex.pos + vertex.normal * 10.0f, GREEN_MATERIAL);
 			}
 		}, true);
 	}
 
 	void Renderer::renderVectorOnVertex(const Point3D& vertexPos, const Vector3D& vector)
 	{
-		invokeDebugRenderAction([this, &vertexPos, &vector]() {
-			addLineDebugPrimitive(vertexPos, vertexPos + vector * 10.0f, GREEN_MATERIAL);
+		invokeExtraRenderAction([this, &vertexPos, &vector]() {
+			addLineExtraPrimitive(vertexPos, vertexPos + vector * 10.0f, GREEN_MATERIAL);
 		}, true);
 	}
 
 	void Renderer::renderPlaneOnVertex(const Point3D& vertexPos, const Vector3D& planeNormal)
 	{
-		invokeDebugRenderAction([this, &vertexPos, &planeNormal]() {
-			Plane plane{ vertexPos, planeNormal };
-			auto planePrimitive = RenderPrimitive::createPrimitive(plane, 50.0f, 50.0f, GREEN_MATERIAL);
-			addDebugPrimitive(planePrimitive);
+		invokeExtraRenderAction([this, &vertexPos, &planeNormal]() {
+			addPlaneExtraPrimitive(vertexPos, planeNormal, 50.0f, 50.0f, GREEN_MATERIAL);
 		}, true);
 	}
 
 	void Renderer::renderLine(const Point3D& startPos, const Point3D& endPos, const Material& material, bool withArrow)
 	{
-		invokeDebugRenderAction([this, &startPos, &endPos, &material, &withArrow]() {
+		invokeExtraRenderAction([this, &startPos, &endPos, &material, &withArrow]() {
 			Line line{ startPos, endPos };
 			auto linePrimitive = RenderPrimitive::createPrimitive(line, withArrow, material);
-			addDebugPrimitive(linePrimitive);
+			addExtraPrimitive(linePrimitive);
 		}, true);
 	}
 
-	void Renderer::clearDebugRenderBuffer()
+	void Renderer::clearExtraRenderBuffer()
 	{
-		mDebugPrimitives.clear();
-		mDebugRenderBuffer.setRenderData({});
+		mExtraPrimitives.clear();
+		mExtraRenderBuffer.setRenderData({});
 	}
 
 	ShaderTransformationSystem& Renderer::getShaderTransformationSystem()

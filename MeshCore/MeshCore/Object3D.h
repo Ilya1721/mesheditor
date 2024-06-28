@@ -27,18 +27,18 @@ namespace MeshCore
 
 		Object3D* getParent() const;
 		const std::unordered_set<Object3D*>& getChildren() const;
-		void appendChild(Object3D* child);
-		void removeChild(Object3D* child);
-		void calculateBBox();
-
 		const Mesh& getMesh() const;
 		Mesh& getMesh();
 		RenderData getRenderData();
 		const glm::mat4& getTransform() const;
-		void setTransform(const glm::mat4& transform);
 		const AABBox& getBBox() const;
 		std::optional<Point3D> findIntersection(const Ray& ray) override;
 		RaySurfaceIntersection findIntersection(const GeometryCore::Ray& ray, bool intersectSurface, int passedFacesCount = 0);
+
+		void appendChild(Object3D* child);
+		void removeChild(Object3D* child);
+		void calculateBBox();
+		void setTransform(const glm::mat4& transform);
 
 	private:
 		void init();

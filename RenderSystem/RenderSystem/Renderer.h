@@ -13,6 +13,11 @@
 
 using namespace GeometryCore;
 
+namespace MeshCore
+{
+	class Object3D;
+}
+
 namespace RenderSystem
 {
 	struct RenderPrimitive;
@@ -28,28 +33,31 @@ namespace RenderSystem
 		Lighting& getLighting();
 		RenderBuffer& getRenderBuffer();
 
+		void init(const MeshCore::Object3D* sceneRootObject);
 		void render();
 		void toggleWireframe();
 		void setHighlightedFaces(const std::vector<int>& facesIndices);
-		void renderAxes();
+		void renderAxes(float length = 10.0f);
 		void renderVerticesNormals(const std::vector<MeshCore::Vertex>& vertices);
 		void renderVectorOnVertex(const Point3D& vertexPos, const Vector3D& vector);
 		void renderPlaneOnVertex(const Point3D& vertexPos, const Vector3D& planeNormal);
 		void renderLine(const Point3D& startPos, const Point3D& endPos, const Material& material = GREEN_MATERIAL, bool withArrow = false);
-		void clearDebugRenderBuffer();
+		void clearExtraRenderBuffer();
 
 	private:
-		void renderDebug();
-		void init();
+		void renderExtra();
 		void initShaders();
 		void initShaderProgram();
+		void addInitialExtraPrimitives();
+		void addSceneFloor();
 		void renderHighlightedFaces();
 		void renderWireframe();
 		void renderScene();
-		void invokeDebugRenderAction(const std::function<void()>& action, bool loadBuffer = false);
-		void renderExtraPrimitives(bool renderCondition, const Material& material, const std::function<void()>& renderFunc);
-		void addDebugPrimitive(const RenderPrimitive& primitive);
-		void addLineDebugPrimitive(const Point3D& start, const Point3D& end, const Material& material);
+		void invokeExtraRenderAction(const std::function<void()>& action, bool loadBuffer = false);
+		void renderOverlayPrimitives(bool renderCondition, const Material& material, const std::function<void()>& renderFunc);
+		void addExtraPrimitive(const RenderPrimitive& primitive);
+		void addLineExtraPrimitive(const Point3D& start, const Point3D& end, const Material& material);
+		void addPlaneExtraPrimitive(const Point3D& origin, const Vector3D& normal, float width, float height, const Material& material);
 
 	private:
 		int mVertexShader;
@@ -63,8 +71,10 @@ namespace RenderSystem
 		Lighting mLighting;
 		RenderBuffer mRenderBuffer;
 
-		std::vector<RenderPrimitive> mDebugPrimitives;
-		RenderBuffer mDebugRenderBuffer;
+		std::vector<RenderPrimitive> mExtraPrimitives;
+		RenderBuffer mExtraRenderBuffer;
+
+		const MeshCore::Object3D* mSceneRootObject;
 	};
 }
 

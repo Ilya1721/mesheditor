@@ -6,7 +6,8 @@ namespace RenderSystem
     {
     public:
         void init(int shaderProgram);
-        void setViewModel(const float* view) const;
+        void setModel(const float* model) const;
+        void setView(const float* view) const;
         void setProjection(const float* projection) const;
 
     private:
@@ -14,7 +15,8 @@ namespace RenderSystem
 
     private:
         int mShaderProgram;
-        int mViewModel;
+        int mModel;
+        int mView;
         int mProjection;
     };
 }

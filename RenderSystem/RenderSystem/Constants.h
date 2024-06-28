@@ -62,6 +62,13 @@ namespace RenderSystem
 		0.6f
 	};
 
+	static inline constexpr Material PEARL_MATERIAL{
+		RGB(0.25f, 0.20725f, 0.20725f),
+		RGB(1.0f, 0.829f, 0.829f),
+		RGB(0.296648f, 0.296648f, 0.296648f),
+		11.264f
+	};
+
 	static inline constexpr Light DEFAULT_LIGHT{
 		RGB(1.0f, 1.0f, 1.0f),
 		RGB(1.0f, 1.0f, 1.0f),
@@ -69,10 +76,10 @@ namespace RenderSystem
 	};
 
 	constexpr RGBA BACKGROUND_COLOR = RGBA(0.725f, 0.9f, 1.0f, 1.0f);
-	constexpr Point3D CAMERA_POSITION = Point3D(0.0f, 0.0f, 5.0f);
-	constexpr Point3D CAMERA_TARGET = Point3D(0.0f, 0.0f, 0.0f);
-	constexpr Vector3D CAMERA_UP = Vector3D(0.0f, 1.0f, 0.0f);
-	constexpr Vector3D CAMERA_RIGHT = Vector3D(1.0f, 0.0f, 0.0f);
+	constexpr Point3D DEFAULT_CAMERA_POSITION = Point3D(0.0f, 0.0f, 5.0f);
+	constexpr Point3D DEFAULT_CAMERA_TARGET = Point3D(0.0f, 0.0f, 0.0f);
+	constexpr Vector3D DEFAULT_CAMERA_UP = Vector3D(0.0f, 1.0f, 0.0f);
+	constexpr Vector3D DEFAULT_CAMERA_RIGHT = Vector3D(1.0f, 0.0f, 0.0f);
 	constexpr Point2D VIEWPORT_POSITION = Point2D(0.0f, 0.0f);
 
 	constexpr float FOV = 45.0f;
@@ -87,6 +94,7 @@ namespace RenderSystem
 	constexpr float BBOX_VIEWPORT_GAP_COEF = 2.0f;
 	constexpr float ORTHO_ZOOM_STEP = 0.25f;
 	constexpr float COS_45 = 0.707107f;
+	constexpr float FLOOR_BBOX_HEIGHT_COEF = 1.0f;
 	inline const std::string WINDOW_TITLE = "Mesh Editor";
 
 	constexpr bool DEBUG_RENDER = true;

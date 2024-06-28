@@ -35,18 +35,14 @@ namespace RenderSystem
 
 	void Scene::init()
 	{
-		initRenderBuffer();
+		mRenderer.init(&mRootObject);
+		updateRenderBuffer();
 	}
 
 	void Scene::adjustCameraAndLight()
 	{
 		adjustCamera();
 		adjustLightPos();
-	}
-
-	void Scene::initRenderBuffer()
-	{
-		updateRenderBuffer();
 	}
 
 	void Scene::adjustLightPos()

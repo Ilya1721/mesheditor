@@ -20,10 +20,10 @@ using namespace GeometryCore;
 namespace RenderSystem
 {
 	Camera::Camera(ShaderTransformationSystem* shaderTransformationSystem) :
-		mTarget(CAMERA_TARGET),
-		mEye(CAMERA_POSITION),
-		mUp(CAMERA_UP),
-		mRight(CAMERA_RIGHT),
+		mTarget(DEFAULT_CAMERA_TARGET),
+		mEye(DEFAULT_CAMERA_POSITION),
+		mUp(DEFAULT_CAMERA_UP),
+		mRight(DEFAULT_CAMERA_RIGHT),
 		mShaderTransformationSystem(shaderTransformationSystem)
 	{
 		invokeEditOperation([]() {});
@@ -74,7 +74,7 @@ namespace RenderSystem
 	{
 		action();
 		mViewMatrix = createViewMatrix();
-		mShaderTransformationSystem->setViewModel(glm::value_ptr(mViewMatrix));
+		mShaderTransformationSystem->setView(glm::value_ptr(mViewMatrix));
 	}
 
 	void Camera::setEyeTargetUp(const Point3D& eye, const Point3D& target, const Vector3D& up)
@@ -156,9 +156,9 @@ namespace RenderSystem
 	void Camera::validateCamera() const
 	{
 		Vector3D nullVector(0.0f, 0.0f, 0.0f);
-		if (isEqual(mEye, nullVector) || isEqual(mTarget, nullVector) || isEqual(mUp, nullVector) || isEqual(mRight, nullVector))
+		if (isEqual(mUp, nullVector) || isEqual(mRight, nullVector))
 		{
-			throw std::exception("Some important Camera vector is null vector");
+			throw std::exception("Either up or right camera vector is null vector");
 		}
 
 		if (glm::any(glm::isnan(mEye)) || glm::any(glm::isnan(mTarget)) || glm::any(glm::isnan(mUp)) || glm::any(glm::isnan(mRight)))
@@ -201,9 +201,8 @@ namespace RenderSystem
 	void Camera::adjust(const MeshCore::AABBox& bbox, float fov)
 	{
 		invokeEditOperation([&bbox, &fov, this]() {
-			auto bboxCenter = bbox.getCenter();
-			Point3D eye(bboxCenter.x, bboxCenter.y, bbox.getMax().z + calculateDistanceToCamera(bbox, fov));
-			setEyeTargetUp(eye, bboxCenter, mUp);
+			Point3D eye(mEye.x, mEye.y, bbox.getMax().z + calculateDistanceToCamera(bbox, fov));
+			setEyeTargetUp(eye, mTarget, mUp);
 		});
 	}
 
