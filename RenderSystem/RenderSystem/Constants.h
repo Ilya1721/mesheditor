@@ -93,7 +93,6 @@ namespace RenderSystem
 	constexpr float DEFAULT_Z_VALUE = 1.0f;
 	constexpr float BBOX_VIEWPORT_GAP_COEF = 2.0f;
 	constexpr float ORTHO_ZOOM_STEP = 0.25f;
-	constexpr float COS_45 = 0.707107f;
 	constexpr float FLOOR_BBOX_HEIGHT_COEF = 1.0f;
 	inline const std::string WINDOW_TITLE = "Mesh Editor";
 

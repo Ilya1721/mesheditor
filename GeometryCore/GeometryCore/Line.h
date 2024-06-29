@@ -11,6 +11,6 @@ namespace GeometryCore
         Point3D start;
         Point3D end;
 
-        glm::mat4 getTransformToSelf(const Line& source) const;
+        glm::mat4 getTransformToSelf(const Line& input) const;
     };
 }

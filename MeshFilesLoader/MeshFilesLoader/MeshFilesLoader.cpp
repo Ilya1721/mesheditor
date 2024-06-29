@@ -49,14 +49,12 @@ namespace
 
 	std::unique_ptr<MeshCore::Mesh> readText(std::string& fileContent)
 	{
-		auto contentString = fileContent.data();
-		auto delimiters = MeshFilesLoader::STL_DELIMITERS.c_str();
-
 		std::vector<MeshCore::Vertex> vertices;
 		Vector3D faceNormal{};
 
 		char* nextToken = nullptr;
-		char* currentToken = strtok_s(contentString, delimiters, &nextToken);
+		auto delimiters = MeshFilesLoader::STL_DELIMITERS.c_str();
+		char* currentToken = strtok_s(fileContent.data(), delimiters, &nextToken);
 
 		while (currentToken != nullptr)
 		{
@@ -96,8 +94,7 @@ namespace
 			{
 				Point3D pos{};
 				readCoordinatesFromBuffer(pos, buffer);
-				MeshCore::Vertex vertex (pos, faceNormal);
-				vertices.push_back(vertex);
+				vertices.push_back({ pos, faceNormal });
 			}
 
 			buffer += sizeof(uint16_t);

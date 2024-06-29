@@ -156,6 +156,7 @@ namespace RenderSystem
 	void Camera::validateCamera() const
 	{
 		Vector3D nullVector(0.0f, 0.0f, 0.0f);
+
 		if (isEqual(mUp, nullVector) || isEqual(mRight, nullVector))
 		{
 			throw std::exception("Either up or right camera vector is null vector");
@@ -169,12 +170,7 @@ namespace RenderSystem
 
 	float Camera::calculateDistanceToCamera(const MeshCore::AABBox& bbox, float fov) const
 	{
-		if (fov > 0.0f) 
-		{
-			return bbox.getHeight() / (2.0f * glm::tan(glm::radians(fov / 2.0f))) * CAMERA_DIST_TO_BBOX_COEF;
-		}
-
-		return bbox.getHeight() * COS_45;
+		return bbox.getHeight() / (2.0f * glm::tan(glm::radians(fov / 2.0f))) * CAMERA_DIST_TO_BBOX_COEF;
 	}
 
 	glm::vec3 Camera::getPanTranslationVector(const Point3D& startPointInWorldSpace, const Point3D& endPointInWorldSpace, PROJECTION_TYPE projectionType) const
@@ -201,7 +197,8 @@ namespace RenderSystem
 	void Camera::adjust(const MeshCore::AABBox& bbox, float fov)
 	{
 		invokeEditOperation([&bbox, &fov, this]() {
-			Point3D eye(mEye.x, mEye.y, bbox.getMax().z + calculateDistanceToCamera(bbox, fov));
+			auto distanceToCamera = fov > 0.0f ? calculateDistanceToCamera(bbox, fov) : 0.0f;
+			Point3D eye(mEye.x, mEye.y, bbox.getMax().z + distanceToCamera);
 			setEyeTargetUp(eye, mTarget, mUp);
 		});
 	}

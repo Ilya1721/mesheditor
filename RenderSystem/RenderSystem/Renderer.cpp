@@ -237,20 +237,6 @@ namespace RenderSystem
 		}, true);
 	}
 
-	void Renderer::renderVectorOnVertex(const Point3D& vertexPos, const Vector3D& vector)
-	{
-		invokeExtraRenderAction([this, &vertexPos, &vector]() {
-			addLineExtraPrimitive(vertexPos, vertexPos + vector * 10.0f, GREEN_MATERIAL);
-		}, true);
-	}
-
-	void Renderer::renderPlaneOnVertex(const Point3D& vertexPos, const Vector3D& planeNormal)
-	{
-		invokeExtraRenderAction([this, &vertexPos, &planeNormal]() {
-			addPlaneExtraPrimitive(vertexPos, planeNormal, 50.0f, 50.0f, GREEN_MATERIAL);
-		}, true);
-	}
-
 	void Renderer::renderLine(const Point3D& startPos, const Point3D& endPos, const Material& material, bool withArrow)
 	{
 		invokeExtraRenderAction([this, &startPos, &endPos, &material, &withArrow]() {
@@ -258,12 +244,6 @@ namespace RenderSystem
 			auto linePrimitive = RenderPrimitive::createPrimitive(line, withArrow, material);
 			addExtraPrimitive(linePrimitive);
 		}, true);
-	}
-
-	void Renderer::clearExtraRenderBuffer()
-	{
-		mExtraPrimitives.clear();
-		mExtraRenderBuffer.setRenderData({});
 	}
 
 	ShaderTransformationSystem& Renderer::getShaderTransformationSystem()

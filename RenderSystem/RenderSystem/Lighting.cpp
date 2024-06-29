@@ -61,47 +61,47 @@ namespace RenderSystem
 		setLightSpecular(glm::value_ptr(light.specular));
 	}
 
-	void Lighting::setLightPos(const float* lightPos)
+	void Lighting::setLightPos(const float* lightPos) const
 	{
 		glUniform3fv(mLightPos, 1, lightPos);
 	}
 
-	void Lighting::setCameraPos(const float* pos)
+	void Lighting::setCameraPos(const float* pos) const
 	{
 		glUniform3fv(mCameraPos, 1, pos);
 	}
 
-	void Lighting::setLightAmbient(const float* ambient)
+	void Lighting::setLightAmbient(const float* ambient) const
 	{
 		glUniform3fv(mLightAmbient, 1, ambient);
 	}
 
-	void Lighting::setLightDiffuse(const float* diffuse)
+	void Lighting::setLightDiffuse(const float* diffuse) const
 	{
 		glUniform3fv(mLightDiffuse, 1, diffuse);
 	}
 
-	void Lighting::setLightSpecular(const float* specular)
+	void Lighting::setLightSpecular(const float* specular) const
 	{
 		glUniform3fv(mLightSpecular, 1, specular);
 	}
 
-	void Lighting::setMaterialAmbient(const float* ambient)
+	void Lighting::setMaterialAmbient(const float* ambient) const
 	{
 		glUniform3fv(mMaterialAmbient, 1, ambient);
 	}
 
-	void Lighting::setMaterialDiffuse(const float* diffuse)
+	void Lighting::setMaterialDiffuse(const float* diffuse) const
 	{
 		glUniform3fv(mMaterialDiffuse, 1, diffuse);
 	}
 
-	void Lighting::setMaterialSpecular(const float* specular)
+	void Lighting::setMaterialSpecular(const float* specular) const
 	{
 		glUniform3fv(mMaterialSpecular, 1, specular);
 	}
 
-	void Lighting::setMaterialShininess(float shininess)
+	void Lighting::setMaterialShininess(float shininess) const
 	{
 		glUniform1f(mMaterialShininess, shininess);
 	}

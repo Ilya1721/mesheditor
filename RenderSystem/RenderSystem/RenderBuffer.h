@@ -13,7 +13,7 @@ namespace RenderSystem
 
 		const MeshCore::RenderData& getRenderData() const;
 
-		void bind();
+		void bind() const;
 		void load();
 		void appendRenderData(const MeshCore::RenderData& renderData);
 		void setRenderData(const MeshCore::RenderData& renderData);

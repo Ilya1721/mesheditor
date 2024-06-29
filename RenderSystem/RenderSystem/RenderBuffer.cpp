@@ -31,7 +31,7 @@ namespace RenderSystem
 		glGenVertexArrays(1, &mVAO);
 	}
 
-	void RenderBuffer::bind()
+	void RenderBuffer::bind() const
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, mVBO);
 		glBindVertexArray(mVAO);

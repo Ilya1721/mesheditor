@@ -13,8 +13,7 @@ namespace GeometryCore
 
     Point3D Plane::projectPoint(const Point3D& point) const
     {
-        auto pointToOriginVec = origin - point;
-        auto dotProduct = glm::dot(pointToOriginVec, normal);
+        auto dotProduct = glm::dot(origin - point, normal);
 
         if (glm::epsilonEqual(dotProduct, 0.0f, 1e-5f))
         {
@@ -46,6 +45,6 @@ namespace GeometryCore
 
         auto distanceToPlane = (glm::dot(normal, origin) - glm::dot(normal, ray.origin)) / glm::dot(normal, ray.direction);
 
-        return std::make_optional(ray.origin + distanceToPlane * ray.direction);
+        return std::make_optional(ray.origin + ray.direction * distanceToPlane);
     }
 }

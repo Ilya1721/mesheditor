@@ -6,15 +6,15 @@
 
 namespace GeometryCore
 {
-    glm::mat4 Line::getTransformToSelf(const Line& source) const
+    glm::mat4 Line::getTransformToSelf(const Line& input) const
     {
-        auto lineDir = end - start;
-        auto sourceLineDir = source.end - source.start;
-        auto rotationAxis = glm::cross(lineDir, sourceLineDir);
-        auto rotationAngle = glm::angle(glm::normalize(lineDir), glm::normalize(sourceLineDir));
+        auto originLineDir = end - start;
+        auto inputLineDir = input.end - input.start;
+        auto rotationAxis = glm::cross(originLineDir, inputLineDir);
+        auto rotationAngle = glm::angle(glm::normalize(originLineDir), glm::normalize(inputLineDir));
 
         auto rotationTransform = getRotationTransform(-rotationAngle, rotationAxis);
-        auto translationTransform = getTranslationTransform(start, source.start);
+        auto translationTransform = getTranslationTransform(start, input.start);
 
         return translationTransform * rotationTransform;
     }

@@ -37,27 +37,27 @@ namespace RenderSystem
 		void render();
 		void toggleWireframe();
 		void setHighlightedFaces(const std::vector<int>& facesIndices);
+
 		void renderAxes(float length = 10.0f);
 		void renderVerticesNormals(const std::vector<MeshCore::Vertex>& vertices);
-		void renderVectorOnVertex(const Point3D& vertexPos, const Vector3D& vector);
-		void renderPlaneOnVertex(const Point3D& vertexPos, const Vector3D& planeNormal);
 		void renderLine(const Point3D& startPos, const Point3D& endPos, const Material& material = GREEN_MATERIAL, bool withArrow = false);
-		void clearExtraRenderBuffer();
 
 	private:
-		void renderExtra();
 		void initShaders();
 		void initShaderProgram();
+		void invokeExtraRenderAction(const std::function<void()>& action, bool loadBuffer = false);
+
 		void addInitialExtraPrimitives();
 		void addSceneFloor();
-		void renderHighlightedFaces();
-		void renderWireframe();
-		void renderScene();
-		void invokeExtraRenderAction(const std::function<void()>& action, bool loadBuffer = false);
-		void renderOverlayPrimitives(bool renderCondition, const Material& material, const std::function<void()>& renderFunc);
 		void addExtraPrimitive(const RenderPrimitive& primitive);
 		void addLineExtraPrimitive(const Point3D& start, const Point3D& end, const Material& material);
 		void addPlaneExtraPrimitive(const Point3D& origin, const Vector3D& normal, float width, float height, const Material& material);
+
+		void renderExtra();
+		void renderHighlightedFaces();
+		void renderWireframe();
+		void renderScene();
+		void renderOverlayPrimitives(bool renderCondition, const Material& material, const std::function<void()>& renderFunc);
 
 	private:
 		int mVertexShader;
