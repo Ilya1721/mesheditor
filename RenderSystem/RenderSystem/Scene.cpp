@@ -47,10 +47,7 @@ namespace RenderSystem
 
 	void Scene::adjustLightPos()
 	{
-		auto cameraXYVec = (mCamera.getRight() + mCamera.getUp()) * mRootObject.getBBox().getHeight() * 0.25f;
-		auto cameraZVec = -mCamera.getNormalizedDirection() * LIGHT_SOURCE_TO_CAMERA_DISTANCE;
-		auto lightPos = mCamera.getEye() + cameraXYVec + cameraZVec;
-		Point3D lightPosInCameraSpace = mCamera.getViewMatrix() * Point4D(lightPos, 1.0f);
+		Point3D lightPosInCameraSpace = mCamera.getViewMatrix() * Point4D(0.0f, LIGHT_SOURCE_POS_Y, FAR_PLANE_DISTANCE, 0.0f);
 		mRenderer.getLighting().setLightPos(glm::value_ptr(lightPosInCameraSpace));
 	}
 

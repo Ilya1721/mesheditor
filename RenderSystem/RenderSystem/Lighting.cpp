@@ -35,8 +35,8 @@ namespace RenderSystem
 
 	void Lighting::initUniformLocations()
 	{
-		mLightPos = getUniformLocation("lightPos");
-		mCameraPos = getUniformLocation("cameraPos");
+		mLightPos = getUniformLocation("lightPosInCameraSpace");
+		mCameraPos = getUniformLocation("cameraPosInCameraSpace");
 		mLightAmbient = getUniformLocation("light.ambient");
 		mLightDiffuse = getUniformLocation("light.diffuse");
 		mLightSpecular = getUniformLocation("light.specular");

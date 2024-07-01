@@ -110,7 +110,7 @@ namespace RenderSystem
 	void Renderer::addSceneFloor()
 	{
 		auto originY = -mSceneRootObject->getBBox().getHeight() * FLOOR_BBOX_HEIGHT_COEF;
-		addPlaneExtraPrimitive(Point3D(0.0f, originY, 0.0f), Vector3D(0.0f, 1.0f, 0.0f), FAR_PLANE_DISTANCE, FAR_PLANE_DISTANCE, FLOOR_MATERIAL);
+		addPlaneExtraPrimitive(Point3D(0.0f, originY, 0.0f), Vector3D(0.0f, -1.0f, 0.0f), FAR_PLANE_DISTANCE, FAR_PLANE_DISTANCE, FLOOR_MATERIAL);
 	}
 
 	void Renderer::renderHighlightedFaces()
