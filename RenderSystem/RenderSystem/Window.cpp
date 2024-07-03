@@ -51,8 +51,7 @@ namespace RenderSystem
 {
 	Window::Window(int width, int height, const std::string& meshFilePath) :
 		mWidth(width),
-		mHeight(height),
-		mMouseButtonPressed(MouseButtonPressed::NONE)
+		mHeight(height)
 	{
 		instance = this;
 		initGLFW();
@@ -153,71 +152,35 @@ namespace RenderSystem
 		return ndcPos;
 	}
 
-	void Window::enableSceneMovement(bool isEnabled)
+	bool Window::isMouseButtonPressed(int button) const
 	{
-		mSceneMovementEnabled = isEnabled;
+		return glfwGetMouseButton(mWindow, button) == GLFW_PRESS;
+	}
+
+	bool Window::isKeyPressed(int key) const
+	{
+		return glfwGetKey(mWindow, key) == GLFW_PRESS;
 	}
 
 	void Window::onMouseMove(double cursorX, double cursorY)
 	{
 		Point2D currentCursorPosition(cursorX, cursorY);
-
-		if (mSceneMovementEnabled)
-		{
-			switch (mMouseButtonPressed)
-			{
-			case MouseButtonPressed::MIDDLE:
-				mScene->getCamera().pan(unProject(mSavedCursorPosition), unProject(currentCursorPosition), mViewport->getProjectionType());
-				break;
-			case MouseButtonPressed::LEFT:
-				mScene->getCamera().orbit(screenCoordinatesToNDC(mSavedCursorPosition), screenCoordinatesToNDC(currentCursorPosition));
-				break;
-			}
-		}
-
 		mOperationsDispatcher->onMouseMove(mSavedCursorPosition, currentCursorPosition);
 		mSavedCursorPosition = currentCursorPosition;
 	}
 
 	void Window::onMouseButton(int button, int action, [[maybe_unused]] int mods)
 	{
-		if (action == GLFW_RELEASE)
+		if (action == GLFW_PRESS)
 		{
-			mMouseButtonPressed = MouseButtonPressed::NONE;
-		}
-
-		if (action != GLFW_PRESS)
-		{
-			return;
-		}
-
-		mSavedCursorPosition = getCursorPos();
-
-		switch (button)
-		{
-			case GLFW_MOUSE_BUTTON_LEFT:
-				mOperationsDispatcher->onMouseClick();
-				mMouseButtonPressed = MouseButtonPressed::LEFT;
-				break;
-			case GLFW_MOUSE_BUTTON_RIGHT:
-				mMouseButtonPressed = MouseButtonPressed::RIGHT;
-				break;
-			case GLFW_MOUSE_BUTTON_MIDDLE:
-				mMouseButtonPressed = MouseButtonPressed::MIDDLE;
-				break;
+			mSavedCursorPosition = getCursorPos();
+			mOperationsDispatcher->onMouseClick();
 		}
 	}
 
 	void Window::onMouseScroll([[maybe_unused]] double xOffset, double yOffset)
 	{
-		if (mViewport->getProjectionType() == PROJECTION_TYPE::PERSPECTIVE)
-		{
-			mScene->getCamera().zoom(yOffset * mScene->getRootObject().getBBox().getHeight() * ZOOM_STEP_COEF);
-		}
-		else
-		{
-			mViewport->zoom(-yOffset * ORTHO_ZOOM_STEP);
-		}
+		mOperationsDispatcher->onMouseScroll(yOffset);
 	}
 
 	void Window::onFramebufferSizeChanged(int width, int height)

@@ -48,7 +48,7 @@ namespace MeshCore
 		calcBBoxPlanes();
 	}
 
-	void AABBox::applyMesh(const Mesh& mesh, const glm::mat4& meshTransform)
+	void AABBox::applyMesh(const Mesh& mesh)
 	{
 		Point3D min = mMin;
 		Point3D max = mMax;
@@ -65,9 +65,6 @@ namespace MeshCore
 			max.z = std::max(max.z, vertex.pos.z);
 		}
 
-		min = meshTransform * Point4D(min, 1.0f);
-		max = meshTransform * Point4D(max, 1.0f);
-
 		setMinMax(min, max);
 	}
 
@@ -78,11 +75,6 @@ namespace MeshCore
 		Point3D min(floatMax, floatMax, floatMax);
 		Point3D max(floatMin, floatMin, floatMin);
 		setMinMax(min, max);
-	}
-
-	void AABBox::applyTransform(const glm::mat4& transform)
-	{
-		setMinMax(transform * Point4D(mMin, 1.0f), transform * Point4D(mMax, 1.0f));
 	}
 
 	void AABBox::applyOtherBBox(const AABBox& other)

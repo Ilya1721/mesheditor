@@ -23,11 +23,11 @@ namespace RenderSystem
 
         if (mEnabled)
         {
-            mScene->getParentWindow()->enableSceneMovement(false);
+            mScene->enableCameraMovement(false);
         }
         else
         {
-            mScene->getParentWindow()->enableSceneMovement(true);
+            mScene->enableCameraMovement(true);
             toggleSurfaceMovement();
         }
     }
@@ -60,14 +60,12 @@ namespace RenderSystem
 
     void SurfaceExtruder::onMouseClick()
     {
-        if (!mEnabled)
+        if (mEnabled && mScene->getParentWindow()->isMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT))
         {
-            return;
+            mSurfaceIntersection = mScene->getClosestIntersection();
+            toggleSurfaceMovement(!mSurfaceIntersection.surfaceIndices.empty());
+            highlightIntersectedSurface();
         }
-
-        mSurfaceIntersection = mScene->getClosestIntersection();
-        toggleSurfaceMovement(!mSurfaceIntersection.surfaceIndices.empty());
-        highlightIntersectedSurface();
     }
 
     void SurfaceExtruder::highlightIntersectedSurface()

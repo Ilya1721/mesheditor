@@ -36,9 +36,10 @@ namespace RenderSystem
 		Point2D getCursorPos() const;
 		Point3D unProject(const Point2D& cursorPos, float depth = DEFAULT_Z_VALUE) const;
 		Point3D screenCoordinatesToNDC(const Point2D& cursorPos, float depth = DEFAULT_Z_VALUE) const;
+		bool isMouseButtonPressed(int button) const;
+		bool isKeyPressed(int key) const;
 
 		void render();
-		void enableSceneMovement(bool isEnabled);
 
 		void onMouseMove(double cursorX, double cursorY);
 		void onMouseButton(int button, int action, int mods);
@@ -55,9 +56,6 @@ namespace RenderSystem
 	private:
 		int mWidth;
 		int mHeight;
-		bool mSceneMovementEnabled = true;
-
-		MouseButtonPressed mMouseButtonPressed;
 		Point2D mSavedCursorPosition;
 
 		GLFWwindow* mWindow;

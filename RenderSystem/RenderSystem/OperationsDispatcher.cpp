@@ -5,6 +5,9 @@
 #include "SurfaceHighlighter.h"
 #include "SurfaceExtruder.h"
 #include "WireframeRenderer.h"
+#include "Orbit.h"
+#include "Pan.h"
+#include "Zoom.h"
 #include "Operation.h"
 
 namespace RenderSystem
@@ -13,12 +16,13 @@ namespace RenderSystem
         mScene(scene)
     {
         initSurfaceOperations();
+        initCameraMovementOperations();
     }
 
     void OperationsDispatcher::toggle(int key)
     {
-        auto operationIt = mKeyOperationMap.find(key);
-        if (operationIt != mKeyOperationMap.end())
+        auto operationIt = mToggleableOperations.find(key);
+        if (operationIt != mToggleableOperations.end())
         {
             auto& [_, operation] = *operationIt;
             operation->toggle();
@@ -27,15 +31,23 @@ namespace RenderSystem
 
     void OperationsDispatcher::onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos)
     {
-        for (auto& [key, operation] : mKeyOperationMap)
+        for (auto& operation : mOperations)
         {
             operation->onMouseMove(startCursorPos, endCursorPos);
         }
     }
 
+    void OperationsDispatcher::onMouseScroll(double offset)
+    {
+        for (auto& operation : mOperations)
+        {
+            operation->onMouseScroll(offset);
+        }
+    }
+
     void OperationsDispatcher::onMouseClick()
     {
-        for (auto& [key, operation] : mKeyOperationMap)
+        for (auto& operation : mOperations)
         {
             operation->onMouseClick();
         }
@@ -43,8 +55,15 @@ namespace RenderSystem
 
     void OperationsDispatcher::initSurfaceOperations()
     {
-        addOperation<SurfaceHighlighter>(GLFW_KEY_H);
-        addOperation<SurfaceExtruder>(GLFW_KEY_E);
-        addOperation<WireframeRenderer>(GLFW_KEY_W);
+        addToggleableOperation<SurfaceHighlighter>(GLFW_KEY_H);
+        addToggleableOperation<SurfaceExtruder>(GLFW_KEY_E);
+        addToggleableOperation<WireframeRenderer>(GLFW_KEY_W);
+    }
+
+    void OperationsDispatcher::initCameraMovementOperations()
+    {
+        addBasicOperation<Orbit>();
+        addBasicOperation<Pan>();
+        addBasicOperation<Zoom>();
     }
 }

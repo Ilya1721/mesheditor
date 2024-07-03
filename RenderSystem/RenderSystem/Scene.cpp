@@ -8,6 +8,7 @@
 #include <iostream>
 
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/transform.hpp>
 
 #include "GeometryCore/Ray.h"
 #include "GeometryCore/Line.h"
@@ -28,7 +29,8 @@ namespace RenderSystem
 	Scene::Scene(const std::string& meshFilePath, Window* parentWindow) :
 		mParentWindow(parentWindow),
 		mRootObject(MeshCore::Object3D(nullptr, MeshFilesLoader::loadSTL(meshFilePath))),
-		mCamera(&mRenderer.getShaderTransformationSystem())
+		mCamera(&mRenderer.getShaderTransformationSystem()),
+		mCameraMovementEnabled(true)
 	{
 		init();
 	}
@@ -72,17 +74,29 @@ namespace RenderSystem
 		mRenderer.getRenderBuffer().setRenderData(mRootObject.getMesh().getRenderData());
 	}
 
+	void Scene::enableCameraMovement(bool isEnabled)
+	{
+		mCameraMovementEnabled = isEnabled;
+	}
+
 	MeshCore::RaySurfaceIntersection Scene::getClosestIntersection(bool intersectSurface)
 	{
+		const auto& rootBBox = mRootObject.getBBox();
 		auto nearCursorPosInWorldSpace = mParentWindow->unProject(mParentWindow->getCursorPos(), 0.0f);
 		auto farCursorPosInWorldSpace = mParentWindow->unProject(mParentWindow->getCursorPos(), 1.0f);
 		Ray castedRay { nearCursorPosInWorldSpace, farCursorPosInWorldSpace - nearCursorPosInWorldSpace };
-		if (!mRootObject.getBBox().findIntersection(castedRay).has_value())
+		auto transformedCastedRay = glm::translate(rootBBox.getCenter()) * castedRay;
+		if (!rootBBox.findIntersection(transformedCastedRay).has_value())
 		{
 			return {};
 		}
 
-		return mRootObject.findIntersection(castedRay, intersectSurface);
+		return mRootObject.findIntersection(transformedCastedRay, intersectSurface);
+	}
+
+	bool Scene::isCameraMovementEnabled() const
+	{
+		return mCameraMovementEnabled;
 	}
 
 	Camera& Scene::getCamera()

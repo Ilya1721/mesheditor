@@ -23,18 +23,29 @@ namespace RenderSystem
 
         void toggle(int key);
         void onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos);
+        void onMouseScroll(double offset);
         void onMouseClick();
 
     private:
         void initSurfaceOperations();
+        void initCameraMovementOperations();
+
         template<typename T>
-        void addOperation(int key) requires std::derived_from<T, Operation>
+        void addToggleableOperation(int key) requires std::derived_from<T, Operation>
         {
-            mKeyOperationMap.insert({ key, std::make_unique<T>(mScene) });
+            addBasicOperation<T>();
+            mToggleableOperations.insert({ key, mOperations.back().get() });
+        }
+
+        template<typename T>
+        void addBasicOperation() requires std::derived_from<T, Operation>
+        {
+            mOperations.emplace_back(std::make_unique<T>(mScene));
         }
 
     private:
-        std::unordered_map<int, std::unique_ptr<Operation>> mKeyOperationMap;
+        std::unordered_map<int, Operation*> mToggleableOperations;
+        std::vector<std::unique_ptr<Operation>> mOperations;
         Scene* mScene;
     };
 }

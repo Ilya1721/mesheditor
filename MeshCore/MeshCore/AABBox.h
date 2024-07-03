@@ -23,8 +23,7 @@ namespace MeshCore
 	public:
 		AABBox();
 
-		void applyMesh(const Mesh& mesh, const glm::mat4& meshTransform);
-		void applyTransform(const glm::mat4& transform);
+		void applyMesh(const Mesh& mesh);
 		void applyOtherBBox(const AABBox& other);
 		void clear();
 

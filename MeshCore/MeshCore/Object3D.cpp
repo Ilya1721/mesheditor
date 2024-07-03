@@ -120,7 +120,7 @@ namespace MeshCore
 	{
 		TreeWalker walker(this);
 		walker.forEach([this](Object3D* object) {
-			mBBox.applyMesh(object->getMesh(), object->getTransform());
+			mBBox.applyMesh(object->getMesh());
 		});
 		setTransform(glm::translate(-mBBox.getCenter()));
 	}

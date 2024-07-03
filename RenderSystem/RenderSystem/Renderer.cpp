@@ -78,6 +78,7 @@ namespace RenderSystem
 		mSceneRootObject = sceneRootObject;
 		initShaders();
 		mShaderTransformationSystem.init(mShaderProgram);
+		mShaderTransformationSystem.setModel(glm::value_ptr(mSceneRootObject->getTransform()));
 		mLighting.init(mShaderProgram);
 		addInitialExtraPrimitives();
 		mRenderBuffer.bind();
@@ -134,19 +135,19 @@ namespace RenderSystem
 
 	void Renderer::renderScene()
 	{
-		mShaderTransformationSystem.setModel(glm::value_ptr(mSceneRootObject->getTransform()));
 		glDrawArrays(GL_TRIANGLES, 0, mRenderBuffer.getRenderData().getVertexCount());
-		mShaderTransformationSystem.setModel(glm::value_ptr(glm::mat4(1.0f)));
 	}
 
 	void Renderer::invokeExtraRenderAction(const std::function<void()>& action, bool loadBuffer)
 	{
 		mExtraRenderBuffer.bind();
+		mShaderTransformationSystem.setModel(glm::value_ptr(glm::mat4(1.0f)));
 		action();
 		if (loadBuffer)
 		{
 			mExtraRenderBuffer.load();
 		}
+		mShaderTransformationSystem.setModel(glm::value_ptr(mSceneRootObject->getTransform()));
 		mRenderBuffer.bind();
 	}
 
