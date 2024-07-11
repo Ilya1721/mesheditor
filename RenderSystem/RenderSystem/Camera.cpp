@@ -1,6 +1,7 @@
 #include "Camera.h"
 
 #include <iostream>
+#include <algorithm>
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/vector_angle.hpp>
@@ -11,6 +12,8 @@
 #include "GeometryCore/Ray.h"
 #include "GeometryCore/Plane.h"
 #include "GeometryCore/Numeric.h"
+#include "GeometryCore/Transforms.h"
+#include "GeometryCore/Constants.h"
 #include "MeshCore/AABBox.h"
 
 #include "Constants.h"
@@ -93,18 +96,6 @@ namespace RenderSystem
 		});
 	}
 
-	void Camera::orbit(const Point3D& startPointInNDC, const Point3D& endPointInNDC)
-	{
-		invokeEditOperation([&startPointInNDC, &endPointInNDC, this]() {
-			auto startPointInNDCWithZ = getCursorPosInNDCWithZ(startPointInNDC);
-			auto endPointInNDCWithZ = getCursorPosInNDCWithZ(endPointInNDC);
-			auto orbitTransform = getOrbitTransform(startPointInNDCWithZ, endPointInNDCWithZ);
-			auto eye = Point3D(orbitTransform * glm::vec4(mEye - mTarget, 1.0f));
-			auto up = Vector3D(orbitTransform * glm::vec4(mUp, 0.0f));
-			setEyeTargetUp(eye + mTarget, mTarget, up);
-		});
-	}
-
 	void Camera::zoom(float step)
 	{
 		invokeEditOperation([&step, this]() {
@@ -147,10 +138,24 @@ namespace RenderSystem
 		}
 
 		auto rotationAxisInNDC = glm::cross(startPosInNDCWithZ, endPosInNDCWithZ);
-		auto rotationAxisInCameraSpace = glm::inverse(calculateViewMatrixWithTargetAtOrigin()) * Vector4D(rotationAxisInNDC, 0.0f);
-		auto unitRotationAxisInCameraSpace = glm::normalize(Vector3D(rotationAxisInCameraSpace));
+		auto rotationAxisInCameraSpace = transformVector(rotationAxisInNDC, glm::inverse(calculateViewMatrixWithTargetAtOrigin()));
+		auto unitRotationAxisInCameraSpace = glm::normalize(rotationAxisInCameraSpace);
 
 		return glm::rotate(-rotationAngle * ORBIT_SPEED_COEF, unitRotationAxisInCameraSpace);
+	}
+
+	glm::mat4 Camera::getSmoothOrbitTransform(float yaw, float pitch) const
+	{
+		return glm::rotate(pitch, mRight) * glm::rotate(-yaw, Vector3D(0.0f, 1.0f, 0.0f));
+	}
+
+	glm::mat4 Camera::getCorrectionOrbitTransform() const
+	{
+		Vector3D yAxis(0.0f, 1.0f, 0.0f);
+		auto angle = glm::angle(mRight, yAxis) - HALF_PI;
+		auto rotationAxis = glm::cross(mRight, yAxis);
+
+		return glm::rotate(angle, rotationAxis);
 	}
 
 	void Camera::validateCamera() const
@@ -200,6 +205,30 @@ namespace RenderSystem
 			auto distanceToCamera = fov > 0.0f ? calculateDistanceToCamera(bbox, fov) : 0.0f;
 			Point3D eye(mEye.x, mEye.y, bbox.getMax().z + distanceToCamera);
 			setEyeTargetUp(eye, mTarget, mUp);
+		});
+	}
+
+	void Camera::rotateCamera(const glm::mat4& rotationTransform)
+	{
+		auto cameraInverseDir = transformVector(mEye - mTarget, rotationTransform);
+		auto up = transformVector(mUp, rotationTransform);
+		setEyeTargetUp(mTarget + cameraInverseDir, mTarget, up);
+	}
+
+	void Camera::rawOrbit(const Point3D& startPointInNDC, const Point3D& endPointInNDC)
+	{
+		invokeEditOperation([&startPointInNDC, &endPointInNDC, this]() {
+			auto startPointInNDCWithZ = getCursorPosInNDCWithZ(startPointInNDC);
+			auto endPointInNDCWithZ = getCursorPosInNDCWithZ(endPointInNDC);
+			rotateCamera(getOrbitTransform(startPointInNDCWithZ, endPointInNDCWithZ));
+		});
+	}
+
+	void Camera::smoothOrbit(float xOffset, float yOffset)
+	{
+		invokeEditOperation([&xOffset, &yOffset, this]() {
+			rotateCamera(getSmoothOrbitTransform(xOffset * ARCBALL_SENSITIVITY, yOffset * ARCBALL_SENSITIVITY));
+			rotateCamera(getCorrectionOrbitTransform());
 		});
 	}
 

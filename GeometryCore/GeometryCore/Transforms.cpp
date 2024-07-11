@@ -26,4 +26,14 @@ namespace GeometryCore
 
         return glm::translate(destinationPoint - sourcePoint);
     }
+
+    Vector3D transformVector(const Vector3D& vec, const glm::mat4& transform)
+    {
+        return transform * Vector4D(vec, 0.0f);
+    }
+
+    Point3D transformPoint(const Point3D& vec, const glm::mat4& transform)
+    {
+        return transform * Point4D(vec, 1.0f);
+    }
 }

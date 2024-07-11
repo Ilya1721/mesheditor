@@ -12,6 +12,7 @@
 
 #include "GeometryCore/Ray.h"
 #include "GeometryCore/Line.h"
+#include "GeometryCore/Transforms.h"
 #include "MeshFilesLoader/MeshFilesLoader.h"
 #include "MeshCore/Intersection.h"
 #include "MeshCore/Mesh.h"
@@ -49,7 +50,7 @@ namespace RenderSystem
 
 	void Scene::adjustLightPos()
 	{
-		Point3D lightPosInCameraSpace = mCamera.getViewMatrix() * Point4D(0.0f, LIGHT_SOURCE_POS_Y, FAR_PLANE_DISTANCE, 0.0f);
+		Point3D lightPosInCameraSpace = transformPoint(Point3D(0.0f, LIGHT_SOURCE_POS_Y, FAR_PLANE_DISTANCE), mCamera.getViewMatrix());
 		mRenderer.getLighting().setLightPos(glm::value_ptr(lightPosInCameraSpace));
 	}
 
@@ -65,7 +66,7 @@ namespace RenderSystem
 			mCamera.orthoAdjust(mRootObject.getBBox());
 		}
 
-		Point3D cameraPosInCameraSpace = mCamera.getViewMatrix() * Point4D(mCamera.getEye(), 1.0f);
+		Point3D cameraPosInCameraSpace = transformPoint(mCamera.getEye(), mCamera.getViewMatrix());
 		mRenderer.getLighting().setCameraPos(glm::value_ptr(cameraPosInCameraSpace));
 	}
 

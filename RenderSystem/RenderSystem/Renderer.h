@@ -38,7 +38,6 @@ namespace RenderSystem
 		void toggleWireframe();
 		void setHighlightedFaces(const std::vector<int>& facesIndices);
 
-		void renderAxes(float length = 10.0f);
 		void renderVerticesNormals(const std::vector<MeshCore::Vertex>& vertices);
 		void renderLine(const Point3D& startPos, const Point3D& endPos, const Material& material = GREEN_MATERIAL, bool withArrow = false);
 
@@ -53,6 +52,7 @@ namespace RenderSystem
 		void addLineExtraPrimitive(const Point3D& start, const Point3D& end, const Material& material);
 		void addPlaneExtraPrimitive(const Point3D& origin, const Vector3D& normal, float width, float height, const Material& material);
 
+		void addGlobalAxes(float length = 10.0f);
 		void renderExtra();
 		void renderHighlightedFaces();
 		void renderWireframe();

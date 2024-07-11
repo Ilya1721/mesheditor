@@ -17,7 +17,9 @@ namespace RenderSystem
 
         if (mScene->isCameraMovementEnabled() && middleMouseButtonPressed && !shiftKeyPressed)
         {
-            mScene->getCamera().orbit(window->screenCoordinatesToNDC(startCursorPos), window->screenCoordinatesToNDC(endCursorPos));
+            const auto offsetX = endCursorPos.x - startCursorPos.x;
+            const auto offsetY = startCursorPos.y - endCursorPos.y;
+            mScene->getCamera().smoothOrbit(offsetX, offsetY);
         }
     }
 }

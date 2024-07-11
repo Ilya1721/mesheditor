@@ -219,13 +219,11 @@ namespace RenderSystem
 		addExtraPrimitive(planePrimitive);
 	}
 
-	void Renderer::renderAxes(float length)
+	void Renderer::addGlobalAxes(float length)
 	{
-		invokeExtraRenderAction([this, &length]() {
-			addLineExtraPrimitive(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(length, 0.0f, 0.0f), BLUE_MATERIAL);
-			addLineExtraPrimitive(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, length, 0.0f), RED_MATERIAL);
-			addLineExtraPrimitive(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, length), GREEN_MATERIAL);
-		}, true);
+		addLineExtraPrimitive(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(length, 0.0f, 0.0f), BLUE_MATERIAL);
+		addLineExtraPrimitive(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, length, 0.0f), RED_MATERIAL);
+		addLineExtraPrimitive(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, length), GREEN_MATERIAL);
 	}
 
 	void Renderer::renderVerticesNormals(const std::vector<MeshCore::Vertex>& vertices)
