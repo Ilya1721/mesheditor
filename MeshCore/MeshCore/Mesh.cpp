@@ -13,6 +13,7 @@
 #include "Constants.h"
 #include "EdgeWalker.h"
 #include "Intersection.h"
+#include "Object3D.h"
 
 using namespace GeometryCore;
 
@@ -50,8 +51,10 @@ namespace
 
 namespace MeshCore
 {
-	Mesh::Mesh(const std::vector<Vertex>& vertices)
-		: mVertices(vertices), mIntersectionTempData{-1, 0}
+	Mesh::Mesh(const std::vector<Vertex>& vertices) : 
+		mVertices(vertices),
+		mIntersectionTempData{-1, 0},
+		mParentObject(nullptr)
 	{
 		init();
 	}
@@ -71,7 +74,6 @@ namespace MeshCore
 		{
 			mRenderData.append(vertex);
 		}
-		//mRenderData.prepareCompactData();
 	}
 
 	void Mesh::prepareHalfEdgeDataStructure()
@@ -86,8 +88,6 @@ namespace MeshCore
 		if (SMOOTHING_ENABLED)
 		{
 			averageFaceNormals();
-			//mRenderData.clear();
-			//prepareRenderData();
 		}
 	}
 
@@ -100,6 +100,11 @@ namespace MeshCore
 				mRenderData.updateVertex(originalVertexData);
 			}
 		}
+	}
+
+	void Mesh::setParentObject(Object3D* parentObject)
+	{
+		mParentObject = parentObject;
 	}
 
 	const std::unordered_map<Vertex, UniqueVertex>& Mesh::getUniqueVertices() const
@@ -228,6 +233,11 @@ namespace MeshCore
 	const RenderData& Mesh::getRenderData() const
 	{
 		return mRenderData;
+	}
+
+	Object3D* Mesh::getParentObject() const
+	{
+		return mParentObject;
 	}
 
 	std::optional<Point3D> Mesh::findIntersection(const Ray& ray) const

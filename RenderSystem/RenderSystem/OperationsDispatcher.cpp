@@ -8,6 +8,7 @@
 #include "Orbit.h"
 #include "Pan.h"
 #include "Zoom.h"
+#include "Picker.h"
 #include "Operation.h"
 
 namespace RenderSystem
@@ -17,6 +18,7 @@ namespace RenderSystem
     {
         initSurfaceOperations();
         initCameraMovementOperations();
+        initSceneOperations();
     }
 
     void OperationsDispatcher::toggle(int key)
@@ -65,5 +67,10 @@ namespace RenderSystem
         addBasicOperation<Orbit>();
         addBasicOperation<Pan>();
         addBasicOperation<Zoom>();
+    }
+
+    void OperationsDispatcher::initSceneOperations()
+    {
+        addBasicOperation<Picker>();
     }
 }

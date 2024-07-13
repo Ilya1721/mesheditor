@@ -27,12 +27,12 @@ namespace MeshCore
 
 	void Object3D::init()
 	{
-		calculateBBox();
-
+		mMesh->setParentObject(this);
 		if (mParent)
 		{
 			mParent->appendChild(this);
 		}
+		calculateBBox();
 	}
 
 	void Object3D::setParent(Object3D* parent)

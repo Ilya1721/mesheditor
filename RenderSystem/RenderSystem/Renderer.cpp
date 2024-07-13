@@ -57,6 +57,7 @@ namespace RenderSystem
 		mFragmentShader(),
 		mShaderProgram(),
 		mRenderWireframe(false),
+		mHighlightWholeObject(false),
 		mHighlightedFacesIndices(),
 		mLighting(),
 		mRenderBuffer(),
@@ -133,6 +134,13 @@ namespace RenderSystem
 		});
 	}
 
+	void Renderer::renderWholeObjectHighlighted()
+	{
+		renderOverlayPrimitives(mHighlightWholeObject, HIGHLIGHT_MATERIAL, [this]() {
+			glDrawArrays(GL_TRIANGLES, 0, mRenderBuffer.getRenderData().getVertexCount());
+		});
+	}
+
 	void Renderer::renderScene()
 	{
 		glDrawArrays(GL_TRIANGLES, 0, mRenderBuffer.getRenderData().getVertexCount());
@@ -171,6 +179,7 @@ namespace RenderSystem
 		renderScene();
 		renderHighlightedFaces();
 		renderWireframe();
+		renderWholeObjectHighlighted();
 		renderExtra();
 	}
 
@@ -192,6 +201,11 @@ namespace RenderSystem
 	void Renderer::toggleWireframe()
 	{
 		mRenderWireframe = !mRenderWireframe;
+	}
+
+	void Renderer::highlightWholeObject(bool isToHighlight)
+	{
+		mHighlightWholeObject = isToHighlight;
 	}
 
 	void Renderer::setHighlightedFaces(const std::vector<int>& facesIndices)

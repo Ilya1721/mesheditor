@@ -5,8 +5,8 @@
 
 namespace RenderSystem
 {
-    Orbit::Orbit(Scene* scene) 
-        : Operation(scene)
+    Orbit::Orbit(Scene* scene) :
+        Operation(scene)
     {}
 
     void Orbit::onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos)

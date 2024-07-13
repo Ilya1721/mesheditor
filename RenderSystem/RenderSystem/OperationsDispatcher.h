@@ -29,6 +29,7 @@ namespace RenderSystem
     private:
         void initSurfaceOperations();
         void initCameraMovementOperations();
+        void initSceneOperations();
 
         template<typename T>
         void addToggleableOperation(int key) requires std::derived_from<T, Operation>

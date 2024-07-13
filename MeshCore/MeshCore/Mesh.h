@@ -22,6 +22,7 @@ namespace MeshCore
 	struct Face;
 	struct Surface;
 	struct RaySurfaceIntersection;
+	class Object3D;
 
 	struct IntersectionTempData
 	{
@@ -38,11 +39,13 @@ namespace MeshCore
 		bool operator==(const Mesh& other) const = default;
 
 		void updateVertices(const std::unordered_set<UniqueVertex*>& vertices);
+		void setParentObject(Object3D* parentObject);
 
 		const std::unordered_map<Vertex, UniqueVertex>& getUniqueVertices() const;
 		const std::vector<Vertex>& getVertices() const;
 		int getNumberOfFaces() const;
 		const RenderData& getRenderData() const;
+		Object3D* getParentObject() const;
 		std::optional<Point3D> findIntersection(const Ray& ray) const override;
 		RaySurfaceIntersection findIntersection(const Ray& ray, bool intersectSurface, int passedFacesCount = 0);
 
@@ -68,6 +71,7 @@ namespace MeshCore
 		std::unordered_map<Vertex, UniqueVertex> mUniqueVerticesMap;
 		std::unordered_map<Face*, int> mFaceIndexMap;
 		RenderData mRenderData;
+		Object3D* mParentObject;
 		mutable IntersectionTempData mIntersectionTempData;
 	};
 }

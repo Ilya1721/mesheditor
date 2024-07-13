@@ -12,7 +12,7 @@ namespace MeshCore
 
     struct RaySurfaceIntersection
     {
-        Surface intersectedSurface;
+        Surface intersectedSurface {};
         std::vector<int> surfaceIndices;
         Point3D point {};
 

@@ -5,6 +5,8 @@
 
 #include "GeometryCore/Typedefs.h"
 
+#include "Object3D.h"
+
 namespace GeometryCore
 {
     struct Plane;
@@ -22,6 +24,7 @@ namespace MeshCore
         Surface(Face* initialFace, bool collectAdjacentFaces = true);
 
         Plane getPerpendicularPlane() const;
+        Object3D* getParentObject() const;
 
         std::unordered_set<Face*> faces;
         Vector3D normal{};

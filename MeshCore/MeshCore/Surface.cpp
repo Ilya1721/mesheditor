@@ -25,4 +25,9 @@ namespace MeshCore
 
         return { facePoints[0], planeNormal };
     }
+
+    Object3D* Surface::getParentObject() const
+    {
+        return mInitialFace->parentMesh->getParentObject();
+    }
 }

@@ -36,6 +36,7 @@ namespace RenderSystem
 		void init(const MeshCore::Object3D* sceneRootObject);
 		void render();
 		void toggleWireframe();
+		void highlightWholeObject(bool isToHighlight);
 		void setHighlightedFaces(const std::vector<int>& facesIndices);
 
 		void renderVerticesNormals(const std::vector<MeshCore::Vertex>& vertices);
@@ -56,6 +57,7 @@ namespace RenderSystem
 		void renderExtra();
 		void renderHighlightedFaces();
 		void renderWireframe();
+		void renderWholeObjectHighlighted();
 		void renderScene();
 		void renderOverlayPrimitives(bool renderCondition, const Material& material, const std::function<void()>& renderFunc);
 
@@ -65,6 +67,7 @@ namespace RenderSystem
 		int mShaderProgram;
 
 		bool mRenderWireframe;
+		bool mHighlightWholeObject;
 		std::vector<int> mHighlightedFacesIndices;
 
 		ShaderTransformationSystem mShaderTransformationSystem;

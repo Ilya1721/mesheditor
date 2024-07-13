@@ -25,9 +25,7 @@ namespace RenderSystem
     {
         if (mEnabled)
         {
-            auto cursorPos = mScene->getParentWindow()->getCursorPos();
-            auto surfaceIntersection = mScene->getClosestIntersection();
-            mScene->getRenderer().setHighlightedFaces(surfaceIntersection.surfaceIndices);
+            mScene->getRenderer().setHighlightedFaces(mScene->getClosestIntersection().surfaceIndices);
         }
     }
 }

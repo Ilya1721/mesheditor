@@ -130,6 +130,7 @@
     <ClCompile Include="RenderSystem\OperationsDispatcher.cpp" />
     <ClCompile Include="RenderSystem\Orbit.cpp" />
     <ClCompile Include="RenderSystem\Pan.cpp" />
+    <ClCompile Include="RenderSystem\Picker.cpp" />
     <ClCompile Include="RenderSystem\RenderBuffer.cpp" />
     <ClCompile Include="RenderSystem\Renderer.cpp" />
     <ClCompile Include="RenderSystem\RenderLogger.cpp" />
@@ -156,6 +157,7 @@
     <ClInclude Include="RenderSystem\OperationsDispatcher.h" />
     <ClInclude Include="RenderSystem\Orbit.h" />
     <ClInclude Include="RenderSystem\Pan.h" />
+    <ClInclude Include="RenderSystem\Picker.h" />
     <ClInclude Include="RenderSystem\RenderBuffer.h" />
     <ClInclude Include="RenderSystem\Renderer.h" />
     <ClInclude Include="RenderSystem\RenderLogger.h" />
