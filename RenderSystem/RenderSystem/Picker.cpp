@@ -9,8 +9,7 @@
 namespace RenderSystem
 {
     Picker::Picker(Scene* scene) :
-        Operation(scene),
-        mPickedObject(nullptr)
+        Operation(scene)
     {}
 
     void Picker::onMouseClick()
@@ -23,7 +22,7 @@ namespace RenderSystem
         auto intersection = mScene->getClosestIntersection();
         if (!intersection.surfaceIndices.empty())
         {
-            mPickedObject = intersection.intersectedSurface.getParentObject();
+            mScene->setPickedObject(intersection.intersectedSurface.getParentObject());
             mScene->getRenderer().highlightWholeObject(true);
         }
         else

@@ -31,6 +31,7 @@ namespace RenderSystem
 		mParentWindow(parentWindow),
 		mRootObject(MeshCore::Object3D(nullptr, MeshFilesLoader::loadSTL(meshFilePath))),
 		mCamera(&mRenderer.getShaderTransformationSystem()),
+		mPickedObject(nullptr),
 		mCameraMovementEnabled(true)
 	{
 		init();
@@ -40,6 +41,11 @@ namespace RenderSystem
 	{
 		mRenderer.init(&mRootObject);
 		updateRenderBuffer();
+	}
+
+	void Scene::setPickedObject(MeshCore::Object3D* pickedObject)
+	{
+		mPickedObject = pickedObject;
 	}
 
 	void Scene::adjustCameraAndLight()

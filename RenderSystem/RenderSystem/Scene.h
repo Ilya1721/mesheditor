@@ -28,6 +28,7 @@ namespace RenderSystem
 		MeshCore::RaySurfaceIntersection getClosestIntersection(bool intersectSurface = true);
 		bool isCameraMovementEnabled() const;
 
+		void setPickedObject(MeshCore::Object3D* pickedObject);
 		void adjustCameraAndLight();
 		void updateRenderBuffer();
 		void enableCameraMovement(bool isEnabled);
@@ -42,6 +43,7 @@ namespace RenderSystem
 		Renderer mRenderer;
 		Camera mCamera;
 		MeshCore::Object3D mRootObject;
+		MeshCore::Object3D* mPickedObject;
 		bool mCameraMovementEnabled;
 	};
 }
