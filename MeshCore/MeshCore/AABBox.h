@@ -26,6 +26,7 @@ namespace MeshCore
 		void applyMesh(const Mesh& mesh);
 		void applyOtherBBox(const AABBox& other);
 		void clear();
+		void applyTransform(const glm::mat4& transform);
 
 		Point3D getCenter() const;
 		const Point3D& getMin() const;

@@ -9,7 +9,7 @@
 #include "Pan.h"
 #include "Zoom.h"
 #include "Picker.h"
-#include "Operation.h"
+#include "Mover.h"
 
 namespace RenderSystem
 {
@@ -72,5 +72,6 @@ namespace RenderSystem
     void OperationsDispatcher::initSceneOperations()
     {
         addBasicOperation<Picker>();
+        addToggleableOperation<Mover>(GLFW_KEY_M);
     }
 }

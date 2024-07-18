@@ -126,6 +126,7 @@
     <ClCompile Include="RenderSystem\Camera.cpp" />
     <ClCompile Include="RenderSystem\glad.c" />
     <ClCompile Include="RenderSystem\Lighting.cpp" />
+    <ClCompile Include="RenderSystem\Mover.cpp" />
     <ClCompile Include="RenderSystem\Operation.cpp" />
     <ClCompile Include="RenderSystem\OperationsDispatcher.cpp" />
     <ClCompile Include="RenderSystem\Orbit.cpp" />
@@ -153,6 +154,7 @@
     <ClInclude Include="RenderSystem\Light.h" />
     <ClInclude Include="RenderSystem\Lighting.h" />
     <ClInclude Include="RenderSystem\Material.h" />
+    <ClInclude Include="RenderSystem\Mover.h" />
     <ClInclude Include="RenderSystem\Operation.h" />
     <ClInclude Include="RenderSystem\OperationsDispatcher.h" />
     <ClInclude Include="RenderSystem\Orbit.h" />

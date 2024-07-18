@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <string>
+#include <functional>
 
 #include "MeshCore/Object3D.h"
 #include "GeometryCore/Typedefs.h"
@@ -27,11 +28,13 @@ namespace RenderSystem
 		MeshCore::Object3D& getRootObject();
 		MeshCore::RaySurfaceIntersection getClosestIntersection(bool intersectSurface = true);
 		bool isCameraMovementEnabled() const;
+		MeshCore::Object3D* getPickedObject() const;
 
 		void setPickedObject(MeshCore::Object3D* pickedObject);
 		void adjustCameraAndLight();
 		void updateRenderBuffer();
 		void enableCameraMovement(bool isEnabled);
+		void invokeModelTransformAction(const std::function<void()>& action);
 
 	private:
 		void init();

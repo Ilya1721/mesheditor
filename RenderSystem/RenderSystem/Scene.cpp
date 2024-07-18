@@ -86,24 +86,34 @@ namespace RenderSystem
 		mCameraMovementEnabled = isEnabled;
 	}
 
+	void Scene::invokeModelTransformAction(const std::function<void()>& action)
+	{
+		action();
+		mRenderer.getShaderTransformationSystem().setModel(glm::value_ptr(mRootObject.getTransform()));
+	}
+
 	MeshCore::RaySurfaceIntersection Scene::getClosestIntersection(bool intersectSurface)
 	{
-		const auto& rootBBox = mRootObject.getBBox();
 		auto nearCursorPosInWorldSpace = mParentWindow->unProject(mParentWindow->getCursorPos(), 0.0f);
 		auto farCursorPosInWorldSpace = mParentWindow->unProject(mParentWindow->getCursorPos(), 1.0f);
 		Ray castedRay { nearCursorPosInWorldSpace, farCursorPosInWorldSpace - nearCursorPosInWorldSpace };
-		auto transformedCastedRay = glm::translate(rootBBox.getCenter()) * castedRay;
-		if (!rootBBox.findIntersection(transformedCastedRay).has_value())
+
+		if (mRootObject.getBBox().findIntersection(castedRay).has_value())
 		{
-			return {};
+			return mRootObject.findIntersection(castedRay, intersectSurface);
 		}
 
-		return mRootObject.findIntersection(transformedCastedRay, intersectSurface);
+		return {};
 	}
 
 	bool Scene::isCameraMovementEnabled() const
 	{
 		return mCameraMovementEnabled;
+	}
+
+	MeshCore::Object3D* Scene::getPickedObject() const
+	{
+		return mPickedObject;
 	}
 
 	Camera& Scene::getCamera()

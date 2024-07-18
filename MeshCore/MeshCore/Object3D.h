@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <unordered_set>
+#include <functional>
 
 #include "GeometryCore/Intersectable.h"
 
@@ -39,12 +40,14 @@ namespace MeshCore
 		void removeChild(Object3D* child);
 		void calculateBBox();
 		void setTransform(const glm::mat4& transform);
+		void updateTransform(const glm::mat4& transform);
 
 	private:
 		void init();
 		void setParent(Object3D* parent);
 		void updateParentBBox(Object3D* parent) const;
 		void recalcParentBBox(Object3D* parent) const;
+		void invokeTransformAction(const std::function<void()>& action, const glm::mat4& transform);
 
 	private:
 		Object3D* mParent;

@@ -78,7 +78,16 @@ namespace MeshCore
 
 	void Object3D::setTransform(const glm::mat4& transform)
 	{
-		mTransform = transform;
+		invokeTransformAction([this, &transform]() {
+			mTransform = transform;
+		}, transform);
+	}
+
+	void Object3D::updateTransform(const glm::mat4& transform)
+	{
+		invokeTransformAction([this, &transform]() {
+			mTransform = transform * mTransform;
+		}, transform);
 	}
 
 	const AABBox& Object3D::getBBox() const
@@ -162,5 +171,11 @@ namespace MeshCore
 			parent->calculateBBox();
 			recalcParentBBox(parent->mParent);
 		}
+	}
+
+	void Object3D::invokeTransformAction(const std::function<void()>& action, const glm::mat4& transform)
+	{
+		action();
+		mBBox.applyTransform(transform);
 	}
 }

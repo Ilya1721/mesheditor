@@ -268,14 +268,15 @@ namespace MeshCore
 	RaySurfaceIntersection Mesh::findIntersection(const Ray& ray, bool intersectSurface, int passedFacesCount)
 	{
 		RaySurfaceIntersection rayFaceIntersection;
-		auto intersection = findIntersection(ray);
+		auto invertedRay = glm::inverse(mParentObject->getTransform()) * ray;
+		auto meshIntersection = findIntersection(invertedRay);
 
-		if (intersection.has_value())
+		if (meshIntersection.has_value())
 		{
 			auto faceIdx = mIntersectionTempData.intersectedFaceIdx;
 			Surface surface(mFaces[faceIdx].get(), intersectSurface);
 			auto facesIndices = intersectSurface ? getIntersectedSurfaceIndices(surface) : std::vector<int>{ faceIdx + passedFacesCount };
-			rayFaceIntersection.setClosest({ std::move(surface), facesIndices, intersection.value() }, ray.origin);
+			rayFaceIntersection.setClosest({ std::move(surface), facesIndices, meshIntersection.value() }, invertedRay.origin);
 		}
 
 		return rayFaceIntersection;

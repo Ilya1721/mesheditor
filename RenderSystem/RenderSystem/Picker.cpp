@@ -14,7 +14,8 @@ namespace RenderSystem
 
     void Picker::onMouseClick()
     {
-        if (!mScene->getParentWindow()->isMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT))
+        if (!mScene->getParentWindow()->isMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT) ||
+            !mScene->isCameraMovementEnabled())
         {
             return;
         }
@@ -27,6 +28,7 @@ namespace RenderSystem
         }
         else
         {
+            mScene->setPickedObject(nullptr);
             mScene->getRenderer().highlightWholeObject(false);
         }
     }
