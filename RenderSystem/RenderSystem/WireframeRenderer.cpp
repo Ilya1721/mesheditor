@@ -1,6 +1,7 @@
 #include "WireframeRenderer.h"
 
 #include "Scene.h"
+#include "Window.h"
 
 namespace RenderSystem
 {
@@ -8,8 +9,11 @@ namespace RenderSystem
         Operation(scene)
     {}
 
-    void WireframeRenderer::toggle()
+    void WireframeRenderer::onKeyPressed(int key)
     {
-        mScene->getRenderer().toggleWireframe();
+        if (key == GLFW_KEY_W)
+        {
+            mScene->getRenderer().toggleWireframe();
+        }
     }
 }

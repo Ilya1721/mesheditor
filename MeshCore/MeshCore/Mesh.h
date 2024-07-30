@@ -33,6 +33,7 @@ namespace MeshCore
 	class Mesh : public Intersectable
 	{
 	public:
+		Mesh() = default;
 		Mesh(const std::vector<Vertex>& vertices);
 		Mesh(Mesh&& other) = delete;
 		~Mesh();

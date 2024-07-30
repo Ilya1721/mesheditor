@@ -97,7 +97,7 @@ namespace MeshCore
 		{
 			for (auto& originalVertexData : vertex->originalVertices)
 			{
-				mRenderData.updateVertex(originalVertexData);
+				mParentObject->updateRenderData(originalVertexData);
 			}
 		}
 	}

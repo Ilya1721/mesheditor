@@ -19,7 +19,7 @@ namespace MeshCore
 	public:
 		void append(const RenderData& other);
 		void append(const Vertex& vertex);
-		void updateVertex(const OriginalVertexData& vertexData);
+		void updateVertex(const OriginalVertexData& vertexData, int offset);
 		void clear();
 
 		const std::vector<float>& getCompactData() const;

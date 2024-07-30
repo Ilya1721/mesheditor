@@ -29,16 +29,18 @@ namespace RenderSystem
 {
 	Scene::Scene(const std::string& meshFilePath, Window* parentWindow) :
 		mParentWindow(parentWindow),
-		mRootObject(MeshCore::Object3D(nullptr, MeshFilesLoader::loadSTL(meshFilePath))),
+		mRootObject(),
 		mCamera(&mRenderer.getShaderTransformationSystem()),
 		mPickedObject(nullptr),
 		mCameraMovementEnabled(true)
 	{
+		mRootObject.addChild(std::make_unique<MeshCore::Object3D>(MeshFilesLoader::loadSTL(meshFilePath)));
 		init();
 	}
 
 	void Scene::init()
 	{
+		mRootObject.setTransform(glm::translate(-mRootObject.getBBox().getCenter()));
 		mRenderer.init(&mRootObject);
 		updateRenderBuffer();
 	}
@@ -78,18 +80,12 @@ namespace RenderSystem
 
 	void Scene::updateRenderBuffer()
 	{
-		mRenderer.getRenderBuffer().setRenderData(mRootObject.getMesh().getRenderData());
+		mRenderer.getRenderBuffer().setRenderData(mRootObject.getRenderData());
 	}
 
 	void Scene::enableCameraMovement(bool isEnabled)
 	{
 		mCameraMovementEnabled = isEnabled;
-	}
-
-	void Scene::invokeModelTransformAction(const std::function<void()>& action)
-	{
-		action();
-		mRenderer.getShaderTransformationSystem().setModel(glm::value_ptr(mRootObject.getTransform()));
 	}
 
 	MeshCore::RaySurfaceIntersection Scene::getClosestIntersection(bool intersectSurface)

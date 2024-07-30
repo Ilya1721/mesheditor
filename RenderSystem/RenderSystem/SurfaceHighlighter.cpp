@@ -11,21 +11,26 @@ namespace RenderSystem
         Operation(scene)
     {}
 
-    void SurfaceHighlighter::toggle()
-    {
-        mEnabled = !mEnabled;
-
-        if (!mEnabled) 
-        {
-            mScene->getRenderer().setHighlightedFaces({});
-        }
-    }
-
     void SurfaceHighlighter::onMouseMove([[maybe_unused]] const Point2D& startCursorPos, [[maybe_unused]] const Point2D& endCursorPos)
     {
         if (mEnabled)
         {
             mScene->getRenderer().setHighlightedFaces(mScene->getClosestIntersection().surfaceIndices);
+        }
+    }
+
+    void SurfaceHighlighter::onKeyPressed(int key)
+    {
+        if (key != GLFW_KEY_H)
+        {
+            return;
+        }
+
+        mEnabled = !mEnabled;
+
+        if (!mEnabled)
+        {
+            mScene->getRenderer().setHighlightedFaces({});
         }
     }
 }

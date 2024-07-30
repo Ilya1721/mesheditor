@@ -8,6 +8,7 @@
 #include "GeometryCore/Line.h"
 #include "GeometryCore/Plane.h"
 #include "MeshCore/Object3D.h"
+#include "MeshCore/Mesh.h"
 
 #include "RenderLogger.h"
 #include "GladTypedefs.h"
@@ -143,7 +144,11 @@ namespace RenderSystem
 
 	void Renderer::renderScene()
 	{
-		glDrawArrays(GL_TRIANGLES, 0, mRenderBuffer.getRenderData().getVertexCount());
+		for (auto& object : MeshCore::Object3D::getAllObjects())
+		{
+			mShaderTransformationSystem.setModel(glm::value_ptr(object->getTransform()));
+			glDrawArrays(GL_TRIANGLES, 0, object->getMesh().getRenderData().getVertexCount());
+		}
 	}
 
 	void Renderer::invokeExtraRenderAction(const std::function<void()>& action, bool loadBuffer)

@@ -16,10 +16,10 @@ namespace RenderSystem
         Operation(Scene* scene);
         virtual ~Operation() = default;
 
-        virtual void toggle() = 0;
         virtual void onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos) = 0;
         virtual void onMouseScroll(double offset) = 0;
         virtual void onMouseClick() = 0;
+        virtual void onKeyPressed(int key) = 0;
 
     protected:
         bool mEnabled = false;

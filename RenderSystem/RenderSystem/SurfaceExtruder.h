@@ -16,10 +16,10 @@ namespace RenderSystem
     public:
         SurfaceExtruder(Scene* scene);
 
-        void toggle() override;
         void onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos) override;
         void onMouseScroll(double offset) override {};
         void onMouseClick() override;
+        void onKeyPressed(int key) override;
 
     private:
         void toggleSurfaceMovement(bool isSurfaceIntersected = false);

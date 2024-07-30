@@ -10,25 +10,14 @@
 #include "Zoom.h"
 #include "Picker.h"
 #include "Mover.h"
+#include "Cloner.h"
 
 namespace RenderSystem
 {
     OperationsDispatcher::OperationsDispatcher(Scene* scene) :
         mScene(scene)
     {
-        initSurfaceOperations();
-        initCameraMovementOperations();
-        initSceneOperations();
-    }
-
-    void OperationsDispatcher::toggle(int key)
-    {
-        auto operationIt = mToggleableOperations.find(key);
-        if (operationIt != mToggleableOperations.end())
-        {
-            auto& [_, operation] = *operationIt;
-            operation->toggle();
-        }
+        initOperations();
     }
 
     void OperationsDispatcher::onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos)
@@ -55,23 +44,27 @@ namespace RenderSystem
         }
     }
 
-    void OperationsDispatcher::initSurfaceOperations()
+    void OperationsDispatcher::onKeyPressed(int key)
     {
-        addToggleableOperation<SurfaceHighlighter>(GLFW_KEY_H);
-        addToggleableOperation<SurfaceExtruder>(GLFW_KEY_E);
-        addToggleableOperation<WireframeRenderer>(GLFW_KEY_W);
+        for (auto& operation : mOperations)
+        {
+            operation->onKeyPressed(key);
+        }
     }
 
-    void OperationsDispatcher::initCameraMovementOperations()
+    void OperationsDispatcher::initOperations()
     {
-        addBasicOperation<Orbit>();
-        addBasicOperation<Pan>();
-        addBasicOperation<Zoom>();
-    }
+        addOperation<SurfaceHighlighter>();
+        addOperation<SurfaceExtruder>();
+        addOperation<WireframeRenderer>();
 
-    void OperationsDispatcher::initSceneOperations()
-    {
-        addBasicOperation<Picker>();
-        addToggleableOperation<Mover>(GLFW_KEY_M);
+        addOperation<Orbit>();
+        addOperation<Pan>();
+        addOperation<Zoom>();
+
+        addOperation<Picker>();
+        addOperation<Mover>();
+
+        addOperation<Cloner>();
     }
 }

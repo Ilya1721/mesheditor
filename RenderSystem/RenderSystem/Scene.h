@@ -34,7 +34,6 @@ namespace RenderSystem
 		void adjustCameraAndLight();
 		void updateRenderBuffer();
 		void enableCameraMovement(bool isEnabled);
-		void invokeModelTransformAction(const std::function<void()>& action);
 
 	private:
 		void init();

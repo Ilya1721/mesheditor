@@ -192,7 +192,7 @@ namespace RenderSystem
 	{
 		if (action == GLFW_PRESS)
 		{
-			mOperationsDispatcher->toggle(key);
+			mOperationsDispatcher->onKeyPressed(key);
 		}
 	}
 }

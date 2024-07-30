@@ -6,16 +6,12 @@
 
 namespace RenderSystem
 {
-    using namespace GeometryCore;
-
-    class Scene;
-
-    class WireframeRenderer : public Operation
+    class Cloner : public Operation
     {
     public:
-        WireframeRenderer(Scene* scene);
+        Cloner(Scene* scene);
 
-        void onMouseMove(const Point2D&, const Point2D&) override {};
+        void onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos) override {};
         void onMouseScroll(double offset) override {};
         void onMouseClick() override {};
         void onKeyPressed(int key) override;

@@ -11,17 +11,20 @@ namespace RenderSystem
         Operation(scene)
     {}
 
-    void Mover::toggle()
-    {
-        mEnabled = !mEnabled;
-    }
-
     void Mover::onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos)
     {
         const auto& pickedObject = mScene->getPickedObject();
         if (mEnabled && pickedObject)
         {
             pickedObject->updateTransform(getTranslationTransform(startCursorPos, endCursorPos));
+        }
+    }
+
+    void Mover::onKeyPressed(int key)
+    {
+        if (key == GLFW_KEY_M)
+        {
+            mEnabled = !mEnabled;
         }
     }
 

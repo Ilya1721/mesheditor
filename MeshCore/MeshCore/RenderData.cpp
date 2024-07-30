@@ -46,9 +46,9 @@ namespace MeshCore
 		}
 	}
 
-	void RenderData::updateVertex(const OriginalVertexData& vertexData)
+	void RenderData::updateVertex(const OriginalVertexData& vertexData, int offset)
 	{
-		for (unsigned int compactDataIdx = vertexData.index * 6, coordIdx = 0; coordIdx < 3; ++compactDataIdx, ++coordIdx)
+		for (unsigned int compactDataIdx = offset + vertexData.index * 6, coordIdx = 0; coordIdx < 3; ++compactDataIdx, ++coordIdx)
 		{
 			mCompactData[compactDataIdx] = vertexData.vertex->pos[coordIdx];
 			mCompactData[compactDataIdx + 3] = vertexData.vertex->normal[coordIdx];

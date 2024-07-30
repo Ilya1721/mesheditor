@@ -17,21 +17,6 @@ namespace RenderSystem
         mSurfaceMovementEnabled(false)
     {}
 
-    void SurfaceExtruder::toggle()
-    {
-        mEnabled = !mEnabled;
-
-        if (mEnabled)
-        {
-            mScene->enableCameraMovement(false);
-        }
-        else
-        {
-            mScene->enableCameraMovement(true);
-            toggleSurfaceMovement();
-        }
-    }
-
     void SurfaceExtruder::onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos)
     {
         if (!mEnabled || mSurfaceIntersection.surfaceIndices.empty() || !mSurfaceMovementEnabled)
@@ -65,6 +50,26 @@ namespace RenderSystem
             mSurfaceIntersection = mScene->getClosestIntersection();
             toggleSurfaceMovement(!mSurfaceIntersection.surfaceIndices.empty());
             highlightIntersectedSurface();
+        }
+    }
+
+    void SurfaceExtruder::onKeyPressed(int key)
+    {
+        if (key != GLFW_KEY_E)
+        {
+            return;
+        }
+
+        mEnabled = !mEnabled;
+
+        if (mEnabled)
+        {
+            mScene->enableCameraMovement(false);
+        }
+        else
+        {
+            mScene->enableCameraMovement(true);
+            toggleSurfaceMovement();
         }
     }
 
