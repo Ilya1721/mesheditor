@@ -58,7 +58,7 @@ namespace RenderSystem
 		mFragmentShader(),
 		mShaderProgram(),
 		mRenderWireframe(false),
-		mHighlightWholeObject(false),
+		mHighlightedObject(nullptr),
 		mHighlightedFacesIndices(),
 		mLighting(),
 		mRenderBuffer(),
@@ -137,17 +137,21 @@ namespace RenderSystem
 
 	void Renderer::renderWholeObjectHighlighted()
 	{
-		renderOverlayPrimitives(mHighlightWholeObject, HIGHLIGHT_MATERIAL, [this]() {
-			glDrawArrays(GL_TRIANGLES, 0, mRenderBuffer.getRenderData().getVertexCount());
+		const auto& objectRenderDataOffsetMap = MeshCore::Object3D::getObjectRenderDataOffsetMap();
+		const auto& highlightedObjectIt = objectRenderDataOffsetMap.find(mHighlightedObject);
+		renderOverlayPrimitives(highlightedObjectIt != objectRenderDataOffsetMap.end(), HIGHLIGHT_MATERIAL, [this, highlightedObjectIt]() {
+			auto& [object, offset] = *highlightedObjectIt;
+			mShaderTransformationSystem.setModel(glm::value_ptr(object->getTransform()));
+			glDrawArrays(GL_TRIANGLES, offset, object->getMesh().getVertices().size());
 		});
 	}
 
 	void Renderer::renderScene()
 	{
-		for (auto& object : MeshCore::Object3D::getAllObjects())
+		for (auto& [object, offset] : MeshCore::Object3D::getObjectRenderDataOffsetMap())
 		{
 			mShaderTransformationSystem.setModel(glm::value_ptr(object->getTransform()));
-			glDrawArrays(GL_TRIANGLES, 0, object->getMesh().getRenderData().getVertexCount());
+			glDrawArrays(GL_TRIANGLES, offset, object->getMesh().getVertices().size());
 		}
 	}
 
@@ -208,9 +212,9 @@ namespace RenderSystem
 		mRenderWireframe = !mRenderWireframe;
 	}
 
-	void Renderer::highlightWholeObject(bool isToHighlight)
+	void Renderer::highlightWholeObject(MeshCore::Object3D* object)
 	{
-		mHighlightWholeObject = isToHighlight;
+		mHighlightedObject = object;
 	}
 
 	void Renderer::setHighlightedFaces(const std::vector<int>& facesIndices)

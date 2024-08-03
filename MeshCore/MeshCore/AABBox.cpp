@@ -83,7 +83,7 @@ namespace MeshCore
 		setMinMax(transformPoint(mMin, transform), transformPoint(mMax, transform));
 	}
 
-	void AABBox::applyOtherBBox(const AABBox& other)
+	void AABBox::applyBBox(const AABBox& other)
 	{
 		setMinMax(getMinMaxPoint(mMin, other.mMin, MinMaxOption::MIN), getMinMaxPoint(mMax, other.mMax, MinMaxOption::MAX));
 	}

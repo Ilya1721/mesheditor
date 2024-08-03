@@ -23,13 +23,14 @@ namespace RenderSystem
         auto intersection = mScene->getClosestIntersection();
         if (!intersection.surfaceIndices.empty())
         {
-            mScene->setPickedObject(intersection.intersectedSurface.getParentObject());
-            mScene->getRenderer().highlightWholeObject(true);
+            auto pickedObject = intersection.intersectedSurface.getParentObject();
+            mScene->setPickedObject(pickedObject);
+            mScene->getRenderer().highlightWholeObject(pickedObject);
         }
         else
         {
             mScene->setPickedObject(nullptr);
-            mScene->getRenderer().highlightWholeObject(false);
+            mScene->getRenderer().highlightWholeObject(nullptr);
         }
     }
 }

@@ -36,7 +36,7 @@ namespace RenderSystem
 		void init(const MeshCore::Object3D* sceneRootObject);
 		void render();
 		void toggleWireframe();
-		void highlightWholeObject(bool isToHighlight);
+		void highlightWholeObject(MeshCore::Object3D* object);
 		void setHighlightedFaces(const std::vector<int>& facesIndices);
 
 		void renderVerticesNormals(const std::vector<MeshCore::Vertex>& vertices);
@@ -67,7 +67,7 @@ namespace RenderSystem
 		int mShaderProgram;
 
 		bool mRenderWireframe;
-		bool mHighlightWholeObject;
+		MeshCore::Object3D* mHighlightedObject;
 		std::vector<int> mHighlightedFacesIndices;
 
 		ShaderTransformationSystem mShaderTransformationSystem;

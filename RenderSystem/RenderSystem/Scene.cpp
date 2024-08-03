@@ -34,13 +34,14 @@ namespace RenderSystem
 		mPickedObject(nullptr),
 		mCameraMovementEnabled(true)
 	{
-		mRootObject.addChild(std::make_unique<MeshCore::Object3D>(MeshFilesLoader::loadSTL(meshFilePath)));
+		auto firstSceneObject = std::make_unique<MeshCore::Object3D>(MeshFilesLoader::loadSTL(meshFilePath));
+		firstSceneObject->moveToOrigin();
+		mRootObject.addChild(std::move(firstSceneObject));
 		init();
 	}
 
 	void Scene::init()
 	{
-		mRootObject.setTransform(glm::translate(-mRootObject.getBBox().getCenter()));
 		mRenderer.init(&mRootObject);
 		updateRenderBuffer();
 	}

@@ -85,7 +85,6 @@ namespace RenderSystem
     {
         if (mSurfaceMovementEnabled)
         {
-            mScene->getRootObject().calculateBBox();
             mScene->getRenderer().setHighlightedFaces({});
         }
 

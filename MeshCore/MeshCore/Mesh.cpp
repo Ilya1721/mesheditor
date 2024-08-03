@@ -100,11 +100,17 @@ namespace MeshCore
 				mParentObject->updateRenderData(originalVertexData);
 			}
 		}
+		mParentObject->updateBBox();
 	}
 
 	void Mesh::setParentObject(Object3D* parentObject)
 	{
 		mParentObject = parentObject;
+	}
+
+	std::unique_ptr<Mesh> Mesh::clone() const
+	{
+		return std::make_unique<Mesh>(mVertices);
 	}
 
 	const std::unordered_map<Vertex, UniqueVertex>& Mesh::getUniqueVertices() const

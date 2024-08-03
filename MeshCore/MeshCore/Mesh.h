@@ -41,6 +41,7 @@ namespace MeshCore
 
 		void updateVertices(const std::unordered_set<UniqueVertex*>& vertices);
 		void setParentObject(Object3D* parentObject);
+		std::unique_ptr<Mesh> clone() const;
 
 		const std::unordered_map<Vertex, UniqueVertex>& getUniqueVertices() const;
 		const std::vector<Vertex>& getVertices() const;
