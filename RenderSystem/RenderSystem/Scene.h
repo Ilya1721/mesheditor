@@ -25,18 +25,18 @@ namespace RenderSystem
 		Camera& getCamera();
 		Window* getParentWindow();
 		Renderer& getRenderer();
-		MeshCore::Object3D& getRootObject();
 		MeshCore::RaySurfaceIntersection getClosestIntersection(bool intersectSurface = true);
 		bool isCameraMovementEnabled() const;
 		MeshCore::Object3D* getPickedObject() const;
 
 		void setPickedObject(MeshCore::Object3D* pickedObject);
 		void adjustCameraAndLight();
-		void updateRenderBuffer();
 		void enableCameraMovement(bool isEnabled);
 
+		static MeshCore::Object3D& getRootObject();
+
 	private:
-		void init();
+		void init(const std::string& meshFilePath);
 		void adjustCamera();
 		void adjustLightPos();
 
@@ -44,8 +44,8 @@ namespace RenderSystem
 		Window* mParentWindow;
 		Renderer mRenderer;
 		Camera mCamera;
-		MeshCore::Object3D mRootObject;
 		MeshCore::Object3D* mPickedObject;
 		bool mCameraMovementEnabled;
+		static MeshCore::Object3D sRootObject;
 	};
 }

@@ -23,14 +23,14 @@ namespace MeshCore
     struct UniqueVertex;
     class Mesh;
 
-    struct Face : Intersectable, Movable
+    struct Face : GeometryCore::Intersectable, Movable
     {
         Face(Mesh* parentMesh, HalfEdge* halfEdge = nullptr);
 
         Mesh* parentMesh = nullptr;
         HalfEdge* halfEdge = nullptr;
 
-        std::optional<Point3D> findIntersection(const Ray& ray) const override;
+        std::optional<Point3D> findIntersectionPoint(const Ray& ray) const override;
         Vector3D calcNormal() const;
         bool isPointInside(const Point3D& point) const;
         std::vector<Vector3D> getAllGeometryEdges() const;

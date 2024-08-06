@@ -113,12 +113,14 @@
     <ClInclude Include="MeshCore\EdgeWalker.h" />
     <ClInclude Include="MeshCore\Face.h" />
     <ClInclude Include="MeshCore\HalfEdge.h" />
+    <ClInclude Include="MeshCore\Intersectable.h" />
     <ClInclude Include="MeshCore\Intersection.h" />
     <ClInclude Include="MeshCore\Mesh.h" />
     <ClInclude Include="MeshCore\Movable.h" />
     <ClInclude Include="MeshCore\Object3D.h" />
     <ClInclude Include="MeshCore\OutgoingEdgeFinder.h" />
     <ClInclude Include="MeshCore\RenderData.h" />
+    <ClInclude Include="MeshCore\RootRenderDataStorage.h" />
     <ClInclude Include="MeshCore\Surface.h" />
     <ClInclude Include="MeshCore\TreeWalker.h" />
     <ClInclude Include="MeshCore\Vertex.h" />
@@ -133,6 +135,7 @@
     <ClCompile Include="MeshCore\Object3D.cpp" />
     <ClCompile Include="MeshCore\OutgoingEdgeFinder.cpp" />
     <ClCompile Include="MeshCore\RenderData.cpp" />
+    <ClCompile Include="MeshCore\RootRenderDataStorage.cpp" />
     <ClCompile Include="MeshCore\Surface.cpp" />
     <ClCompile Include="MeshCore\Vertex.cpp" />
   </ItemGroup>

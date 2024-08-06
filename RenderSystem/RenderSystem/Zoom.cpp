@@ -14,7 +14,7 @@ namespace RenderSystem
         const auto& viewport = mScene->getParentWindow()->getViewport();
         if (viewport->getProjectionType() == PROJECTION_TYPE::PERSPECTIVE)
         {
-            mScene->getCamera().zoom(offset * mScene->getRootObject().getBBox().getHeight() * ZOOM_STEP_COEF);
+            mScene->getCamera().zoom(offset * Scene::getRootObject().getBBox().getHeight() * ZOOM_STEP_COEF);
         }
         else
         {

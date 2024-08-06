@@ -4,6 +4,7 @@
 
 #include "Scene.h"
 #include "Window.h"
+#include "GlobalRenderState.h"
 
 namespace RenderSystem
 {
@@ -18,8 +19,7 @@ namespace RenderSystem
         {
             pickedObject->getParent()->addChild(pickedObject->clone(getInitialTransform(pickedObject->getBBox())));
             mScene->setPickedObject(nullptr);
-            mScene->getRenderer().highlightWholeObject(nullptr);
-            mScene->updateRenderBuffer();
+            GlobalRenderState::highlightWholeObject(nullptr);
         }
     }
 

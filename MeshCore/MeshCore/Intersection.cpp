@@ -8,7 +8,7 @@ namespace MeshCore
     {
         if (surfaceIndices.empty() || isCloser(other.point, point, referencePoint))
         {
-            intersectedSurface = other.intersectedSurface;
+            surface = other.surface;
             surfaceIndices = other.surfaceIndices;
             point = other.point;
         }

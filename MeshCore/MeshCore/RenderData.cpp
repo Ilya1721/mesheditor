@@ -36,11 +36,11 @@ namespace MeshCore
 
 	void RenderData::append(const Vertex& vertex)
 	{
-		for (int coordIdx = 0; coordIdx < COORDINATES_PER_VERTEX; ++coordIdx)
+		for (int coordIdx = 0; coordIdx < 3; ++coordIdx)
 		{
 			mCompactData.emplace_back(vertex.pos[coordIdx]);
 		}
-		for (int coordIdx = 0; coordIdx < COORDINATES_PER_VERTEX; ++coordIdx)
+		for (int coordIdx = 0; coordIdx < 3; ++coordIdx)
 		{
 			mCompactData.emplace_back(vertex.normal[coordIdx]);
 		}
@@ -53,11 +53,6 @@ namespace MeshCore
 			mCompactData[compactDataIdx] = vertexData.vertex->pos[coordIdx];
 			mCompactData[compactDataIdx + 3] = vertexData.vertex->normal[coordIdx];
 		}
-	}
-
-	void RenderData::clear()
-	{
-		mCompactData.clear();
 	}
 
 	const std::vector<float>& RenderData::getCompactData() const

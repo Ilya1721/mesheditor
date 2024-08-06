@@ -33,27 +33,13 @@ namespace RenderSystem
 		Lighting& getLighting();
 		RenderBuffer& getRenderBuffer();
 
-		void init(const MeshCore::Object3D* sceneRootObject);
+		void init();
+		void registerCallbacks();
 		void render();
-		void toggleWireframe();
-		void highlightWholeObject(MeshCore::Object3D* object);
-		void setHighlightedFaces(const std::vector<int>& facesIndices);
-
-		void renderVerticesNormals(const std::vector<MeshCore::Vertex>& vertices);
-		void renderLine(const Point3D& startPos, const Point3D& endPos, const Material& material = GREEN_MATERIAL, bool withArrow = false);
 
 	private:
 		void initShaders();
 		void initShaderProgram();
-		void invokeExtraRenderAction(const std::function<void()>& action, bool loadBuffer = false);
-
-		void addInitialExtraPrimitives();
-		void addSceneFloor();
-		void addExtraPrimitive(const RenderPrimitive& primitive);
-		void addLineExtraPrimitive(const Point3D& start, const Point3D& end, const Material& material);
-		void addPlaneExtraPrimitive(const Point3D& origin, const Vector3D& normal, float width, float height, const Material& material);
-
-		void addGlobalAxes(float length = 10.0f);
 		void renderExtra();
 		void renderHighlightedFaces();
 		void renderWireframe();
@@ -66,18 +52,10 @@ namespace RenderSystem
 		int mFragmentShader;
 		int mShaderProgram;
 
-		bool mRenderWireframe;
-		MeshCore::Object3D* mHighlightedObject;
-		std::vector<int> mHighlightedFacesIndices;
-
 		ShaderTransformationSystem mShaderTransformationSystem;
 		Lighting mLighting;
 		RenderBuffer mRenderBuffer;
-
-		std::vector<RenderPrimitive> mExtraPrimitives;
 		RenderBuffer mExtraRenderBuffer;
-
-		const MeshCore::Object3D* mSceneRootObject;
 	};
 }
 

@@ -70,7 +70,7 @@ namespace RenderSystem
 	Point3D Camera::projectToTargetPlane(const Point3D& cursorPosInWorldSpace) const
 	{
 		Ray cursorRay(cursorPosInWorldSpace, cursorPosInWorldSpace - mEye);
-		return getTargetPlane().findIntersection(cursorRay).value();
+		return getTargetPlane().findIntersectionPoint(cursorRay).value();
 	}
 
 	void Camera::invokeEditOperation(const std::function<void()>& action)

@@ -2,6 +2,7 @@
 
 #include "Scene.h"
 #include "Window.h"
+#include "GlobalRenderState.h"
 
 namespace RenderSystem
 {
@@ -13,7 +14,7 @@ namespace RenderSystem
     {
         if (key == GLFW_KEY_W)
         {
-            mScene->getRenderer().toggleWireframe();
+            GlobalRenderState::toggleWireframe();
         }
     }
 }

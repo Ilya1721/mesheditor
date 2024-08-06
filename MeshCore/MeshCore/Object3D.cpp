@@ -7,9 +7,8 @@
 
 #include "Mesh.h"
 #include "Constants.h"
-#include "Intersection.h"
-#include "RenderData.h"
 #include "TreeWalker.h"
+#include "RootRenderDataStorage.h"
 
 using namespace GeometryCore;
 
@@ -36,12 +35,12 @@ namespace MeshCore
 		mBBox.applyMesh(*mMesh);
 	}
 
-	void Object3D::setParent(Object3D* parent)
+	Mesh& Object3D::getMesh()
 	{
-		mParent = parent;
+		return *mMesh;
 	}
 
-	Mesh& Object3D::getMesh()
+	const Mesh& Object3D::getMesh() const
 	{
 		return *mMesh;
 	}
@@ -56,21 +55,9 @@ namespace MeshCore
 		return mChildren;
 	}
 
-	const RenderData& Object3D::getRenderData() const
-	{
-		return mRenderData;
-	}
-
 	const glm::mat4& Object3D::getTransform() const
 	{
 		return mTransform;
-	}
-
-	void Object3D::setTransform(const glm::mat4& transform)
-	{
-		invokeTransformAction([this, &transform]() {
-			mTransform = transform;
-		}, transform);
 	}
 
 	void Object3D::updateTransform(const glm::mat4& transform)
@@ -78,11 +65,6 @@ namespace MeshCore
 		invokeTransformAction([this, &transform]() {
 			mTransform = transform * mTransform;
 		}, transform);
-	}
-
-	void Object3D::updateRenderData(const OriginalVertexData& vertexData)
-	{
-		getRoot()->mRenderData.updateVertex(vertexData, sObjectRenderDataOffsetMap.at(this));
 	}
 
 	const std::unordered_map<Object3D*, int>& Object3D::getObjectRenderDataOffsetMap()
@@ -95,41 +77,25 @@ namespace MeshCore
 		return mBBox;
 	}
 
-	std::optional<Point3D> Object3D::findIntersection(const Ray& ray)
+	RaySurfaceIntersection Object3D::findIntersection(const Ray& ray, bool intersectSurface, int passedFacesCount) const
 	{
-		auto startIntersection = std::make_optional<Point3D>();
-		TreeWalker<Object3D> walker(this);
-		walker.forEach([&ray, &startIntersection](Object3D* object) {
-			auto intersection = object->getMesh().findIntersection(ray);
-			if (intersection && (!startIntersection.has_value() || isCloser(intersection.value(), startIntersection.value(), ray.origin)))
-			{
-				startIntersection = intersection;
-			}
-		});
-
-		return startIntersection;
-	}
-
-	RaySurfaceIntersection Object3D::findIntersection(const Ray& ray, bool intersectSurface, int passedFacesCount)
-	{
-		RaySurfaceIntersection startIntersection;
+		RaySurfaceIntersection finalIntersection;
 		TreeWalker walker(this);
-		walker.forEach([&ray, &startIntersection, &intersectSurface, &passedFacesCount, this](Object3D* object) {
+		walker.forEach([&ray, &finalIntersection, &intersectSurface, &passedFacesCount, this](const Object3D* object) {
 			auto intersection = object->getMesh().findIntersection(ray, intersectSurface, passedFacesCount + object->getMesh().getNumberOfFaces());
-			if (startIntersection.surfaceIndices.empty() || isCloser(intersection.point, startIntersection.point, ray.origin))
+			if (finalIntersection.surfaceIndices.empty() || isCloser(intersection.point, finalIntersection.point, ray.origin))
 			{
-				startIntersection = intersection;
+				finalIntersection = intersection;
 			}
 		});
 
-		return startIntersection;
+		return finalIntersection;
 	}
 
 	std::unique_ptr<Object3D> Object3D::clone(const glm::mat4& initialTransform)
 	{
 		auto newObject = std::make_unique<Object3D>();
 		newObject->mMesh = mMesh->clone();
-		newObject->mRenderData = mRenderData;
 		newObject->mTransform = initialTransform * mTransform;
 		newObject->mBBox = mBBox;
 		newObject->mMesh->setParentObject(newObject.get());
@@ -144,65 +110,44 @@ namespace MeshCore
 
 	void Object3D::addChild(std::unique_ptr<Object3D>&& child)
 	{
-		child->setParent(this);
+		child->mParent = this;
 		child->propagateRenderDataToRoot();
+		child->propagateBBoxToRoot();
 		mChildren.emplace_back(std::move(child));
-		calculateBBox();
 	}
 
-	void Object3D::updateBBox()
+	void Object3D::onMeshUpdated(const std::unordered_set<UniqueVertex*>& vertices)
 	{
 		mBBox.applyMesh(*mMesh);
 		propagateBBoxToRoot();
-	}
-
-	void Object3D::calculateBBox()
-	{
-		TreeWalker walker(this);
-		walker.forEach([this](Object3D* object) {
-			mBBox.applyBBox(object->getBBox());
-		});
+		RootRenderDataStorage::updateRenderData(vertices, sObjectRenderDataOffsetMap.at(this));
 	}
 
 	void Object3D::moveToOrigin()
 	{
-		setTransform(glm::translate(-mBBox.getCenter()));
+		updateTransform(glm::translate(-mBBox.getCenter()));
 	}
 
 	void Object3D::invokeTransformAction(const std::function<void()>& action, const glm::mat4& transform)
 	{
 		action();
 		mBBox.applyTransform(transform);
-		auto parent = getParent();
 		propagateBBoxToRoot();
 	}
 
 	void Object3D::propagateRenderDataToRoot()
 	{
-		auto root = getRoot();
-		//sObjectRenderDataOffsetMap.insert({ this, root->mRenderData.getCompactData().size() });
-		sObjectRenderDataOffsetMap.insert({ this, root->mRenderData.getVertexCount() });
-		root->mRenderData.append(mMesh->getRenderData());
+		sObjectRenderDataOffsetMap.insert({ this, RootRenderDataStorage::getRenderData().getVertexCount()});
+		RootRenderDataStorage::appendRenderData(mMesh->getRenderData());
 	}
 
 	void Object3D::propagateBBoxToRoot() const
 	{
-		auto parent = getParent();
-		while (parent != nullptr)
-		{
-			parent->calculateBBox();
-			parent = parent->getParent();
-		}
-	}
-
-	Object3D* Object3D::getRoot()
-	{
 		auto currentObject = this;
-		while (currentObject->getParent() != nullptr)
+		while (currentObject->mParent != nullptr)
 		{
-			currentObject = currentObject->getParent();
+			currentObject->mParent->mBBox.applyBBox(currentObject->mBBox);
+			currentObject = currentObject->mParent;
 		}
-
-		return currentObject;
 	}
 }

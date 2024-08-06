@@ -4,6 +4,7 @@
 
 #include "Scene.h"
 #include "Window.h"
+#include "GlobalRenderState.h"
 
 namespace RenderSystem
 {
@@ -15,7 +16,7 @@ namespace RenderSystem
     {
         if (mEnabled)
         {
-            mScene->getRenderer().setHighlightedFaces(mScene->getClosestIntersection().surfaceIndices);
+            GlobalRenderState::setHighlightedFaces(mScene->getClosestIntersection().surfaceIndices);
         }
     }
 
@@ -30,7 +31,7 @@ namespace RenderSystem
 
         if (!mEnabled)
         {
-            mScene->getRenderer().setHighlightedFaces({});
+            GlobalRenderState::setHighlightedFaces({});
         }
     }
 }

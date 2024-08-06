@@ -22,28 +22,33 @@
 #include "Viewport.h"
 #include "Constants.h"
 #include "RenderPrimitive.h"
+#include "GlobalExtraPrimitives.h"
 
 using namespace GeometryCore;
 
 namespace RenderSystem
 {
+	MeshCore::Object3D Scene::sRootObject;
+}
+
+namespace RenderSystem
+{
 	Scene::Scene(const std::string& meshFilePath, Window* parentWindow) :
 		mParentWindow(parentWindow),
-		mRootObject(),
 		mCamera(&mRenderer.getShaderTransformationSystem()),
 		mPickedObject(nullptr),
 		mCameraMovementEnabled(true)
 	{
-		auto firstSceneObject = std::make_unique<MeshCore::Object3D>(MeshFilesLoader::loadSTL(meshFilePath));
-		firstSceneObject->moveToOrigin();
-		mRootObject.addChild(std::move(firstSceneObject));
-		init();
+		init(meshFilePath);
 	}
 
-	void Scene::init()
+	void Scene::init(const std::string& meshFilePath)
 	{
-		mRenderer.init(&mRootObject);
-		updateRenderBuffer();
+		mRenderer.init();
+		GlobalExtraPrimitives::addSceneFloor();
+		auto firstSceneObject = std::make_unique<MeshCore::Object3D>(MeshFilesLoader::loadSTL(meshFilePath));
+		firstSceneObject->moveToOrigin();
+		sRootObject.addChild(std::move(firstSceneObject));
 	}
 
 	void Scene::setPickedObject(MeshCore::Object3D* pickedObject)
@@ -68,20 +73,15 @@ namespace RenderSystem
 		const auto& viewport = mParentWindow->getViewport();
 		if (viewport->getProjectionType() == PROJECTION_TYPE::PERSPECTIVE)
 		{
-			mCamera.perspectiveAdjust(mRootObject.getBBox(), viewport->getFov());
+			mCamera.perspectiveAdjust(sRootObject.getBBox(), viewport->getFov());
 		}
 		else
 		{
-			mCamera.orthoAdjust(mRootObject.getBBox());
+			mCamera.orthoAdjust(sRootObject.getBBox());
 		}
 
 		Point3D cameraPosInCameraSpace = transformPoint(mCamera.getEye(), mCamera.getViewMatrix());
 		mRenderer.getLighting().setCameraPos(glm::value_ptr(cameraPosInCameraSpace));
-	}
-
-	void Scene::updateRenderBuffer()
-	{
-		mRenderer.getRenderBuffer().setRenderData(mRootObject.getRenderData());
 	}
 
 	void Scene::enableCameraMovement(bool isEnabled)
@@ -95,9 +95,9 @@ namespace RenderSystem
 		auto farCursorPosInWorldSpace = mParentWindow->unProject(mParentWindow->getCursorPos(), 1.0f);
 		Ray castedRay { nearCursorPosInWorldSpace, farCursorPosInWorldSpace - nearCursorPosInWorldSpace };
 
-		if (mRootObject.getBBox().findIntersection(castedRay).has_value())
+		if (sRootObject.getBBox().findIntersectionPoint(castedRay).has_value())
 		{
-			return mRootObject.findIntersection(castedRay, intersectSurface);
+			return sRootObject.findIntersection(castedRay, intersectSurface);
 		}
 
 		return {};
@@ -130,6 +130,6 @@ namespace RenderSystem
 
 	MeshCore::Object3D& Scene::getRootObject()
 	{
-		return mRootObject;
+		return sRootObject;
 	}
 }

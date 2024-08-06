@@ -5,6 +5,7 @@
 
 #include "Scene.h"
 #include "Window.h"
+#include "GlobalRenderState.h"
 
 namespace RenderSystem
 {
@@ -23,14 +24,14 @@ namespace RenderSystem
         auto intersection = mScene->getClosestIntersection();
         if (!intersection.surfaceIndices.empty())
         {
-            auto pickedObject = intersection.intersectedSurface.getParentObject();
+            auto pickedObject = intersection.surface.getParentObject();
             mScene->setPickedObject(pickedObject);
-            mScene->getRenderer().highlightWholeObject(pickedObject);
+            GlobalRenderState::highlightWholeObject(pickedObject);
         }
         else
         {
             mScene->setPickedObject(nullptr);
-            mScene->getRenderer().highlightWholeObject(nullptr);
+            GlobalRenderState::highlightWholeObject(nullptr);
         }
     }
 }

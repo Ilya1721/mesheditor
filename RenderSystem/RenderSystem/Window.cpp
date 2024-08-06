@@ -88,7 +88,7 @@ namespace RenderSystem
 	{
 		mScene = std::make_unique<Scene>(meshFilePath, this);
 		auto shaderTransformationSystemPtr = &mScene->getRenderer().getShaderTransformationSystem();
-		mViewport = std::make_unique<Viewport>(mWidth, mHeight, &mScene->getRootObject().getBBox(), shaderTransformationSystemPtr);
+		mViewport = std::make_unique<Viewport>(mWidth, mHeight, &Scene::getRootObject().getBBox(), shaderTransformationSystemPtr);
 		mScene->adjustCameraAndLight();
 		mOperationsDispatcher = std::make_unique<OperationsDispatcher>(mScene.get());
 	}

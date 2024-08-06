@@ -16,13 +16,13 @@ namespace MeshCore
     };
 
     template <Tree T>
-    using TreeNodeFunction = std::function<void(T*)>;
+    using TreeNodeFunction = std::function<void(const T*)>;
 
     template<Tree T>
     class TreeWalker
     {
     public:
-        TreeWalker(T* root, bool invokeFunctionForRoot = false) :
+        TreeWalker(const T* root, bool invokeFunctionForRoot = false) :
             mRoot(root),
             mInvokeFunctionForRoot(invokeFunctionForRoot)
         {};
@@ -33,7 +33,7 @@ namespace MeshCore
         }
 
     private:
-        void depthFirstTraversal(T* node, const TreeNodeFunction<T>& function)
+        void depthFirstTraversal(const T* node, const TreeNodeFunction<T>& function)
         {
             if (!node)
             {
@@ -52,7 +52,7 @@ namespace MeshCore
         }
 
     private:
-        T* mRoot;
+        const T* mRoot;
         bool mInvokeFunctionForRoot;
     };
 }

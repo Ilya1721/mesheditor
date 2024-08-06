@@ -23,7 +23,7 @@ namespace RenderSystem
 
     private:
         void toggleSurfaceMovement(bool isSurfaceIntersected = false);
-        void highlightIntersectedSurface();
+        void highlightIntersectedSurface() const;
 
     private:
         MeshCore::RaySurfaceIntersection mSurfaceIntersection;

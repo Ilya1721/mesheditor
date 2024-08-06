@@ -57,14 +57,11 @@ namespace RenderSystem
         addOperation<SurfaceHighlighter>();
         addOperation<SurfaceExtruder>();
         addOperation<WireframeRenderer>();
-
         addOperation<Orbit>();
         addOperation<Pan>();
         addOperation<Zoom>();
-
         addOperation<Picker>();
         addOperation<Mover>();
-
         addOperation<Cloner>();
     }
 }

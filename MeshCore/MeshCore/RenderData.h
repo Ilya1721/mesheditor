@@ -20,7 +20,6 @@ namespace MeshCore
 		void append(const RenderData& other);
 		void append(const Vertex& vertex);
 		void updateVertex(const OriginalVertexData& vertexData, int offset);
-		void clear();
 
 		const std::vector<float>& getCompactData() const;
 		int getVertexCount() const;

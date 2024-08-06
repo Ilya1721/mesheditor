@@ -4,6 +4,7 @@
 
 #include "Face.h"
 #include "Mesh.h"
+#include "Object3D.h"
 
 namespace MeshCore
 {

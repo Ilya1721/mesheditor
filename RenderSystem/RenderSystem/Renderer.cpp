@@ -9,10 +9,16 @@
 #include "GeometryCore/Plane.h"
 #include "MeshCore/Object3D.h"
 #include "MeshCore/Mesh.h"
+#include "MeshCore/RootRenderDataStorage.h"
 
 #include "RenderLogger.h"
 #include "GladTypedefs.h"
 #include "RenderPrimitive.h"
+#include "GlobalExtraPrimitives.h"
+#include "Scene.h"
+#include "GlobalRenderState.h"
+
+using namespace MeshCore;
 
 namespace
 {
@@ -21,7 +27,6 @@ namespace
 	constexpr Material MAIN_MATERIAL = GOLD_MATERIAL;
 	constexpr Material HIGHLIGHT_MATERIAL = RUBY_MATERIAL;
 	constexpr Material WIREFRAME_MATERIAL = BLACK_MATERIAL;
-	constexpr Material FLOOR_MATERIAL = PEARL_MATERIAL;
 
 	void checkShaderOrProgramStatus(GetShaderIV getShaderIVFunc, int shaderOrProgram, int statusToCheck,
 									SHADER_TYPE shaderType, const std::string& failedMessage)
@@ -57,14 +62,10 @@ namespace RenderSystem
 		mVertexShader(),
 		mFragmentShader(),
 		mShaderProgram(),
-		mRenderWireframe(false),
-		mHighlightedObject(nullptr),
-		mHighlightedFacesIndices(),
 		mLighting(),
 		mRenderBuffer(),
 		mExtraRenderBuffer(),
-		mShaderTransformationSystem(),
-		mSceneRootObject(nullptr)
+		mShaderTransformationSystem()
 	{}
 
 	Renderer::~Renderer()
@@ -75,15 +76,26 @@ namespace RenderSystem
 		glDeleteProgram(mShaderProgram);
 	}
 
-	void Renderer::init(const MeshCore::Object3D* sceneRootObject)
+	void Renderer::init()
 	{
-		mSceneRootObject = sceneRootObject;
 		initShaders();
 		mShaderTransformationSystem.init(mShaderProgram);
-		mShaderTransformationSystem.setModel(glm::value_ptr(mSceneRootObject->getTransform()));
+		mShaderTransformationSystem.setModel(glm::value_ptr(Scene::getRootObject().getTransform()));
 		mLighting.init(mShaderProgram);
-		addInitialExtraPrimitives();
+		registerCallbacks();
 		mRenderBuffer.bind();
+	}
+
+	void Renderer::registerCallbacks()
+	{
+		RootRenderDataStorage::addOnRenderDataUpdatedCallback([this]() {
+			mRenderBuffer.loadRenderData(RootRenderDataStorage::getRenderData());
+		});
+		RootRenderDataStorage::addOnExtraRenderDataUpdatedCallback([this]() {
+			mExtraRenderBuffer.bind();
+			mExtraRenderBuffer.loadRenderData(RootRenderDataStorage::getExtraRenderData());
+			mRenderBuffer.bind();
+		});
 	}
 
 	void Renderer::initShaders()
@@ -103,23 +115,11 @@ namespace RenderSystem
 		glUseProgram(mShaderProgram);
 	}
 
-	void Renderer::addInitialExtraPrimitives()
-	{
-		invokeExtraRenderAction([this]() {
-			addSceneFloor();
-		}, true);
-	}
-
-	void Renderer::addSceneFloor()
-	{
-		auto originY = -mSceneRootObject->getBBox().getHeight() * FLOOR_BBOX_HEIGHT_COEF;
-		addPlaneExtraPrimitive(Point3D(0.0f, originY, 0.0f), Vector3D(0.0f, -1.0f, 0.0f), FAR_PLANE_DISTANCE, FAR_PLANE_DISTANCE, FLOOR_MATERIAL);
-	}
-
 	void Renderer::renderHighlightedFaces()
 	{
-		renderOverlayPrimitives(!mHighlightedFacesIndices.empty(), HIGHLIGHT_MATERIAL, [this]() {
-			for (const auto& faceIdx : mHighlightedFacesIndices)
+		const auto& highlightedFacesIndices = GlobalRenderState::getHighlightedFacesIndices();
+		renderOverlayPrimitives(!highlightedFacesIndices.empty(), HIGHLIGHT_MATERIAL, [highlightedFacesIndices]() {
+			for (const auto& faceIdx : highlightedFacesIndices)
 			{
 				glDrawArrays(GL_TRIANGLES, faceIdx * 3, 3);
 			}
@@ -128,17 +128,17 @@ namespace RenderSystem
 
 	void Renderer::renderWireframe()
 	{
-		renderOverlayPrimitives(mRenderWireframe, WIREFRAME_MATERIAL, [this]() {
+		renderOverlayPrimitives(GlobalRenderState::getRenderWireframe(), WIREFRAME_MATERIAL, [this]() {
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-			glDrawArrays(GL_TRIANGLES, 0, mRenderBuffer.getRenderData().getVertexCount());
+			glDrawArrays(GL_TRIANGLES, 0, RootRenderDataStorage::getRenderData().getVertexCount());
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		});
 	}
 
 	void Renderer::renderWholeObjectHighlighted()
 	{
-		const auto& objectRenderDataOffsetMap = MeshCore::Object3D::getObjectRenderDataOffsetMap();
-		const auto& highlightedObjectIt = objectRenderDataOffsetMap.find(mHighlightedObject);
+		const auto& objectRenderDataOffsetMap = Object3D::getObjectRenderDataOffsetMap();
+		const auto& highlightedObjectIt = objectRenderDataOffsetMap.find(GlobalRenderState::getHighlightedObject());
 		renderOverlayPrimitives(highlightedObjectIt != objectRenderDataOffsetMap.end(), HIGHLIGHT_MATERIAL, [this, highlightedObjectIt]() {
 			auto& [object, offset] = *highlightedObjectIt;
 			mShaderTransformationSystem.setModel(glm::value_ptr(object->getTransform()));
@@ -148,24 +148,11 @@ namespace RenderSystem
 
 	void Renderer::renderScene()
 	{
-		for (auto& [object, offset] : MeshCore::Object3D::getObjectRenderDataOffsetMap())
+		for (auto& [object, offset] : Object3D::getObjectRenderDataOffsetMap())
 		{
 			mShaderTransformationSystem.setModel(glm::value_ptr(object->getTransform()));
 			glDrawArrays(GL_TRIANGLES, offset, object->getMesh().getVertices().size());
 		}
-	}
-
-	void Renderer::invokeExtraRenderAction(const std::function<void()>& action, bool loadBuffer)
-	{
-		mExtraRenderBuffer.bind();
-		mShaderTransformationSystem.setModel(glm::value_ptr(glm::mat4(1.0f)));
-		action();
-		if (loadBuffer)
-		{
-			mExtraRenderBuffer.load();
-		}
-		mShaderTransformationSystem.setModel(glm::value_ptr(mSceneRootObject->getTransform()));
-		mRenderBuffer.bind();
 	}
 
 	void Renderer::renderOverlayPrimitives(bool renderCondition, const Material& material, const std::function<void()>& renderFunc)
@@ -194,78 +181,21 @@ namespace RenderSystem
 
 	void Renderer::renderExtra()
 	{
-		invokeExtraRenderAction([this]() {
-			int startIndex = 0;
-			for (const auto& extraPrimitive : mExtraPrimitives)
-			{
-				auto vertexCount = extraPrimitive.renderData.getVertexCount();
-				mLighting.setMaterial(extraPrimitive.material);
-				glDrawArrays(extraPrimitive.renderMode, startIndex, vertexCount);
-				startIndex += vertexCount;
-			}
-			mLighting.setMaterial(MAIN_MATERIAL);
-		});
-	}
+		mExtraRenderBuffer.bind();
+		mShaderTransformationSystem.setModel(glm::value_ptr(glm::mat4(1.0f)));
 
-	void Renderer::toggleWireframe()
-	{
-		mRenderWireframe = !mRenderWireframe;
-	}
+		int startIndex = 0;
+		for (const auto& extraPrimitive : GlobalExtraPrimitives::getExtraPrimitives())
+		{
+			auto vertexCount = extraPrimitive.renderData.getVertexCount();
+			mLighting.setMaterial(extraPrimitive.material);
+			glDrawArrays(extraPrimitive.renderMode, startIndex, vertexCount);
+			startIndex += vertexCount;
+		}
 
-	void Renderer::highlightWholeObject(MeshCore::Object3D* object)
-	{
-		mHighlightedObject = object;
-	}
-
-	void Renderer::setHighlightedFaces(const std::vector<int>& facesIndices)
-	{
-		mHighlightedFacesIndices = facesIndices;
-	}
-
-	void Renderer::addExtraPrimitive(const RenderPrimitive& primitive)
-	{
-		mExtraPrimitives.push_back(primitive);
-		mExtraRenderBuffer.appendRenderData(primitive.renderData);
-	}
-
-	void Renderer::addLineExtraPrimitive(const Point3D& start, const Point3D& end, const Material& material)
-	{
-		Line line{ start, end };
-		auto linePrimitive = RenderPrimitive::createPrimitive(line, true, material);
-		addExtraPrimitive(linePrimitive);
-	}
-
-	void Renderer::addPlaneExtraPrimitive(const Point3D& origin, const Vector3D& normal, float width, float height, const Material& material)
-	{
-		Plane plane{ origin, normal };
-		auto planePrimitive = RenderPrimitive::createPrimitive(plane, width, height, material);
-		addExtraPrimitive(planePrimitive);
-	}
-
-	void Renderer::addGlobalAxes(float length)
-	{
-		addLineExtraPrimitive(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(length, 0.0f, 0.0f), BLUE_MATERIAL);
-		addLineExtraPrimitive(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, length, 0.0f), RED_MATERIAL);
-		addLineExtraPrimitive(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, length), GREEN_MATERIAL);
-	}
-
-	void Renderer::renderVerticesNormals(const std::vector<MeshCore::Vertex>& vertices)
-	{
-		invokeExtraRenderAction([this, &vertices]() {
-			for (const auto& vertex : vertices)
-			{
-				addLineExtraPrimitive(vertex.pos, vertex.pos + vertex.normal * 10.0f, GREEN_MATERIAL);
-			}
-		}, true);
-	}
-
-	void Renderer::renderLine(const Point3D& startPos, const Point3D& endPos, const Material& material, bool withArrow)
-	{
-		invokeExtraRenderAction([this, &startPos, &endPos, &material, &withArrow]() {
-			Line line{ startPos, endPos };
-			auto linePrimitive = RenderPrimitive::createPrimitive(line, withArrow, material);
-			addExtraPrimitive(linePrimitive);
-		}, true);
+		mLighting.setMaterial(MAIN_MATERIAL);
+		mShaderTransformationSystem.setModel(glm::value_ptr(Scene::getRootObject().getTransform()));
+		mRenderBuffer.bind();
 	}
 
 	ShaderTransformationSystem& Renderer::getShaderTransformationSystem()

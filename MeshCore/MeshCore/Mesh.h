@@ -4,11 +4,11 @@
 #include <memory>
 #include <unordered_map>
 #include <array>
-
-#include "GeometryCore/Intersectable.h"
+#include <optional>
 
 #include "VerticesHash.h"
 #include "RenderData.h"
+#include "Intersectable.h"
 
 namespace GeometryCore
 {
@@ -21,7 +21,6 @@ namespace MeshCore
 	struct HalfEdge;
 	struct Face;
 	struct Surface;
-	struct RaySurfaceIntersection;
 	class Object3D;
 
 	struct IntersectionTempData
@@ -39,17 +38,14 @@ namespace MeshCore
 		~Mesh();
 		bool operator==(const Mesh& other) const = default;
 
-		void updateVertices(const std::unordered_set<UniqueVertex*>& vertices);
 		void setParentObject(Object3D* parentObject);
 		std::unique_ptr<Mesh> clone() const;
 
-		const std::unordered_map<Vertex, UniqueVertex>& getUniqueVertices() const;
 		const std::vector<Vertex>& getVertices() const;
 		int getNumberOfFaces() const;
 		const RenderData& getRenderData() const;
 		Object3D* getParentObject() const;
-		std::optional<Point3D> findIntersection(const Ray& ray) const override;
-		RaySurfaceIntersection findIntersection(const Ray& ray, bool intersectSurface, int passedFacesCount = 0);
+		RaySurfaceIntersection findIntersection(const Ray& ray, bool intersectSurface, int passedFacesCount = 0) const override;
 
 	private:
 		void init();
@@ -65,6 +61,7 @@ namespace MeshCore
 		UniqueVertex* getUniqueVertex(int vertexIdx);
 		std::unordered_map<HalfEdgeVerticesPair, HalfEdge*> createHalfEdgeVerticesMap() const;
 		std::vector<int> getIntersectedSurfaceIndices(const Surface& surface) const;
+		std::optional<Point3D> findIntersectionPoint(const Ray& ray) const;
 
 	private:
 		std::vector<Vertex> mVertices;

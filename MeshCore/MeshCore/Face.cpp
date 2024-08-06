@@ -24,10 +24,10 @@ namespace MeshCore
         parentMesh(parentMesh), halfEdge(halfEdge)
     {}
 
-    std::optional<Point3D> Face::findIntersection(const Ray& ray) const
+    std::optional<Point3D> Face::findIntersectionPoint(const Ray& ray) const
     {
         Plane facePlane(halfEdge->vertex->pos, calcNormal());
-        auto rayPlaneIntersectionPoint = facePlane.findIntersection(ray);
+        auto rayPlaneIntersectionPoint = facePlane.findIntersectionPoint(ray);
 
         if (rayPlaneIntersectionPoint.has_value() && isPointInside(rayPlaneIntersectionPoint.value()))
         {
@@ -80,7 +80,7 @@ namespace MeshCore
     {
         std::vector<Vector3D> edges;
         EdgeWalker edgeWalker(halfEdge);
-        edgeWalker.forEach([&edges](HalfEdge* edge)
+        edgeWalker.forEach([&edges](const HalfEdge* edge)
         {
             edges.emplace_back(edge->next->vertex->pos - edge->vertex->pos);
         });
@@ -169,7 +169,7 @@ namespace MeshCore
     {
         std::vector<Point3D> verticesPositions;
         EdgeWalker edgeWalker(halfEdge);
-        edgeWalker.forEach([&verticesPositions](HalfEdge* edge)
+        edgeWalker.forEach([&verticesPositions](const HalfEdge* edge)
         {
             verticesPositions.emplace_back(edge->vertex->pos);
         });

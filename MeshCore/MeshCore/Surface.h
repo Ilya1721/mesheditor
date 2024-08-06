@@ -5,8 +5,6 @@
 
 #include "GeometryCore/Typedefs.h"
 
-#include "Object3D.h"
-
 namespace GeometryCore
 {
     struct Plane;
@@ -17,6 +15,7 @@ namespace MeshCore
     using namespace GeometryCore;
 
     struct Face;
+    class Object3D;
 
     struct Surface
     {

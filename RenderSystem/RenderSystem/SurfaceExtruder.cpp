@@ -9,6 +9,7 @@
 #include "Constants.h"
 #include "Scene.h"
 #include "Window.h"
+#include "GlobalRenderState.h"
 
 namespace RenderSystem
 {
@@ -24,7 +25,7 @@ namespace RenderSystem
             return;
         }
 
-        auto& surface = mSurfaceIntersection.intersectedSurface;
+        auto& surface = mSurfaceIntersection.surface;
         auto window = mScene->getParentWindow();
         auto startCursorPosInWorld = window->unProject(startCursorPos);
         auto endCursorPosInWorld = window->unProject(endCursorPos);
@@ -38,9 +39,7 @@ namespace RenderSystem
             face->move(surfaceMovement, changedVertices);
         }
 
-        auto& parentMesh = (*surface.faces.begin())->parentMesh;
-        parentMesh->updateVertices(changedVertices);
-        mScene->updateRenderBuffer();
+        (*surface.faces.begin())->parentMesh->getParentObject()->onMeshUpdated(changedVertices);
     }
 
     void SurfaceExtruder::onMouseClick()
@@ -73,11 +72,11 @@ namespace RenderSystem
         }
     }
 
-    void SurfaceExtruder::highlightIntersectedSurface()
+    void SurfaceExtruder::highlightIntersectedSurface() const
     {
         if (mSurfaceMovementEnabled)
         {
-            mScene->getRenderer().setHighlightedFaces(mSurfaceIntersection.surfaceIndices);
+            GlobalRenderState::setHighlightedFaces(mSurfaceIntersection.surfaceIndices);
         }
     }
 
@@ -85,7 +84,7 @@ namespace RenderSystem
     {
         if (mSurfaceMovementEnabled)
         {
-            mScene->getRenderer().setHighlightedFaces({});
+            GlobalRenderState::setHighlightedFaces({});
         }
 
         mSurfaceMovementEnabled = isSurfaceIntersected && !mSurfaceMovementEnabled;

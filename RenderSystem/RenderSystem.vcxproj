@@ -125,7 +125,9 @@
   <ItemGroup>
     <ClCompile Include="RenderSystem\Camera.cpp" />
     <ClCompile Include="RenderSystem\Cloner.cpp" />
+    <ClCompile Include="RenderSystem\GlobalExtraPrimitives.cpp" />
     <ClCompile Include="RenderSystem\glad.c" />
+    <ClCompile Include="RenderSystem\GlobalRenderState.cpp" />
     <ClCompile Include="RenderSystem\Lighting.cpp" />
     <ClCompile Include="RenderSystem\Mover.cpp" />
     <ClCompile Include="RenderSystem\Operation.cpp" />
@@ -150,8 +152,10 @@
     <ClInclude Include="RenderSystem\Camera.h" />
     <ClInclude Include="RenderSystem\Cloner.h" />
     <ClInclude Include="RenderSystem\Constants.h" />
+    <ClInclude Include="RenderSystem\GlobalExtraPrimitives.h" />
     <ClInclude Include="RenderSystem\glad.h" />
     <ClInclude Include="RenderSystem\GladTypedefs.h" />
+    <ClInclude Include="RenderSystem\GlobalRenderState.h" />
     <ClInclude Include="RenderSystem\khrplatform.h" />
     <ClInclude Include="RenderSystem\Light.h" />
     <ClInclude Include="RenderSystem\Lighting.h" />
