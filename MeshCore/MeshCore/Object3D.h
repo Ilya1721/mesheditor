@@ -27,14 +27,13 @@ namespace MeshCore
 		const AABBox& getBBox() const;
 		RaySurfaceIntersection findIntersection(const GeometryCore::Ray& ray, bool intersectSurface, int passedFacesCount = 0) const override;
 		std::unique_ptr<Object3D> clone();
-		int getRenderDataOffset();
 
 		void addChild(std::unique_ptr<Object3D>&& child);
 		void updateTransform(const glm::mat4& transform);
 		void onMeshUpdated(const std::unordered_set<UniqueVertex*>& vertices);
 		void moveToOrigin();
 
-		static const std::unordered_map<Object3D*, int>& getObjectRenderDataOffsetMap();
+		static const std::unordered_map<Object3D*, int>& getObjectVertexCountMap();
 
 	private:
 		void init();
@@ -49,7 +48,6 @@ namespace MeshCore
 		glm::mat4 mTransform;
 		AABBox mBBox;
 
-		static std::unordered_map<Object3D*, int> sObjectRenderDataOffsetMap;
+		static std::unordered_map<Object3D*, int> sObjectVertexCountMap;
 	};
 }
-

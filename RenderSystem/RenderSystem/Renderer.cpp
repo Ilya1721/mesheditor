@@ -118,13 +118,13 @@ namespace RenderSystem
 	void Renderer::renderHighlightedFaces()
 	{
 		const auto& highlightedFacesData = GlobalRenderState::getHighlightedFacesData();
-		const auto& renderDataOffsetMap = Object3D::getObjectRenderDataOffsetMap();
+		const auto& objectVertexCountMap = Object3D::getObjectVertexCountMap();
 		renderOverlayPrimitives(!highlightedFacesData.facesIndices.empty(), HIGHLIGHT_MATERIAL,
-			[&highlightedFacesData, &renderDataOffsetMap, this]() {
+			[&highlightedFacesData, &objectVertexCountMap, this]() {
 			for (const auto& faceIdx : highlightedFacesData.facesIndices)
 			{
 				mShaderTransformationSystem.setModel(glm::value_ptr(highlightedFacesData.parentObject->getTransform()));
-				glDrawArrays(GL_TRIANGLES, faceIdx * 3 + renderDataOffsetMap.at(highlightedFacesData.parentObject), 3);
+				glDrawArrays(GL_TRIANGLES, faceIdx * 3 + objectVertexCountMap.at(highlightedFacesData.parentObject), 3);
 			}
 		});
 	}
@@ -140,21 +140,21 @@ namespace RenderSystem
 
 	void Renderer::renderWholeObjectHighlighted()
 	{
-		const auto& objectRenderDataOffsetMap = Object3D::getObjectRenderDataOffsetMap();
-		const auto& highlightedObjectIt = objectRenderDataOffsetMap.find(GlobalRenderState::getHighlightedObject());
-		renderOverlayPrimitives(highlightedObjectIt != objectRenderDataOffsetMap.end(), HIGHLIGHT_MATERIAL, [this, highlightedObjectIt]() {
-			auto& [object, offset] = *highlightedObjectIt;
+		const auto& objectVertexCountMap = Object3D::getObjectVertexCountMap();
+		const auto& highlightedObjectIt = objectVertexCountMap.find(GlobalRenderState::getHighlightedObject());
+		renderOverlayPrimitives(highlightedObjectIt != objectVertexCountMap.end(), HIGHLIGHT_MATERIAL, [this, highlightedObjectIt]() {
+			auto& [object, vertexCount] = *highlightedObjectIt;
 			mShaderTransformationSystem.setModel(glm::value_ptr(object->getTransform()));
-			glDrawArrays(GL_TRIANGLES, offset, object->getMesh().getVertices().size());
+			glDrawArrays(GL_TRIANGLES, vertexCount, object->getMesh().getVertices().size());
 		});
 	}
 
 	void Renderer::renderScene()
 	{
-		for (auto& [object, offset] : Object3D::getObjectRenderDataOffsetMap())
+		for (auto& [object, vertexCount] : Object3D::getObjectVertexCountMap())
 		{
 			mShaderTransformationSystem.setModel(glm::value_ptr(object->getTransform()));
-			glDrawArrays(GL_TRIANGLES, offset, object->getMesh().getVertices().size());
+			glDrawArrays(GL_TRIANGLES, vertexCount, object->getMesh().getVertices().size());
 		}
 	}
 

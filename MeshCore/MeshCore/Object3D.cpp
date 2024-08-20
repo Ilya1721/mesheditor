@@ -14,7 +14,7 @@ using namespace GeometryCore;
 
 namespace MeshCore
 {
-	std::unordered_map<Object3D*, int> Object3D::sObjectRenderDataOffsetMap;
+	std::unordered_map<Object3D*, int> Object3D::sObjectVertexCountMap;
 
 	bool registerNewIntersection(
 		const RaySurfaceIntersection& oldIntersection, const RaySurfaceIntersection& newIntersection, const Point3D& rayOrigin
@@ -79,9 +79,9 @@ namespace MeshCore
 		}, transform);
 	}
 
-	const std::unordered_map<Object3D*, int>& Object3D::getObjectRenderDataOffsetMap()
+	const std::unordered_map<Object3D*, int>& Object3D::getObjectVertexCountMap()
 	{
-		return sObjectRenderDataOffsetMap;
+		return sObjectVertexCountMap;
 	}
 
 	const AABBox& Object3D::getBBox() const
@@ -120,11 +120,6 @@ namespace MeshCore
 		return newObject;
 	}
 
-	int Object3D::getRenderDataOffset()
-	{
-		return sObjectRenderDataOffsetMap.at(this);
-	}
-
 	void Object3D::addChild(std::unique_ptr<Object3D>&& child)
 	{
 		child->mParent = this;
@@ -137,7 +132,7 @@ namespace MeshCore
 	{
 		mBBox.applyMesh(*mMesh);
 		propagateBBoxToRoot();
-		RootRenderDataStorage::updateRenderData(vertices, getRenderDataOffset());
+		RootRenderDataStorage::updateRenderData(vertices, sObjectVertexCountMap.at(this));
 	}
 
 	void Object3D::moveToOrigin()
@@ -154,7 +149,7 @@ namespace MeshCore
 
 	void Object3D::propagateRenderDataToRoot()
 	{
-		sObjectRenderDataOffsetMap.insert({ this, RootRenderDataStorage::getRenderData().getVertexCount()});
+		sObjectVertexCountMap.insert({ this, RootRenderDataStorage::getRenderData().getVertexCount()});
 		RootRenderDataStorage::appendRenderData(mMesh->getRenderData());
 	}
 

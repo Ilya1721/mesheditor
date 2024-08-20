@@ -30,13 +30,13 @@ namespace MeshCore
         return gExtraRenderData;
     }
 
-    void RootRenderDataStorage::updateRenderData(const std::unordered_set<UniqueVertex*>& vertices, int startOffset)
+    void RootRenderDataStorage::updateRenderData(const std::unordered_set<UniqueVertex*>& vertices, int startVertexOffset)
     {
         for (auto& vertex : vertices)
         {
             for (auto& originalVertexData : vertex->originalVertices)
             {
-                gRenderData.updateVertex(originalVertexData, startOffset);
+                gRenderData.updateVertex(originalVertexData, startVertexOffset);
             }
         }
         fireCallbacks(gOnRenderDataUpdatedCallbacks);
