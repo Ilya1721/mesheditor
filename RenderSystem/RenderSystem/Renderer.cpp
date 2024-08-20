@@ -117,11 +117,14 @@ namespace RenderSystem
 
 	void Renderer::renderHighlightedFaces()
 	{
-		const auto& highlightedFacesIndices = GlobalRenderState::getHighlightedFacesIndices();
-		renderOverlayPrimitives(!highlightedFacesIndices.empty(), HIGHLIGHT_MATERIAL, [highlightedFacesIndices]() {
-			for (const auto& faceIdx : highlightedFacesIndices)
+		const auto& highlightedFacesData = GlobalRenderState::getHighlightedFacesData();
+		const auto& renderDataOffsetMap = Object3D::getObjectRenderDataOffsetMap();
+		renderOverlayPrimitives(!highlightedFacesData.facesIndices.empty(), HIGHLIGHT_MATERIAL,
+			[&highlightedFacesData, &renderDataOffsetMap, this]() {
+			for (const auto& faceIdx : highlightedFacesData.facesIndices)
 			{
-				glDrawArrays(GL_TRIANGLES, faceIdx * 3, 3);
+				mShaderTransformationSystem.setModel(glm::value_ptr(highlightedFacesData.parentObject->getTransform()));
+				glDrawArrays(GL_TRIANGLES, faceIdx * 3 + renderDataOffsetMap.at(highlightedFacesData.parentObject), 3);
 			}
 		});
 	}

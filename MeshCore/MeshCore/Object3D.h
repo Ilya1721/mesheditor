@@ -26,7 +26,8 @@ namespace MeshCore
 		const glm::mat4& getTransform() const;
 		const AABBox& getBBox() const;
 		RaySurfaceIntersection findIntersection(const GeometryCore::Ray& ray, bool intersectSurface, int passedFacesCount = 0) const override;
-		std::unique_ptr<Object3D> clone(const glm::mat4& initialTransform = glm::mat4(1.0f));
+		std::unique_ptr<Object3D> clone();
+		int getRenderDataOffset();
 
 		void addChild(std::unique_ptr<Object3D>&& child);
 		void updateTransform(const glm::mat4& transform);

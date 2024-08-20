@@ -16,7 +16,8 @@ namespace RenderSystem
     {
         if (mEnabled)
         {
-            GlobalRenderState::setHighlightedFaces(mScene->getClosestIntersection().surfaceIndices);
+            auto intersection = mScene->getClosestIntersection();
+            GlobalRenderState::setHighlightedFacesData({ intersection.surfaceIndices, intersection.surface.getParentObject() });
         }
     }
 
@@ -31,7 +32,7 @@ namespace RenderSystem
 
         if (!mEnabled)
         {
-            GlobalRenderState::setHighlightedFaces({});
+            GlobalRenderState::setHighlightedFacesData({});
         }
     }
 }

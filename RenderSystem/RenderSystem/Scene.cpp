@@ -45,10 +45,10 @@ namespace RenderSystem
 	void Scene::init(const std::string& meshFilePath)
 	{
 		mRenderer.init();
-		GlobalExtraPrimitives::addSceneFloor();
 		auto firstSceneObject = std::make_unique<MeshCore::Object3D>(MeshFilesLoader::loadSTL(meshFilePath));
 		firstSceneObject->moveToOrigin();
 		sRootObject.addChild(std::move(firstSceneObject));
+		GlobalExtraPrimitives::addSceneFloor();
 	}
 
 	void Scene::setPickedObject(MeshCore::Object3D* pickedObject)

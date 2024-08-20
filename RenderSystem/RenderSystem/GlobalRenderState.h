@@ -9,6 +9,12 @@ namespace MeshCore
 
 namespace RenderSystem
 {
+    struct HighlightedFacesData
+    {
+        std::vector<int> facesIndices;
+        MeshCore::Object3D* parentObject;
+    };
+
     class GlobalRenderState
     {
     public:
@@ -16,15 +22,15 @@ namespace RenderSystem
 
         static bool getRenderWireframe();
         static MeshCore::Object3D* getHighlightedObject();
-        static const std::vector<int>& getHighlightedFacesIndices();
+        static const HighlightedFacesData& getHighlightedFacesData();
 
         static void toggleWireframe();
         static void highlightWholeObject(MeshCore::Object3D* object);
-        static void setHighlightedFaces(const std::vector<int>& facesIndices);
+        static void setHighlightedFacesData(const HighlightedFacesData& data);
 
     private:
         static bool gRenderWireframe;
         static MeshCore::Object3D* gHighlightedObject;
-        static std::vector<int> gHighlightedFacesIndices;
+        static HighlightedFacesData gHighlightedFacesData;
     };
 }

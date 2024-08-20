@@ -35,7 +35,7 @@ namespace RenderSystem
 	void RenderBuffer::loadRenderData(const MeshCore::RenderData& renderData)
 	{
 		const auto& compactData = renderData.getCompactData();
-		glBufferData(GL_ARRAY_BUFFER, compactData.size() * sizeof(float), compactData.data(), GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, compactData.size() * sizeof(float), compactData.data(), GL_DYNAMIC_DRAW);
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
 		glEnableVertexAttribArray(1);

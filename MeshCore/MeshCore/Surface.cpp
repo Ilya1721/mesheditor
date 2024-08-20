@@ -29,6 +29,10 @@ namespace MeshCore
 
     Object3D* Surface::getParentObject() const
     {
+        if (!mInitialFace) {
+            return nullptr;
+        }
+
         return mInitialFace->parentMesh->getParentObject();
     }
 }

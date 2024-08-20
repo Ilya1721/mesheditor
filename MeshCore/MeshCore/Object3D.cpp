@@ -15,6 +15,18 @@ using namespace GeometryCore;
 namespace MeshCore
 {
 	std::unordered_map<Object3D*, int> Object3D::sObjectRenderDataOffsetMap;
+
+	bool registerNewIntersection(
+		const RaySurfaceIntersection& oldIntersection, const RaySurfaceIntersection& newIntersection, const Point3D& rayOrigin
+	)
+	{
+		if (newIntersection.surfaceIndices.empty())
+		{
+			return false;
+		}
+
+		return oldIntersection.surfaceIndices.empty() || isCloser(newIntersection.point, oldIntersection.point, rayOrigin);
+	}
 }
 
 namespace MeshCore
@@ -83,7 +95,7 @@ namespace MeshCore
 		TreeWalker walker(this);
 		walker.forEach([&ray, &finalIntersection, &intersectSurface, &passedFacesCount, this](const Object3D* object) {
 			auto intersection = object->getMesh().findIntersection(ray, intersectSurface, passedFacesCount + object->getMesh().getNumberOfFaces());
-			if (finalIntersection.surfaceIndices.empty() || isCloser(intersection.point, finalIntersection.point, ray.origin))
+			if (registerNewIntersection(finalIntersection, intersection, ray.origin))
 			{
 				finalIntersection = intersection;
 			}
@@ -92,12 +104,12 @@ namespace MeshCore
 		return finalIntersection;
 	}
 
-	std::unique_ptr<Object3D> Object3D::clone(const glm::mat4& initialTransform)
+	std::unique_ptr<Object3D> Object3D::clone()
 	{
 		auto newObject = std::make_unique<Object3D>();
 		newObject->mMesh = mMesh->clone();
-		newObject->mTransform = initialTransform * mTransform;
 		newObject->mBBox = mBBox;
+		newObject->mTransform = mTransform;
 		newObject->mMesh->setParentObject(newObject.get());
 
 		for (const auto& child : mChildren)
@@ -106,6 +118,11 @@ namespace MeshCore
 		}
 
 		return newObject;
+	}
+
+	int Object3D::getRenderDataOffset()
+	{
+		return sObjectRenderDataOffsetMap.at(this);
 	}
 
 	void Object3D::addChild(std::unique_ptr<Object3D>&& child)
@@ -120,7 +137,7 @@ namespace MeshCore
 	{
 		mBBox.applyMesh(*mMesh);
 		propagateBBoxToRoot();
-		RootRenderDataStorage::updateRenderData(vertices, sObjectRenderDataOffsetMap.at(this));
+		RootRenderDataStorage::updateRenderData(vertices, getRenderDataOffset());
 	}
 
 	void Object3D::moveToOrigin()

@@ -76,7 +76,7 @@ namespace RenderSystem
     {
         if (mSurfaceMovementEnabled)
         {
-            GlobalRenderState::setHighlightedFaces(mSurfaceIntersection.surfaceIndices);
+            GlobalRenderState::setHighlightedFacesData({ mSurfaceIntersection.surfaceIndices, mSurfaceIntersection.surface.getParentObject() });
         }
     }
 
@@ -84,7 +84,7 @@ namespace RenderSystem
     {
         if (mSurfaceMovementEnabled)
         {
-            GlobalRenderState::setHighlightedFaces({});
+            GlobalRenderState::setHighlightedFacesData({});
         }
 
         mSurfaceMovementEnabled = isSurfaceIntersected && !mSurfaceMovementEnabled;

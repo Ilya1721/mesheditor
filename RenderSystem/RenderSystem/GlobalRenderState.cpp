@@ -6,7 +6,7 @@ namespace RenderSystem
 {
     bool GlobalRenderState::gRenderWireframe = false;
     MeshCore::Object3D* GlobalRenderState::gHighlightedObject = nullptr;
-    std::vector<int> GlobalRenderState::gHighlightedFacesIndices;
+    HighlightedFacesData GlobalRenderState::gHighlightedFacesData;
 }
 
 namespace RenderSystem
@@ -21,9 +21,9 @@ namespace RenderSystem
         return gHighlightedObject;
     }
 
-    const std::vector<int>& GlobalRenderState::getHighlightedFacesIndices()
+    const HighlightedFacesData& GlobalRenderState::getHighlightedFacesData()
     {
-        return gHighlightedFacesIndices;
+        return gHighlightedFacesData;
     }
 
     void GlobalRenderState::toggleWireframe()
@@ -36,8 +36,8 @@ namespace RenderSystem
         gHighlightedObject = object;
     }
 
-    void GlobalRenderState::setHighlightedFaces(const std::vector<int>& facesIndices)
+    void GlobalRenderState::setHighlightedFacesData(const HighlightedFacesData& data)
     {
-        gHighlightedFacesIndices = facesIndices;
+        gHighlightedFacesData = data;
     }
 }

@@ -4,7 +4,6 @@
 
 #include "Scene.h"
 #include "Window.h"
-#include "GlobalRenderState.h"
 
 namespace RenderSystem
 {
@@ -17,9 +16,9 @@ namespace RenderSystem
         auto pickedObject = mScene->getPickedObject();
         if (key == GLFW_KEY_C && pickedObject)
         {
-            pickedObject->getParent()->addChild(pickedObject->clone(getInitialTransform(pickedObject->getBBox())));
-            mScene->setPickedObject(nullptr);
-            GlobalRenderState::highlightWholeObject(nullptr);
+            auto clonedObject = pickedObject->clone();
+            clonedObject->updateTransform(getInitialTransform(pickedObject->getBBox()));
+            pickedObject->getParent()->addChild(std::move(clonedObject));
         }
     }
 
