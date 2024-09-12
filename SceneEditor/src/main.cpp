@@ -4,8 +4,7 @@ using namespace RenderSystem;
 
 int main()
 {
-	Window mainWindow(1200, 628, R"(D:\3DModels\STL\Cube\Cube.stl)");
-	mainWindow.render();
+	Window::getInstance().render();
 
 	return 0;
 }

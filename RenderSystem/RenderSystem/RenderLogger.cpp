@@ -2,33 +2,13 @@
 
 #include <iostream>
 
-#include "GladTypedefs.h"
-
-namespace
-{
-	using namespace RenderSystem;
-
-	std::string getShaderOrProgramInfoLog(GetShaderIV getShaderIVFunc, GetShaderInfoLog getShaderInfoLogFunc, int shaderId)
-	{
-		int infoLogLength = 0;
-		std::string infoLog{ '\0' };
-
-		getShaderIVFunc(shaderId, GL_INFO_LOG_LENGTH, &infoLogLength);
-		infoLog.resize(infoLogLength);
-		getShaderInfoLogFunc(shaderId, infoLogLength, &infoLogLength, infoLog.data());
-
-		return infoLog;
-	}
-}
+#ifdef __gl_h_
+#undef __gl_h_
+#endif
+#include "glad.h"
 
 namespace RenderSystem
 {
-	std::string getShaderInfoLog(int shaderId, SHADER_TYPE shaderType)
-	{
-		auto getShaderIVFunc = shaderType == SHADER_TYPE::SHADER ? glGetShaderiv : glGetProgramiv;
-		return getShaderOrProgramInfoLog(getShaderIVFunc, glGetProgramInfoLog, shaderId);
-	}
-
 	void printOpenGLErrorMessage()
 	{
 		GLenum error{};

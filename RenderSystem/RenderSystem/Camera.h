@@ -1,12 +1,10 @@
 #pragma once
 
 #include <functional>
-
-#include <glm/glm.hpp>
+#include <vector>
 
 #include "GeometryCore/Typedefs.h"
 
-#include "Renderer.h"
 #include "Viewport.h"
 
 namespace GeometryCore
@@ -27,7 +25,7 @@ namespace RenderSystem
 	class Camera
 	{
 	public:
-		Camera(ShaderTransformationSystem* shaderTransformationSystem);
+		static Camera& getInstance();
 
 		const glm::mat4& getViewMatrix() const;
 		const Point3D& getTarget() const;
@@ -36,18 +34,25 @@ namespace RenderSystem
 		const Vector3D& getRight() const;
 		Vector3D getNormalizedDirection() const;
 		Point3D projectToTargetPlane(const Point3D& cursorPosInWorldSpace) const;
+		bool isMovementEnabled() const;
 
+		void init();
 		void pan(const Point3D& startPointInWorldSpace, const Point3D& endPointInWorldSpace, PROJECTION_TYPE projectionType);
 		void rawOrbit(const Point3D& startPointInNDC, const Point3D& endPointInNDC);
 		void smoothOrbit(float xOffset, float yOffset);
 		void zoom(float step);
-		void perspectiveAdjust(const MeshCore::AABBox& bbox, float fov);
-		void orthoAdjust(const MeshCore::AABBox& bbox);
+		void enableMovement(bool isEnabled);
+		void addOnCameraEditedCallback(const std::function<void()>& callback);
 
 	private:
+		Camera();
+
 		void invokeEditOperation(const std::function<void()>& action);
 		void setEyeTargetUp(const Point3D& eye, const Point3D& target, const Vector3D& up);
 		void translate(const Vector3D& movement);
+		void perspectiveAdjust(const MeshCore::AABBox& bbox, float fov);
+		void orthoAdjust(const MeshCore::AABBox& bbox);
+		void adjust();
 		void adjust(const MeshCore::AABBox& bbox, float fov = 0.0f);
 		void rotateCamera(const glm::mat4& rotationTransform);
 
@@ -69,7 +74,10 @@ namespace RenderSystem
 		Vector3D mUp;
 		Vector3D mRight;
 		glm::mat4 mViewMatrix;
-		ShaderTransformationSystem* mShaderTransformationSystem;
+		bool mMovementEnabled;
+		std::vector<std::function<void()>> mOnCameraEditedCallbacks;
+
+		static Camera sInstance;
 	};
 }
 

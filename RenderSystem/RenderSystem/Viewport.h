@@ -5,8 +5,6 @@
 
 #include "MeshCore/AABBox.h"
 
-#include "Renderer.h"
-
 namespace RenderSystem
 {
 	enum class PROJECTION_TYPE
@@ -18,11 +16,12 @@ namespace RenderSystem
 	class Viewport
 	{
 	public:
-		Viewport(int width, int height, const MeshCore::AABBox* rootBBox, ShaderTransformationSystem* shaderTransformationSystem);
+		static Viewport& getInstance();
 
 		void setProjectionType(PROJECTION_TYPE projectionType);
 		void resize(int width, int height);
 		void zoom(float step);
+		void addOnViewportEditedCallback(const std::function<void()>& callback);
 
 		float getFov() const;
 		float getNearPlaneDistance() const;
@@ -34,6 +33,10 @@ namespace RenderSystem
 		const PROJECTION_TYPE getProjectionType() const;
 
 	private:
+		Viewport();
+		~Viewport() = default;
+
+		void init(int width, int height, const MeshCore::AABBox* rootBBox);
 		void invokeEditOperation(const std::function<void()>& action);
 		glm::mat4 createProjectionMatrix() const;
 
@@ -49,7 +52,9 @@ namespace RenderSystem
 		PROJECTION_TYPE mProjectionType;
 		glm::mat4 mProjectionMatrix;
 		const MeshCore::AABBox* mRootBBox;
-		ShaderTransformationSystem* mShaderTransformationSystem;
+		std::vector<std::function<void()>> mOnViewportEditedCallbacks;
+
+		static Viewport sInstance;
 	};
 }
 

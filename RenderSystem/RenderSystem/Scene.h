@@ -7,45 +7,26 @@
 #include "MeshCore/Object3D.h"
 #include "GeometryCore/Typedefs.h"
 
-#include "Camera.h"
-#include "Renderer.h"
-
 namespace RenderSystem
 {
 	using namespace GeometryCore;
 
-	class Window;
-
 	class Scene
 	{
 	public:
-		Scene(const std::string& meshFilePath, Window* parentWindow);
-		Scene(Scene&& scene) = delete;
+		static Scene& getInstance();
 
-		Camera& getCamera();
-		Window* getParentWindow();
-		Renderer& getRenderer();
-		MeshCore::RaySurfaceIntersection getClosestIntersection(bool intersectSurface = true);
-		bool isCameraMovementEnabled() const;
-		MeshCore::Object3D* getPickedObject() const;
+		void init(const std::string& meshFilePath);
 
-		void setPickedObject(MeshCore::Object3D* pickedObject);
-		void adjustCameraAndLight();
-		void enableCameraMovement(bool isEnabled);
-
-		static MeshCore::Object3D& getRootObject();
+		const MeshCore::Object3D& getRootObject() const;
 
 	private:
-		void init(const std::string& meshFilePath);
-		void adjustCamera();
+		~Scene() = default;
+
 		void adjustLightPos();
 
 	private:
-		Window* mParentWindow;
-		Renderer mRenderer;
-		Camera mCamera;
-		MeshCore::Object3D* mPickedObject;
-		bool mCameraMovementEnabled;
-		static MeshCore::Object3D sRootObject;
+		MeshCore::Object3D sRootObject;
+		static Scene sInstance;
 	};
 }

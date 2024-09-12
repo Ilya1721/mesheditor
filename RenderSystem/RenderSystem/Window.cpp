@@ -15,48 +15,56 @@
 #include "Viewport.h"
 #include "OperationsDispatcher.h"
 
+namespace RenderSystem
+{
+	Window Window::sInstance;
+	Window* instancePtr = &sInstance;
+}
+
 namespace
 {
 	using namespace RenderSystem;
 
-	Window* instance = nullptr;
-
 	void onMouseMove([[maybe_unused]] GLFWwindow* window, double cursorX, double cursorY)
 	{
-		instance->onMouseMove(cursorX, cursorY);
+		instancePtr->onMouseMove(cursorX, cursorY);
 	}
 
 	void onMouseButton([[maybe_unused]] GLFWwindow* window, int button, int action, int mods)
 	{
-		instance->onMouseButton(button, action, mods);
+		instancePtr->onMouseButton(button, action, mods);
 	}
 
 	void onMouseScroll([[maybe_unused]] GLFWwindow* window, double xOffset, double yOffset)
 	{
-		instance->onMouseScroll(xOffset, yOffset);
+		instancePtr->onMouseScroll(xOffset, yOffset);
 	}
 
 	void onKey([[maybe_unused]] GLFWwindow* window, int key, int scancode, int action, int mods)
 	{
-		instance->onKey(key, scancode, action, mods);
+		instancePtr->onKey(key, scancode, action, mods);
 	}
 
 	void onFramebufferSizeChanged([[maybe_unused]] GLFWwindow* window, int width, int height)
 	{
-		instance->onFramebufferSizeChanged(width, height);
+		instancePtr->onFramebufferSizeChanged(width, height);
 	}
 }
 
 namespace RenderSystem
 {
-	Window::Window(int width, int height, const std::string& meshFilePath) :
-		mWidth(width),
-		mHeight(height)
+	Window& Window::getInstance()
 	{
-		instance = this;
+		return sInstance;
+	}
+
+	void Window::init(int width, int height, const std::string& meshFilePath)
+	{
+		mWidth = width;
+		mHeight = height;
 		initGLFW();
-		initSceneAndViewport(meshFilePath);
-		setCallbacks();
+		setGLFWCallbacks();
+		mInitializationCallbackMechanism.invokeCallbacks();
 	}
 
 	Window::~Window()
@@ -86,14 +94,12 @@ namespace RenderSystem
 
 	void Window::initSceneAndViewport(const std::string& meshFilePath)
 	{
-		mScene = std::make_unique<Scene>(meshFilePath, this);
-		auto shaderTransformationSystemPtr = &mScene->getRenderer().getShaderTransformationSystem();
 		mViewport = std::make_unique<Viewport>(mWidth, mHeight, &Scene::getRootObject().getBBox(), shaderTransformationSystemPtr);
 		mScene->adjustCameraAndLight();
 		mOperationsDispatcher = std::make_unique<OperationsDispatcher>(mScene.get());
 	}
 
-	void Window::setCallbacks()
+	void Window::setGLFWCallbacks()
 	{
 		glfwSetCursorPosCallback(mWindow, ::onMouseMove);
 		glfwSetMouseButtonCallback(mWindow, ::onMouseButton);
@@ -110,6 +116,11 @@ namespace RenderSystem
 			glfwSwapBuffers(mWindow);
 			glfwWaitEvents();
 		}
+	}
+
+	const std::unique_ptr<Scene>& Window::getScene() const
+	{
+		return mScene;
 	}
 
 	const std::unique_ptr<Viewport>& Window::getViewport() const
@@ -152,6 +163,14 @@ namespace RenderSystem
 		return ndcPos;
 	}
 
+	Ray Window::castCursorRay() const
+	{
+		auto nearCursorPosInWorldSpace = unProject(getCursorPos(), 0.0f);
+		auto farCursorPosInWorldSpace = unProject(getCursorPos(), 1.0f);
+
+		return { nearCursorPosInWorldSpace, farCursorPosInWorldSpace - nearCursorPosInWorldSpace };
+	}
+
 	bool Window::isMouseButtonPressed(int button) const
 	{
 		return glfwGetMouseButton(mWindow, button) == GLFW_PRESS;
@@ -160,6 +179,16 @@ namespace RenderSystem
 	bool Window::isKeyPressed(int key) const
 	{
 		return glfwGetKey(mWindow, key) == GLFW_PRESS;
+	}
+
+	int Window::getWidth() const
+	{
+		return mWidth;
+	}
+
+	int Window::getHeight() const
+	{
+		return mHeight;
 	}
 
 	void Window::onMouseMove(double cursorX, double cursorY)
@@ -194,5 +223,10 @@ namespace RenderSystem
 		{
 			mOperationsDispatcher->onKeyPressed(key);
 		}
+	}
+
+	void Window::addWindowInitializedCallback(const std::function<void()>& callback)
+	{
+		mInitializationCallbackMechanism.addCallback(callback);
 	}
 }

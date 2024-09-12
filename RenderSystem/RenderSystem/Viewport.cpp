@@ -9,10 +9,26 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Constants.h"
+#include "Window.h"
 
 namespace RenderSystem
 {
-	Viewport::Viewport(int width, int height, const MeshCore::AABBox* rootBBox, ShaderTransformationSystem* shaderTransformationSystem) :
+	Viewport Viewport::sInstance;
+}
+
+namespace RenderSystem
+{
+	Viewport::Viewport()
+	{
+		
+	}
+
+	Viewport& Viewport::getInstance()
+	{
+		return sInstance;
+	}
+
+	void Viewport::init(int width, int height, const MeshCore::AABBox* rootBBox) :
 		mFov(FOV),
 		mNearPlaneDistance(NEAR_PLANE_DISTANCE),
 		mFarPlaneDistance(FAR_PLANE_DISTANCE),
@@ -22,7 +38,6 @@ namespace RenderSystem
 		mProjectionType(PROJECTION_TYPE::PERSPECTIVE),
 		mProjectionMatrix(1.0f),
 		mRootBBox(rootBBox),
-		mShaderTransformationSystem(shaderTransformationSystem),
 		mBBoxViewportGapCoef(BBOX_VIEWPORT_GAP_COEF)
 	{
 		resize(width, height);
@@ -47,7 +62,10 @@ namespace RenderSystem
 	{
 		action();
 		mProjectionMatrix = createProjectionMatrix();
-		mShaderTransformationSystem->setProjection(glm::value_ptr(mProjectionMatrix));
+		for (const auto& callback : mOnViewportEditedCallbacks)
+		{
+			callback();
+		}
 	}
 
 	void Viewport::setProjectionType(PROJECTION_TYPE projectionType)
@@ -71,6 +89,11 @@ namespace RenderSystem
 		invokeEditOperation([this, &step]() {
 			mBBoxViewportGapCoef += step;
 		});
+	}
+
+	void Viewport::addOnViewportEditedCallback(const std::function<void()>& callback)
+	{
+		mOnViewportEditedCallbacks.push_back(callback);
 	}
 
 	const glm::mat4& Viewport::getProjectionMatrix() const
