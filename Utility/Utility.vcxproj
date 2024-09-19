@@ -11,12 +11,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Utility\CallbackMechanism.h" />
     <ClInclude Include="Utility\FileHelper.h" />
     <ClInclude Include="Utility\StringHelper.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Utility\CallbackMechanism.cpp" />
     <ClCompile Include="Utility\FileHelper.cpp" />
     <ClCompile Include="Utility\StringHelper.cpp" />
   </ItemGroup>

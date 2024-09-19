@@ -28,22 +28,38 @@ using namespace GeometryCore;
 
 namespace RenderSystem
 {
-	Scene Scene::sInstance;
+	MeshCore::Object3D Scene::sRootObject;
 }
 
 namespace RenderSystem
 {
-	Scene& Scene::getInstance()
+	Scene::Scene(const std::string& meshFilePath, Window* parentWindow) :
+		mParentWindow(parentWindow),
+		mCamera(&mRenderer.getShaderTransformationSystem()),
+		mPickedObject(nullptr),
+		mCameraMovementEnabled(true)
 	{
-		return sInstance;
+		init(meshFilePath);
 	}
 
 	void Scene::init(const std::string& meshFilePath)
 	{
+		mRenderer.init();
 		auto firstSceneObject = std::make_unique<MeshCore::Object3D>(MeshFilesLoader::loadSTL(meshFilePath));
 		firstSceneObject->moveToOrigin();
 		sRootObject.addChild(std::move(firstSceneObject));
 		GlobalExtraPrimitives::addSceneFloor();
+	}
+
+	void Scene::setPickedObject(MeshCore::Object3D* pickedObject)
+	{
+		mPickedObject = pickedObject;
+	}
+
+	void Scene::adjustCameraAndLight()
+	{
+		adjustCamera();
+		adjustLightPos();
 	}
 
 	void Scene::adjustLightPos()
@@ -52,7 +68,67 @@ namespace RenderSystem
 		mRenderer.getLighting().setLightPos(glm::value_ptr(lightPosInCameraSpace));
 	}
 
-	const MeshCore::Object3D& Scene::getRootObject() const
+	void Scene::adjustCamera()
+	{
+		const auto& viewport = mParentWindow->getViewport();
+		if (viewport->getProjectionType() == PROJECTION_TYPE::PERSPECTIVE)
+		{
+			mCamera.perspectiveAdjust(sRootObject.getBBox(), viewport->getFov());
+		}
+		else
+		{
+			mCamera.orthoAdjust(sRootObject.getBBox());
+		}
+
+		Point3D cameraPosInCameraSpace = transformPoint(mCamera.getEye(), mCamera.getViewMatrix());
+		mRenderer.getLighting().setCameraPos(glm::value_ptr(cameraPosInCameraSpace));
+	}
+
+	void Scene::enableCameraMovement(bool isEnabled)
+	{
+		mCameraMovementEnabled = isEnabled;
+	}
+
+	MeshCore::RaySurfaceIntersection Scene::getClosestIntersection(bool intersectSurface)
+	{
+		auto nearCursorPosInWorldSpace = mParentWindow->unProject(mParentWindow->getCursorPos(), 0.0f);
+		auto farCursorPosInWorldSpace = mParentWindow->unProject(mParentWindow->getCursorPos(), 1.0f);
+		Ray castedRay { nearCursorPosInWorldSpace, farCursorPosInWorldSpace - nearCursorPosInWorldSpace };
+
+		if (sRootObject.getBBox().findIntersectionPoint(castedRay).has_value())
+		{
+			return sRootObject.findIntersection(castedRay, intersectSurface);
+		}
+
+		return {};
+	}
+
+	bool Scene::isCameraMovementEnabled() const
+	{
+		return mCameraMovementEnabled;
+	}
+
+	MeshCore::Object3D* Scene::getPickedObject() const
+	{
+		return mPickedObject;
+	}
+
+	Camera& Scene::getCamera()
+	{
+		return mCamera;
+	}
+
+	Window* Scene::getParentWindow()
+	{
+		return mParentWindow;
+	}
+
+	Renderer& Scene::getRenderer()
+	{
+		return mRenderer;
+	}
+
+	MeshCore::Object3D& Scene::getRootObject()
 	{
 		return sRootObject;
 	}

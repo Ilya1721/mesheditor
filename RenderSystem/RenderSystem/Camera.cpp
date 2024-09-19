@@ -16,35 +16,20 @@
 #include "GeometryCore/Constants.h"
 #include "MeshCore/AABBox.h"
 
-#include "Scene.h"
-
 #include "Constants.h"
 
 using namespace GeometryCore;
 
 namespace RenderSystem
 {
-	Camera Camera::sInstance;
-
-	Viewport* gViewport = &Viewport::getInstance();
-	Scene* gScene = &Scene::getInstance();
-}
-
-namespace RenderSystem
-{
-	Camera& Camera::getInstance()
-	{
-		return sInstance;
-	}
-
-	Camera::Camera() :
+	Camera::Camera(ShaderTransformationSystem* shaderTransformationSystem) :
 		mTarget(DEFAULT_CAMERA_TARGET),
 		mEye(DEFAULT_CAMERA_POSITION),
 		mUp(DEFAULT_CAMERA_UP),
 		mRight(DEFAULT_CAMERA_RIGHT),
-		mMovementEnabled(true)
+		mShaderTransformationSystem(shaderTransformationSystem)
 	{
-		mViewMatrix = createViewMatrix();
+		invokeEditOperation([]() {});
 	}
 
 	const glm::mat4& Camera::getViewMatrix() const
@@ -82,16 +67,6 @@ namespace RenderSystem
 		return glm::normalize(mTarget - mEye);
 	}
 
-	bool Camera::isMovementEnabled() const
-	{
-		return mMovementEnabled;
-	}
-
-	void Camera::init()
-	{
-
-	}
-
 	Point3D Camera::projectToTargetPlane(const Point3D& cursorPosInWorldSpace) const
 	{
 		Ray cursorRay(cursorPosInWorldSpace, cursorPosInWorldSpace - mEye);
@@ -102,10 +77,7 @@ namespace RenderSystem
 	{
 		action();
 		mViewMatrix = createViewMatrix();
-		for (const auto& callback : mOnCameraEditedCallbacks)
-		{
-			callback();
-		}
+		mShaderTransformationSystem->setView(glm::value_ptr(mViewMatrix));
 	}
 
 	void Camera::setEyeTargetUp(const Point3D& eye, const Point3D& target, const Vector3D& up)
@@ -129,21 +101,6 @@ namespace RenderSystem
 		invokeEditOperation([&step, this]() {
 			mEye += glm::normalize(mTarget - mEye) * step;
 		});
-	}
-
-	void Camera::adjust()
-	{
-		if (gViewport->getProjectionType() == PROJECTION_TYPE::PERSPECTIVE)
-		{
-			perspectiveAdjust(sRootObject.getBBox(), gViewport->getFov());
-		}
-		else
-		{
-			orthoAdjust(sRootObject.getBBox());
-		}
-
-		Point3D cameraPosInCameraSpace = transformPoint(mEye, mViewMatrix);
-		mRenderer.getLighting().setCameraPos(glm::value_ptr(cameraPosInCameraSpace));
 	}
 
 	void Camera::translate(const Vector3D& movement)
@@ -283,15 +240,5 @@ namespace RenderSystem
 	void Camera::orthoAdjust(const MeshCore::AABBox& bbox)
 	{
 		adjust(bbox);
-	}
-
-	void Camera::enableMovement(bool isEnabled)
-	{
-		mMovementEnabled = isEnabled;
-	}
-
-	void Camera::addOnCameraEditedCallback(const std::function<void()>& callback)
-	{
-		mOnCameraEditedCallbacks.push_back(callback);
 	}
 }

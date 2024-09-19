@@ -5,7 +5,7 @@ namespace RenderSystem
 	struct Material;
 	struct Light;
 
-	class SceneLighting
+	class Lighting
 	{
 	public:
 		void init(int shaderProgram);

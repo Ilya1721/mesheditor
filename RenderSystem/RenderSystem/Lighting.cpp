@@ -1,4 +1,4 @@
-#include "SceneLighting.h"
+#include "Lighting.h"
 
 #ifdef __gl_h_
 #undef __gl_h_
@@ -13,14 +13,14 @@
 
 namespace RenderSystem
 {
-	void SceneLighting::init(int shaderProgram)
+	void Lighting::init(int shaderProgram)
 	{
 		mShaderProgram = shaderProgram;
 		initUniformLocations();
 		setupSettings();
 	}
 
-	void SceneLighting::setupSettings()
+	void Lighting::setupSettings()
 	{
 		glClearColor(BACKGROUND_COLOR.r, BACKGROUND_COLOR.g, BACKGROUND_COLOR.b, BACKGROUND_COLOR.a);
 		glEnable(GL_DEPTH_TEST);
@@ -28,12 +28,12 @@ namespace RenderSystem
 		setMaterial(GOLD_MATERIAL);
 	}
 
-	int SceneLighting::getUniformLocation(const char* name) const
+	int Lighting::getUniformLocation(const char* name) const
 	{
 		return glGetUniformLocation(mShaderProgram, name);
 	}
 
-	void SceneLighting::initUniformLocations()
+	void Lighting::initUniformLocations()
 	{
 		mLightPos = getUniformLocation("lightPosInCameraSpace");
 		mCameraPos = getUniformLocation("cameraPosInCameraSpace");
@@ -46,7 +46,7 @@ namespace RenderSystem
 		mMaterialShininess = getUniformLocation("material.shininess");
 	}
 
-	void SceneLighting::setMaterial(const Material& material)
+	void Lighting::setMaterial(const Material& material)
 	{
 		setMaterialAmbient(glm::value_ptr(material.ambient));
 		setMaterialDiffuse(glm::value_ptr(material.diffuse));
@@ -54,54 +54,54 @@ namespace RenderSystem
 		setMaterialShininess(material.shininess);
 	}
 
-	void SceneLighting::setLight(const Light& light)
+	void Lighting::setLight(const Light& light)
 	{
 		setLightAmbient(glm::value_ptr(light.ambient));
 		setLightDiffuse(glm::value_ptr(light.diffuse));
 		setLightSpecular(glm::value_ptr(light.specular));
 	}
 
-	void SceneLighting::setLightPos(const float* lightPos) const
+	void Lighting::setLightPos(const float* lightPos) const
 	{
 		glUniform3fv(mLightPos, 1, lightPos);
 	}
 
-	void SceneLighting::setCameraPos(const float* pos) const
+	void Lighting::setCameraPos(const float* pos) const
 	{
 		glUniform3fv(mCameraPos, 1, pos);
 	}
 
-	void SceneLighting::setLightAmbient(const float* ambient) const
+	void Lighting::setLightAmbient(const float* ambient) const
 	{
 		glUniform3fv(mLightAmbient, 1, ambient);
 	}
 
-	void SceneLighting::setLightDiffuse(const float* diffuse) const
+	void Lighting::setLightDiffuse(const float* diffuse) const
 	{
 		glUniform3fv(mLightDiffuse, 1, diffuse);
 	}
 
-	void SceneLighting::setLightSpecular(const float* specular) const
+	void Lighting::setLightSpecular(const float* specular) const
 	{
 		glUniform3fv(mLightSpecular, 1, specular);
 	}
 
-	void SceneLighting::setMaterialAmbient(const float* ambient) const
+	void Lighting::setMaterialAmbient(const float* ambient) const
 	{
 		glUniform3fv(mMaterialAmbient, 1, ambient);
 	}
 
-	void SceneLighting::setMaterialDiffuse(const float* diffuse) const
+	void Lighting::setMaterialDiffuse(const float* diffuse) const
 	{
 		glUniform3fv(mMaterialDiffuse, 1, diffuse);
 	}
 
-	void SceneLighting::setMaterialSpecular(const float* specular) const
+	void Lighting::setMaterialSpecular(const float* specular) const
 	{
 		glUniform3fv(mMaterialSpecular, 1, specular);
 	}
 
-	void SceneLighting::setMaterialShininess(float shininess) const
+	void Lighting::setMaterialShininess(float shininess) const
 	{
 		glUniform1f(mMaterialShininess, shininess);
 	}
