@@ -12,6 +12,13 @@
 
 using namespace GeometryCore;
 
+namespace
+{
+	using namespace MeshCore;
+
+	RootRenderDataStorage* gRootRenderDataStorage = &RootRenderDataStorage::getInstance();
+}
+
 namespace MeshCore
 {
 	std::unordered_map<Object3D*, int> Object3D::sObjectVertexCountMap;
@@ -132,7 +139,7 @@ namespace MeshCore
 	{
 		mBBox.applyMesh(*mMesh);
 		propagateBBoxToRoot();
-		RootRenderDataStorage::updateRenderData(vertices, sObjectVertexCountMap.at(this));
+		gRootRenderDataStorage->updateRenderData(vertices, sObjectVertexCountMap.at(this));
 	}
 
 	void Object3D::moveToOrigin()
@@ -149,8 +156,8 @@ namespace MeshCore
 
 	void Object3D::propagateRenderDataToRoot()
 	{
-		sObjectVertexCountMap.insert({ this, RootRenderDataStorage::getRenderData().getVertexCount()});
-		RootRenderDataStorage::appendRenderData(mMesh->getRenderData());
+		sObjectVertexCountMap.insert({ this, gRootRenderDataStorage->getRenderData().getVertexCount()});
+		gRootRenderDataStorage->appendRenderData(mMesh->getRenderData());
 	}
 
 	void Object3D::propagateBBoxToRoot() const

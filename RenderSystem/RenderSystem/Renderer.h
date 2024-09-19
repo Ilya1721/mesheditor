@@ -5,6 +5,7 @@
 
 #include "GeometryCore/Typedefs.h"
 #include "MeshCore/Vertex.h"
+#include "Utility/CallbackMechanism.h"
 
 #include "RenderBuffer.h"
 #include "Constants.h"
@@ -27,17 +28,20 @@ namespace RenderSystem
 	public:
 		static Renderer& getInstance();
 
-		RenderBuffer& getRenderBuffer();
-
-		void init();
-		void registerCallbacks();
 		void render();
+		void addInitializedCallback(const std::function<void()>& callback);
+		void adjustLightPos();
+
+		RenderBuffer& getRenderBuffer();
+		SceneShaderProgram& getSceneShaderProgram();
 
 	private:
 		Renderer();
 		~Renderer();
 
+		void init();
 		void initExtraFBO();
+		void registerCallbacks();
 		void renderExtra();
 		void renderShadows();
 		void renderHighlightedFaces();
@@ -46,7 +50,6 @@ namespace RenderSystem
 		void renderScene();
 		void renderOverlayPrimitives(bool renderCondition, const Material& material, const std::function<void()>& renderFunc);
 		void renderExtraFBO(const std::function<void()>& renderFunc) const;
-		void adjustLightPos();
 
 	private:
 		unsigned int mExtraFBO;
@@ -54,8 +57,7 @@ namespace RenderSystem
 		RenderBuffer mExtraRenderBuffer;
 		SceneShaderProgram mSceneShaderProgram;
 		DepthShaderProgram mDepthShaderProgram;
-
-		static Renderer sInstance;
+		Utility::CallbackMechanism mRendererInitCM;
 	};
 }
 

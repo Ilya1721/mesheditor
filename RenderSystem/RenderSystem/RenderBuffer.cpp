@@ -7,13 +7,10 @@
 
 #include "MeshCore/Constants.h"
 
+#include "Renderer.h"
+
 namespace RenderSystem
 {
-	RenderBuffer::RenderBuffer()
-	{
-		init();
-	}
-
 	RenderBuffer::~RenderBuffer()
 	{
 		glDeleteBuffers(1, &mVBO);

@@ -7,20 +7,19 @@
 
 namespace RenderSystem
 {
-    DepthShaderProgram::DepthShaderProgram(const std::string& vertexShaderPath, const std::string& fragmentShaderPath) :
-        ShaderProgram(vertexShaderPath, fragmentShaderPath),
+    DepthShaderProgram::DepthShaderProgram() :
+        ShaderProgram(),
         mLightSpaceTransform()
-    {
-        init();
-    }
+    {}
 
 	void DepthShaderProgram::setLightSpaceTransform(const float* transform) const
 	{
 		glUniformMatrix4fv(mLightSpaceTransform, 1, false, transform);
 	}
 
-	void DepthShaderProgram::init()
+	void DepthShaderProgram::init(const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
 	{
+		ShaderProgram::init(vertexShaderPath, fragmentShaderPath);
 		initUniformLocations();
 	}
 

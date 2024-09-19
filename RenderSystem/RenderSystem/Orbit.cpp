@@ -1,25 +1,28 @@
 #include "Orbit.h"
 
-#include "Scene.h"
 #include "Window.h"
+#include "Camera.h"
+
+namespace 
+{
+    using namespace RenderSystem;
+
+    Window* gWindow = &Window::getInstance();
+    Camera* gCamera = &Camera::getInstance();
+}
 
 namespace RenderSystem
 {
-    Orbit::Orbit(Scene* scene) :
-        Operation(scene)
-    {}
-
     void Orbit::onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos)
     {
-        const auto& window = mScene->getParentWindow();
-        auto middleMouseButtonPressed = window->isMouseButtonPressed(GLFW_MOUSE_BUTTON_MIDDLE);
-        auto shiftKeyPressed = window->isKeyPressed(GLFW_KEY_LEFT_SHIFT);
+        auto middleMouseButtonPressed = gWindow->isMouseButtonPressed(GLFW_MOUSE_BUTTON_MIDDLE);
+        auto shiftKeyPressed = gWindow->isKeyPressed(GLFW_KEY_LEFT_SHIFT);
 
-        if (mScene->isCameraMovementEnabled() && middleMouseButtonPressed && !shiftKeyPressed)
+        if (gCamera->isMovementEnabled() && middleMouseButtonPressed && !shiftKeyPressed)
         {
             const auto offsetX = endCursorPos.x - startCursorPos.x;
             const auto offsetY = startCursorPos.y - endCursorPos.y;
-            mScene->getCamera().smoothOrbit(offsetX, offsetY);
+            gCamera->smoothOrbit(offsetX, offsetY);
         }
     }
 }

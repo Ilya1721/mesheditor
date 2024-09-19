@@ -10,18 +10,17 @@
 
 #include "GeometryCore/Line.h"
 #include "GeometryCore/Plane.h"
+#include "GeometryCore/Transforms.h"
 #include "MeshCore/Object3D.h"
 #include "MeshCore/Mesh.h"
 #include "MeshCore/RootRenderDataStorage.h"
 
 #include "RenderPrimitive.h"
 #include "GlobalExtraPrimitives.h"
-#include "Scene.h"
 #include "GlobalRenderState.h"
 #include "Texture.h"
 #include "Camera.h"
 #include "Window.h"
-#include <GeometryCore/Transforms.h>
 
 using namespace MeshCore;
 
@@ -33,23 +32,22 @@ namespace
 	constexpr Material HIGHLIGHT_MATERIAL = RUBY_MATERIAL;
 	constexpr Material WIREFRAME_MATERIAL = BLACK_MATERIAL;
 
-	inline const std::string MAIN_VERTEX_SHADER_PATH = "";
-	inline const std::string MAIN_FRAGMENT_SHADER_PATH = "";
-	inline const std::string DEPTH_VERTEX_SHADER_PATH = "";
-	inline const std::string DEPTH_FRAGMENT_SHADER_PATH = "";
+	const std::string MAIN_VERTEX_SHADER_PATH = R"(../Shaders/VertexShader.frag)";
+	const std::string MAIN_FRAGMENT_SHADER_PATH = R"(../Shaders/FragmentShader.frag)";
+	const std::string DEPTH_VERTEX_SHADER_PATH = R"(../Shaders/DepthMapVertexShader.vert)";
+	const std::string DEPTH_FRAGMENT_SHADER_PATH = R"(../Shaders/DepthMapFragmentShader.frag)";
 
-	Camera* gCamera = &Camera::getInstance();
-}
-
-namespace RenderSystem
-{
-	Renderer Renderer::sInstance;
+	GlobalRenderState* gGlobalRenderState = nullptr;
+	Camera* gCamera = nullptr;
+	RootRenderDataStorage* gRootRenderDataStorage = nullptr;
+	GlobalExtraPrimitives* gGlobalExtraPrimitives = nullptr;
 }
 
 namespace RenderSystem
 {
 	Renderer& Renderer::getInstance()
 	{
+		static Renderer sInstance;
 		return sInstance;
 	}
 
@@ -57,32 +55,49 @@ namespace RenderSystem
 		mExtraFBO(),
 		mRenderBuffer(),
 		mExtraRenderBuffer(),
-		mSceneShaderProgram(MAIN_VERTEX_SHADER_PATH, MAIN_FRAGMENT_SHADER_PATH),
-		mDepthShaderProgram(DEPTH_VERTEX_SHADER_PATH, DEPTH_FRAGMENT_SHADER_PATH)
-	{}
+		mSceneShaderProgram(),
+		mDepthShaderProgram()
+	{
+		gGlobalRenderState = &gGlobalRenderState->getInstance();
+		gCamera = &Camera::getInstance();
+		gRootRenderDataStorage = &RootRenderDataStorage::getInstance();
+		gGlobalExtraPrimitives = &GlobalExtraPrimitives::getInstance();
+		gGlobalRenderState->addRootObjectInitializedCallback([this]() {
+			init();
+		});
+	}
 
 	Renderer::~Renderer()
 	{
 		glDeleteFramebuffers(1, &mExtraFBO);
 	}
 
+	void Renderer::addInitializedCallback(const std::function<void()>& callback)
+	{
+		mRendererInitCM.addCallback(callback);
+	}
+
 	void Renderer::init()
 	{
+		mSceneShaderProgram.init(MAIN_VERTEX_SHADER_PATH, MAIN_FRAGMENT_SHADER_PATH);
+		mDepthShaderProgram.init(DEPTH_VERTEX_SHADER_PATH, DEPTH_FRAGMENT_SHADER_PATH);
 		mSceneShaderProgram.use();
-		mSceneShaderProgram.setModel(glm::value_ptr(Scene::getRootObject().getTransform()));
+		mSceneShaderProgram.setModel(glm::value_ptr(gGlobalRenderState->getRootObject()->getTransform()));
 		registerCallbacks();
+		mRenderBuffer.init();
 		mRenderBuffer.bind();
 		initExtraFBO();
+		mRendererInitCM.invokeCallbacks();
 	}
 
 	void Renderer::registerCallbacks()
 	{
-		RootRenderDataStorage::addOnRenderDataUpdatedCallback([this]() {
-			mRenderBuffer.loadRenderData(RootRenderDataStorage::getRenderData());
+		gRootRenderDataStorage->addOnRenderDataUpdatedCallback([this]() {
+			mRenderBuffer.loadRenderData(gRootRenderDataStorage->getRenderData());
 		});
-		RootRenderDataStorage::addOnExtraRenderDataUpdatedCallback([this]() {
+		gRootRenderDataStorage->addOnExtraRenderDataUpdatedCallback([this]() {
 			mExtraRenderBuffer.bind();
-			mExtraRenderBuffer.loadRenderData(RootRenderDataStorage::getExtraRenderData());
+			mExtraRenderBuffer.loadRenderData(gRootRenderDataStorage->getExtraRenderData());
 			mRenderBuffer.bind();
 		});
 		gCamera->addOnCameraEditedCallback([this]() {
@@ -97,7 +112,7 @@ namespace RenderSystem
 
 	void Renderer::renderHighlightedFaces()
 	{
-		const auto& highlightedFacesData = GlobalRenderState::getHighlightedFacesData();
+		const auto& highlightedFacesData = gGlobalRenderState->getHighlightedFacesData();
 		const auto& objectVertexCountMap = Object3D::getObjectVertexCountMap();
 		renderOverlayPrimitives(!highlightedFacesData.facesIndices.empty(), HIGHLIGHT_MATERIAL,
 			[&highlightedFacesData, &objectVertexCountMap, this]() {
@@ -111,9 +126,9 @@ namespace RenderSystem
 
 	void Renderer::renderWireframe()
 	{
-		renderOverlayPrimitives(GlobalRenderState::getRenderWireframe(), WIREFRAME_MATERIAL, [this]() {
+		renderOverlayPrimitives(gGlobalRenderState->getRenderWireframe(), WIREFRAME_MATERIAL, [this]() {
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-			glDrawArrays(GL_TRIANGLES, 0, RootRenderDataStorage::getRenderData().getVertexCount());
+			glDrawArrays(GL_TRIANGLES, 0, gRootRenderDataStorage->getRenderData().getVertexCount());
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		});
 	}
@@ -121,7 +136,7 @@ namespace RenderSystem
 	void Renderer::renderWholeObjectHighlighted()
 	{
 		const auto& objectVertexCountMap = Object3D::getObjectVertexCountMap();
-		const auto& highlightedObjectIt = objectVertexCountMap.find(GlobalRenderState::getHighlightedObject());
+		const auto& highlightedObjectIt = objectVertexCountMap.find(gGlobalRenderState->getHighlightedObject());
 		renderOverlayPrimitives(highlightedObjectIt != objectVertexCountMap.end(), HIGHLIGHT_MATERIAL, [this, highlightedObjectIt]() {
 			auto& [object, vertexCount] = *highlightedObjectIt;
 			mSceneShaderProgram.setModel(glm::value_ptr(object->getTransform()));
@@ -175,7 +190,7 @@ namespace RenderSystem
 		mSceneShaderProgram.setModel(glm::value_ptr(glm::mat4(1.0f)));
 
 		int startIndex = 0;
-		for (const auto& extraPrimitive : GlobalExtraPrimitives::getExtraPrimitives())
+		for (const auto& extraPrimitive : gGlobalExtraPrimitives->getExtraPrimitives())
 		{
 			auto vertexCount = extraPrimitive.renderData.getVertexCount();
 			mSceneShaderProgram.lighting.setMaterial(extraPrimitive.material);
@@ -184,7 +199,7 @@ namespace RenderSystem
 		}
 
 		mSceneShaderProgram.lighting.setMaterial(MAIN_MATERIAL);
-		mSceneShaderProgram.setModel(glm::value_ptr(Scene::getRootObject().getTransform()));
+		mSceneShaderProgram.setModel(glm::value_ptr(gGlobalRenderState->getRootObject()->getTransform()));
 		mRenderBuffer.bind();
 	}
 
@@ -207,5 +222,10 @@ namespace RenderSystem
 	RenderBuffer& Renderer::getRenderBuffer()
 	{
 		return mRenderBuffer;
+	}
+
+	SceneShaderProgram& Renderer::getSceneShaderProgram()
+	{
+		return mSceneShaderProgram;
 	}
 }

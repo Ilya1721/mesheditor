@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 
 #include "MeshCore/AABBox.h"
+#include "Utility/CallbackMechanism.h"
 
 namespace RenderSystem
 {
@@ -52,9 +53,7 @@ namespace RenderSystem
 		PROJECTION_TYPE mProjectionType;
 		glm::mat4 mProjectionMatrix;
 		const MeshCore::AABBox* mRootBBox;
-		std::vector<std::function<void()>> mOnViewportEditedCallbacks;
-
-		static Viewport sInstance;
+		Utility::CallbackMechanism mViewportEditedCM;
 	};
 }
 

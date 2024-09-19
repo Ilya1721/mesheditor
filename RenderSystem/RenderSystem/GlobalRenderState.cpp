@@ -1,31 +1,33 @@
 #include "GlobalRenderState.h"
 
 #include "MeshCore/Object3D.h"
+#include "MeshCore/Mesh.h"
 #include "MeshFilesLoader/MeshFilesLoader.h"
 
 #include "GlobalExtraPrimitives.h"
 #include "Window.h"
 
-namespace RenderSystem
+namespace
 {
-    GlobalRenderState GlobalRenderState::gInstance;
+    using namespace RenderSystem;
+
+    Window* gWindow = nullptr;
 }
 
 namespace RenderSystem
 {
     GlobalRenderState::GlobalRenderState()
     {
-        addWindowInitializedCallbacks();
+        gWindow = &Window::getInstance();
+        gWindow->addInitializedCallback([this]() {
+            initRootObject(gWindow->getMeshFilePath());
+        });
     }
 
     GlobalRenderState& GlobalRenderState::getInstance()
     {
-        return gInstance;
-    }
-
-    void GlobalRenderState::addWindowInitializedCallbacks()
-    {
-
+        static GlobalRenderState sInstance;
+        return sInstance;
     }
 
     bool GlobalRenderState::getRenderWireframe() const
@@ -78,20 +80,16 @@ namespace RenderSystem
         mHighlightedFacesData = data;
     }
 
-    void GlobalRenderState::initializeRootObject(const std::string& meshFilePath)
+    void GlobalRenderState::initRootObject(const std::string& meshFilePath)
     {
         auto firstSceneObject = std::make_unique<MeshCore::Object3D>(MeshFilesLoader::loadSTL(meshFilePath));
         firstSceneObject->moveToOrigin();
         mRootObject->addChild(std::move(firstSceneObject));
-        //GlobalExtraPrimitives::addSceneFloor();
-        for (const auto& callback : mRootObjectInitializedCallbacks)
-        {
-            callback();
-        }
+        mRootObjectInitCM.invokeCallbacks();
     }
 
     void GlobalRenderState::addRootObjectInitializedCallback(const std::function<void()>& callback)
     {
-        mRootObjectInitializedCallbacks.push_back(callback);
+        mRootObjectInitCM.addCallback(callback);
     }
 }

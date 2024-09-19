@@ -43,6 +43,7 @@ namespace RenderSystem
 		bool isKeyPressed(int key) const;
 		int getWidth() const;
 		int getHeight() const;
+		const std::string& getMeshFilePath() const;
 
 		void init(int width, int height, const std::string& meshFilePath);
 		void render();
@@ -51,13 +52,12 @@ namespace RenderSystem
 		void onMouseScroll(double xOffset, double yOffset);
 		void onFramebufferSizeChanged(int width, int height);
 		void onKey(int key, int scancode, int action, int mods);
-		void addWindowInitializedCallback(const std::function<void()>& callback);
+		void addInitializedCallback(const std::function<void()>& callback);
 
 	private:
 		~Window();
 
 		void initGLFW();
-		void initSceneAndViewport(const std::string& meshFilePath);
 		void resizeViewport(int width, int height);
 		void setGLFWCallbacks();
 
@@ -65,12 +65,11 @@ namespace RenderSystem
 		int mWidth;
 		int mHeight;
 		Point2D mSavedCursorPosition;
+		std::string mMeshFilePath;
 
 		GLFWwindow* mWindow;
 		std::unique_ptr<OperationsDispatcher> mOperationsDispatcher;
-		CallbackMechanism mInitializationCallbackMechanism;
-
-		static Window sInstance;
+		CallbackMechanism mWindowInitCM;
 	};
 }
 

@@ -8,13 +8,13 @@ namespace RenderSystem
     class SceneShaderProgram : public ShaderProgram
     {
     public:
-        SceneShaderProgram(const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
+        SceneShaderProgram();
 
         void setView(const float* view) const;
         void setProjection(const float* projection) const;
+        void init(const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
 
     private:
-        void init();
         void initUniformLocations();
 
     public:

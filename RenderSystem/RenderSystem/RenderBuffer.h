@@ -7,15 +7,13 @@ namespace RenderSystem
 	class RenderBuffer
 	{
 	public:
-		RenderBuffer();
+		RenderBuffer() = default;
 		RenderBuffer(RenderBuffer&&) = delete;
 		~RenderBuffer();
 
 		void bind() const;
-		void loadRenderData(const MeshCore::RenderData& renderData);
-
-	private:
 		void init();
+		void loadRenderData(const MeshCore::RenderData& renderData);
 
 	private:
 		unsigned int mVBO;

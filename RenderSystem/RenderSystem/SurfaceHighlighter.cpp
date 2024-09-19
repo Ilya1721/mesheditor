@@ -1,23 +1,27 @@
 #include "SurfaceHighlighter.h"
 
 #include "MeshCore/Intersection.h"
+#include "MeshCore/Object3D.h"
 
-#include "Scene.h"
 #include "Window.h"
 #include "GlobalRenderState.h"
 
+namespace
+{
+    using namespace RenderSystem;
+
+    GlobalRenderState* gGlobalRenderState = &GlobalRenderState::getInstance();
+    Window* gWindow = &Window::getInstance();
+}
+
 namespace RenderSystem
 {
-    SurfaceHighlighter::SurfaceHighlighter(Scene* scene) :
-        Operation(scene)
-    {}
-
     void SurfaceHighlighter::onMouseMove([[maybe_unused]] const Point2D& startCursorPos, [[maybe_unused]] const Point2D& endCursorPos)
     {
         if (mEnabled)
         {
-            auto intersection = mScene->getClosestIntersection();
-            GlobalRenderState::setHighlightedFacesData({ intersection.surfaceIndices, intersection.surface.getParentObject() });
+            auto intersection = gGlobalRenderState->getRootObject()->findIntersection(gWindow->castCursorRay(), true);
+            gGlobalRenderState->setHighlightedFacesData({ intersection.surfaceIndices, intersection.surface.getParentObject() });
         }
     }
 
@@ -32,7 +36,7 @@ namespace RenderSystem
 
         if (!mEnabled)
         {
-            GlobalRenderState::setHighlightedFacesData({});
+            gGlobalRenderState->setHighlightedFacesData({});
         }
     }
 }

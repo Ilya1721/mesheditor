@@ -13,8 +13,6 @@ namespace RenderSystem
     class WireframeRenderer : public Operation
     {
     public:
-        WireframeRenderer(Scene* scene);
-
         void onMouseMove(const Point2D&, const Point2D&) override {};
         void onMouseScroll(double offset) override {};
         void onMouseClick() override {};

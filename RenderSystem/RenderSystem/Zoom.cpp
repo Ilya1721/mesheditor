@@ -1,24 +1,32 @@
 #include "Zoom.h"
 
-#include "Scene.h"
-#include "Window.h"
+#include "MeshCore/Object3D.h"
+
+#include "GlobalRenderState.h"
+#include "Viewport.h"
+#include "Camera.h"
+#include "Constants.h"
+
+namespace
+{
+    using namespace RenderSystem;
+
+    Camera* gCamera = &Camera::getInstance();
+    Viewport* gViewport = &Viewport::getInstance();
+    GlobalRenderState* gGlobalRenderState = &GlobalRenderState::getInstance();
+}
 
 namespace RenderSystem
 {
-    Zoom::Zoom(Scene* scene)
-        : Operation(scene)
-    {}
-
     void Zoom::onMouseScroll(double offset)
     {
-        const auto& viewport = mScene->getParentWindow()->getViewport();
-        if (viewport->getProjectionType() == PROJECTION_TYPE::PERSPECTIVE)
+        if (gViewport->getProjectionType() == PROJECTION_TYPE::PERSPECTIVE)
         {
-            mScene->getCamera().zoom(offset * Scene::getRootObject().getBBox().getHeight() * ZOOM_STEP_COEF);
+            gCamera->zoom(offset * gGlobalRenderState->getRootObject()->getBBox().getHeight() * ZOOM_STEP_COEF);
         }
         else
         {
-            viewport->zoom(-offset * ORTHO_ZOOM_STEP);
+            gViewport->zoom(-offset * ORTHO_ZOOM_STEP);
         }
     }
 }

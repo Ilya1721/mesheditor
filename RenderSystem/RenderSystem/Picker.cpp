@@ -3,35 +3,39 @@
 #include "MeshCore/Intersection.h"
 #include "MeshCore/Object3D.h"
 
-#include "Scene.h"
 #include "Window.h"
 #include "GlobalRenderState.h"
+#include "Camera.h"
+
+namespace
+{
+    using namespace RenderSystem;
+
+    Window* gWindow = &Window::getInstance();
+    Camera* gCamera = &Camera::getInstance();
+    GlobalRenderState* gGlobalRenderState = &GlobalRenderState::getInstance();
+}
 
 namespace RenderSystem
 {
-    Picker::Picker(Scene* scene) :
-        Operation(scene)
-    {}
-
     void Picker::onMouseClick()
     {
-        if (!mScene->getParentWindow()->isMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT) ||
-            !mScene->isCameraMovementEnabled())
+        if (!gWindow->isMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT) || !gCamera->isMovementEnabled())
         {
             return;
         }
 
-        auto intersection = mScene->getClosestIntersection();
+        auto intersection = gGlobalRenderState->getRootObject()->findIntersection(gWindow->castCursorRay(), true);
         if (!intersection.surfaceIndices.empty())
         {
             auto pickedObject = intersection.surface.getParentObject();
-            mScene->setPickedObject(pickedObject);
-            GlobalRenderState::highlightWholeObject(pickedObject);
+            gGlobalRenderState->setPickedObject(pickedObject);
+            gGlobalRenderState->highlightWholeObject(pickedObject);
         }
         else
         {
-            mScene->setPickedObject(nullptr);
-            GlobalRenderState::highlightWholeObject(nullptr);
+            gGlobalRenderState->setPickedObject(nullptr);
+            gGlobalRenderState->highlightWholeObject(nullptr);
         }
     }
 }

@@ -2,6 +2,8 @@
 
 #include <functional>
 
+#include "Utility/CallbackMechanism.h"
+
 #include "RenderData.h"
 #include "Vertex.h"
 
@@ -12,22 +14,25 @@ namespace MeshCore
     class RootRenderDataStorage
     {
     public:
-        ~RootRenderDataStorage() = delete;
+        static RootRenderDataStorage& getInstance();
 
-        static const RenderData& getRenderData();
-        static const RenderData& getExtraRenderData();
+        const RenderData& getRenderData();
+        const RenderData& getExtraRenderData();
 
-        static void updateRenderData(const std::unordered_set<UniqueVertex*>& vertices, int startOffset);
-        static void appendRenderData(const RenderData& renderData);
-        static void appendExtraRenderData(const RenderData& renderData);
+        void updateRenderData(const std::unordered_set<UniqueVertex*>& vertices, int startOffset);
+        void appendRenderData(const RenderData& renderData);
+        void appendExtraRenderData(const RenderData& renderData);
 
-        static void addOnRenderDataUpdatedCallback(const std::function<void()>& callback);
-        static void addOnExtraRenderDataUpdatedCallback(const std::function<void()>& callback);
+        void addOnRenderDataUpdatedCallback(const std::function<void()>& callback);
+        void addOnExtraRenderDataUpdatedCallback(const std::function<void()>& callback);
 
     private:
-        static RenderData gRenderData;
-        static RenderData gExtraRenderData;
-        static std::vector<std::function<void()>> gOnRenderDataUpdatedCallbacks;
-        static std::vector<std::function<void()>> gOnExtraRenderDataUpdatedCallbacks;
+        ~RootRenderDataStorage() = default;
+
+    private:
+        RenderData mRenderData;
+        RenderData mExtraRenderData;
+        Utility::CallbackMechanism mRenderDataUpdatedCM;
+        Utility::CallbackMechanism mExtraRenderDataUpdatedCM;
     };
 }

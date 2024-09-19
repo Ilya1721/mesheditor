@@ -2,9 +2,15 @@
 
 using namespace RenderSystem;
 
+namespace
+{
+	Window* gWindow = &Window::getInstance();
+}
+
 int main()
 {
-	Window::getInstance().render();
+	gWindow->init(1200, 628, R"(D:\3DModels\STL\Cube\Cube.stl)");
+	gWindow->render();
 
 	return 0;
 }

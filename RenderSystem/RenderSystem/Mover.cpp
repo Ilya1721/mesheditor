@@ -2,18 +2,28 @@
 
 #include <glm/gtx/transform.hpp>
 
-#include "Scene.h"
+#include "MeshCore/Object3D.h"
+
 #include "Window.h"
+#include "GlobalRenderState.h"
+#include "Viewport.h"
+#include "Camera.h"
+
+namespace
+{
+    using namespace RenderSystem;
+
+    Window* gWindow = &Window::getInstance();
+    GlobalRenderState* gGlobalRenderState = &GlobalRenderState::getInstance();
+    Viewport* gViewport = &Viewport::getInstance();
+    Camera* gCamera = &Camera::getInstance();
+}
 
 namespace RenderSystem
 {
-    Mover::Mover(Scene* scene) :
-        Operation(scene)
-    {}
-
     void Mover::onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos)
     {
-        const auto& pickedObject = mScene->getPickedObject();
+        const auto& pickedObject = gGlobalRenderState->getPickedObject();
         if (mEnabled && pickedObject)
         {
             pickedObject->updateTransform(getTranslationTransform(startCursorPos, endCursorPos));
@@ -30,14 +40,12 @@ namespace RenderSystem
 
     glm::mat4 Mover::getTranslationTransform(const Point2D& startCursorPos, const Point2D& endCursorPos) const
     {
-        const auto& window = mScene->getParentWindow();
-        const auto& startPosInWorldSpace = window->unProject(startCursorPos);
-        const auto& endPosInWorldSpace = window->unProject(endCursorPos);
+        const auto& startPosInWorldSpace = gWindow->unProject(startCursorPos);
+        const auto& endPosInWorldSpace = gWindow->unProject(endCursorPos);
 
-        if (window->getViewport()->getProjectionType() == PROJECTION_TYPE::PERSPECTIVE)
+        if (gViewport->getProjectionType() == PROJECTION_TYPE::PERSPECTIVE)
         {
-            const auto& camera = mScene->getCamera();
-            return glm::translate(camera.projectToTargetPlane(endPosInWorldSpace) - camera.projectToTargetPlane(startPosInWorldSpace));
+            return glm::translate(gCamera->projectToTargetPlane(endPosInWorldSpace) - gCamera->projectToTargetPlane(startPosInWorldSpace));
         }
         else
         {

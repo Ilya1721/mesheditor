@@ -65,16 +65,12 @@ namespace
 
 namespace RenderSystem
 {
-    ShaderProgram::ShaderProgram(const std::string& vertexShaderPath, const std::string& fragmentShaderPath) :
+    ShaderProgram::ShaderProgram() :
         mVertexShader(),
         mFragmentShader(),
         mShaderProgram(),
-		mModel(),
-		mVertexShaderPath(vertexShaderPath),
-		mFragmentShaderPath(fragmentShaderPath)
-    {
-		init();
-    }
+		mModel()
+    {}
 
 	ShaderProgram::~ShaderProgram()
 	{
@@ -84,8 +80,10 @@ namespace RenderSystem
 		glDeleteProgram(mShaderProgram);
 	}
 
-	void ShaderProgram::init()
+	void ShaderProgram::init(const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
 	{
+		mVertexShaderPath = vertexShaderPath;
+		mFragmentShaderPath = fragmentShaderPath;
 		initShaderProgram();
 		initUniformLocations();
 	}

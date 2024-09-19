@@ -14,7 +14,7 @@ namespace RenderSystem
     class SurfaceExtruder : public Operation
     {
     public:
-        SurfaceExtruder(Scene* scene);
+        SurfaceExtruder();
 
         void onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos) override;
         void onMouseScroll(double offset) override {};

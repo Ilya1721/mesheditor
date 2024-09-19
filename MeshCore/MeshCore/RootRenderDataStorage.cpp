@@ -4,30 +4,20 @@
 
 namespace MeshCore
 {
-    RenderData RootRenderDataStorage::gRenderData;
-    RenderData RootRenderDataStorage::gExtraRenderData;
-    std::vector<std::function<void()>> RootRenderDataStorage::gOnRenderDataUpdatedCallbacks;
-    std::vector<std::function<void()>> RootRenderDataStorage::gOnExtraRenderDataUpdatedCallbacks;
-
-    void fireCallbacks(const std::vector<std::function<void()>>& callbacks)
+    RootRenderDataStorage& RootRenderDataStorage::getInstance()
     {
-        for (const auto& callback : callbacks)
-        {
-            callback();
-        }
+        static RootRenderDataStorage sInstance;
+        return sInstance;
     }
-}
 
-namespace MeshCore
-{
     const RenderData& RootRenderDataStorage::getRenderData()
     {
-        return gRenderData;
+        return mRenderData;
     }
 
     const RenderData& RootRenderDataStorage::getExtraRenderData()
     {
-        return gExtraRenderData;
+        return mExtraRenderData;
     }
 
     void RootRenderDataStorage::updateRenderData(const std::unordered_set<UniqueVertex*>& vertices, int startVertexOffset)
@@ -36,31 +26,31 @@ namespace MeshCore
         {
             for (auto& originalVertexData : vertex->originalVertices)
             {
-                gRenderData.updateVertex(originalVertexData, startVertexOffset);
+                mRenderData.updateVertex(originalVertexData, startVertexOffset);
             }
         }
-        fireCallbacks(gOnRenderDataUpdatedCallbacks);
+        mRenderDataUpdatedCM.invokeCallbacks();
     }
 
     void RootRenderDataStorage::addOnRenderDataUpdatedCallback(const std::function<void()>& callback)
     {
-        gOnRenderDataUpdatedCallbacks.push_back(callback);
+        mRenderDataUpdatedCM.addCallback(callback);
     }
 
     void RootRenderDataStorage::addOnExtraRenderDataUpdatedCallback(const std::function<void()>& callback)
     {
-        gOnExtraRenderDataUpdatedCallbacks.push_back(callback);
+        mExtraRenderDataUpdatedCM.addCallback(callback);
     }
 
     void RootRenderDataStorage::appendRenderData(const RenderData& renderData)
     {
-        gRenderData.append(renderData);
-        fireCallbacks(gOnRenderDataUpdatedCallbacks);
+        mRenderData.append(renderData);
+        mRenderDataUpdatedCM.invokeCallbacks();
     }
 
     void RootRenderDataStorage::appendExtraRenderData(const RenderData& renderData)
     {
-        gExtraRenderData.append(renderData);
-        fireCallbacks(gOnExtraRenderDataUpdatedCallbacks);
+        mExtraRenderData.append(renderData);
+        mExtraRenderDataUpdatedCM.invokeCallbacks();
     }
 }

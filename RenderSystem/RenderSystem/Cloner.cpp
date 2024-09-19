@@ -2,18 +2,23 @@
 
 #include <glm/gtx/transform.hpp>
 
-#include "Scene.h"
+#include "MeshCore/Object3D.h"
+
 #include "Window.h"
+#include "GlobalRenderState.h"
+
+namespace
+{
+    using namespace RenderSystem;
+
+    GlobalRenderState* gGlobalRenderState = &GlobalRenderState::getInstance();
+}
 
 namespace RenderSystem
 {
-    Cloner::Cloner(Scene* scene) :
-        Operation(scene)
-    {}
-
     void Cloner::onKeyPressed(int key)
     {
-        auto pickedObject = mScene->getPickedObject();
+        auto pickedObject = gGlobalRenderState->getPickedObject();
         if (key == GLFW_KEY_C && pickedObject)
         {
             auto clonedObject = pickedObject->clone();

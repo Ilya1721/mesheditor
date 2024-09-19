@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "GeometryCore/Typedefs.h"
+#include "Utility/CallbackMechanism.h"
 
 #include "Viewport.h"
 
@@ -36,7 +37,6 @@ namespace RenderSystem
 		Point3D projectToTargetPlane(const Point3D& cursorPosInWorldSpace) const;
 		bool isMovementEnabled() const;
 
-		void init();
 		void pan(const Point3D& startPointInWorldSpace, const Point3D& endPointInWorldSpace, PROJECTION_TYPE projectionType);
 		void rawOrbit(const Point3D& startPointInNDC, const Point3D& endPointInNDC);
 		void smoothOrbit(float xOffset, float yOffset);
@@ -47,6 +47,7 @@ namespace RenderSystem
 	private:
 		Camera();
 
+		void init();
 		void invokeEditOperation(const std::function<void()>& action);
 		void setEyeTargetUp(const Point3D& eye, const Point3D& target, const Vector3D& up);
 		void translate(const Vector3D& movement);
@@ -75,9 +76,7 @@ namespace RenderSystem
 		Vector3D mRight;
 		glm::mat4 mViewMatrix;
 		bool mMovementEnabled;
-		std::vector<std::function<void()>> mOnCameraEditedCallbacks;
-
-		static Camera sInstance;
+		Utility::CallbackMechanism mCameraEditedCM;
 	};
 }
 

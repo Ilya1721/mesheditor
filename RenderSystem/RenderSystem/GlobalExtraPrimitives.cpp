@@ -2,33 +2,57 @@
 
 #include "GeometryCore/Line.h"
 #include "MeshCore/RootRenderDataStorage.h"
+#include "MeshCore/Object3D.h"
+#include "MeshCore/RootRenderDataStorage.h"
 
 #include "Constants.h"
-#include "Scene.h"
+#include "Renderer.h"
+#include "GlobalRenderState.h"
 
-namespace RenderSystem
+namespace
 {
-	std::vector<RenderPrimitive> GlobalExtraPrimitives::gExtraPrimitives;
+	using namespace MeshCore;
+	using namespace RenderSystem;
+
+	Renderer* gRenderer = nullptr;
+	GlobalRenderState* gGlobalRenderState = nullptr;
+	RootRenderDataStorage* gRootRenderDataStorage = nullptr;
 	constexpr Material FLOOR_MATERIAL = PEARL_MATERIAL;
 }
 
 namespace RenderSystem
 {
+	GlobalExtraPrimitives::GlobalExtraPrimitives()
+	{
+		gRenderer = &Renderer::getInstance();
+		gGlobalRenderState = &gGlobalRenderState->getInstance();
+		gRootRenderDataStorage = &RootRenderDataStorage::getInstance();
+		gRenderer->addInitializedCallback([this]() {
+			addSceneFloor();
+		});
+	}
+
+	GlobalExtraPrimitives& GlobalExtraPrimitives::getInstance()
+	{
+		static GlobalExtraPrimitives sInstance;
+		return sInstance;
+	}
+
 	const std::vector<RenderPrimitive>& GlobalExtraPrimitives::getExtraPrimitives()
 	{
-		return gExtraPrimitives;
+		return mExtraPrimitives;
 	}
 
 	void GlobalExtraPrimitives::addSceneFloor()
 	{
-		auto originY = -Scene::getRootObject().getBBox().getHeight() * FLOOR_BBOX_HEIGHT_COEF;
+		auto originY = -gGlobalRenderState->getRootObject()->getBBox().getHeight() * FLOOR_BBOX_HEIGHT_COEF;
 		addPlane(Point3D(0.0f, originY, 0.0f), Vector3D(0.0f, -1.0f, 0.0f), FAR_PLANE_DISTANCE, FAR_PLANE_DISTANCE, FLOOR_MATERIAL);
 	}
 
 	void GlobalExtraPrimitives::add(const RenderPrimitive& primitive)
 	{
-		gExtraPrimitives.push_back(primitive);
-		MeshCore::RootRenderDataStorage::appendExtraRenderData(primitive.renderData);
+		mExtraPrimitives.push_back(primitive);
+		gRootRenderDataStorage->appendExtraRenderData(primitive.renderData);
 	}
 
 	void GlobalExtraPrimitives::addPlane(const Point3D& origin, const Vector3D& normal, float width, float height, const Material& material)

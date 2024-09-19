@@ -5,6 +5,8 @@
 #include <string>
 #include <functional>
 
+#include "Utility/CallbackMechanism.h"
+
 namespace MeshCore
 {
     class Object3D;
@@ -21,7 +23,7 @@ namespace RenderSystem
     class GlobalRenderState
     {
     public:
-        GlobalRenderState& getInstance();
+        static GlobalRenderState& getInstance();
 
         bool getRenderWireframe() const;
         MeshCore::Object3D* getHighlightedObject();
@@ -33,12 +35,11 @@ namespace RenderSystem
         void highlightWholeObject(MeshCore::Object3D* object);
         void setPickedObject(MeshCore::Object3D* object);
         void setHighlightedFacesData(const HighlightedFacesData& data);
-        void initializeRootObject(const std::string& meshFilePath);
         void addRootObjectInitializedCallback(const std::function<void()>& callback);
 
     private:
         GlobalRenderState();
-        void addWindowInitializedCallbacks();
+        void initRootObject(const std::string& meshFilePath);
 
     private:
         bool mRenderWireframe;
@@ -46,7 +47,6 @@ namespace RenderSystem
         MeshCore::Object3D* mPickedObject;
         HighlightedFacesData mHighlightedFacesData;
         std::unique_ptr<MeshCore::Object3D> mRootObject;
-        std::vector<std::function<void()>> mRootObjectInitializedCallbacks;
-        static GlobalRenderState gInstance;
+        Utility::CallbackMechanism mRootObjectInitCM;
     };
 }

@@ -8,38 +8,52 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "MeshCore/Object3D.h"
+
 #include "Constants.h"
+#include "GlobalRenderState.h"
 #include "Window.h"
 
-namespace RenderSystem
+namespace
 {
-	Viewport Viewport::sInstance;
+	using namespace RenderSystem;
+
+	GlobalRenderState* gGlobalRenderState = nullptr;
+	Window* gWindow = nullptr;
 }
 
 namespace RenderSystem
 {
-	Viewport::Viewport()
-	{
-		
-	}
-
-	Viewport& Viewport::getInstance()
-	{
-		return sInstance;
-	}
-
-	void Viewport::init(int width, int height, const MeshCore::AABBox* rootBBox) :
+	Viewport::Viewport() :
 		mFov(FOV),
 		mNearPlaneDistance(NEAR_PLANE_DISTANCE),
 		mFarPlaneDistance(FAR_PLANE_DISTANCE),
 		mPos(VIEWPORT_POSITION.x, VIEWPORT_POSITION.y),
-		mWidth(width),
-		mHeight(height),
+		mWidth(),
+		mHeight(),
 		mProjectionType(PROJECTION_TYPE::PERSPECTIVE),
 		mProjectionMatrix(1.0f),
-		mRootBBox(rootBBox),
+		mRootBBox(nullptr),
 		mBBoxViewportGapCoef(BBOX_VIEWPORT_GAP_COEF)
 	{
+		gGlobalRenderState = &GlobalRenderState::getInstance();
+		gWindow = &Window::getInstance();
+		gGlobalRenderState->addRootObjectInitializedCallback([this]() {
+			init(gWindow->getWidth(), gWindow->getHeight(), &gGlobalRenderState->getRootObject()->getBBox());
+		});
+	}
+
+	Viewport& Viewport::getInstance()
+	{
+		static Viewport sInstance;
+		return sInstance;
+	}
+
+	void Viewport::init(int width, int height, const MeshCore::AABBox* rootBBox)
+	{
+		mWidth = width;
+		mHeight = height;
+		mRootBBox = rootBBox;
 		resize(width, height);
 	}
 
@@ -62,10 +76,7 @@ namespace RenderSystem
 	{
 		action();
 		mProjectionMatrix = createProjectionMatrix();
-		for (const auto& callback : mOnViewportEditedCallbacks)
-		{
-			callback();
-		}
+		mViewportEditedCM.invokeCallbacks();
 	}
 
 	void Viewport::setProjectionType(PROJECTION_TYPE projectionType)
@@ -93,7 +104,7 @@ namespace RenderSystem
 
 	void Viewport::addOnViewportEditedCallback(const std::function<void()>& callback)
 	{
-		mOnViewportEditedCallbacks.push_back(callback);
+		mViewportEditedCM.addCallback(callback);
 	}
 
 	const glm::mat4& Viewport::getProjectionMatrix() const

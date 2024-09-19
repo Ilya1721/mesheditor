@@ -11,13 +11,29 @@
 #include "Picker.h"
 #include "Mover.h"
 #include "Cloner.h"
+#include "Window.h"
+
+namespace
+{
+    using namespace RenderSystem;
+
+    Window* gWindow = nullptr;
+}
 
 namespace RenderSystem
 {
-    OperationsDispatcher::OperationsDispatcher(Scene* scene) :
-        mScene(scene)
+    OperationsDispatcher& OperationsDispatcher::getInstance()
     {
-        initOperations();
+        static OperationsDispatcher sInstance;
+        return sInstance;
+    }
+
+    OperationsDispatcher::OperationsDispatcher()
+    {
+        gWindow = &Window::getInstance();
+        gWindow->addInitializedCallback([this]() {
+            initOperations();
+        });
     }
 
     void OperationsDispatcher::onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos)

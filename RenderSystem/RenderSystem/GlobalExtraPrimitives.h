@@ -12,18 +12,22 @@ namespace RenderSystem
     class GlobalExtraPrimitives
     {
     public:
-        ~GlobalExtraPrimitives() = delete;
+        static GlobalExtraPrimitives& getInstance();
 
-        static const std::vector<RenderPrimitive>& getExtraPrimitives();
+        const std::vector<RenderPrimitive>& getExtraPrimitives();
 
-        static void addSceneFloor();
-        static void add(const RenderPrimitive& primitive);
-        static void addPlane(const Point3D& origin, const Vector3D& normal, float width, float height, const Material& material);
-        static void addLine(const Point3D& start, const Point3D& end, const Material& material);
-        static void addGlobalAxes(float length = 10.0f);
-        static void addVerticesNormals(const std::vector<MeshCore::Vertex>& vertices);
+        void addSceneFloor();
+        void add(const RenderPrimitive& primitive);
+        void addPlane(const Point3D& origin, const Vector3D& normal, float width, float height, const Material& material);
+        void addLine(const Point3D& start, const Point3D& end, const Material& material);
+        void addGlobalAxes(float length = 10.0f);
+        void addVerticesNormals(const std::vector<MeshCore::Vertex>& vertices);
 
     private:
-        static std::vector<RenderPrimitive> gExtraPrimitives;
+        GlobalExtraPrimitives();
+        ~GlobalExtraPrimitives() = default;
+
+    private:
+        std::vector<RenderPrimitive> mExtraPrimitives;
     };
 }

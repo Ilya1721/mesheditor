@@ -7,17 +7,16 @@
 
 namespace RenderSystem
 {
-    SceneShaderProgram::SceneShaderProgram(const std::string& vertexShaderPath, const std::string& fragmentShaderPath) :
-        ShaderProgram(vertexShaderPath, fragmentShaderPath),
+    SceneShaderProgram::SceneShaderProgram() :
+        ShaderProgram(),
 		mProjection(),
 		mView(),
 		lighting()
-    {
-		init();
-	}
+    {}
 
-	void SceneShaderProgram::init()
+	void SceneShaderProgram::init(const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
 	{
+		ShaderProgram::init(vertexShaderPath, fragmentShaderPath);
 		initUniformLocations();
 		lighting.init(mShaderProgram);
 	}

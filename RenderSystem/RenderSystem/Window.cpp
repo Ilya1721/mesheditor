@@ -11,19 +11,26 @@
 #include <iostream>
 
 #include "Constants.h"
-#include "Scene.h"
 #include "Viewport.h"
 #include "OperationsDispatcher.h"
+#include "Renderer.h"
+#include "Viewport.h"
+#include "Camera.h"
 
-namespace RenderSystem
+namespace
 {
-	Window Window::sInstance;
-	Window* instancePtr = &sInstance;
+	using namespace RenderSystem;
+
+	Renderer* gRenderer = &Renderer::getInstance();
+	Viewport* gViewport = &Viewport::getInstance();
+	Camera* gCamera = &Camera::getInstance();
 }
 
 namespace
 {
 	using namespace RenderSystem;
+
+	Window* instancePtr = &Window::getInstance();
 
 	void onMouseMove([[maybe_unused]] GLFWwindow* window, double cursorX, double cursorY)
 	{
@@ -55,6 +62,7 @@ namespace RenderSystem
 {
 	Window& Window::getInstance()
 	{
+		static Window sInstance;
 		return sInstance;
 	}
 
@@ -62,9 +70,10 @@ namespace RenderSystem
 	{
 		mWidth = width;
 		mHeight = height;
+		mMeshFilePath = meshFilePath;
 		initGLFW();
 		setGLFWCallbacks();
-		mInitializationCallbackMechanism.invokeCallbacks();
+		mWindowInitCM.invokeCallbacks();
 	}
 
 	Window::~Window()
@@ -92,13 +101,6 @@ namespace RenderSystem
 		}
 	}
 
-	void Window::initSceneAndViewport(const std::string& meshFilePath)
-	{
-		mViewport = std::make_unique<Viewport>(mWidth, mHeight, &Scene::getRootObject().getBBox(), shaderTransformationSystemPtr);
-		mScene->adjustCameraAndLight();
-		mOperationsDispatcher = std::make_unique<OperationsDispatcher>(mScene.get());
-	}
-
 	void Window::setGLFWCallbacks()
 	{
 		glfwSetCursorPosCallback(mWindow, ::onMouseMove);
@@ -112,20 +114,10 @@ namespace RenderSystem
 	{		
 		while (!glfwWindowShouldClose(mWindow))
 		{
-			mScene->getRenderer().render();
+			gRenderer->render();
 			glfwSwapBuffers(mWindow);
 			glfwWaitEvents();
 		}
-	}
-
-	const std::unique_ptr<Scene>& Window::getScene() const
-	{
-		return mScene;
-	}
-
-	const std::unique_ptr<Viewport>& Window::getViewport() const
-	{
-		return mViewport;
 	}
 
 	Point2D Window::getCursorPos() const
@@ -142,22 +134,22 @@ namespace RenderSystem
 			return;
 		}
 
-		mViewport->resize(width, height);
-		mScene->getRenderer().getShaderTransformationSystem().setProjection(glm::value_ptr(mViewport->getProjectionMatrix()));
+		gViewport->resize(width, height);
+		gRenderer->getSceneShaderProgram().setProjection(glm::value_ptr(gViewport->getProjectionMatrix()));
 	}
 
 	Point3D Window::unProject(const Point2D& cursorPos, float depth) const
 	{
-		glm::vec4 viewportData = { mViewport->getPos().x, mViewport->getPos().y, mViewport->getWidth(), mViewport->getHeight() };
-		Point3D cursorPosGL3D(cursorPos.x, mViewport->getHeight() - cursorPos.y, depth);
-		return glm::unProject(cursorPosGL3D, mScene->getCamera().getViewMatrix(), mViewport->getProjectionMatrix(), viewportData);
+		glm::vec4 viewportData = { gViewport->getPos().x, gViewport->getPos().y, gViewport->getWidth(), gViewport->getHeight() };
+		Point3D cursorPosGL3D(cursorPos.x, gViewport->getHeight() - cursorPos.y, depth);
+		return glm::unProject(cursorPosGL3D, gCamera->getViewMatrix(), gViewport->getProjectionMatrix(), viewportData);
 	}
 
 	Point3D Window::screenCoordinatesToNDC(const Point2D& cursorPos, float depth) const
 	{
 		Point3D ndcPos{};
-		ndcPos.x = (2.0 * cursorPos.x) / mViewport->getWidth() - 1.0;
-		ndcPos.y = 2.0 * (mViewport->getHeight() - cursorPos.y) / mViewport->getHeight() - 1.0;
+		ndcPos.x = (2.0 * cursorPos.x) / gViewport->getWidth() - 1.0;
+		ndcPos.y = 2.0 * (gViewport->getHeight() - cursorPos.y) / gViewport->getHeight() - 1.0;
 		ndcPos.z = depth;
 
 		return ndcPos;
@@ -189,6 +181,11 @@ namespace RenderSystem
 	int Window::getHeight() const
 	{
 		return mHeight;
+	}
+
+	const std::string& Window::getMeshFilePath() const
+	{
+		return mMeshFilePath;
 	}
 
 	void Window::onMouseMove(double cursorX, double cursorY)
@@ -225,8 +222,8 @@ namespace RenderSystem
 		}
 	}
 
-	void Window::addWindowInitializedCallback(const std::function<void()>& callback)
+	void Window::addInitializedCallback(const std::function<void()>& callback)
 	{
-		mInitializationCallbackMechanism.addCallback(callback);
+		mWindowInitCM.addCallback(callback);
 	}
 }

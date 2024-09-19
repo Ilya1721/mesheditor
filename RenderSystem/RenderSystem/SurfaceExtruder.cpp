@@ -3,18 +3,27 @@
 #include "MeshCore/Vertex.h"
 #include "MeshCore/Face.h"
 #include "MeshCore/Mesh.h"
+#include "MeshCore/Object3D.h"
 #include "GeometryCore/Plane.h"
 #include "GeometryCore/Numeric.h"
 
 #include "Constants.h"
-#include "Scene.h"
 #include "Window.h"
 #include "GlobalRenderState.h"
+#include "Camera.h"
+
+namespace
+{
+    using namespace RenderSystem;
+
+    GlobalRenderState* gGlobalRenderState = &GlobalRenderState::getInstance();
+    Window* gWindow = &Window::getInstance();
+    Camera* gCamera = &Camera::getInstance();
+}
 
 namespace RenderSystem
 {
-    SurfaceExtruder::SurfaceExtruder(Scene* scene) :
-        Operation(scene),
+    SurfaceExtruder::SurfaceExtruder() :
         mSurfaceMovementEnabled(false)
     {}
 
@@ -26,9 +35,8 @@ namespace RenderSystem
         }
 
         auto& surface = mSurfaceIntersection.surface;
-        auto window = mScene->getParentWindow();
-        auto startCursorPosInWorld = window->unProject(startCursorPos);
-        auto endCursorPosInWorld = window->unProject(endCursorPos);
+        auto startCursorPosInWorld = gWindow->unProject(startCursorPos);
+        auto endCursorPosInWorld = gWindow->unProject(endCursorPos);
         auto surfaceNormal = glm::normalize(surface.normal);
         auto cursorMovement = glm::normalize(endCursorPosInWorld - startCursorPosInWorld);
         auto surfaceMovement = surfaceNormal * glm::dot(surfaceNormal, cursorMovement);
@@ -44,9 +52,9 @@ namespace RenderSystem
 
     void SurfaceExtruder::onMouseClick()
     {
-        if (mEnabled && mScene->getParentWindow()->isMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT))
+        if (mEnabled && gWindow->isMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT))
         {
-            mSurfaceIntersection = mScene->getClosestIntersection();
+            mSurfaceIntersection = gGlobalRenderState->getRootObject()->findIntersection(gWindow->castCursorRay(), true);
             toggleSurfaceMovement(!mSurfaceIntersection.surfaceIndices.empty());
             highlightIntersectedSurface();
         }
@@ -63,11 +71,11 @@ namespace RenderSystem
 
         if (mEnabled)
         {
-            mScene->enableCameraMovement(false);
+            gCamera->enableMovement(false);
         }
         else
         {
-            mScene->enableCameraMovement(true);
+            gCamera->enableMovement(true);
             toggleSurfaceMovement();
         }
     }
@@ -76,7 +84,7 @@ namespace RenderSystem
     {
         if (mSurfaceMovementEnabled)
         {
-            GlobalRenderState::setHighlightedFacesData({ mSurfaceIntersection.surfaceIndices, mSurfaceIntersection.surface.getParentObject() });
+            gGlobalRenderState->setHighlightedFacesData({ mSurfaceIntersection.surfaceIndices, mSurfaceIntersection.surface.getParentObject() });
         }
     }
 
@@ -84,7 +92,7 @@ namespace RenderSystem
     {
         if (mSurfaceMovementEnabled)
         {
-            GlobalRenderState::setHighlightedFacesData({});
+            gGlobalRenderState->setHighlightedFacesData({});
         }
 
         mSurfaceMovementEnabled = isSurfaceIntersected && !mSurfaceMovementEnabled;

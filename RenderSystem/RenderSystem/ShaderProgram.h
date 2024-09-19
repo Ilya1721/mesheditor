@@ -7,14 +7,16 @@ namespace RenderSystem
     class ShaderProgram
     {
     public:
-        ShaderProgram(const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
+        ShaderProgram();
         virtual ~ShaderProgram();
 
         void setModel(const float* model) const;
         void use() const;
 
+    protected:
+        void init(const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
+
     private:
-        void init();
         void initShaderProgram();
         void initUniformLocations();
 

@@ -14,12 +14,10 @@ namespace RenderSystem
 {
     using namespace GeometryCore;
 
-    class Scene;
-
     class OperationsDispatcher
     {
     public:
-        OperationsDispatcher(Scene* scene);
+        OperationsDispatcher& getInstance();
 
         void onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos);
         void onMouseScroll(double offset);
@@ -27,16 +25,16 @@ namespace RenderSystem
         void onKeyPressed(int key);
 
     private:
+        OperationsDispatcher();
         void initOperations();
 
         template<typename T>
         void addOperation() requires std::derived_from<T, Operation>
         {
-            mOperations.emplace_back(std::make_unique<T>(mScene));
+            mOperations.emplace_back(std::make_unique<T>());
         }
 
     private:
         std::vector<std::unique_ptr<Operation>> mOperations;
-        Scene* mScene;
     };
 }
