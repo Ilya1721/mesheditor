@@ -11,7 +11,7 @@ namespace RenderSystem
     class Zoom : public Operation
     {
     public:
-        Zoom(Scene* scene);
+        Zoom(Window* window);
 
         void onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos) override {};
         void onMouseScroll(double offset) override;

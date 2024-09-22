@@ -2,21 +2,20 @@
 
 #include "MeshCore/Intersection.h"
 
-#include "Scene.h"
 #include "Window.h"
 #include "GlobalRenderState.h"
 
 namespace RenderSystem
 {
-    SurfaceHighlighter::SurfaceHighlighter(Scene* scene) :
-        Operation(scene)
+    SurfaceHighlighter::SurfaceHighlighter(Window* window) :
+        Operation(window)
     {}
 
     void SurfaceHighlighter::onMouseMove([[maybe_unused]] const Point2D& startCursorPos, [[maybe_unused]] const Point2D& endCursorPos)
     {
         if (mEnabled)
         {
-            auto intersection = mScene->getClosestIntersection();
+            auto intersection = mWindow->getClosestIntersection();
             GlobalRenderState::setHighlightedFacesData({ intersection.surfaceIndices, intersection.surface.getParentObject() });
         }
     }

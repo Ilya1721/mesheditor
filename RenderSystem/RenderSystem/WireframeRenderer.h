@@ -8,12 +8,10 @@ namespace RenderSystem
 {
     using namespace GeometryCore;
 
-    class Scene;
-
     class WireframeRenderer : public Operation
     {
     public:
-        WireframeRenderer(Scene* scene);
+        WireframeRenderer(Window* window);
 
         void onMouseMove(const Point2D&, const Point2D&) override {};
         void onMouseScroll(double offset) override {};

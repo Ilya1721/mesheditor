@@ -8,12 +8,12 @@ namespace RenderSystem
 {
     using namespace GeometryCore;
 
-    class Scene;
+    class Window;
 
     class Operation
     {
     public:
-        Operation(Scene* scene);
+        Operation(Window* window);
         virtual ~Operation() = default;
 
         virtual void onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos) = 0;
@@ -23,6 +23,6 @@ namespace RenderSystem
 
     protected:
         bool mEnabled = false;
-        Scene* mScene = nullptr;
+        Window* mWindow = nullptr;
     };
 }

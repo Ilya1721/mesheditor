@@ -3,18 +3,18 @@
 #include "MeshCore/Vertex.h"
 #include "MeshCore/Face.h"
 #include "MeshCore/Mesh.h"
+#include "MeshCore/Object3D.h"
 #include "GeometryCore/Plane.h"
 #include "GeometryCore/Numeric.h"
 
 #include "Constants.h"
-#include "Scene.h"
 #include "Window.h"
 #include "GlobalRenderState.h"
 
 namespace RenderSystem
 {
-    SurfaceExtruder::SurfaceExtruder(Scene* scene) :
-        Operation(scene),
+    SurfaceExtruder::SurfaceExtruder(Window* window) :
+        Operation(window),
         mSurfaceMovementEnabled(false)
     {}
 
@@ -26,9 +26,8 @@ namespace RenderSystem
         }
 
         auto& surface = mSurfaceIntersection.surface;
-        auto window = mScene->getParentWindow();
-        auto startCursorPosInWorld = window->unProject(startCursorPos);
-        auto endCursorPosInWorld = window->unProject(endCursorPos);
+        auto startCursorPosInWorld = mWindow->unProject(startCursorPos);
+        auto endCursorPosInWorld = mWindow->unProject(endCursorPos);
         auto surfaceNormal = glm::normalize(surface.normal);
         auto cursorMovement = glm::normalize(endCursorPosInWorld - startCursorPosInWorld);
         auto surfaceMovement = surfaceNormal * glm::dot(surfaceNormal, cursorMovement);
@@ -44,9 +43,9 @@ namespace RenderSystem
 
     void SurfaceExtruder::onMouseClick()
     {
-        if (mEnabled && mScene->getParentWindow()->isMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT))
+        if (mEnabled && mWindow->isMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT))
         {
-            mSurfaceIntersection = mScene->getClosestIntersection();
+            mSurfaceIntersection = mWindow->getClosestIntersection();
             toggleSurfaceMovement(!mSurfaceIntersection.surfaceIndices.empty());
             highlightIntersectedSurface();
         }
@@ -63,11 +62,11 @@ namespace RenderSystem
 
         if (mEnabled)
         {
-            mScene->enableCameraMovement(false);
+            mWindow->enableCameraMovement(false);
         }
         else
         {
-            mScene->enableCameraMovement(true);
+            mWindow->enableCameraMovement(true);
             toggleSurfaceMovement();
         }
     }

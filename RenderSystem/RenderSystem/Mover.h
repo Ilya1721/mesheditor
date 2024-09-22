@@ -9,7 +9,7 @@ namespace RenderSystem
     class Mover : public Operation
     {
     public:
-        Mover(Scene* scene);
+        Mover(Window* window);
 
         void onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos) override;
         void onMouseScroll(double offset) override {};

@@ -14,8 +14,8 @@
 
 namespace RenderSystem
 {
-    OperationsDispatcher::OperationsDispatcher(Scene* scene) :
-        mScene(scene)
+    OperationsDispatcher::OperationsDispatcher(Window* window) :
+        mWindow(window)
     {
         initOperations();
     }

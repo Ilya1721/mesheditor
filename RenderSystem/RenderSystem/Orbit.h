@@ -11,7 +11,7 @@ namespace RenderSystem
     class Orbit : public Operation
     {
     public:
-        Orbit(Scene* scene);
+        Orbit(Window* window);
 
         void onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos) override;
         void onMouseScroll(double offset) override {};

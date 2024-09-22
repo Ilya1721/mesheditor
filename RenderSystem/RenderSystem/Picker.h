@@ -14,7 +14,7 @@ namespace RenderSystem
     class Picker : public Operation
     {
     public:
-        Picker(Scene* scene);
+        Picker(Window* window);
 
         void onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos) override {};
         void onMouseScroll(double offset) override {};

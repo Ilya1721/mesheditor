@@ -2,18 +2,19 @@
 
 #include <glm/gtx/transform.hpp>
 
-#include "Scene.h"
+#include "MeshCore/Object3D.h"
+
 #include "Window.h"
 
 namespace RenderSystem
 {
-    Cloner::Cloner(Scene* scene) :
-        Operation(scene)
+    Cloner::Cloner(Window* window) :
+        Operation(window)
     {}
 
     void Cloner::onKeyPressed(int key)
     {
-        auto pickedObject = mScene->getPickedObject();
+        auto pickedObject = mWindow->getPickedObject();
         if (key == GLFW_KEY_C && pickedObject)
         {
             auto clonedObject = pickedObject->clone();

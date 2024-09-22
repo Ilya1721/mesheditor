@@ -9,12 +9,10 @@ namespace RenderSystem
 {
     using namespace GeometryCore;
 
-    class Scene;
-
     class SurfaceExtruder : public Operation
     {
     public:
-        SurfaceExtruder(Scene* scene);
+        SurfaceExtruder(Window* window);
 
         void onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos) override;
         void onMouseScroll(double offset) override {};

@@ -90,7 +90,7 @@ namespace RenderSystem
 		auto shaderTransformationSystemPtr = &mScene->getRenderer().getShaderTransformationSystem();
 		mViewport = std::make_unique<Viewport>(mWidth, mHeight, &Scene::getRootObject().getBBox(), shaderTransformationSystemPtr);
 		mScene->adjustCameraAndLight();
-		mOperationsDispatcher = std::make_unique<OperationsDispatcher>(mScene.get());
+		mOperationsDispatcher = std::make_unique<OperationsDispatcher>(this);
 	}
 
 	void Window::setCallbacks()
@@ -110,11 +110,6 @@ namespace RenderSystem
 			glfwSwapBuffers(mWindow);
 			glfwWaitEvents();
 		}
-	}
-
-	const std::unique_ptr<Viewport>& Window::getViewport() const
-	{
-		return mViewport;
 	}
 
 	Point2D Window::getCursorPos() const
@@ -162,6 +157,41 @@ namespace RenderSystem
 		return glfwGetKey(mWindow, key) == GLFW_PRESS;
 	}
 
+	PROJECTION_TYPE Window::getProjectionType() const
+	{
+		return mViewport->getProjectionType();
+	}
+
+	float Window::getFov() const
+	{
+		return mViewport->getFov();
+	}
+
+	MeshCore::Object3D* Window::getPickedObject() const
+	{
+		return mScene->getPickedObject();
+	}
+
+	Point3D Window::projectToCameraTargetPlane(const Point3D& cursorPosInWorldSpace) const
+	{
+		return mScene->getCamera().projectToTargetPlane(cursorPosInWorldSpace);
+	}
+
+	bool Window::isCameraMovementEnabled() const
+	{
+		return mScene->isCameraMovementEnabled();
+	}
+
+	MeshCore::RaySurfaceIntersection Window::getClosestIntersection(bool intersectSurface)
+	{
+		return mScene->getClosestIntersection(intersectSurface);
+	}
+
+	void Window::setPickedObject(MeshCore::Object3D* pickedObject)
+	{
+		mScene->setPickedObject(pickedObject);
+	}
+
 	void Window::onMouseMove(double cursorX, double cursorY)
 	{
 		Point2D currentCursorPosition(cursorX, cursorY);
@@ -194,5 +224,32 @@ namespace RenderSystem
 		{
 			mOperationsDispatcher->onKeyPressed(key);
 		}
+	}
+
+	void Window::zoom(float step)
+	{
+		if (mViewport->getProjectionType() == PROJECTION_TYPE::PERSPECTIVE)
+		{
+			mScene->getCamera().zoom(step * Scene::getRootObject().getBBox().getHeight() * ZOOM_STEP_COEF);
+		}
+		else
+		{
+			mViewport->zoom(-step * ORTHO_ZOOM_STEP);
+		}
+	}
+
+	void Window::smoothOrbit(float xOffset, float yOffset)
+	{
+		mScene->getCamera().smoothOrbit(xOffset, yOffset);
+	}
+
+	void Window::pan(const Point3D& startPointInWorldSpace, const Point3D& endPointInWorldSpace, PROJECTION_TYPE projectionType)
+	{
+		mScene->getCamera().pan(startPointInWorldSpace, endPointInWorldSpace, projectionType);
+	}
+
+	void Window::enableCameraMovement(bool isEnabled)
+	{
+		mScene->enableCameraMovement(isEnabled);
 	}
 }

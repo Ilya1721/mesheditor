@@ -1,13 +1,12 @@
 #include "WireframeRenderer.h"
 
-#include "Scene.h"
 #include "Window.h"
 #include "GlobalRenderState.h"
 
 namespace RenderSystem
 {
-    WireframeRenderer::WireframeRenderer(Scene* scene) :
-        Operation(scene)
+    WireframeRenderer::WireframeRenderer(Window* window) :
+        Operation(window)
     {}
 
     void WireframeRenderer::onKeyPressed(int key)

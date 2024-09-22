@@ -70,10 +70,9 @@ namespace RenderSystem
 
 	void Scene::adjustCamera()
 	{
-		const auto& viewport = mParentWindow->getViewport();
-		if (viewport->getProjectionType() == PROJECTION_TYPE::PERSPECTIVE)
+		if (mParentWindow->getProjectionType() == PROJECTION_TYPE::PERSPECTIVE)
 		{
-			mCamera.perspectiveAdjust(sRootObject.getBBox(), viewport->getFov());
+			mCamera.perspectiveAdjust(sRootObject.getBBox(), mParentWindow->getFov());
 		}
 		else
 		{

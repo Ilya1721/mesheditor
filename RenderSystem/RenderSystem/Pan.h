@@ -11,7 +11,7 @@ namespace RenderSystem
     class Pan : public Operation
     {
     public:
-        Pan(Scene* scene);
+        Pan(Window* window);
 
         void onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos) override;
         void onMouseScroll(double offset) override {};
