@@ -66,7 +66,9 @@ namespace RenderSystem
 		mRenderBuffer(),
 		mExtraRenderBuffer(),
 		mShaderTransformationSystem()
-	{}
+	{
+		init();
+	}
 
 	Renderer::~Renderer()
 	{

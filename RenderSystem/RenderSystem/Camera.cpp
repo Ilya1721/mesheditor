@@ -27,7 +27,8 @@ namespace RenderSystem
 		mEye(DEFAULT_CAMERA_POSITION),
 		mUp(DEFAULT_CAMERA_UP),
 		mRight(DEFAULT_CAMERA_RIGHT),
-		mShaderTransformationSystem(shaderTransformationSystem)
+		mShaderTransformationSystem(shaderTransformationSystem),
+		mIsMovementEnabled(true)
 	{
 		invokeEditOperation([]() {});
 	}
@@ -71,6 +72,11 @@ namespace RenderSystem
 	{
 		Ray cursorRay(cursorPosInWorldSpace, cursorPosInWorldSpace - mEye);
 		return getTargetPlane().findIntersectionPoint(cursorRay).value();
+	}
+
+	bool Camera::isMovementEnabled() const
+	{
+		return mIsMovementEnabled;
 	}
 
 	void Camera::invokeEditOperation(const std::function<void()>& action)
@@ -240,5 +246,24 @@ namespace RenderSystem
 	void Camera::orthoAdjust(const MeshCore::AABBox& bbox)
 	{
 		adjust(bbox);
+	}
+
+	void Camera::enableMovement(bool isEnabled)
+	{
+		mIsMovementEnabled = isEnabled;
+	}
+
+	Point3D Camera::adjust(PROJECTION_TYPE projectionType, const MeshCore::AABBox& sceneBBox, float fov)
+	{
+		if (projectionType == PROJECTION_TYPE::PERSPECTIVE)
+		{
+			perspectiveAdjust(sceneBBox, fov);
+		}
+		else
+		{
+			orthoAdjust(sceneBBox);
+		}
+
+		return transformPoint(mEye, mViewMatrix);
 	}
 }

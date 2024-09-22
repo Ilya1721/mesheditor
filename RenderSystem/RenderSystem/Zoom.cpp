@@ -1,6 +1,5 @@
 #include "Zoom.h"
 
-#include "Scene.h"
 #include "Window.h"
 
 namespace RenderSystem

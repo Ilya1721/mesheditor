@@ -4,11 +4,14 @@
 #undef __gl_h_
 #endif
 #include "glad.h"
-#include <glfw/glfw3.h>
 
+#include <glfw/glfw3.h>
 #include <glm/ext/matrix_projection.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
+
+#include "GeometryCore/Transforms.h"
+#include "GeometryCore/Ray.h"
 
 #include "Constants.h"
 #include "Scene.h"
@@ -55,7 +58,9 @@ namespace RenderSystem
 	{
 		instance = this;
 		initGLFW();
-		initSceneAndViewport(meshFilePath);
+		init(meshFilePath);
+		adjustCamera();
+		adjustLightPos();
 		setCallbacks();
 	}
 
@@ -84,12 +89,13 @@ namespace RenderSystem
 		}
 	}
 
-	void Window::initSceneAndViewport(const std::string& meshFilePath)
+	void Window::init(const std::string& meshFilePath)
 	{
-		mScene = std::make_unique<Scene>(meshFilePath, this);
-		auto shaderTransformationSystemPtr = &mScene->getRenderer().getShaderTransformationSystem();
+		mRenderer = std::make_unique<Renderer>();
+		mScene = std::make_unique<Scene>(meshFilePath);
+		auto shaderTransformationSystemPtr = &mRenderer->getShaderTransformationSystem();
+		mCamera = std::make_unique<Camera>(shaderTransformationSystemPtr);
 		mViewport = std::make_unique<Viewport>(mWidth, mHeight, &Scene::getRootObject().getBBox(), shaderTransformationSystemPtr);
-		mScene->adjustCameraAndLight();
 		mOperationsDispatcher = std::make_unique<OperationsDispatcher>(this);
 	}
 
@@ -102,11 +108,26 @@ namespace RenderSystem
 		glfwSetKeyCallback(mWindow, ::onKey);
 	}
 
+	void Window::adjustCamera()
+	{
+		const auto& projectionType = mViewport->getProjectionType();
+		const auto& sceneBBox = mScene->getRootObject().getBBox();
+		const auto& fov = mViewport->getFov();
+		auto cameraPosInCameraSpace = mCamera->adjust(projectionType, sceneBBox, fov);
+		mRenderer->getLighting().setCameraPos(glm::value_ptr(cameraPosInCameraSpace));
+	}
+
+	void Window::adjustLightPos()
+	{
+		Point3D lightPosInCameraSpace = transformPoint(Point3D(0.0f, LIGHT_SOURCE_POS_Y, FAR_PLANE_DISTANCE), mCamera->getViewMatrix());
+		mRenderer->getLighting().setLightPos(glm::value_ptr(lightPosInCameraSpace));
+	}
+
 	void Window::render()
 	{		
 		while (!glfwWindowShouldClose(mWindow))
 		{
-			mScene->getRenderer().render();
+			mRenderer->render();
 			glfwSwapBuffers(mWindow);
 			glfwWaitEvents();
 		}
@@ -127,14 +148,14 @@ namespace RenderSystem
 		}
 
 		mViewport->resize(width, height);
-		mScene->getRenderer().getShaderTransformationSystem().setProjection(glm::value_ptr(mViewport->getProjectionMatrix()));
+		mRenderer->getShaderTransformationSystem().setProjection(glm::value_ptr(mViewport->getProjectionMatrix()));
 	}
 
 	Point3D Window::unProject(const Point2D& cursorPos, float depth) const
 	{
 		glm::vec4 viewportData = { mViewport->getPos().x, mViewport->getPos().y, mViewport->getWidth(), mViewport->getHeight() };
 		Point3D cursorPosGL3D(cursorPos.x, mViewport->getHeight() - cursorPos.y, depth);
-		return glm::unProject(cursorPosGL3D, mScene->getCamera().getViewMatrix(), mViewport->getProjectionMatrix(), viewportData);
+		return glm::unProject(cursorPosGL3D, mCamera->getViewMatrix(), mViewport->getProjectionMatrix(), viewportData);
 	}
 
 	Point3D Window::screenCoordinatesToNDC(const Point2D& cursorPos, float depth) const
@@ -174,17 +195,24 @@ namespace RenderSystem
 
 	Point3D Window::projectToCameraTargetPlane(const Point3D& cursorPosInWorldSpace) const
 	{
-		return mScene->getCamera().projectToTargetPlane(cursorPosInWorldSpace);
+		return mCamera->projectToTargetPlane(cursorPosInWorldSpace);
 	}
 
 	bool Window::isCameraMovementEnabled() const
 	{
-		return mScene->isCameraMovementEnabled();
+		return mCamera->isMovementEnabled();
 	}
 
 	MeshCore::RaySurfaceIntersection Window::getClosestIntersection(bool intersectSurface)
 	{
-		return mScene->getClosestIntersection(intersectSurface);
+		return mScene->getClosestIntersection(castCursorRay(), intersectSurface);
+	}
+
+	Ray Window::castCursorRay() const
+	{
+		auto nearCursorPosInWorldSpace = unProject(getCursorPos(), 0.0f);
+		auto farCursorPosInWorldSpace = unProject(getCursorPos(), 1.0f);
+		return { nearCursorPosInWorldSpace, farCursorPosInWorldSpace - nearCursorPosInWorldSpace };
 	}
 
 	void Window::setPickedObject(MeshCore::Object3D* pickedObject)
@@ -230,7 +258,7 @@ namespace RenderSystem
 	{
 		if (mViewport->getProjectionType() == PROJECTION_TYPE::PERSPECTIVE)
 		{
-			mScene->getCamera().zoom(step * Scene::getRootObject().getBBox().getHeight() * ZOOM_STEP_COEF);
+			mCamera->zoom(step * Scene::getRootObject().getBBox().getHeight() * ZOOM_STEP_COEF);
 		}
 		else
 		{
@@ -240,16 +268,16 @@ namespace RenderSystem
 
 	void Window::smoothOrbit(float xOffset, float yOffset)
 	{
-		mScene->getCamera().smoothOrbit(xOffset, yOffset);
+		mCamera->smoothOrbit(xOffset, yOffset);
 	}
 
 	void Window::pan(const Point3D& startPointInWorldSpace, const Point3D& endPointInWorldSpace, PROJECTION_TYPE projectionType)
 	{
-		mScene->getCamera().pan(startPointInWorldSpace, endPointInWorldSpace, projectionType);
+		mCamera->pan(startPointInWorldSpace, endPointInWorldSpace, projectionType);
 	}
 
 	void Window::enableCameraMovement(bool isEnabled)
 	{
-		mScene->enableCameraMovement(isEnabled);
+		mCamera->enableMovement(isEnabled);
 	}
 }

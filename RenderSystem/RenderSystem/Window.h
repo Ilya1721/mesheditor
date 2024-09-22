@@ -11,6 +11,8 @@
 
 #include "Constants.h"
 #include "Viewport.h"
+#include "Camera.h"
+#include "Renderer.h"
 
 namespace MeshCore
 {
@@ -49,6 +51,7 @@ namespace RenderSystem
 		Point3D projectToCameraTargetPlane(const Point3D& cursorPosInWorldSpace) const;
 		bool isCameraMovementEnabled() const;
 		MeshCore::RaySurfaceIntersection getClosestIntersection(bool intersectSurface = true);
+		Ray castCursorRay() const;
 
 		void setPickedObject(MeshCore::Object3D* pickedObject);
 
@@ -66,9 +69,11 @@ namespace RenderSystem
 
 	private:
 		void initGLFW();
-		void initSceneAndViewport(const std::string& meshFilePath);
+		void init(const std::string& meshFilePath);
 		void resizeViewport(int width, int height);
 		void setCallbacks();
+		void adjustCamera();
+		void adjustLightPos();
 
 	private:
 		int mWidth;
@@ -78,6 +83,8 @@ namespace RenderSystem
 		GLFWwindow* mWindow;
 		std::unique_ptr<Scene> mScene;
 		std::unique_ptr<Viewport> mViewport;
+		std::unique_ptr<Camera> mCamera;
+		std::unique_ptr<Renderer> mRenderer;
 		std::unique_ptr<OperationsDispatcher> mOperationsDispatcher;
 	};
 }

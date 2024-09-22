@@ -36,6 +36,7 @@ namespace RenderSystem
 		const Vector3D& getRight() const;
 		Vector3D getNormalizedDirection() const;
 		Point3D projectToTargetPlane(const Point3D& cursorPosInWorldSpace) const;
+		bool isMovementEnabled() const;
 
 		void pan(const Point3D& startPointInWorldSpace, const Point3D& endPointInWorldSpace, PROJECTION_TYPE projectionType);
 		void rawOrbit(const Point3D& startPointInNDC, const Point3D& endPointInNDC);
@@ -43,6 +44,8 @@ namespace RenderSystem
 		void zoom(float step);
 		void perspectiveAdjust(const MeshCore::AABBox& bbox, float fov);
 		void orthoAdjust(const MeshCore::AABBox& bbox);
+		void enableMovement(bool isEnabled);
+		Point3D adjust(PROJECTION_TYPE projectionType, const MeshCore::AABBox& sceneBBox, float fov);
 
 	private:
 		void invokeEditOperation(const std::function<void()>& action);
@@ -70,6 +73,7 @@ namespace RenderSystem
 		Vector3D mRight;
 		glm::mat4 mViewMatrix;
 		ShaderTransformationSystem* mShaderTransformationSystem;
+		bool mIsMovementEnabled;
 	};
 }
 

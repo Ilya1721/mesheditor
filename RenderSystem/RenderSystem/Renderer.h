@@ -33,11 +33,10 @@ namespace RenderSystem
 		Lighting& getLighting();
 		RenderBuffer& getRenderBuffer();
 
-		void init();
-		void registerCallbacks();
 		void render();
 
 	private:
+		void init();
 		void initShaders();
 		void initShaderProgram();
 		void renderExtra();
@@ -46,6 +45,7 @@ namespace RenderSystem
 		void renderWholeObjectHighlighted();
 		void renderScene();
 		void renderOverlayPrimitives(bool renderCondition, const Material& material, const std::function<void()>& renderFunc);
+		void registerCallbacks();
 
 	private:
 		int mVertexShader;
