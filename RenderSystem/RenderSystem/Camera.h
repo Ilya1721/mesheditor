@@ -27,7 +27,7 @@ namespace RenderSystem
 	class Camera
 	{
 	public:
-		Camera(ShaderTransformationSystem* shaderTransformationSystem);
+		Camera(Renderer* renderer);
 
 		const glm::mat4& getViewMatrix() const;
 		const Point3D& getTarget() const;
@@ -72,7 +72,7 @@ namespace RenderSystem
 		Vector3D mUp;
 		Vector3D mRight;
 		glm::mat4 mViewMatrix;
-		ShaderTransformationSystem* mShaderTransformationSystem;
+		Renderer* mRenderer;
 		bool mIsMovementEnabled;
 	};
 }

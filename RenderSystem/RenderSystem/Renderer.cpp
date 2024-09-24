@@ -78,6 +78,21 @@ namespace RenderSystem
 		glDeleteProgram(mShaderProgram);
 	}
 
+	void Renderer::setModel(const float* model) const
+	{
+		mShaderTransformationSystem.setModel(model);
+	}
+
+	void Renderer::setView(const float* view) const
+	{
+		mShaderTransformationSystem.setView(view);
+	}
+
+	void Renderer::setProjection(const float* projection) const
+	{
+		mShaderTransformationSystem.setProjection(projection);
+	}
+
 	void Renderer::init()
 	{
 		initShaders();
@@ -201,11 +216,6 @@ namespace RenderSystem
 		mLighting.setMaterial(MAIN_MATERIAL);
 		mShaderTransformationSystem.setModel(glm::value_ptr(Scene::getRootObject().getTransform()));
 		mRenderBuffer.bind();
-	}
-
-	ShaderTransformationSystem& Renderer::getShaderTransformationSystem()
-	{
-		return mShaderTransformationSystem;
 	}
 
 	Lighting& Renderer::getLighting()

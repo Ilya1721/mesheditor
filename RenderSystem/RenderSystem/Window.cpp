@@ -93,9 +93,8 @@ namespace RenderSystem
 	{
 		mRenderer = std::make_unique<Renderer>();
 		mScene = std::make_unique<Scene>(meshFilePath);
-		auto shaderTransformationSystemPtr = &mRenderer->getShaderTransformationSystem();
-		mCamera = std::make_unique<Camera>(shaderTransformationSystemPtr);
-		mViewport = std::make_unique<Viewport>(mWidth, mHeight, &Scene::getRootObject().getBBox(), shaderTransformationSystemPtr);
+		mCamera = std::make_unique<Camera>(mRenderer.get());
+		mViewport = std::make_unique<Viewport>(mWidth, mHeight, &Scene::getRootObject().getBBox(), mRenderer.get());
 		mOperationsDispatcher = std::make_unique<OperationsDispatcher>(this);
 	}
 
@@ -148,7 +147,7 @@ namespace RenderSystem
 		}
 
 		mViewport->resize(width, height);
-		mRenderer->getShaderTransformationSystem().setProjection(glm::value_ptr(mViewport->getProjectionMatrix()));
+		mRenderer->setProjection(glm::value_ptr(mViewport->getProjectionMatrix()));
 	}
 
 	Point3D Window::unProject(const Point2D& cursorPos, float depth) const

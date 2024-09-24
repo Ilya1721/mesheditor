@@ -18,7 +18,7 @@ namespace RenderSystem
 	class Viewport
 	{
 	public:
-		Viewport(int width, int height, const MeshCore::AABBox* rootBBox, ShaderTransformationSystem* shaderTransformationSystem);
+		Viewport(int width, int height, const MeshCore::AABBox* rootBBox, Renderer* renderer);
 
 		void setProjectionType(PROJECTION_TYPE projectionType);
 		void resize(int width, int height);
@@ -49,7 +49,7 @@ namespace RenderSystem
 		PROJECTION_TYPE mProjectionType;
 		glm::mat4 mProjectionMatrix;
 		const MeshCore::AABBox* mRootBBox;
-		ShaderTransformationSystem* mShaderTransformationSystem;
+		Renderer* mRenderer;
 	};
 }
 

@@ -22,12 +22,12 @@ using namespace GeometryCore;
 
 namespace RenderSystem
 {
-	Camera::Camera(ShaderTransformationSystem* shaderTransformationSystem) :
+	Camera::Camera(Renderer* renderer) :
 		mTarget(DEFAULT_CAMERA_TARGET),
 		mEye(DEFAULT_CAMERA_POSITION),
 		mUp(DEFAULT_CAMERA_UP),
 		mRight(DEFAULT_CAMERA_RIGHT),
-		mShaderTransformationSystem(shaderTransformationSystem),
+		mRenderer(renderer),
 		mIsMovementEnabled(true)
 	{
 		invokeEditOperation([]() {});
@@ -83,7 +83,7 @@ namespace RenderSystem
 	{
 		action();
 		mViewMatrix = createViewMatrix();
-		mShaderTransformationSystem->setView(glm::value_ptr(mViewMatrix));
+		mRenderer->setView(glm::value_ptr(mViewMatrix));
 	}
 
 	void Camera::setEyeTargetUp(const Point3D& eye, const Point3D& target, const Vector3D& up)

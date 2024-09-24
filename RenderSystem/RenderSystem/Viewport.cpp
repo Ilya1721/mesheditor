@@ -12,7 +12,7 @@
 
 namespace RenderSystem
 {
-	Viewport::Viewport(int width, int height, const MeshCore::AABBox* rootBBox, ShaderTransformationSystem* shaderTransformationSystem) :
+	Viewport::Viewport(int width, int height, const MeshCore::AABBox* rootBBox, Renderer* renderer) :
 		mFov(FOV),
 		mNearPlaneDistance(NEAR_PLANE_DISTANCE),
 		mFarPlaneDistance(FAR_PLANE_DISTANCE),
@@ -22,7 +22,7 @@ namespace RenderSystem
 		mProjectionType(PROJECTION_TYPE::PERSPECTIVE),
 		mProjectionMatrix(1.0f),
 		mRootBBox(rootBBox),
-		mShaderTransformationSystem(shaderTransformationSystem),
+		mRenderer(renderer),
 		mBBoxViewportGapCoef(BBOX_VIEWPORT_GAP_COEF)
 	{
 		resize(width, height);
@@ -47,7 +47,7 @@ namespace RenderSystem
 	{
 		action();
 		mProjectionMatrix = createProjectionMatrix();
-		mShaderTransformationSystem->setProjection(glm::value_ptr(mProjectionMatrix));
+		mRenderer->setProjection(glm::value_ptr(mProjectionMatrix));
 	}
 
 	void Viewport::setProjectionType(PROJECTION_TYPE projectionType)

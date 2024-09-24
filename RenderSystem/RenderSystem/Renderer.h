@@ -29,7 +29,10 @@ namespace RenderSystem
 		Renderer(Renderer&&) = delete;
 		~Renderer();
 
-		ShaderTransformationSystem& getShaderTransformationSystem();
+		void setModel(const float* model) const;
+		void setView(const float* view) const;
+		void setProjection(const float* projection) const;
+
 		Lighting& getLighting();
 		RenderBuffer& getRenderBuffer();
 
