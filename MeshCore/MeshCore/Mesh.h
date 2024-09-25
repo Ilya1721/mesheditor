@@ -42,7 +42,7 @@ namespace MeshCore
 		std::unique_ptr<Mesh> clone() const;
 
 		const std::vector<Vertex>& getVertices() const;
-		int getNumberOfFaces() const;
+		const std::vector<std::unique_ptr<Face>>& getFaces() const;
 		const RenderData& getRenderData() const;
 		Object3D* getParentObject() const;
 		RaySurfaceIntersection findIntersection(const Ray& ray, bool intersectSurface, int passedFacesCount = 0) const override;

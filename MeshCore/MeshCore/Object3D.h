@@ -21,7 +21,6 @@ namespace MeshCore
 
 		Object3D* getParent() const;
 		const std::vector<std::unique_ptr<Object3D>>& getChildren() const;
-		Mesh& getMesh();
 		const Mesh& getMesh() const;
 		const glm::mat4& getTransform() const;
 		const AABBox& getBBox() const;

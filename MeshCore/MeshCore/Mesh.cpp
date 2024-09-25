@@ -105,9 +105,9 @@ namespace MeshCore
 		return mVertices;
 	}
 
-	int Mesh::getNumberOfFaces() const
+	const std::vector<std::unique_ptr<Face>>& Mesh::getFaces() const
 	{
-		return mFaces.size();
+		return mFaces;
 	}
 
 	void Mesh::createHalfEdgesForFace(size_t lastVertexIdx)

@@ -93,6 +93,16 @@ namespace RenderSystem
 		mShaderTransformationSystem.setProjection(projection);
 	}
 
+	void Renderer::setLightPos(const float* pos) const
+	{
+		mLighting.setLightPos(pos);
+	}
+
+	void Renderer::setCameraPos(const float* pos) const
+	{
+		mLighting.setCameraPos(pos);
+	}
+
 	void Renderer::init()
 	{
 		initShaders();
@@ -216,15 +226,5 @@ namespace RenderSystem
 		mLighting.setMaterial(MAIN_MATERIAL);
 		mShaderTransformationSystem.setModel(glm::value_ptr(Scene::getRootObject().getTransform()));
 		mRenderBuffer.bind();
-	}
-
-	Lighting& Renderer::getLighting()
-	{
-		return mLighting;
-	}
-
-	RenderBuffer& Renderer::getRenderBuffer()
-	{
-		return mRenderBuffer;
 	}
 }

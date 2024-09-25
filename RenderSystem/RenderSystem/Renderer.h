@@ -11,13 +11,6 @@
 #include "ShaderTransformationSystem.h"
 #include "Constants.h"
 
-using namespace GeometryCore;
-
-namespace MeshCore
-{
-	class Object3D;
-}
-
 namespace RenderSystem
 {
 	struct RenderPrimitive;
@@ -32,9 +25,8 @@ namespace RenderSystem
 		void setModel(const float* model) const;
 		void setView(const float* view) const;
 		void setProjection(const float* projection) const;
-
-		Lighting& getLighting();
-		RenderBuffer& getRenderBuffer();
+		void setLightPos(const float* pos) const;
+		void setCameraPos(const float* pos) const;
 
 		void render();
 

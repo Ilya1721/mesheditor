@@ -47,11 +47,6 @@ namespace MeshCore
 		mBBox.applyMesh(*mMesh);
 	}
 
-	Mesh& Object3D::getMesh()
-	{
-		return *mMesh;
-	}
-
 	const Mesh& Object3D::getMesh() const
 	{
 		return *mMesh;
@@ -94,7 +89,8 @@ namespace MeshCore
 		RaySurfaceIntersection finalIntersection;
 		TreeWalker walker(this);
 		walker.forEach([&ray, &finalIntersection, &intersectSurface, &passedFacesCount, this](const Object3D* object) {
-			auto intersection = object->getMesh().findIntersection(ray, intersectSurface, passedFacesCount + object->getMesh().getNumberOfFaces());
+			const auto numberOfFaces = object->getMesh().getFaces().size();
+			auto intersection = object->getMesh().findIntersection(ray, intersectSurface, numberOfFaces);
 			if (registerNewIntersection(finalIntersection, intersection, ray.origin))
 			{
 				finalIntersection = intersection;

@@ -113,13 +113,13 @@ namespace RenderSystem
 		const auto& sceneBBox = mScene->getRootObject().getBBox();
 		const auto& fov = mViewport->getFov();
 		auto cameraPosInCameraSpace = mCamera->adjust(projectionType, sceneBBox, fov);
-		mRenderer->getLighting().setCameraPos(glm::value_ptr(cameraPosInCameraSpace));
+		mRenderer->setCameraPos(glm::value_ptr(cameraPosInCameraSpace));
 	}
 
 	void Window::adjustLightPos()
 	{
 		Point3D lightPosInCameraSpace = transformPoint(Point3D(0.0f, LIGHT_SOURCE_POS_Y, FAR_PLANE_DISTANCE), mCamera->getViewMatrix());
-		mRenderer->getLighting().setLightPos(glm::value_ptr(lightPosInCameraSpace));
+		mRenderer->setLightPos(glm::value_ptr(lightPosInCameraSpace));
 	}
 
 	void Window::render()
