@@ -16,7 +16,6 @@
 #include "MeshFilesLoader/MeshFilesLoader.h"
 #include "MeshCore/Intersection.h"
 #include "MeshCore/Mesh.h"
-#include "MeshCore/RenderData.h"
 
 #include "Window.h"
 #include "Viewport.h"
@@ -28,7 +27,7 @@ using namespace GeometryCore;
 
 namespace RenderSystem
 {
-	MeshCore::Object3D Scene::sRootObject;
+	Object3D Scene::sRootObject;
 }
 
 namespace RenderSystem
@@ -41,18 +40,18 @@ namespace RenderSystem
 
 	void Scene::init(const std::string& meshFilePath)
 	{
-		auto firstSceneObject = std::make_unique<MeshCore::Object3D>(MeshFilesLoader::loadSTL(meshFilePath));
+		auto firstSceneObject = std::make_unique<Object3D>(MeshFilesLoader::loadSTL(meshFilePath));
 		firstSceneObject->moveToOrigin();
 		sRootObject.addChild(std::move(firstSceneObject));
 		GlobalExtraPrimitives::addSceneFloor();
 	}
 
-	void Scene::setPickedObject(MeshCore::Object3D* pickedObject)
+	void Scene::setPickedObject(Object3D* pickedObject)
 	{
 		mPickedObject = pickedObject;
 	}
 
-	MeshCore::RaySurfaceIntersection Scene::getClosestIntersection(const Ray& cursorRay, bool intersectSurface)
+	Object3DIntersectionData Scene::getClosestIntersection(const Ray& cursorRay, bool intersectSurface)
 	{
 		if (sRootObject.getBBox().findIntersectionPoint(cursorRay).has_value())
 		{
@@ -62,12 +61,12 @@ namespace RenderSystem
 		return {};
 	}
 
-	MeshCore::Object3D* Scene::getPickedObject() const
+	Object3D* Scene::getPickedObject() const
 	{
 		return mPickedObject;
 	}
 
-	MeshCore::Object3D& Scene::getRootObject()
+	Object3D& Scene::getRootObject()
 	{
 		return sRootObject;
 	}

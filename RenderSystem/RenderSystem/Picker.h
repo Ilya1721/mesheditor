@@ -4,13 +4,10 @@
 
 #include "Operation.h"
 
-namespace MeshCore
-{
-    class Object3D;
-}
-
 namespace RenderSystem
 {
+    class Object3D;
+
     class Picker : public Operation
     {
     public:

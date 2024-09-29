@@ -1,21 +1,22 @@
 #pragma once
 
 #include <vector>
-#include <glm/glm.hpp>
+#include <optional>
 
-#include "GeometryCore/Typedefs.h"
 #include "Surface.h"
 
 namespace MeshCore
 {
-    using namespace GeometryCore;
+	struct IntersectionTempData
+	{
+		int intersectedFaceIdx;
+		int passedFacesCount;
+	};
 
-    struct RaySurfaceIntersection
-    {
-        Surface surface {};
-        std::vector<int> surfaceIndices;
-        Point3D point {};
-
-        void setClosest(const RaySurfaceIntersection& other, const Point3D& referencePoint);
-    };
+	struct MeshIntersectionData
+	{
+		std::vector<int> interestedFacesIndices;
+		Point3D intersectionPoint;
+		Surface intersectedSurface;
+	};
 }

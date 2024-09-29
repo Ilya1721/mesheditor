@@ -32,7 +32,7 @@ namespace RenderSystem
 		glBindVertexArray(mVAO);
 	}
 
-	void RenderBuffer::loadRenderData(const MeshCore::RenderData& renderData)
+	void RenderBuffer::loadRenderData(const RenderData& renderData)
 	{
 		const auto& compactData = renderData.getCompactData();
 		glBufferData(GL_ARRAY_BUFFER, compactData.size() * sizeof(float), compactData.data(), GL_DYNAMIC_DRAW);

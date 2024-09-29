@@ -4,14 +4,17 @@
 #include <unordered_map>
 #include <functional>
 
-#include "AABBox.h"
-#include "RenderData.h"
-#include "Intersectable.h"
-#include "Vertex.h"
+#include "MeshCore/AABBox.h"
+#include "MeshCore/Vertex.h"
 
-namespace MeshCore 
+#include "RenderData.h"
+#include "Object3DIntersectionData.h"
+
+using namespace MeshCore;
+
+namespace RenderSystem
 {
-	class Object3D : public Intersectable
+	class Object3D
 	{
 	public:
 		Object3D() = default;
@@ -24,7 +27,8 @@ namespace MeshCore
 		const Mesh& getMesh() const;
 		const glm::mat4& getTransform() const;
 		const AABBox& getBBox() const;
-		RaySurfaceIntersection findIntersection(const GeometryCore::Ray& ray, bool intersectSurface, int passedFacesCount = 0) const override;
+		const RenderData& getRenderData() const;
+		Object3DIntersectionData findIntersection(const GeometryCore::Ray& ray, bool intersectSurface, int passedFacesCount = 0);
 		std::unique_ptr<Object3D> clone();
 
 		void addChild(std::unique_ptr<Object3D>&& child);
@@ -32,10 +36,11 @@ namespace MeshCore
 		void onMeshUpdated(const std::unordered_set<UniqueVertex*>& vertices);
 		void moveToOrigin();
 
-		static const std::unordered_map<Object3D*, int>& getObjectVertexCountMap();
+		static const std::unordered_map<const Object3D*, int>& getObjectVertexCountMap();
 
 	private:
 		void init();
+		void prepareRenderData();
 		void invokeTransformAction(const std::function<void()>& action, const glm::mat4& transform);
 		void propagateRenderDataToRoot();
 		void propagateBBoxToRoot() const;
@@ -46,7 +51,8 @@ namespace MeshCore
 		std::unique_ptr<Mesh> mMesh;
 		glm::mat4 mTransform;
 		AABBox mBBox;
+		RenderData mRenderData;
 
-		static std::unordered_map<Object3D*, int> sObjectVertexCountMap;
+		static std::unordered_map<const Object3D*, int> sObjectVertexCountMap;
 	};
 }

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "MeshCore/Intersection.h"
 #include "GeometryCore/Typedefs.h"
 
+#include "Object3DIntersectionData.h"
 #include "Operation.h"
 
 namespace RenderSystem
@@ -24,7 +24,7 @@ namespace RenderSystem
         void highlightIntersectedSurface() const;
 
     private:
-        MeshCore::RaySurfaceIntersection mSurfaceIntersection;
+        Object3DIntersectionData mIntersectionData;
         bool mSurfaceMovementEnabled;
     };
 }

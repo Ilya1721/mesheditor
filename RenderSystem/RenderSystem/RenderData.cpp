@@ -6,12 +6,12 @@
 #include "GeometryCore/Typedefs.h"
 #include "GeometryCore/Numeric.h"
 
-#include "Vertex.h"
-#include "Constants.h"
+#include "MeshCore/Vertex.h"
+#include "MeshCore/Constants.h"
 
 namespace
 {
-	using namespace MeshCore;
+	using namespace RenderSystem;
 
 	RenderData generateRenderData(const std::vector<Vertex>& vertices, const glm::mat4& transform)
 	{
@@ -25,7 +25,7 @@ namespace
 	}
 }
 
-namespace MeshCore
+namespace RenderSystem
 {
 	using namespace GeometryCore;
 

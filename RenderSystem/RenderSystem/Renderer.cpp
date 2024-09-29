@@ -7,9 +7,7 @@
 #include "Utility/StringHelper.h"
 #include "GeometryCore/Line.h"
 #include "GeometryCore/Plane.h"
-#include "MeshCore/Object3D.h"
 #include "MeshCore/Mesh.h"
-#include "MeshCore/RootRenderDataStorage.h"
 
 #include "RenderLogger.h"
 #include "GladTypedefs.h"
@@ -17,6 +15,8 @@
 #include "GlobalExtraPrimitives.h"
 #include "Scene.h"
 #include "GlobalRenderState.h"
+#include "Object3D.h"
+#include "RootRenderDataStorage.h"
 
 using namespace MeshCore;
 

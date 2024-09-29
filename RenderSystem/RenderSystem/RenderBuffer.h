@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MeshCore/RenderData.h"
+#include "RenderData.h"
 
 namespace RenderSystem
 {
@@ -12,7 +12,7 @@ namespace RenderSystem
 		~RenderBuffer();
 
 		void bind() const;
-		void loadRenderData(const MeshCore::RenderData& renderData);
+		void loadRenderData(const RenderData& renderData);
 
 	private:
 		void init();

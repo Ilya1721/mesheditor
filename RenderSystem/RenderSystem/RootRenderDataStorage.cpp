@@ -2,7 +2,7 @@
 
 #include "Object3D.h"
 
-namespace MeshCore
+namespace RenderSystem
 {
     RenderData RootRenderDataStorage::gRenderData;
     RenderData RootRenderDataStorage::gExtraRenderData;
@@ -18,7 +18,7 @@ namespace MeshCore
     }
 }
 
-namespace MeshCore
+namespace RenderSystem
 {
     const RenderData& RootRenderDataStorage::getRenderData()
     {

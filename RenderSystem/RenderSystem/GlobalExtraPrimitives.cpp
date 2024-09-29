@@ -1,8 +1,8 @@
 #include "GlobalExtraPrimitives.h"
 
 #include "GeometryCore/Line.h"
-#include "MeshCore/RootRenderDataStorage.h"
 
+#include "RootRenderDataStorage.h"
 #include "Constants.h"
 #include "Scene.h"
 
@@ -28,7 +28,7 @@ namespace RenderSystem
 	void GlobalExtraPrimitives::add(const RenderPrimitive& primitive)
 	{
 		gExtraPrimitives.push_back(primitive);
-		MeshCore::RootRenderDataStorage::appendExtraRenderData(primitive.renderData);
+		RootRenderDataStorage::appendExtraRenderData(primitive.renderData);
 	}
 
 	void GlobalExtraPrimitives::addPlane(const Point3D& origin, const Vector3D& normal, float width, float height, const Material& material)

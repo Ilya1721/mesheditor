@@ -1,11 +1,11 @@
 #include "GlobalRenderState.h"
 
-#include "MeshCore/Object3D.h"
+#include "Object3D.h"
 
 namespace RenderSystem
 {
     bool GlobalRenderState::gRenderWireframe = false;
-    MeshCore::Object3D* GlobalRenderState::gHighlightedObject = nullptr;
+    const Object3D* GlobalRenderState::gHighlightedObject = nullptr;
     HighlightedFacesData GlobalRenderState::gHighlightedFacesData;
 }
 
@@ -16,7 +16,7 @@ namespace RenderSystem
         return gRenderWireframe;
     }
 
-    MeshCore::Object3D* GlobalRenderState::getHighlightedObject()
+    const Object3D* GlobalRenderState::getHighlightedObject()
     {
         return gHighlightedObject;
     }
@@ -31,7 +31,7 @@ namespace RenderSystem
         gRenderWireframe = !gRenderWireframe;
     }
 
-    void GlobalRenderState::highlightWholeObject(MeshCore::Object3D* object)
+    void GlobalRenderState::highlightWholeObject(const Object3D* object)
     {
         gHighlightedObject = object;
     }

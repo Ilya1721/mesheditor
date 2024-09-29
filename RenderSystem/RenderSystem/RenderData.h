@@ -13,7 +13,12 @@ namespace MeshCore
 {
 	struct Vertex;
 	struct OriginalVertexData;
+}
 
+using namespace MeshCore;
+
+namespace RenderSystem
+{
 	class RenderData
 	{
 	public:

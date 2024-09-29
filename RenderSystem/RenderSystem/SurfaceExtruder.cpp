@@ -3,10 +3,10 @@
 #include "MeshCore/Vertex.h"
 #include "MeshCore/Face.h"
 #include "MeshCore/Mesh.h"
-#include "MeshCore/Object3D.h"
 #include "GeometryCore/Plane.h"
 #include "GeometryCore/Numeric.h"
 
+#include "Object3D.h"
 #include "Constants.h"
 #include "Window.h"
 #include "GlobalRenderState.h"
@@ -20,12 +20,12 @@ namespace RenderSystem
 
     void SurfaceExtruder::onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos)
     {
-        if (!mEnabled || mSurfaceIntersection.surfaceIndices.empty() || !mSurfaceMovementEnabled)
+        if (!mEnabled || mIntersectionData.intersection.surfaceIndices.empty() || !mSurfaceMovementEnabled)
         {
             return;
         }
 
-        auto& surface = mSurfaceIntersection.surface;
+        auto& surface = mIntersectionData.intersection.surface;
         auto startCursorPosInWorld = mWindow->unProject(startCursorPos);
         auto endCursorPosInWorld = mWindow->unProject(endCursorPos);
         auto surfaceNormal = glm::normalize(surface.normal);
@@ -38,15 +38,15 @@ namespace RenderSystem
             face->move(surfaceMovement, changedVertices);
         }
 
-        (*surface.faces.begin())->parentMesh->getParentObject()->onMeshUpdated(changedVertices);
+        mIntersectionData.intersectedObject->onMeshUpdated(changedVertices);
     }
 
     void SurfaceExtruder::onMouseClick()
     {
         if (mEnabled && mWindow->isMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT))
         {
-            mSurfaceIntersection = mWindow->getClosestIntersection();
-            toggleSurfaceMovement(!mSurfaceIntersection.surfaceIndices.empty());
+            mIntersectionData = mWindow->getClosestIntersection();
+            toggleSurfaceMovement(!mIntersectionData.intersection.surfaceIndices.empty());
             highlightIntersectedSurface();
         }
     }
@@ -75,7 +75,7 @@ namespace RenderSystem
     {
         if (mSurfaceMovementEnabled)
         {
-            GlobalRenderState::setHighlightedFacesData({ mSurfaceIntersection.surfaceIndices, mSurfaceIntersection.surface.getParentObject() });
+            GlobalRenderState::setHighlightedFacesData({ mIntersectionData.intersection.surfaceIndices, mIntersectionData.intersectedObject });
         }
     }
 

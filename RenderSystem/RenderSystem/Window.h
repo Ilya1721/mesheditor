@@ -7,17 +7,13 @@
 #include <glm/glm.hpp>
 
 #include "GeometryCore/Typedefs.h"
-#include "MeshCore/Intersection.h"
 
+#include "Intersection.h"
 #include "Constants.h"
 #include "Viewport.h"
 #include "Camera.h"
 #include "Renderer.h"
-
-namespace MeshCore
-{
-	class Object3D;
-}
+#include "Object3DIntersectionData.h"
 
 namespace RenderSystem
 {
@@ -25,6 +21,7 @@ namespace RenderSystem
 
 	class Scene;
 	class OperationsDispatcher;
+	class Object3D;
 
 	enum class MouseButtonPressed
 	{
@@ -47,13 +44,13 @@ namespace RenderSystem
 		bool isKeyPressed(int key) const;
 		PROJECTION_TYPE getProjectionType() const;
 		float getFov() const;
-		MeshCore::Object3D* getPickedObject() const;
+		Object3D* getPickedObject() const;
 		Point3D projectToCameraTargetPlane(const Point3D& cursorPosInWorldSpace) const;
 		bool isCameraMovementEnabled() const;
-		MeshCore::RaySurfaceIntersection getClosestIntersection(bool intersectSurface = true);
+		Object3DIntersectionData getClosestIntersection(bool intersectSurface = true);
 		Ray castCursorRay() const;
 
-		void setPickedObject(MeshCore::Object3D* pickedObject);
+		void setPickedObject(Object3D* pickedObject);
 
 		void render();
 		void zoom(float step);

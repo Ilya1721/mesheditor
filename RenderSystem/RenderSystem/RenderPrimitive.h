@@ -1,7 +1,6 @@
 #pragma once
 
-#include "MeshCore/RenderData.h"
-
+#include "RenderData.h"
 #include "Material.h"
 
 namespace GeometryCore
@@ -15,7 +14,7 @@ namespace RenderSystem
 {
     struct RenderPrimitive
     {
-        MeshCore::RenderData renderData;
+        RenderData renderData;
         Material material{};
         unsigned int renderMode{};
 

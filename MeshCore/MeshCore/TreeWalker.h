@@ -9,20 +9,20 @@ namespace MeshCore
     concept Pointer = std::is_pointer_v<T>;
 
     template <typename T>
-    concept Tree = requires(const T& tree)
+    concept Tree = requires(T& tree)
     {
         { tree.getChildren() } -> std::ranges::range;
         { (*tree.getChildren().begin()).get() } -> Pointer;
     };
 
     template <Tree T>
-    using TreeNodeFunction = std::function<void(const T*)>;
+    using TreeNodeFunction = std::function<void(T*)>;
 
     template<Tree T>
     class TreeWalker
     {
     public:
-        TreeWalker(const T* root, bool invokeFunctionForRoot = false) :
+        TreeWalker(T* root, bool invokeFunctionForRoot = false) :
             mRoot(root),
             mInvokeFunctionForRoot(invokeFunctionForRoot)
         {};
@@ -33,7 +33,7 @@ namespace MeshCore
         }
 
     private:
-        void depthFirstTraversal(const T* node, const TreeNodeFunction<T>& function)
+        void depthFirstTraversal(T* node, const TreeNodeFunction<T>& function)
         {
             if (!node)
             {
@@ -52,7 +52,7 @@ namespace MeshCore
         }
 
     private:
-        const T* mRoot;
+        T* mRoot;
         bool mInvokeFunctionForRoot;
     };
 }

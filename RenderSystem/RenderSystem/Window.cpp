@@ -187,7 +187,7 @@ namespace RenderSystem
 		return mViewport->getFov();
 	}
 
-	MeshCore::Object3D* Window::getPickedObject() const
+	Object3D* Window::getPickedObject() const
 	{
 		return mScene->getPickedObject();
 	}
@@ -202,7 +202,7 @@ namespace RenderSystem
 		return mCamera->isMovementEnabled();
 	}
 
-	MeshCore::RaySurfaceIntersection Window::getClosestIntersection(bool intersectSurface)
+	Object3DIntersectionData Window::getClosestIntersection(bool intersectSurface)
 	{
 		return mScene->getClosestIntersection(castCursorRay(), intersectSurface);
 	}
@@ -214,7 +214,7 @@ namespace RenderSystem
 		return { nearCursorPosInWorldSpace, farCursorPosInWorldSpace - nearCursorPosInWorldSpace };
 	}
 
-	void Window::setPickedObject(MeshCore::Object3D* pickedObject)
+	void Window::setPickedObject(Object3D* pickedObject)
 	{
 		mScene->setPickedObject(pickedObject);
 	}

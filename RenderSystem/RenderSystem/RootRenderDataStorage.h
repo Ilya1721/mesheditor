@@ -2,10 +2,11 @@
 
 #include <functional>
 
-#include "RenderData.h"
-#include "Vertex.h"
+#include "MeshCore/Vertex.h"
 
-namespace MeshCore
+#include "RenderData.h"
+
+namespace RenderSystem
 {
     class Object3D;
 

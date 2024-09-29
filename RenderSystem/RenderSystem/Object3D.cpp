@@ -5,31 +5,20 @@
 #include "GeometryCore/Numeric.h"
 #include "GeometryCore/Ray.h"
 
-#include "Mesh.h"
-#include "Constants.h"
-#include "TreeWalker.h"
+#include "MeshCore/Mesh.h"
+#include "MeshCore/Constants.h"
+#include "MeshCore/TreeWalker.h"
+
 #include "RootRenderDataStorage.h"
 
 using namespace GeometryCore;
 
-namespace MeshCore
+namespace RenderSystem
 {
-	std::unordered_map<Object3D*, int> Object3D::sObjectVertexCountMap;
-
-	bool registerNewIntersection(
-		const RaySurfaceIntersection& oldIntersection, const RaySurfaceIntersection& newIntersection, const Point3D& rayOrigin
-	)
-	{
-		if (newIntersection.surfaceIndices.empty())
-		{
-			return false;
-		}
-
-		return oldIntersection.surfaceIndices.empty() || isCloser(newIntersection.point, oldIntersection.point, rayOrigin);
-	}
+	std::unordered_map<const Object3D*, int> Object3D::sObjectVertexCountMap;
 }
 
-namespace MeshCore
+namespace RenderSystem
 {
 	Object3D::Object3D(std::unique_ptr<Mesh> mesh) :
 		mParent(nullptr),
@@ -43,8 +32,16 @@ namespace MeshCore
 
 	void Object3D::init()
 	{
-		mMesh->setParentObject(this);
+		prepareRenderData();
 		mBBox.applyMesh(*mMesh);
+	}
+
+	void Object3D::prepareRenderData()
+	{
+		for (const auto& vertex : mMesh->getVertices())
+		{
+			mRenderData.append(vertex);
+		}
 	}
 
 	const Mesh& Object3D::getMesh() const
@@ -74,7 +71,7 @@ namespace MeshCore
 		}, transform);
 	}
 
-	const std::unordered_map<Object3D*, int>& Object3D::getObjectVertexCountMap()
+	const std::unordered_map<const Object3D*, int>& Object3D::getObjectVertexCountMap()
 	{
 		return sObjectVertexCountMap;
 	}
@@ -84,20 +81,24 @@ namespace MeshCore
 		return mBBox;
 	}
 
-	RaySurfaceIntersection Object3D::findIntersection(const Ray& ray, bool intersectSurface, int passedFacesCount) const
+	const RenderData& Object3D::getRenderData() const
 	{
-		RaySurfaceIntersection finalIntersection;
+		return mRenderData;
+	}
+
+	Object3DIntersectionData Object3D::findIntersection(const Ray& ray, bool intersectSurface, int passedFacesCount)
+	{
+		Object3DIntersectionData intersectionData;
 		TreeWalker walker(this);
-		walker.forEach([&ray, &finalIntersection, &intersectSurface, &passedFacesCount, this](const Object3D* object) {
-			const auto numberOfFaces = object->getMesh().getFaces().size();
-			auto intersection = object->getMesh().findIntersection(ray, intersectSurface, numberOfFaces);
-			if (registerNewIntersection(finalIntersection, intersection, ray.origin))
-			{
-				finalIntersection = intersection;
-			}
+		walker.forEach([&ray, &intersectionData, &intersectSurface, &passedFacesCount, this](Object3D* object) {
+			const auto numberOfFaces = object->getMesh().getFaces().size() + passedFacesCount;
+			auto invertedRay = glm::inverse(object->getTransform()) * ray;
+			auto meshIntersectionData = object->getMesh().findIntersection(invertedRay, intersectSurface, numberOfFaces);
+			intersectionData.intersectedObject = object;
+			intersectionData.intersection.setClosest(meshIntersectionData, invertedRay.origin);
 		});
 
-		return finalIntersection;
+		return intersectionData;
 	}
 
 	std::unique_ptr<Object3D> Object3D::clone()
@@ -106,7 +107,8 @@ namespace MeshCore
 		newObject->mMesh = mMesh->clone();
 		newObject->mBBox = mBBox;
 		newObject->mTransform = mTransform;
-		newObject->mMesh->setParentObject(newObject.get());
+		newObject->mParent = mParent;
+		newObject->mRenderData = mRenderData;
 
 		for (const auto& child : mChildren)
 		{
@@ -146,7 +148,7 @@ namespace MeshCore
 	void Object3D::propagateRenderDataToRoot()
 	{
 		sObjectVertexCountMap.insert({ this, RootRenderDataStorage::getRenderData().getVertexCount()});
-		RootRenderDataStorage::appendRenderData(mMesh->getRenderData());
+		RootRenderDataStorage::appendRenderData(mRenderData);
 	}
 
 	void Object3D::propagateBBoxToRoot() const

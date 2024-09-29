@@ -2,8 +2,7 @@
 
 #include <glm/gtx/transform.hpp>
 
-#include "MeshCore/Object3D.h"
-
+#include "Object3D.h"
 #include "Window.h"
 
 namespace RenderSystem

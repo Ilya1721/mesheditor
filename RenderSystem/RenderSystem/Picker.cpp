@@ -1,8 +1,8 @@
 #include "Picker.h"
 
 #include "MeshCore/Intersection.h"
-#include "MeshCore/Object3D.h"
 
+#include "Object3D.h"
 #include "Window.h"
 #include "GlobalRenderState.h"
 
@@ -20,10 +20,10 @@ namespace RenderSystem
             return;
         }
 
-        auto intersection = mWindow->getClosestIntersection();
-        if (!intersection.surfaceIndices.empty())
+        auto intersectionData = mWindow->getClosestIntersection();
+        if (!intersectionData.intersection.surfaceIndices.empty())
         {
-            auto pickedObject = intersection.surface.getParentObject();
+            auto pickedObject = intersectionData.intersectedObject;
             mWindow->setPickedObject(pickedObject);
             GlobalRenderState::highlightWholeObject(pickedObject);
         }

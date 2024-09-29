@@ -4,7 +4,6 @@
 
 #include "Face.h"
 #include "Mesh.h"
-#include "Object3D.h"
 
 namespace MeshCore
 {
@@ -25,14 +24,5 @@ namespace MeshCore
         auto planeNormal = glm::normalize(glm::cross(normal, facePoints[1] - facePoints[0]));
 
         return { facePoints[0], planeNormal };
-    }
-
-    Object3D* Surface::getParentObject() const
-    {
-        if (!mInitialFace) {
-            return nullptr;
-        }
-
-        return mInitialFace->parentMesh->getParentObject();
     }
 }
