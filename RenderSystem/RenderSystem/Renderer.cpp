@@ -11,12 +11,8 @@
 
 #include "RenderLogger.h"
 #include "GladTypedefs.h"
-#include "RenderPrimitive.h"
-#include "GlobalExtraPrimitives.h"
-#include "Scene.h"
 #include "GlobalRenderState.h"
 #include "Object3D.h"
-#include "RootRenderDataStorage.h"
 
 using namespace MeshCore;
 
@@ -63,8 +59,8 @@ namespace RenderSystem
 		mFragmentShader(),
 		mShaderProgram(),
 		mLighting(),
-		mRenderBuffer(),
-		mExtraRenderBuffer(),
+		mModelRenderBuffer(),
+		mDecorationsRenderBuffer(),
 		mShaderTransformationSystem()
 	{
 		init();
@@ -107,22 +103,8 @@ namespace RenderSystem
 	{
 		initShaders();
 		mShaderTransformationSystem.init(mShaderProgram);
-		mShaderTransformationSystem.setModel(glm::value_ptr(Scene::getRootObject().getTransform()));
 		mLighting.init(mShaderProgram);
-		registerCallbacks();
-		mRenderBuffer.bind();
-	}
-
-	void Renderer::registerCallbacks()
-	{
-		RootRenderDataStorage::addOnRenderDataUpdatedCallback([this]() {
-			mRenderBuffer.loadRenderData(RootRenderDataStorage::getRenderData());
-		});
-		RootRenderDataStorage::addOnExtraRenderDataUpdatedCallback([this]() {
-			mExtraRenderBuffer.bind();
-			mExtraRenderBuffer.loadRenderData(RootRenderDataStorage::getExtraRenderData());
-			mRenderBuffer.bind();
-		});
+		mModelRenderBuffer.bind();
 	}
 
 	void Renderer::initShaders()
@@ -142,46 +124,44 @@ namespace RenderSystem
 		glUseProgram(mShaderProgram);
 	}
 
-	void Renderer::renderHighlightedFaces()
+	void Renderer::renderHighlightedFaces(const std::unordered_map<const Object3D*, int>& objectVertexOffsetMap)
 	{
 		const auto& highlightedFacesData = GlobalRenderState::getHighlightedFacesData();
-		const auto& objectVertexCountMap = Object3D::getObjectVertexCountMap();
 		renderOverlayPrimitives(!highlightedFacesData.facesIndices.empty(), HIGHLIGHT_MATERIAL,
-			[&highlightedFacesData, &objectVertexCountMap, this]() {
+		[&highlightedFacesData, &objectVertexOffsetMap, this]() {
 			for (const auto& faceIdx : highlightedFacesData.facesIndices)
 			{
-				mShaderTransformationSystem.setModel(glm::value_ptr(highlightedFacesData.parentObject->getTransform()));
-				glDrawArrays(GL_TRIANGLES, faceIdx * 3 + objectVertexCountMap.at(highlightedFacesData.parentObject), 3);
+				setModel(glm::value_ptr(highlightedFacesData.parentObject->getTransform()));
+				glDrawArrays(GL_TRIANGLES, faceIdx * 3 + objectVertexOffsetMap.at(highlightedFacesData.parentObject), 3);
 			}
 		});
 	}
 
-	void Renderer::renderWireframe()
+	void Renderer::renderWireframe(int sceneVertexCount)
 	{
-		renderOverlayPrimitives(GlobalRenderState::getRenderWireframe(), WIREFRAME_MATERIAL, [this]() {
+		renderOverlayPrimitives(GlobalRenderState::getRenderWireframe(), WIREFRAME_MATERIAL, [&sceneVertexCount]() {
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-			glDrawArrays(GL_TRIANGLES, 0, RootRenderDataStorage::getRenderData().getVertexCount());
+			glDrawArrays(GL_TRIANGLES, 0, sceneVertexCount);
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		});
 	}
 
-	void Renderer::renderWholeObjectHighlighted()
+	void Renderer::renderWholeObjectHighlighted(const std::unordered_map<const Object3D*, int>& objectVertexOffsetMap)
 	{
-		const auto& objectVertexCountMap = Object3D::getObjectVertexCountMap();
-		const auto& highlightedObjectIt = objectVertexCountMap.find(GlobalRenderState::getHighlightedObject());
-		renderOverlayPrimitives(highlightedObjectIt != objectVertexCountMap.end(), HIGHLIGHT_MATERIAL, [this, highlightedObjectIt]() {
+		const auto& highlightedObjectIt = objectVertexOffsetMap.find(GlobalRenderState::getHighlightedObject());
+		renderOverlayPrimitives(highlightedObjectIt != objectVertexOffsetMap.end(), HIGHLIGHT_MATERIAL, [this, highlightedObjectIt]() {
 			auto& [object, vertexCount] = *highlightedObjectIt;
-			mShaderTransformationSystem.setModel(glm::value_ptr(object->getTransform()));
-			glDrawArrays(GL_TRIANGLES, vertexCount, object->getMesh().getVertices().size());
+			setModel(glm::value_ptr(object->getTransform()));
+			glDrawArrays(GL_TRIANGLES, vertexCount, object->getVertexCount());
 		});
 	}
 
-	void Renderer::renderScene()
+	void Renderer::renderScene(const std::unordered_map<const Object3D*, int>& objectVertexOffsetMap)
 	{
-		for (auto& [object, vertexCount] : Object3D::getObjectVertexCountMap())
+		for (auto& [object, vertexOffset] : objectVertexOffsetMap)
 		{
-			mShaderTransformationSystem.setModel(glm::value_ptr(object->getTransform()));
-			glDrawArrays(GL_TRIANGLES, vertexCount, object->getMesh().getVertices().size());
+			setModel(glm::value_ptr(object->getTransform()));
+			glDrawArrays(GL_TRIANGLES, vertexOffset, object->getVertexCount());
 		}
 	}
 
@@ -199,32 +179,39 @@ namespace RenderSystem
 		mLighting.setMaterial(MAIN_MATERIAL);
 	}
 
-	void Renderer::render()
+	void Renderer::cleanScreen()
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		renderScene();
-		renderHighlightedFaces();
-		renderWireframe();
-		renderWholeObjectHighlighted();
-		renderExtra();
 	}
 
-	void Renderer::renderExtra()
+	void Renderer::loadDecorationsRenderData(const RenderData& renderData)
 	{
-		mExtraRenderBuffer.bind();
-		mShaderTransformationSystem.setModel(glm::value_ptr(glm::mat4(1.0f)));
+		mDecorationsRenderBuffer.bind();
+		mDecorationsRenderBuffer.loadRenderData(renderData);
+		mModelRenderBuffer.bind();
+	}
+
+	void Renderer::loadModelRenderData(const RenderData& renderData)
+	{
+		mModelRenderBuffer.loadRenderData(renderData);
+	}
+
+	void Renderer::renderSceneDecorations(const std::vector<SceneDecoration>& sceneDecorations, const glm::mat4& rootObjectTransform)
+	{
+		mDecorationsRenderBuffer.bind();
+		setModel(glm::value_ptr(glm::mat4(1.0f)));
 
 		int startIndex = 0;
-		for (const auto& extraPrimitive : GlobalExtraPrimitives::getExtraPrimitives())
+		for (const auto& sceneDecoration : sceneDecorations)
 		{
-			auto vertexCount = extraPrimitive.renderData.getVertexCount();
-			mLighting.setMaterial(extraPrimitive.material);
-			glDrawArrays(extraPrimitive.renderMode, startIndex, vertexCount);
+			auto vertexCount = sceneDecoration.renderData.getVertexCount();
+			mLighting.setMaterial(sceneDecoration.material);
+			glDrawArrays(sceneDecoration.renderMode, startIndex, vertexCount);
 			startIndex += vertexCount;
 		}
 
 		mLighting.setMaterial(MAIN_MATERIAL);
-		mShaderTransformationSystem.setModel(glm::value_ptr(Scene::getRootObject().getTransform()));
-		mRenderBuffer.bind();
+		setModel(glm::value_ptr(rootObjectTransform));
+		mModelRenderBuffer.bind();
 	}
 }

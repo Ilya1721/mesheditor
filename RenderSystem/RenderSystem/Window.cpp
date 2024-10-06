@@ -92,9 +92,9 @@ namespace RenderSystem
 	void Window::init(const std::string& meshFilePath)
 	{
 		mRenderer = std::make_unique<Renderer>();
-		mScene = std::make_unique<Scene>(meshFilePath);
+		mScene = std::make_unique<Scene>(meshFilePath, mRenderer.get());
 		mCamera = std::make_unique<Camera>(mRenderer.get());
-		mViewport = std::make_unique<Viewport>(mWidth, mHeight, &Scene::getRootObject().getBBox(), mRenderer.get());
+		mViewport = std::make_unique<Viewport>(mWidth, mHeight, &mScene->getRootObject().getBBox(), mRenderer.get());
 		mOperationsDispatcher = std::make_unique<OperationsDispatcher>(this);
 	}
 
@@ -126,7 +126,7 @@ namespace RenderSystem
 	{		
 		while (!glfwWindowShouldClose(mWindow))
 		{
-			mRenderer->render();
+			mScene->render();
 			glfwSwapBuffers(mWindow);
 			glfwWaitEvents();
 		}
@@ -257,7 +257,7 @@ namespace RenderSystem
 	{
 		if (mViewport->getProjectionType() == PROJECTION_TYPE::PERSPECTIVE)
 		{
-			mCamera->zoom(step * Scene::getRootObject().getBBox().getHeight() * ZOOM_STEP_COEF);
+			mCamera->zoom(step * mScene->getRootObject().getBBox().getHeight() * ZOOM_STEP_COEF);
 		}
 		else
 		{

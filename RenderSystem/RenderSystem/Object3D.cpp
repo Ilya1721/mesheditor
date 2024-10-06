@@ -7,19 +7,16 @@
 
 #include "MeshCore/Mesh.h"
 #include "MeshCore/Constants.h"
-#include "MeshCore/TreeWalker.h"
-
-#include "RootRenderDataStorage.h"
 
 using namespace GeometryCore;
 
 namespace RenderSystem
 {
-	std::unordered_map<const Object3D*, int> Object3D::sObjectVertexCountMap;
-}
+	Object3D::Object3D() :
+		mParent(nullptr),
+		mTransform(1.0f)
+	{}
 
-namespace RenderSystem
-{
 	Object3D::Object3D(std::unique_ptr<Mesh> mesh) :
 		mParent(nullptr),
 		mMesh(std::move(mesh)),
@@ -32,21 +29,7 @@ namespace RenderSystem
 
 	void Object3D::init()
 	{
-		prepareRenderData();
 		mBBox.applyMesh(*mMesh);
-	}
-
-	void Object3D::prepareRenderData()
-	{
-		for (const auto& vertex : mMesh->getVertices())
-		{
-			mRenderData.append(vertex);
-		}
-	}
-
-	const Mesh& Object3D::getMesh() const
-	{
-		return *mMesh;
 	}
 
 	Object3D* Object3D::getParent() const
@@ -71,19 +54,9 @@ namespace RenderSystem
 		}, transform);
 	}
 
-	const std::unordered_map<const Object3D*, int>& Object3D::getObjectVertexCountMap()
-	{
-		return sObjectVertexCountMap;
-	}
-
 	const AABBox& Object3D::getBBox() const
 	{
 		return mBBox;
-	}
-
-	const RenderData& Object3D::getRenderData() const
-	{
-		return mRenderData;
 	}
 
 	Object3DIntersectionData Object3D::findIntersection(const Ray& ray, bool intersectSurface, int passedFacesCount)
@@ -91,9 +64,9 @@ namespace RenderSystem
 		Object3DIntersectionData intersectionData;
 		TreeWalker walker(this);
 		walker.forEach([&ray, &intersectionData, &intersectSurface, &passedFacesCount, this](Object3D* object) {
-			const auto numberOfFaces = object->getMesh().getFaces().size() + passedFacesCount;
+			const auto numberOfFaces = object->mMesh->getFaces().size() + passedFacesCount;
 			auto invertedRay = glm::inverse(object->getTransform()) * ray;
-			auto meshIntersectionData = object->getMesh().findIntersection(invertedRay, intersectSurface, numberOfFaces);
+			auto meshIntersectionData = object->mMesh->findIntersection(invertedRay, intersectSurface, numberOfFaces);
 			intersectionData.intersectedObject = object;
 			intersectionData.intersection.setClosest(meshIntersectionData, invertedRay.origin);
 		});
@@ -108,7 +81,6 @@ namespace RenderSystem
 		newObject->mBBox = mBBox;
 		newObject->mTransform = mTransform;
 		newObject->mParent = mParent;
-		newObject->mRenderData = mRenderData;
 
 		for (const auto& child : mChildren)
 		{
@@ -118,19 +90,41 @@ namespace RenderSystem
 		return newObject;
 	}
 
+	int Object3D::getVertexCount() const
+	{
+		return mMesh->getVertices().size();
+	}
+
+	const std::vector<Vertex>& Object3D::getVertices() const
+	{
+		return mMesh->getVertices();
+	}
+
 	void Object3D::addChild(std::unique_ptr<Object3D>&& child)
 	{
 		child->mParent = this;
-		child->propagateRenderDataToRoot();
 		child->propagateBBoxToRoot();
+		child->mChildAddedCM.addCallbacks(mChildAddedCM);
+		child->mObjectUpdatedCM.addCallbacks(mObjectUpdatedCM);
+		mChildAddedCM.invokeCallbacks(child.get());
 		mChildren.emplace_back(std::move(child));
+	}
+
+	void Object3D::addOnChildAddedCallback(const std::function<childAddedCallback>& callback)
+	{
+		mChildAddedCM.addCallback(callback);
+	}
+
+	void Object3D::addOnObjectUpdatedCallback(const std::function<objectUpdatedCallback>& callback)
+	{
+		mObjectUpdatedCM.addCallback(callback);
 	}
 
 	void Object3D::onMeshUpdated(const std::unordered_set<UniqueVertex*>& vertices)
 	{
 		mBBox.applyMesh(*mMesh);
 		propagateBBoxToRoot();
-		RootRenderDataStorage::updateRenderData(vertices, sObjectVertexCountMap.at(this));
+		mObjectUpdatedCM.invokeCallbacks(this, vertices);
 	}
 
 	void Object3D::moveToOrigin()
@@ -143,12 +137,6 @@ namespace RenderSystem
 		action();
 		mBBox.applyTransform(transform);
 		propagateBBoxToRoot();
-	}
-
-	void Object3D::propagateRenderDataToRoot()
-	{
-		sObjectVertexCountMap.insert({ this, RootRenderDataStorage::getRenderData().getVertexCount()});
-		RootRenderDataStorage::appendRenderData(mRenderData);
 	}
 
 	void Object3D::propagateBBoxToRoot() const
