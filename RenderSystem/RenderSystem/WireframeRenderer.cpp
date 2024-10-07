@@ -1,7 +1,6 @@
 #include "WireframeRenderer.h"
 
 #include "Window.h"
-#include "GlobalRenderState.h"
 
 namespace RenderSystem
 {
@@ -13,7 +12,7 @@ namespace RenderSystem
     {
         if (key == GLFW_KEY_W)
         {
-            GlobalRenderState::toggleWireframe();
+            mWindow->toggleWireframe();
         }
     }
 }

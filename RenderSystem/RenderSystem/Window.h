@@ -14,6 +14,7 @@
 #include "Camera.h"
 #include "Renderer.h"
 #include "Object3DIntersectionData.h"
+#include "HighlightedFacesData.h"
 
 namespace RenderSystem
 {
@@ -51,6 +52,9 @@ namespace RenderSystem
 		Ray castCursorRay() const;
 
 		void setPickedObject(Object3D* pickedObject);
+		void toggleWireframe();
+		void highlightWholeObject(const Object3D* object);
+		void setHighlightedFacesData(const HighlightedFacesData& data);
 
 		void render();
 		void zoom(float step);

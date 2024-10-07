@@ -9,7 +9,6 @@
 #include "Object3D.h"
 #include "Constants.h"
 #include "Window.h"
-#include "GlobalRenderState.h"
 
 namespace RenderSystem
 {
@@ -75,7 +74,7 @@ namespace RenderSystem
     {
         if (mSurfaceMovementEnabled)
         {
-            GlobalRenderState::setHighlightedFacesData({ mIntersectionData.intersection.surfaceIndices, mIntersectionData.intersectedObject });
+            mWindow->setHighlightedFacesData({ mIntersectionData.intersection.surfaceIndices, mIntersectionData.intersectedObject });
         }
     }
 
@@ -83,7 +82,7 @@ namespace RenderSystem
     {
         if (mSurfaceMovementEnabled)
         {
-            GlobalRenderState::setHighlightedFacesData({});
+            mWindow->setHighlightedFacesData({});
         }
 
         mSurfaceMovementEnabled = isSurfaceIntersected && !mSurfaceMovementEnabled;

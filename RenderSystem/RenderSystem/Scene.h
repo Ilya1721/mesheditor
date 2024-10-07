@@ -9,6 +9,7 @@
 #include "Object3D.h"
 #include "Object3DIntersectionData.h"
 #include "SceneDecoration.h"
+#include "HighlightedFacesData.h"
 
 namespace RenderSystem
 {
@@ -25,9 +26,15 @@ namespace RenderSystem
 		Object3DIntersectionData getClosestIntersection(const Ray& cursorRay, bool intersectSurface);
 		Object3D* getPickedObject() const;
 		const std::vector<SceneDecoration>& getSceneDecorations() const;
+		bool getRenderWireframe();
+		const Object3D* getHighlightedObject();
+		const HighlightedFacesData& getHighlightedFacesData();
 
 		void setPickedObject(Object3D* pickedObject);
 		void addSceneDecoration(const SceneDecoration& sceneDecoration);
+		void toggleWireframe();
+		void highlightWholeObject(const Object3D* object);
+		void setHighlightedFacesData(const HighlightedFacesData& data);
 		void render();
 
 		const Object3D& getRootObject() const;
@@ -44,6 +51,9 @@ namespace RenderSystem
 
 		std::vector<SceneDecoration> mSceneDecorations;
 		RenderData mSceneDecorationsRenderData;
+		bool mRenderWireframe;
+		const Object3D* mHighlightedObject;
+		HighlightedFacesData mHighlightedFacesData;
 
 		RenderData mSceneRenderData;
 		std::unordered_map<const Object3D*, int> mSceneObjectVertexOffsetMap;

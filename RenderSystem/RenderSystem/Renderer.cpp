@@ -11,7 +11,6 @@
 
 #include "RenderLogger.h"
 #include "GladTypedefs.h"
-#include "GlobalRenderState.h"
 #include "Object3D.h"
 
 using namespace MeshCore;
@@ -124,9 +123,8 @@ namespace RenderSystem
 		glUseProgram(mShaderProgram);
 	}
 
-	void Renderer::renderHighlightedFaces(const std::unordered_map<const Object3D*, int>& objectVertexOffsetMap)
+	void Renderer::renderHighlightedFaces(const ObjectVertexMap& objectVertexOffsetMap, const HighlightedFacesData& highlightedFacesData)
 	{
-		const auto& highlightedFacesData = GlobalRenderState::getHighlightedFacesData();
 		renderOverlayPrimitives(!highlightedFacesData.facesIndices.empty(), HIGHLIGHT_MATERIAL,
 		[&highlightedFacesData, &objectVertexOffsetMap, this]() {
 			for (const auto& faceIdx : highlightedFacesData.facesIndices)
@@ -137,18 +135,18 @@ namespace RenderSystem
 		});
 	}
 
-	void Renderer::renderWireframe(int sceneVertexCount)
+	void Renderer::renderWireframe(int sceneVertexCount, bool ifToRender)
 	{
-		renderOverlayPrimitives(GlobalRenderState::getRenderWireframe(), WIREFRAME_MATERIAL, [&sceneVertexCount]() {
+		renderOverlayPrimitives(ifToRender, WIREFRAME_MATERIAL, [&sceneVertexCount]() {
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			glDrawArrays(GL_TRIANGLES, 0, sceneVertexCount);
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		});
 	}
 
-	void Renderer::renderWholeObjectHighlighted(const std::unordered_map<const Object3D*, int>& objectVertexOffsetMap)
+	void Renderer::renderWholeObjectHighlighted(const ObjectVertexMap& objectVertexOffsetMap, const Object3D* highlightedObject)
 	{
-		const auto& highlightedObjectIt = objectVertexOffsetMap.find(GlobalRenderState::getHighlightedObject());
+		const auto& highlightedObjectIt = objectVertexOffsetMap.find(highlightedObject);
 		renderOverlayPrimitives(highlightedObjectIt != objectVertexOffsetMap.end(), HIGHLIGHT_MATERIAL, [this, highlightedObjectIt]() {
 			auto& [object, vertexCount] = *highlightedObjectIt;
 			setModel(glm::value_ptr(object->getTransform()));
@@ -156,7 +154,7 @@ namespace RenderSystem
 		});
 	}
 
-	void Renderer::renderScene(const std::unordered_map<const Object3D*, int>& objectVertexOffsetMap)
+	void Renderer::renderScene(const ObjectVertexMap& objectVertexOffsetMap)
 	{
 		for (auto& [object, vertexOffset] : objectVertexOffsetMap)
 		{

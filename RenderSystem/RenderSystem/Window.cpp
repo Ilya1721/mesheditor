@@ -219,6 +219,21 @@ namespace RenderSystem
 		mScene->setPickedObject(pickedObject);
 	}
 
+	void Window::toggleWireframe()
+	{
+		mScene->toggleWireframe();
+	}
+
+	void Window::highlightWholeObject(const Object3D* object)
+	{
+		mScene->highlightWholeObject(object);
+	}
+
+	void Window::setHighlightedFacesData(const HighlightedFacesData& data)
+	{
+		mScene->setHighlightedFacesData(data);
+	}
+
 	void Window::onMouseMove(double cursorX, double cursorY)
 	{
 		Point2D currentCursorPosition(cursorX, cursorY);

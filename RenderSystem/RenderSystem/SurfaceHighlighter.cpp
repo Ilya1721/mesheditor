@@ -3,7 +3,6 @@
 #include "MeshCore/Intersection.h"
 
 #include "Window.h"
-#include "GlobalRenderState.h"
 
 namespace RenderSystem
 {
@@ -16,7 +15,7 @@ namespace RenderSystem
         if (mEnabled)
         {
             auto intersectionData = mWindow->getClosestIntersection();
-            GlobalRenderState::setHighlightedFacesData({ intersectionData.intersection.surfaceIndices, intersectionData.intersectedObject });
+            mWindow->setHighlightedFacesData({ intersectionData.intersection.surfaceIndices, intersectionData.intersectedObject });
         }
     }
 
@@ -31,7 +30,7 @@ namespace RenderSystem
 
         if (!mEnabled)
         {
-            GlobalRenderState::setHighlightedFacesData({});
+            mWindow->setHighlightedFacesData({});
         }
     }
 }

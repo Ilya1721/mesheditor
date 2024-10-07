@@ -4,7 +4,6 @@
 
 #include "Object3D.h"
 #include "Window.h"
-#include "GlobalRenderState.h"
 
 namespace RenderSystem
 {
@@ -25,12 +24,12 @@ namespace RenderSystem
         {
             auto pickedObject = intersectionData.intersectedObject;
             mWindow->setPickedObject(pickedObject);
-            GlobalRenderState::highlightWholeObject(pickedObject);
+            mWindow->highlightWholeObject(pickedObject);
         }
         else
         {
             mWindow->setPickedObject(nullptr);
-            GlobalRenderState::highlightWholeObject(nullptr);
+            mWindow->highlightWholeObject(nullptr);
         }
     }
 }

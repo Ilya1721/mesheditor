@@ -126,7 +126,6 @@
     <ClCompile Include="RenderSystem\Camera.cpp" />
     <ClCompile Include="RenderSystem\Cloner.cpp" />
     <ClCompile Include="RenderSystem\glad.c" />
-    <ClCompile Include="RenderSystem\GlobalRenderState.cpp" />
     <ClCompile Include="RenderSystem\Intersection.cpp" />
     <ClCompile Include="RenderSystem\Lighting.cpp" />
     <ClCompile Include="RenderSystem\Mover.cpp" />
@@ -156,7 +155,7 @@
     <ClInclude Include="RenderSystem\Constants.h" />
     <ClInclude Include="RenderSystem\glad.h" />
     <ClInclude Include="RenderSystem\GladTypedefs.h" />
-    <ClInclude Include="RenderSystem\GlobalRenderState.h" />
+    <ClInclude Include="RenderSystem\HighlightedFacesData.h" />
     <ClInclude Include="RenderSystem\Intersection.h" />
     <ClInclude Include="RenderSystem\khrplatform.h" />
     <ClInclude Include="RenderSystem\Light.h" />

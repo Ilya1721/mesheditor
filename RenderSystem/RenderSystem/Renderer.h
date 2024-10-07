@@ -12,10 +12,13 @@
 #include "ShaderTransformationSystem.h"
 #include "Constants.h"
 #include "SceneDecoration.h"
+#include "HighlightedFacesData.h"
 
 namespace RenderSystem
 {
 	class Object3D;
+
+	using ObjectVertexMap = std::unordered_map<const Object3D*, int>;
 
 	class Renderer
 	{
@@ -30,11 +33,11 @@ namespace RenderSystem
 		void setLightPos(const float* pos) const;
 		void setCameraPos(const float* pos) const;
 
-		void renderScene(const std::unordered_map<const Object3D*, int>& objectVertexOffsetMap);
+		void renderScene(const ObjectVertexMap& objectVertexOffsetMap);
 		void renderSceneDecorations(const std::vector<SceneDecoration>& sceneDecorations, const glm::mat4& rootObjectTransform);
-		void renderHighlightedFaces(const std::unordered_map<const Object3D*, int>& objectVertexOffsetMap);
-		void renderWireframe(int sceneVertexCount);
-		void renderWholeObjectHighlighted(const std::unordered_map<const Object3D*, int>& objectVertexOffsetMap);
+		void renderHighlightedFaces(const ObjectVertexMap& objectVertexOffsetMap, const HighlightedFacesData& highlightedFacesData);
+		void renderWireframe(int sceneVertexCount, bool ifToRender);
+		void renderWholeObjectHighlighted(const ObjectVertexMap& objectVertexOffsetMap, const Object3D* highlightedObject);
 		void loadModelRenderData(const RenderData& renderData);
 		void loadDecorationsRenderData(const RenderData& renderData);
 		void cleanScreen();

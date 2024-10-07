@@ -32,7 +32,9 @@ namespace RenderSystem
 {
 	Scene::Scene(const std::string& meshFilePath, Renderer* renderer) :
 		mPickedObject(nullptr),
-		mRenderer(renderer)
+		mRenderer(renderer),
+		mRenderWireframe(false),
+		mHighlightedObject(nullptr)
 	{
 		registerRootObjectCallbacks();
 		addModelObject(meshFilePath);
@@ -94,13 +96,28 @@ namespace RenderSystem
 		mRenderer->loadDecorationsRenderData(mSceneDecorationsRenderData);
 	}
 
+	void Scene::toggleWireframe()
+	{
+		mRenderWireframe = !mRenderWireframe;
+	}
+
+	void Scene::highlightWholeObject(const Object3D* object)
+	{
+		mHighlightedObject = object;
+	}
+
+	void Scene::setHighlightedFacesData(const HighlightedFacesData& data)
+	{
+		mHighlightedFacesData = data;
+	}
+
 	void Scene::render()
 	{
 		mRenderer->cleanScreen();
 		mRenderer->renderScene(mSceneObjectVertexOffsetMap);
-		mRenderer->renderHighlightedFaces(mSceneObjectVertexOffsetMap);
-		mRenderer->renderWholeObjectHighlighted(mSceneObjectVertexOffsetMap);
-		mRenderer->renderWireframe(mSceneRenderData.getVertexCount());
+		mRenderer->renderHighlightedFaces(mSceneObjectVertexOffsetMap, mHighlightedFacesData);
+		mRenderer->renderWholeObjectHighlighted(mSceneObjectVertexOffsetMap, mHighlightedObject);
+		mRenderer->renderWireframe(mSceneRenderData.getVertexCount(), mRenderWireframe);
 		mRenderer->renderSceneDecorations(mSceneDecorations, mRootObject.getTransform());
 	}
 
@@ -122,6 +139,21 @@ namespace RenderSystem
 	const std::vector<SceneDecoration>& Scene::getSceneDecorations() const
 	{
 		return mSceneDecorations;
+	}
+
+	bool Scene::getRenderWireframe()
+	{
+		return mRenderWireframe;
+	}
+
+	const Object3D* Scene::getHighlightedObject()
+	{
+		return mHighlightedObject;
+	}
+
+	const HighlightedFacesData& Scene::getHighlightedFacesData()
+	{
+		return mHighlightedFacesData;
 	}
 
 	const Object3D& Scene::getRootObject() const
