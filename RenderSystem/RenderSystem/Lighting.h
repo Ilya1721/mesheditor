@@ -10,7 +10,7 @@ namespace RenderSystem
 	public:
 		void init(int shaderProgram);
 		void setLightPos(const float* lightPos) const;
-		void setCameraPos(const float* pos) const;
+		void setCameraPos(const float* cameraPos) const;
 		void setMaterial(const Material& material);
 		void setLight(const Light& light);
 

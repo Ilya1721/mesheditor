@@ -66,9 +66,9 @@ namespace RenderSystem
 		glUniform3fv(mLightPos, 1, lightPos);
 	}
 
-	void Lighting::setCameraPos(const float* pos) const
+	void Lighting::setCameraPos(const float* cameraPos) const
 	{
-		glUniform3fv(mCameraPos, 1, pos);
+		glUniform3fv(mCameraPos, 1, cameraPos);
 	}
 
 	void Lighting::setLightAmbient(const float* ambient) const

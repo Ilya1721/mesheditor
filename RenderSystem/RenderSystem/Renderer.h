@@ -7,9 +7,8 @@
 #include "GeometryCore/Typedefs.h"
 #include "MeshCore/Vertex.h"
 
-#include "Lighting.h"
 #include "RenderBuffer.h"
-#include "ShaderTransformationSystem.h"
+#include "SceneShaderProgram.h"
 #include "Constants.h"
 #include "SceneDecoration.h"
 #include "HighlightedFacesData.h"
@@ -25,13 +24,12 @@ namespace RenderSystem
 	public:
 		Renderer();
 		Renderer(Renderer&&) = delete;
-		~Renderer();
 
-		void setModel(const float* model) const;
-		void setView(const float* view) const;
-		void setProjection(const float* projection) const;
-		void setLightPos(const float* pos) const;
-		void setCameraPos(const float* pos) const;
+		void setModel(const float* model);
+		void setView(const float* view);
+		void setProjection(const float* projection);
+		void setLightPos(const float* pos);
+		void setCameraPos(const float* pos);
 
 		void renderScene(const ObjectVertexMap& objectVertexOffsetMap);
 		void renderSceneDecorations(const std::vector<SceneDecoration>& sceneDecorations, const glm::mat4& rootObjectTransform);
@@ -44,17 +42,10 @@ namespace RenderSystem
 
 	private:
 		void init();
-		void initShaders();
-		void initShaderProgram();
 		void renderOverlayPrimitives(bool renderCondition, const Material& material, const std::function<void()>& renderFunc);
 
 	private:
-		int mVertexShader;
-		int mFragmentShader;
-		int mShaderProgram;
-
-		ShaderTransformationSystem mShaderTransformationSystem;
-		Lighting mLighting;
+		SceneShaderProgram mSceneShaderProgram;
 		RenderBuffer mModelRenderBuffer;
 		RenderBuffer mDecorationsRenderBuffer;
 	};

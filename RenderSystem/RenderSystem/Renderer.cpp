@@ -3,14 +3,15 @@
 #include <iostream>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "Utility/FileHelper.h"
-#include "Utility/StringHelper.h"
+#ifdef __gl_h_
+#undef __gl_h_
+#endif
+#include "glad.h"
+
 #include "GeometryCore/Line.h"
 #include "GeometryCore/Plane.h"
 #include "MeshCore/Mesh.h"
 
-#include "RenderLogger.h"
-#include "GladTypedefs.h"
 #include "Object3D.h"
 
 using namespace MeshCore;
@@ -22,105 +23,48 @@ namespace
 	constexpr Material MAIN_MATERIAL = GOLD_MATERIAL;
 	constexpr Material HIGHLIGHT_MATERIAL = RUBY_MATERIAL;
 	constexpr Material WIREFRAME_MATERIAL = BLACK_MATERIAL;
-
-	void checkShaderOrProgramStatus(GetShaderIV getShaderIVFunc, int shaderOrProgram, int statusToCheck,
-									SHADER_TYPE shaderType, const std::string& failedMessage)
-	{
-		int isStatusSuccessful = false;
-		getShaderIVFunc(shaderOrProgram, statusToCheck, &isStatusSuccessful);
-		if (!isStatusSuccessful)
-		{
-			auto shaderLog = getShaderInfoLog(shaderOrProgram, shaderType);
-			std::cerr << shaderLog << std::endl;
-			throw std::exception(failedMessage.c_str());
-		}
-	}
-
-	int loadShader(const std::string& shaderPath, int shaderType)
-	{
-		auto shaderContent = Utility::readFile(shaderPath);
-		std::vector<const char*> shaderContentVec{ shaderContent.c_str() };
-		std::vector<int> shaderContentLengthVec{ static_cast<int>(shaderContent.size()) };
-
-		auto shader = glCreateShader(shaderType);
-		glShaderSource(shader, 1, shaderContentVec.data(), shaderContentLengthVec.data());
-		glCompileShader(shader);
-		checkShaderOrProgramStatus(glGetShaderiv, shader, GL_COMPILE_STATUS, SHADER_TYPE::SHADER, "Shader was not compiled!");
-
-		return shader;
-	}
+	const std::string SCENE_VERTEX_SHADER_PATH = R"(../RenderSystem/Shaders/VertexShader.vert)";
+	const std::string SCENE_FRAGMENT_SHADER_PATH = R"(../RenderSystem/Shaders/FragmentShader.frag)";
 }
 
 namespace RenderSystem
 {
 	Renderer::Renderer() :
-		mVertexShader(),
-		mFragmentShader(),
-		mShaderProgram(),
-		mLighting(),
 		mModelRenderBuffer(),
 		mDecorationsRenderBuffer(),
-		mShaderTransformationSystem()
+		mSceneShaderProgram(SCENE_VERTEX_SHADER_PATH, SCENE_FRAGMENT_SHADER_PATH)
 	{
 		init();
 	}
 
-	Renderer::~Renderer()
+	void Renderer::setModel(const float* model)
 	{
-		glUseProgram(0);
-		glDeleteShader(mVertexShader);
-		glDeleteShader(mFragmentShader);
-		glDeleteProgram(mShaderProgram);
+		mSceneShaderProgram.setModel(model);
 	}
 
-	void Renderer::setModel(const float* model) const
+	void Renderer::setView(const float* view)
 	{
-		mShaderTransformationSystem.setModel(model);
+		mSceneShaderProgram.setView(view);
 	}
 
-	void Renderer::setView(const float* view) const
+	void Renderer::setProjection(const float* projection)
 	{
-		mShaderTransformationSystem.setView(view);
+		mSceneShaderProgram.setProjection(projection);
 	}
 
-	void Renderer::setProjection(const float* projection) const
+	void Renderer::setLightPos(const float* pos)
 	{
-		mShaderTransformationSystem.setProjection(projection);
+		mSceneShaderProgram.setLightPos(pos);
 	}
 
-	void Renderer::setLightPos(const float* pos) const
+	void Renderer::setCameraPos(const float* pos)
 	{
-		mLighting.setLightPos(pos);
-	}
-
-	void Renderer::setCameraPos(const float* pos) const
-	{
-		mLighting.setCameraPos(pos);
+		mSceneShaderProgram.setCameraPos(pos);
 	}
 
 	void Renderer::init()
 	{
-		initShaders();
-		mShaderTransformationSystem.init(mShaderProgram);
-		mLighting.init(mShaderProgram);
 		mModelRenderBuffer.bind();
-	}
-
-	void Renderer::initShaders()
-	{
-		mVertexShader = loadShader(R"(../RenderSystem/Shaders/VertexShader.vert)", GL_VERTEX_SHADER);
-		mFragmentShader = loadShader(R"(../RenderSystem/Shaders/FragmentShader.frag)", GL_FRAGMENT_SHADER);
-		initShaderProgram();
-	}
-
-	void Renderer::initShaderProgram()
-	{
-		mShaderProgram = glCreateProgram();
-		glAttachShader(mShaderProgram, mVertexShader);
-		glAttachShader(mShaderProgram, mFragmentShader);
-		glLinkProgram(mShaderProgram);
-		checkShaderOrProgramStatus(glGetProgramiv, mShaderProgram, GL_LINK_STATUS, SHADER_TYPE::SHADER_PROGRAM, "Shader program was not linked");
-		glUseProgram(mShaderProgram);
 	}
 
 	void Renderer::renderHighlightedFaces(const ObjectVertexMap& objectVertexOffsetMap, const HighlightedFacesData& highlightedFacesData)
@@ -170,11 +114,11 @@ namespace RenderSystem
 			return;
 		}
 
-		mLighting.setMaterial(material);
+		mSceneShaderProgram.setMaterial(material);
 		glDepthFunc(GL_LEQUAL);
 		renderFunc();
 		glDepthFunc(GL_LESS);
-		mLighting.setMaterial(MAIN_MATERIAL);
+		mSceneShaderProgram.setMaterial(MAIN_MATERIAL);
 	}
 
 	void Renderer::cleanScreen()
@@ -203,12 +147,12 @@ namespace RenderSystem
 		for (const auto& sceneDecoration : sceneDecorations)
 		{
 			auto vertexCount = sceneDecoration.renderData.getVertexCount();
-			mLighting.setMaterial(sceneDecoration.material);
+			mSceneShaderProgram.setMaterial(sceneDecoration.material);
 			glDrawArrays(sceneDecoration.renderMode, startIndex, vertexCount);
 			startIndex += vertexCount;
 		}
 
-		mLighting.setMaterial(MAIN_MATERIAL);
+		mSceneShaderProgram.setMaterial(MAIN_MATERIAL);
 		setModel(glm::value_ptr(rootObjectTransform));
 		mModelRenderBuffer.bind();
 	}

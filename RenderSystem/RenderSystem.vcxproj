@@ -141,7 +141,8 @@
     <ClCompile Include="RenderSystem\RenderLogger.cpp" />
     <ClCompile Include="RenderSystem\SceneDecoration.cpp" />
     <ClCompile Include="RenderSystem\Scene.cpp" />
-    <ClCompile Include="RenderSystem\ShaderTransformationSystem.cpp" />
+    <ClCompile Include="RenderSystem\SceneShaderProgram.cpp" />
+    <ClCompile Include="RenderSystem\ShaderProgram.cpp" />
     <ClCompile Include="RenderSystem\SurfaceExtruder.cpp" />
     <ClCompile Include="RenderSystem\SurfaceHighlighter.cpp" />
     <ClCompile Include="RenderSystem\Viewport.cpp" />
@@ -175,7 +176,8 @@
     <ClInclude Include="RenderSystem\RenderLogger.h" />
     <ClInclude Include="RenderSystem\SceneDecoration.h" />
     <ClInclude Include="RenderSystem\Scene.h" />
-    <ClInclude Include="RenderSystem\ShaderTransformationSystem.h" />
+    <ClInclude Include="RenderSystem\SceneShaderProgram.h" />
+    <ClInclude Include="RenderSystem\ShaderProgram.h" />
     <ClInclude Include="RenderSystem\SurfaceExtruder.h" />
     <ClInclude Include="RenderSystem\SurfaceHighlighter.h" />
     <ClInclude Include="RenderSystem\Typedefs.h" />
