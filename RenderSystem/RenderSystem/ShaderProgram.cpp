@@ -47,10 +47,7 @@ namespace RenderSystem
 		mFragmentShaderPath(fragmentShaderPath),
 		mVertexShader(),
 		mFragmentShader(),
-		mShaderProgram(),
-		mModel(),
-		mView(),
-		mProjection()
+		mShaderProgram()
 	{
 		init();
 	}
@@ -62,19 +59,13 @@ namespace RenderSystem
         glDeleteProgram(mShaderProgram);
     }
 
-	void ShaderProgram::setModel(const float* model) const
+	void ShaderProgram::invokeAction(const std::function<void()>& action)
 	{
-		glUniformMatrix4fv(mModel, 1, false, model);
-	}
-
-	void ShaderProgram::setView(const float* view) const
-	{
-		glUniformMatrix4fv(mView, 1, false, view);
-	}
-
-	void ShaderProgram::setProjection(const float* projection) const
-	{
-		glUniformMatrix4fv(mProjection, 1, false, projection);
+		GLint shaderProgramToRestore;
+		glGetIntegerv(GL_CURRENT_PROGRAM, &shaderProgramToRestore);
+		glUseProgram(mShaderProgram);
+		action();
+		glUseProgram(shaderProgramToRestore);
 	}
 
 	void ShaderProgram::init()
@@ -82,7 +73,6 @@ namespace RenderSystem
 		mVertexShader = loadShader(mVertexShaderPath.string(), GL_VERTEX_SHADER);
 		mFragmentShader = loadShader(mFragmentShaderPath.string(), GL_FRAGMENT_SHADER);
 		initShaderProgram();
-		initUniformLocations();
 	}
 
 	void ShaderProgram::initShaderProgram()
@@ -93,12 +83,5 @@ namespace RenderSystem
 		glLinkProgram(mShaderProgram);
 		checkShaderOrProgramStatus(glGetProgramiv, mShaderProgram, GL_LINK_STATUS, SHADER_TYPE::SHADER_PROGRAM, "Shader program has not been linked");
 		glUseProgram(mShaderProgram);
-	}
-
-	void ShaderProgram::initUniformLocations()
-	{
-		mModel = glGetUniformLocation(mShaderProgram, "model");
-		mView = glGetUniformLocation(mShaderProgram, "view");
-		mProjection = glGetUniformLocation(mShaderProgram, "projection");
 	}
 }

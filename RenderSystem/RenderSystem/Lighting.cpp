@@ -35,7 +35,7 @@ namespace RenderSystem
 
 	void Lighting::initUniformLocations()
 	{
-		mLightPos = getUniformLocation("lightPosInCameraSpace");
+		mLightSourcePos = getUniformLocation("lightSourcePosInCameraSpace");
 		mCameraPos = getUniformLocation("cameraPosInCameraSpace");
 		mLightAmbient = getUniformLocation("light.ambient");
 		mLightDiffuse = getUniformLocation("light.diffuse");
@@ -61,9 +61,9 @@ namespace RenderSystem
 		setLightSpecular(glm::value_ptr(light.specular));
 	}
 
-	void Lighting::setLightPos(const float* lightPos) const
+	void Lighting::setLightSourcePos(const float* lightSourcePos) const
 	{
-		glUniform3fv(mLightPos, 1, lightPos);
+		glUniform3fv(mLightSourcePos, 1, lightSourcePos);
 	}
 
 	void Lighting::setCameraPos(const float* cameraPos) const

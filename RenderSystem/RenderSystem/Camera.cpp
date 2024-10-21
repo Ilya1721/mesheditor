@@ -7,7 +7,6 @@
 #include <glm/gtx/vector_angle.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/epsilon.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 #include "GeometryCore/Ray.h"
 #include "GeometryCore/Plane.h"
@@ -17,17 +16,18 @@
 #include "MeshCore/AABBox.h"
 
 #include "Constants.h"
+#include "SceneShaderProgram.h"
 
 using namespace GeometryCore;
 
 namespace RenderSystem
 {
-	Camera::Camera(Renderer* renderer) :
+	Camera::Camera(SceneShaderProgram* sceneShaderProgram) :
 		mTarget(DEFAULT_CAMERA_TARGET),
 		mEye(DEFAULT_CAMERA_POSITION),
 		mUp(DEFAULT_CAMERA_UP),
 		mRight(DEFAULT_CAMERA_RIGHT),
-		mRenderer(renderer),
+		mSceneShaderProgram(sceneShaderProgram),
 		mIsMovementEnabled(true)
 	{
 		invokeEditOperation([]() {});
@@ -83,7 +83,7 @@ namespace RenderSystem
 	{
 		action();
 		mViewMatrix = createViewMatrix();
-		mRenderer->setView(glm::value_ptr(mViewMatrix));
+		mSceneShaderProgram->setView(mViewMatrix);
 	}
 
 	void Camera::setEyeTargetUp(const Point3D& eye, const Point3D& target, const Vector3D& up)

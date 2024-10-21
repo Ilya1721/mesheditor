@@ -3,7 +3,7 @@
 in vec3 vertexPosInCameraSpace;
 in vec3 vertexNormalInCameraSpace;
 
-uniform vec3 lightPosInCameraSpace;
+uniform vec3 lightSourcePosInCameraSpace;
 uniform vec3 cameraPosInCameraSpace;
 
 struct Material 
@@ -29,7 +29,7 @@ out vec4 fragColor;
 
 void main()
 {
-    vec3 reversedLightUnitDir = normalize(lightPosInCameraSpace - vertexPosInCameraSpace);
+    vec3 reversedLightUnitDir = normalize(lightSourcePosInCameraSpace - vertexPosInCameraSpace);
     float diffuseStrength = max(dot(vertexNormalInCameraSpace, reversedLightUnitDir), 0.0);
     vec3 diffuse = diffuseStrength * light.diffuse * material.diffuse;
 

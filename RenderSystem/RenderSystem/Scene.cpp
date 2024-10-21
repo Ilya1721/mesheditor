@@ -7,7 +7,6 @@
 
 #include <iostream>
 
-#include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/transform.hpp>
 
 #include "GeometryCore/Ray.h"
@@ -30,11 +29,14 @@ namespace RenderSystem
 
 namespace RenderSystem
 {
-	Scene::Scene(const std::string& meshFilePath, Renderer* renderer) :
-		mPickedObject(nullptr),
+	Scene::Scene(const std::string& meshFilePath, Renderer* renderer, ShadowController* shadowController, SceneShaderProgram* sceneShaderProgram) :
 		mRenderer(renderer),
+		mShadowController(shadowController),
+		mSceneShaderProgram(sceneShaderProgram),
+		mPickedObject(nullptr),
 		mRenderWireframe(false),
-		mHighlightedObject(nullptr)
+		mHighlightedObject(nullptr),
+		mLightSource(sceneShaderProgram, shadowController)
 	{
 		registerRootObjectCallbacks();
 		addModelObject(meshFilePath);
@@ -46,7 +48,7 @@ namespace RenderSystem
 		modelObject->moveToOrigin();
 		mRootObject.addChild(std::move(modelObject));
 		addSceneDecoration(SceneDecoration::createSceneFloor(mRootObject.getBBox().getHeight(), FLOOR_MATERIAL));
-		mRenderer->setModel(glm::value_ptr(mRootObject.getTransform()));
+		mSceneShaderProgram->setModel(mRootObject.getTransform());
 	}
 
 	void Scene::registerRootObjectCallbacks()
@@ -111,14 +113,21 @@ namespace RenderSystem
 		mHighlightedFacesData = data;
 	}
 
+	void Scene::setLightSourcePos(const Point3D& pos)
+	{
+		mLightSource.setPosition(pos);
+	}
+
 	void Scene::render()
 	{
-		mRenderer->cleanScreen();
-		mRenderer->renderScene(mSceneObjectVertexOffsetMap);
-		mRenderer->renderHighlightedFaces(mSceneObjectVertexOffsetMap, mHighlightedFacesData);
-		mRenderer->renderWholeObjectHighlighted(mSceneObjectVertexOffsetMap, mHighlightedObject);
-		mRenderer->renderWireframe(mSceneRenderData.getVertexCount(), mRenderWireframe);
-		mRenderer->renderSceneDecorations(mSceneDecorations, mRootObject.getTransform());
+		mSceneShaderProgram->invokeAction([this]() {
+			mRenderer->cleanScreen();
+			mRenderer->renderScene(mSceneObjectVertexOffsetMap);
+			mRenderer->renderHighlightedFaces(mSceneObjectVertexOffsetMap, mHighlightedFacesData);
+			mRenderer->renderWholeObjectHighlighted(mSceneObjectVertexOffsetMap, mHighlightedObject);
+			mRenderer->renderWireframe(mSceneRenderData.getVertexCount(), mRenderWireframe);
+			mRenderer->renderSceneDecorations(mSceneDecorations, mRootObject.getTransform());
+		});
 	}
 
 	Object3DIntersectionData Scene::getClosestIntersection(const Ray& cursorRay, bool intersectSurface)

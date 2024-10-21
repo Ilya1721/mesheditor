@@ -6,13 +6,13 @@
 #include "glad.h"
 
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 #include "Constants.h"
+#include "SceneShaderProgram.h"
 
 namespace RenderSystem
 {
-	Viewport::Viewport(int width, int height, const MeshCore::AABBox* rootBBox, Renderer* renderer) :
+	Viewport::Viewport(int width, int height, const MeshCore::AABBox* rootBBox, SceneShaderProgram* sceneShaderProgram) :
 		mFov(FOV),
 		mNearPlaneDistance(NEAR_PLANE_DISTANCE),
 		mFarPlaneDistance(FAR_PLANE_DISTANCE),
@@ -22,7 +22,7 @@ namespace RenderSystem
 		mProjectionType(PROJECTION_TYPE::PERSPECTIVE),
 		mProjectionMatrix(1.0f),
 		mRootBBox(rootBBox),
-		mRenderer(renderer),
+		mSceneShaderProgram(sceneShaderProgram),
 		mBBoxViewportGapCoef(BBOX_VIEWPORT_GAP_COEF)
 	{
 		resize(width, height);
@@ -47,7 +47,7 @@ namespace RenderSystem
 	{
 		action();
 		mProjectionMatrix = createProjectionMatrix();
-		mRenderer->setProjection(glm::value_ptr(mProjectionMatrix));
+		mSceneShaderProgram->setProjection(mProjectionMatrix);
 	}
 
 	void Viewport::setProjectionType(PROJECTION_TYPE projectionType)

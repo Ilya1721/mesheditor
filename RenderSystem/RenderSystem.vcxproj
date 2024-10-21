@@ -119,15 +119,23 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Shaders\DepthMapFragmentShader.frag" />
+    <None Include="Shaders\DepthMapVertexShader.vert" />
     <None Include="Shaders\FragmentShader.frag" />
     <None Include="Shaders\VertexShader.vert" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="RenderSystem\Bindable.cpp" />
     <ClCompile Include="RenderSystem\Camera.cpp" />
     <ClCompile Include="RenderSystem\Cloner.cpp" />
+    <ClCompile Include="RenderSystem\DepthMapShaderProgram.cpp" />
+    <ClCompile Include="RenderSystem\DepthTexture.cpp" />
+    <ClCompile Include="RenderSystem\FrameBufferObject.cpp" />
     <ClCompile Include="RenderSystem\glad.c" />
+    <ClCompile Include="RenderSystem\ImageTexture.cpp" />
     <ClCompile Include="RenderSystem\Intersection.cpp" />
     <ClCompile Include="RenderSystem\Lighting.cpp" />
+    <ClCompile Include="RenderSystem\LightSource.cpp" />
     <ClCompile Include="RenderSystem\Mover.cpp" />
     <ClCompile Include="RenderSystem\Object3D.cpp" />
     <ClCompile Include="RenderSystem\Operation.cpp" />
@@ -143,24 +151,32 @@
     <ClCompile Include="RenderSystem\Scene.cpp" />
     <ClCompile Include="RenderSystem\SceneShaderProgram.cpp" />
     <ClCompile Include="RenderSystem\ShaderProgram.cpp" />
+    <ClCompile Include="RenderSystem\ShadowController.cpp" />
     <ClCompile Include="RenderSystem\SurfaceExtruder.cpp" />
     <ClCompile Include="RenderSystem\SurfaceHighlighter.cpp" />
+    <ClCompile Include="RenderSystem\Texture.cpp" />
     <ClCompile Include="RenderSystem\Viewport.cpp" />
     <ClCompile Include="RenderSystem\Window.cpp" />
     <ClCompile Include="RenderSystem\WireframeRenderer.cpp" />
     <ClCompile Include="RenderSystem\Zoom.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="RenderSystem\Bindable.h" />
     <ClInclude Include="RenderSystem\Camera.h" />
     <ClInclude Include="RenderSystem\Cloner.h" />
     <ClInclude Include="RenderSystem\Constants.h" />
+    <ClInclude Include="RenderSystem\DepthMapShaderProgram.h" />
+    <ClInclude Include="RenderSystem\DepthTexture.h" />
+    <ClInclude Include="RenderSystem\FrameBufferObject.h" />
     <ClInclude Include="RenderSystem\glad.h" />
     <ClInclude Include="RenderSystem\GladTypedefs.h" />
     <ClInclude Include="RenderSystem\HighlightedFacesData.h" />
+    <ClInclude Include="RenderSystem\ImageTexture.h" />
     <ClInclude Include="RenderSystem\Intersection.h" />
     <ClInclude Include="RenderSystem\khrplatform.h" />
     <ClInclude Include="RenderSystem\Light.h" />
     <ClInclude Include="RenderSystem\Lighting.h" />
+    <ClInclude Include="RenderSystem\LightSource.h" />
     <ClInclude Include="RenderSystem\Material.h" />
     <ClInclude Include="RenderSystem\Mover.h" />
     <ClInclude Include="RenderSystem\Object3D.h" />
@@ -178,8 +194,10 @@
     <ClInclude Include="RenderSystem\Scene.h" />
     <ClInclude Include="RenderSystem\SceneShaderProgram.h" />
     <ClInclude Include="RenderSystem\ShaderProgram.h" />
+    <ClInclude Include="RenderSystem\ShadowController.h" />
     <ClInclude Include="RenderSystem\SurfaceExtruder.h" />
     <ClInclude Include="RenderSystem\SurfaceHighlighter.h" />
+    <ClInclude Include="RenderSystem\Texture.h" />
     <ClInclude Include="RenderSystem\Typedefs.h" />
     <ClInclude Include="RenderSystem\Viewport.h" />
     <ClInclude Include="RenderSystem\Window.h" />

@@ -10,17 +10,20 @@
 #include "Object3DIntersectionData.h"
 #include "SceneDecoration.h"
 #include "HighlightedFacesData.h"
+#include "LightSource.h"
 
 namespace RenderSystem
 {
 	using namespace GeometryCore;
 
 	class Renderer;
+	class ShadowController;
+	class SceneShaderProgram;
 
 	class Scene
 	{
 	public:
-		Scene(const std::string& meshFilePath, Renderer* renderer);
+		Scene(const std::string& meshFilePath, Renderer* renderer, ShadowController* shadowController, SceneShaderProgram* sceneShaderProgram);
 		Scene(Scene&& scene) = delete;
 
 		Object3DIntersectionData getClosestIntersection(const Ray& cursorRay, bool intersectSurface);
@@ -35,6 +38,7 @@ namespace RenderSystem
 		void toggleWireframe();
 		void highlightWholeObject(const Object3D* object);
 		void setHighlightedFacesData(const HighlightedFacesData& data);
+		void setLightSourcePos(const Point3D& pos);
 		void render();
 
 		const Object3D& getRootObject() const;
@@ -46,17 +50,20 @@ namespace RenderSystem
 		void onSceneObjectUpdated(const Object3D* object, const std::unordered_set<UniqueVertex*>& vertices);
 
 	private:
-		Object3D* mPickedObject;
 		Renderer* mRenderer;
+		ShadowController* mShadowController;
+		SceneShaderProgram* mSceneShaderProgram;
 
 		std::vector<SceneDecoration> mSceneDecorations;
 		RenderData mSceneDecorationsRenderData;
 		bool mRenderWireframe;
 		const Object3D* mHighlightedObject;
 		HighlightedFacesData mHighlightedFacesData;
+		Object3D* mPickedObject;
 
 		RenderData mSceneRenderData;
 		std::unordered_map<const Object3D*, int> mSceneObjectVertexOffsetMap;
 		Object3D mRootObject;
+		LightSource mLightSource;
 	};
 }

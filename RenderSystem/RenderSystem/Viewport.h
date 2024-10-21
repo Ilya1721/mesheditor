@@ -5,8 +5,6 @@
 
 #include "MeshCore/AABBox.h"
 
-#include "Renderer.h"
-
 namespace RenderSystem
 {
 	enum class PROJECTION_TYPE
@@ -15,10 +13,12 @@ namespace RenderSystem
 		PERSPECTIVE
 	};
 
+	class SceneShaderProgram;
+
 	class Viewport
 	{
 	public:
-		Viewport(int width, int height, const MeshCore::AABBox* rootBBox, Renderer* renderer);
+		Viewport(int width, int height, const MeshCore::AABBox* rootBBox, SceneShaderProgram* sceneShaderProgram);
 
 		void setProjectionType(PROJECTION_TYPE projectionType);
 		void resize(int width, int height);
@@ -49,7 +49,7 @@ namespace RenderSystem
 		PROJECTION_TYPE mProjectionType;
 		glm::mat4 mProjectionMatrix;
 		const MeshCore::AABBox* mRootBBox;
-		Renderer* mRenderer;
+		SceneShaderProgram* mSceneShaderProgram;
 	};
 }
 

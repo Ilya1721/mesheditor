@@ -13,6 +13,7 @@
 #include "MeshCore/Mesh.h"
 
 #include "Object3D.h"
+#include "SceneShaderProgram.h"
 
 using namespace MeshCore;
 
@@ -23,43 +24,16 @@ namespace
 	constexpr Material MAIN_MATERIAL = GOLD_MATERIAL;
 	constexpr Material HIGHLIGHT_MATERIAL = RUBY_MATERIAL;
 	constexpr Material WIREFRAME_MATERIAL = BLACK_MATERIAL;
-	const std::string SCENE_VERTEX_SHADER_PATH = R"(../RenderSystem/Shaders/VertexShader.vert)";
-	const std::string SCENE_FRAGMENT_SHADER_PATH = R"(../RenderSystem/Shaders/FragmentShader.frag)";
 }
 
 namespace RenderSystem
 {
-	Renderer::Renderer() :
+	Renderer::Renderer(SceneShaderProgram* sceneShaderProgram) :
+		mSceneShaderProgram(sceneShaderProgram),
 		mModelRenderBuffer(),
-		mDecorationsRenderBuffer(),
-		mSceneShaderProgram(SCENE_VERTEX_SHADER_PATH, SCENE_FRAGMENT_SHADER_PATH)
+		mDecorationsRenderBuffer()
 	{
 		init();
-	}
-
-	void Renderer::setModel(const float* model)
-	{
-		mSceneShaderProgram.setModel(model);
-	}
-
-	void Renderer::setView(const float* view)
-	{
-		mSceneShaderProgram.setView(view);
-	}
-
-	void Renderer::setProjection(const float* projection)
-	{
-		mSceneShaderProgram.setProjection(projection);
-	}
-
-	void Renderer::setLightPos(const float* pos)
-	{
-		mSceneShaderProgram.setLightPos(pos);
-	}
-
-	void Renderer::setCameraPos(const float* pos)
-	{
-		mSceneShaderProgram.setCameraPos(pos);
 	}
 
 	void Renderer::init()
@@ -73,7 +47,7 @@ namespace RenderSystem
 		[&highlightedFacesData, &objectVertexOffsetMap, this]() {
 			for (const auto& faceIdx : highlightedFacesData.facesIndices)
 			{
-				setModel(glm::value_ptr(highlightedFacesData.parentObject->getTransform()));
+				mSceneShaderProgram->setModel(highlightedFacesData.parentObject->getTransform());
 				glDrawArrays(GL_TRIANGLES, faceIdx * 3 + objectVertexOffsetMap.at(highlightedFacesData.parentObject), 3);
 			}
 		});
@@ -93,7 +67,7 @@ namespace RenderSystem
 		const auto& highlightedObjectIt = objectVertexOffsetMap.find(highlightedObject);
 		renderOverlayPrimitives(highlightedObjectIt != objectVertexOffsetMap.end(), HIGHLIGHT_MATERIAL, [this, highlightedObjectIt]() {
 			auto& [object, vertexCount] = *highlightedObjectIt;
-			setModel(glm::value_ptr(object->getTransform()));
+			mSceneShaderProgram->setModel(object->getTransform());
 			glDrawArrays(GL_TRIANGLES, vertexCount, object->getVertexCount());
 		});
 	}
@@ -102,7 +76,7 @@ namespace RenderSystem
 	{
 		for (auto& [object, vertexOffset] : objectVertexOffsetMap)
 		{
-			setModel(glm::value_ptr(object->getTransform()));
+			mSceneShaderProgram->setModel(object->getTransform());
 			glDrawArrays(GL_TRIANGLES, vertexOffset, object->getVertexCount());
 		}
 	}
@@ -114,11 +88,11 @@ namespace RenderSystem
 			return;
 		}
 
-		mSceneShaderProgram.setMaterial(material);
+		mSceneShaderProgram->setMaterial(material);
 		glDepthFunc(GL_LEQUAL);
 		renderFunc();
 		glDepthFunc(GL_LESS);
-		mSceneShaderProgram.setMaterial(MAIN_MATERIAL);
+		mSceneShaderProgram->setMaterial(MAIN_MATERIAL);
 	}
 
 	void Renderer::cleanScreen()
@@ -141,19 +115,19 @@ namespace RenderSystem
 	void Renderer::renderSceneDecorations(const std::vector<SceneDecoration>& sceneDecorations, const glm::mat4& rootObjectTransform)
 	{
 		mDecorationsRenderBuffer.bind();
-		setModel(glm::value_ptr(glm::mat4(1.0f)));
+		mSceneShaderProgram->setModel(glm::mat4(1.0f));
 
 		int startIndex = 0;
 		for (const auto& sceneDecoration : sceneDecorations)
 		{
 			auto vertexCount = sceneDecoration.renderData.getVertexCount();
-			mSceneShaderProgram.setMaterial(sceneDecoration.material);
+			mSceneShaderProgram->setMaterial(sceneDecoration.material);
 			glDrawArrays(sceneDecoration.renderMode, startIndex, vertexCount);
 			startIndex += vertexCount;
 		}
 
-		mSceneShaderProgram.setMaterial(MAIN_MATERIAL);
-		setModel(glm::value_ptr(rootObjectTransform));
+		mSceneShaderProgram->setMaterial(MAIN_MATERIAL);
+		mSceneShaderProgram->setModel(rootObjectTransform);
 		mModelRenderBuffer.bind();
 	}
 }

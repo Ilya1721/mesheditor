@@ -1,6 +1,7 @@
 #pragma once
 
 #include <filesystem>
+#include <functional>
 
 namespace RenderSystem
 {
@@ -8,16 +9,15 @@ namespace RenderSystem
     {
     public:
         ShaderProgram(const std::filesystem::path& vertexShaderPath, const std::filesystem::path& fragmentShaderPath);
-        virtual ~ShaderProgram();
 
-        void setModel(const float* model) const;
-        void setView(const float* view) const;
-        void setProjection(const float* projection) const;
+        void invokeAction(const std::function<void()>& action);
+
+    protected:
+        virtual ~ShaderProgram();
 
     private:
         void init();
         void initShaderProgram();
-        void initUniformLocations();
 
     protected:
         std::filesystem::path mVertexShaderPath;
@@ -26,9 +26,5 @@ namespace RenderSystem
         int mVertexShader;
         int mFragmentShader;
         int mShaderProgram;
-
-        int mModel;
-        int mView;
-        int mProjection;
     };
 }

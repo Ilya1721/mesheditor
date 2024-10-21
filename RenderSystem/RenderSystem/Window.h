@@ -15,6 +15,8 @@
 #include "Renderer.h"
 #include "Object3DIntersectionData.h"
 #include "HighlightedFacesData.h"
+#include "ShadowController.h"
+#include "SceneShaderProgram.h"
 
 namespace RenderSystem
 {
@@ -74,7 +76,7 @@ namespace RenderSystem
 		void resizeViewport(int width, int height);
 		void setCallbacks();
 		void adjustCamera();
-		void adjustLightPos();
+		void adjustLightSourcePos();
 
 	private:
 		int mWidth;
@@ -86,6 +88,8 @@ namespace RenderSystem
 		std::unique_ptr<Viewport> mViewport;
 		std::unique_ptr<Camera> mCamera;
 		std::unique_ptr<Renderer> mRenderer;
+		std::unique_ptr<ShadowController> mShadowController;
+		std::unique_ptr<SceneShaderProgram> mSceneShaderProgram;
 		std::unique_ptr<OperationsDispatcher> mOperationsDispatcher;
 	};
 }

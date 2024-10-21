@@ -6,7 +6,6 @@
 
 #include "GeometryCore/Typedefs.h"
 
-#include "Renderer.h"
 #include "Viewport.h"
 
 namespace GeometryCore
@@ -24,10 +23,12 @@ namespace RenderSystem
 {
 	using namespace GeometryCore;
 
+	class SceneShaderProgram;
+
 	class Camera
 	{
 	public:
-		Camera(Renderer* renderer);
+		Camera(SceneShaderProgram* sceneShaderProgram);
 
 		const glm::mat4& getViewMatrix() const;
 		const Point3D& getTarget() const;
@@ -72,7 +73,7 @@ namespace RenderSystem
 		Vector3D mUp;
 		Vector3D mRight;
 		glm::mat4 mViewMatrix;
-		Renderer* mRenderer;
+		SceneShaderProgram* mSceneShaderProgram;
 		bool mIsMovementEnabled;
 	};
 }

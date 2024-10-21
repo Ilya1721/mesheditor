@@ -22,6 +22,11 @@ namespace
 {
 	using namespace RenderSystem;
 
+	const std::string DEPTH_MAP_VERTEX_SHADER_PATH = R"(../RenderSystem/Shaders/DepthMapVertexShader.vert)";
+	const std::string DEPTH_MAP_FRAGMENT_SHADER_PATH = R"(../RenderSystem/Shaders/DepthMapFragmentShader.frag)";
+	const std::string SCENE_VERTEX_SHADER_PATH = R"(../RenderSystem/Shaders/VertexShader.vert)";
+	const std::string SCENE_FRAGMENT_SHADER_PATH = R"(../RenderSystem/Shaders/FragmentShader.frag)";
+
 	Window* instance = nullptr;
 
 	void onMouseMove([[maybe_unused]] GLFWwindow* window, double cursorX, double cursorY)
@@ -60,7 +65,7 @@ namespace RenderSystem
 		initGLFW();
 		init(meshFilePath);
 		adjustCamera();
-		adjustLightPos();
+		adjustLightSourcePos();
 		setCallbacks();
 	}
 
@@ -91,10 +96,12 @@ namespace RenderSystem
 
 	void Window::init(const std::string& meshFilePath)
 	{
-		mRenderer = std::make_unique<Renderer>();
-		mScene = std::make_unique<Scene>(meshFilePath, mRenderer.get());
-		mCamera = std::make_unique<Camera>(mRenderer.get());
-		mViewport = std::make_unique<Viewport>(mWidth, mHeight, &mScene->getRootObject().getBBox(), mRenderer.get());
+		mSceneShaderProgram = std::make_unique<SceneShaderProgram>(SCENE_VERTEX_SHADER_PATH, SCENE_FRAGMENT_SHADER_PATH);
+		mRenderer = std::make_unique<Renderer>(mSceneShaderProgram.get());
+		mShadowController = std::make_unique<ShadowController>(DEPTH_MAP_VERTEX_SHADER_PATH, DEPTH_MAP_FRAGMENT_SHADER_PATH, mWidth, mHeight);
+		mScene = std::make_unique<Scene>(meshFilePath, mRenderer.get(), mShadowController.get(), mSceneShaderProgram.get());
+		mCamera = std::make_unique<Camera>(mSceneShaderProgram.get());
+		mViewport = std::make_unique<Viewport>(mWidth, mHeight, &mScene->getRootObject().getBBox(), mSceneShaderProgram.get());
 		mOperationsDispatcher = std::make_unique<OperationsDispatcher>(this);
 	}
 
@@ -113,13 +120,13 @@ namespace RenderSystem
 		const auto& sceneBBox = mScene->getRootObject().getBBox();
 		const auto& fov = mViewport->getFov();
 		auto cameraPosInCameraSpace = mCamera->adjust(projectionType, sceneBBox, fov);
-		mRenderer->setCameraPos(glm::value_ptr(cameraPosInCameraSpace));
+		mSceneShaderProgram->setCameraPos(cameraPosInCameraSpace);
 	}
 
-	void Window::adjustLightPos()
+	void Window::adjustLightSourcePos()
 	{
-		Point3D lightPosInCameraSpace = transformPoint(Point3D(0.0f, LIGHT_SOURCE_POS_Y, FAR_PLANE_DISTANCE), mCamera->getViewMatrix());
-		mRenderer->setLightPos(glm::value_ptr(lightPosInCameraSpace));
+		Point3D lightSourcePosInCameraSpace = transformPoint(Point3D(0.0f, LIGHT_SOURCE_POS_Y, FAR_PLANE_DISTANCE), mCamera->getViewMatrix());
+		mScene->setLightSourcePos(lightSourcePosInCameraSpace);
 	}
 
 	void Window::render()
@@ -146,8 +153,12 @@ namespace RenderSystem
 			return;
 		}
 
+		mWidth = width;
+		mHeight = height;
+
 		mViewport->resize(width, height);
-		mRenderer->setProjection(glm::value_ptr(mViewport->getProjectionMatrix()));
+		mSceneShaderProgram->setProjection(mViewport->getProjectionMatrix());
+		mShadowController->setTextureDimensions(width, height);
 	}
 
 	Point3D Window::unProject(const Point2D& cursorPos, float depth) const
