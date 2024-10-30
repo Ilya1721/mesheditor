@@ -19,6 +19,7 @@ namespace RenderSystem
 {
 	using childAddedCallback = void(const Object3D*);
 	using objectUpdatedCallback = void(const Object3D*, const std::unordered_set<UniqueVertex*>&);
+	using bboxUpdatedCallback = void();
 
 	class Object3D
 	{
@@ -40,6 +41,7 @@ namespace RenderSystem
 		void addChild(std::unique_ptr<Object3D>&& child);
 		void addOnChildAddedCallback(const std::function<childAddedCallback>& callback);
 		void addOnObjectUpdatedCallback(const std::function<objectUpdatedCallback>& callback);
+		void addOnBBoxUpdatedCallback(const std::function<bboxUpdatedCallback>& callback);
 		void updateTransform(const glm::mat4& transform);
 		void onMeshUpdated(const std::unordered_set<UniqueVertex*>& vertices);
 		void moveToOrigin();
@@ -47,7 +49,7 @@ namespace RenderSystem
 	private:
 		void init();
 		void invokeTransformAction(const std::function<void()>& action, const glm::mat4& transform);
-		void propagateBBoxToRoot() const;
+		void propagateBBoxToRoot();
 
 	private:
 		Object3D* mParent;
@@ -57,5 +59,6 @@ namespace RenderSystem
 		AABBox mBBox;
 		Utility::CallbackMechanism<childAddedCallback> mChildAddedCM;
 		Utility::CallbackMechanism<objectUpdatedCallback> mObjectUpdatedCM;
+		Utility::CallbackMechanism<bboxUpdatedCallback> mBBoxUpdatedCM;
 	};
 }

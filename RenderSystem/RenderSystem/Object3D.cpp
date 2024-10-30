@@ -120,6 +120,11 @@ namespace RenderSystem
 		mObjectUpdatedCM.addCallback(callback);
 	}
 
+	void Object3D::addOnBBoxUpdatedCallback(const std::function<bboxUpdatedCallback>& callback)
+	{
+		mBBoxUpdatedCM.addCallback(callback);
+	}
+
 	void Object3D::onMeshUpdated(const std::unordered_set<UniqueVertex*>& vertices)
 	{
 		mBBox.applyMesh(*mMesh);
@@ -139,7 +144,7 @@ namespace RenderSystem
 		propagateBBoxToRoot();
 	}
 
-	void Object3D::propagateBBoxToRoot() const
+	void Object3D::propagateBBoxToRoot()
 	{
 		auto currentObject = this;
 		while (currentObject->mParent != nullptr)
@@ -147,5 +152,6 @@ namespace RenderSystem
 			currentObject->mParent->mBBox.applyBBox(currentObject->mBBox);
 			currentObject = currentObject->mParent;
 		}
+		currentObject->mBBoxUpdatedCM.invokeCallbacks();
 	}
 }

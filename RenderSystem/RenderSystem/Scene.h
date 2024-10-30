@@ -19,6 +19,7 @@ namespace RenderSystem
 	class Renderer;
 	class ShadowController;
 	class SceneShaderProgram;
+	struct Modelable;
 
 	class Scene
 	{
@@ -48,6 +49,13 @@ namespace RenderSystem
 		void registerRootObjectCallbacks();
 		void onObjectAddedToScene(const Object3D* object);
 		void onSceneObjectUpdated(const Object3D* object, const std::unordered_set<UniqueVertex*>& vertices);
+		void onSceneObjectBBoxUpdated();
+		void renderScene(Modelable* modelableComponent);
+		void renderDepthMap();
+		void renderSceneDecorations();
+		void renderHighlightedFaces();
+		void renderWireframe();
+		void renderWholeObjectHighlighted();
 
 	private:
 		Renderer* mRenderer;

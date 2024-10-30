@@ -12,7 +12,8 @@ namespace RenderSystem
     DepthMapShaderProgram::DepthMapShaderProgram(const path& vertexShaderPath, const path& fragmentShaderPath) :
         ShaderProgram(vertexShaderPath, fragmentShaderPath),
         mModel(),
-        mLightSpaceMat()
+        mLightView(),
+        mLightProjection()
     {
         initUniformLocations();
     }
@@ -24,16 +25,24 @@ namespace RenderSystem
             });
     }
 
-    void DepthMapShaderProgram::setLightSpace(const glm::mat4& lightSpace)
+    void DepthMapShaderProgram::setLightView(const glm::mat4& lightView)
     {
-        invokeAction([this, &lightSpace]() {
-            glUniformMatrix4fv(mLightSpaceMat, 1, false, glm::value_ptr(lightSpace));
+        invokeAction([this, &lightView]() {
+            glUniformMatrix4fv(mLightView, 1, false, glm::value_ptr(lightView));
+        });
+    }
+
+    void DepthMapShaderProgram::setLightProjection(const glm::mat4& lightProjection)
+    {
+        invokeAction([this, &lightProjection]() {
+            glUniformMatrix4fv(mLightProjection, 1, false, glm::value_ptr(lightProjection));
         });
     }
 
     void DepthMapShaderProgram::initUniformLocations()
     {
         mModel = glGetUniformLocation(mShaderProgram, "model");
-        mLightSpaceMat = glGetUniformLocation(mShaderProgram, "lightSpaceMatrix");
+        mLightView = glGetUniformLocation(mShaderProgram, "lightView");
+        mLightProjection = glGetUniformLocation(mShaderProgram, "lightProjection");
     }
 }

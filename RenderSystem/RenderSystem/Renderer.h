@@ -10,7 +10,6 @@
 #include "RenderBuffer.h"
 #include "Constants.h"
 #include "SceneDecoration.h"
-#include "HighlightedFacesData.h"
 
 namespace RenderSystem
 {
@@ -25,18 +24,18 @@ namespace RenderSystem
 		Renderer(SceneShaderProgram* sceneShaderProgram);
 		Renderer(Renderer&&) = delete;
 
-		void renderScene(const ObjectVertexMap& objectVertexOffsetMap);
-		void renderSceneDecorations(const std::vector<SceneDecoration>& sceneDecorations, const glm::mat4& rootObjectTransform);
-		void renderHighlightedFaces(const ObjectVertexMap& objectVertexOffsetMap, const HighlightedFacesData& highlightedFacesData);
-		void renderWireframe(int sceneVertexCount, bool ifToRender);
-		void renderWholeObjectHighlighted(const ObjectVertexMap& objectVertexOffsetMap, const Object3D* highlightedObject);
+		void renderObject3D(const Object3D& object, int vertexOffset = 0);
+		void renderSceneDecoration(const SceneDecoration& sceneDecoration, int& startIndex);
+		void renderHighlightedFace(int faceIdx, int vertexOffset);
+		void renderWireframe(int objectVertexCount);
+		void renderWholeObjectHighlighted(const Object3D& object, int vertexOffset);
 		void loadModelRenderData(const RenderData& renderData);
 		void loadDecorationsRenderData(const RenderData& renderData);
 		void cleanScreen();
 
 	private:
 		void init();
-		void renderOverlayPrimitives(bool renderCondition, const Material& material, const std::function<void()>& renderFunc);
+		void renderOverlayPrimitive(const std::function<void()>& renderFunc);
 
 	private:
 		SceneShaderProgram* mSceneShaderProgram;
@@ -44,4 +43,3 @@ namespace RenderSystem
 		RenderBuffer mDecorationsRenderBuffer;
 	};
 }
-

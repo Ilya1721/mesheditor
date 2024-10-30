@@ -20,6 +20,6 @@ namespace RenderSystem
     {
         mPos = pos;
         mSceneShaderProgram->setLightSourcePos(pos);
-        mShadowController->calcLightSourceSpace(pos);
+        mShadowController->calcLightView(pos);
     }
 }

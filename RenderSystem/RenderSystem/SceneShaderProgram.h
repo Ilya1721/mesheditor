@@ -4,12 +4,13 @@
 
 #include "ShaderProgram.h"
 #include "Lighting.h"
+#include "Modelable.h"
 
 using namespace GeometryCore;
 
 namespace RenderSystem
 {
-    class SceneShaderProgram : public ShaderProgram
+    class SceneShaderProgram : public ShaderProgram, public Modelable
     {
         friend class LightSource;
 
@@ -19,7 +20,7 @@ namespace RenderSystem
         void setCameraPos(const Point3D& cameraPos);
         void setMaterial(const Material& material);
         void setLight(const Light& light);
-        void setModel(const glm::mat4& model);
+        void setModel(const glm::mat4& model) override;
         void setView(const glm::mat4& view);
         void setProjection(const glm::mat4& projection);
 

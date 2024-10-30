@@ -1,30 +1,26 @@
 #include "Scene.h"
 
-#ifdef __gl_h_
-#undef __gl_h_
-#endif
-#include "glad.h"
-
 #include <iostream>
 
-#include <glm/gtx/transform.hpp>
-
 #include "GeometryCore/Ray.h"
-#include "GeometryCore/Line.h"
 #include "GeometryCore/Transforms.h"
 #include "MeshFilesLoader/MeshFilesLoader.h"
 #include "MeshCore/Intersection.h"
 #include "MeshCore/Mesh.h"
 
-#include "Window.h"
-#include "Viewport.h"
 #include "Constants.h"
+#include "ShadowController.h"
+#include "SceneShaderProgram.h"
+#include "Renderer.h"
 
 using namespace GeometryCore;
 
 namespace RenderSystem
 {
 	constexpr Material FLOOR_MATERIAL = PEARL_MATERIAL;
+	constexpr Material MAIN_MATERIAL = GOLD_MATERIAL;
+	constexpr Material HIGHLIGHT_MATERIAL = RUBY_MATERIAL;
+	constexpr Material WIREFRAME_MATERIAL = BLACK_MATERIAL;
 }
 
 namespace RenderSystem
@@ -59,6 +55,9 @@ namespace RenderSystem
 		mRootObject.addOnObjectUpdatedCallback([this](const Object3D* object, const std::unordered_set<UniqueVertex*>& vertices) {
 			onSceneObjectUpdated(object, vertices);
 		});
+		mRootObject.addOnBBoxUpdatedCallback([this]() {
+			onSceneObjectBBoxUpdated();
+		});
 	}
 
 	void Scene::onObjectAddedToScene(const Object3D* object)
@@ -84,6 +83,88 @@ namespace RenderSystem
 		}
 
 		mRenderer->loadModelRenderData(mSceneRenderData);
+	}
+
+	void Scene::onSceneObjectBBoxUpdated()
+	{
+		mShadowController->calcLightProjection(mRootObject.getBBox());
+	}
+
+	void Scene::renderScene(Modelable* modelableComponent)
+	{
+		for (auto& [object, vertexOffset] : mSceneObjectVertexOffsetMap)
+		{
+			modelableComponent->setModel(object->getTransform());
+			mRenderer->renderObject3D(*object, vertexOffset);
+		}
+	}
+
+	void Scene::renderDepthMap()
+	{
+		mShadowController->renderSceneToDepthMap([this]() {
+			renderScene(mShadowController);
+		});
+	}
+
+	void Scene::renderSceneDecorations()
+	{
+		mSceneShaderProgram->setModel(glm::mat4(1.0f));
+
+		int startIndex = 0;
+		for (const auto& sceneDecoration : mSceneDecorations)
+		{
+			mSceneShaderProgram->setMaterial(sceneDecoration.material);
+			mRenderer->renderSceneDecoration(sceneDecoration, startIndex);
+		}
+
+		mSceneShaderProgram->setMaterial(MAIN_MATERIAL);
+		mSceneShaderProgram->setModel(mRootObject.getTransform());
+	}
+
+	void Scene::renderHighlightedFaces()
+	{
+		mSceneShaderProgram->setMaterial(HIGHLIGHT_MATERIAL);
+
+		for (const auto& faceIdx : mHighlightedFacesData.facesIndices)
+		{
+			mSceneShaderProgram->setModel(mHighlightedFacesData.parentObject->getTransform());
+			mRenderer->renderHighlightedFace(faceIdx, mSceneObjectVertexOffsetMap.at(mHighlightedFacesData.parentObject));
+		}
+
+		mSceneShaderProgram->setMaterial(MAIN_MATERIAL);
+	}
+
+	void Scene::renderWireframe()
+	{
+		if (!mRenderWireframe)
+		{
+			return;
+		}
+
+		mSceneShaderProgram->setMaterial(WIREFRAME_MATERIAL);
+
+		for (const auto& [object, vertexOffset] : mSceneObjectVertexOffsetMap)
+		{
+			mSceneShaderProgram->setModel(object->getTransform());
+			mRenderer->renderWireframe(object->getVertexCount());
+		}
+
+		mSceneShaderProgram->setMaterial(MAIN_MATERIAL);
+	}
+
+	void Scene::renderWholeObjectHighlighted()
+	{
+		const auto& highlightedObjectIt = mSceneObjectVertexOffsetMap.find(mHighlightedObject);
+		if (highlightedObjectIt == mSceneObjectVertexOffsetMap.end())
+		{
+			return;
+		}
+
+		mSceneShaderProgram->setMaterial(HIGHLIGHT_MATERIAL);
+		const auto& [object, vertexCount] = *highlightedObjectIt;
+		mSceneShaderProgram->setModel(object->getTransform());
+		mRenderer->renderWholeObjectHighlighted(*object, vertexCount);
+		mSceneShaderProgram->setMaterial(MAIN_MATERIAL);
 	}
 
 	void Scene::setPickedObject(Object3D* pickedObject)
@@ -120,13 +201,14 @@ namespace RenderSystem
 
 	void Scene::render()
 	{
+		renderDepthMap();
 		mSceneShaderProgram->invokeAction([this]() {
 			mRenderer->cleanScreen();
-			mRenderer->renderScene(mSceneObjectVertexOffsetMap);
-			mRenderer->renderHighlightedFaces(mSceneObjectVertexOffsetMap, mHighlightedFacesData);
-			mRenderer->renderWholeObjectHighlighted(mSceneObjectVertexOffsetMap, mHighlightedObject);
-			mRenderer->renderWireframe(mSceneRenderData.getVertexCount(), mRenderWireframe);
-			mRenderer->renderSceneDecorations(mSceneDecorations, mRootObject.getTransform());
+			renderScene(mSceneShaderProgram);
+			renderSceneDecorations();
+			renderHighlightedFaces();
+			renderWireframe();
+			renderWholeObjectHighlighted();
 		});
 	}
 
