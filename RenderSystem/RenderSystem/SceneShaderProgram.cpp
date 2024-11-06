@@ -7,16 +7,20 @@
 #endif
 #include "glad.h"
 
+#include "Constants.h"
+
 namespace RenderSystem
 {
     SceneShaderProgram::SceneShaderProgram(const std::filesystem::path& vertexShaderPath, const std::filesystem::path& fragmentShaderPath) :
-        ShaderProgram(vertexShaderPath, fragmentShaderPath),
-        mModel(),
+        BaseSceneShaderProgram(vertexShaderPath, fragmentShaderPath),
         mView(),
-        mProjection()
+        mProjection(),
+        mShadowBias(),
+        mDepthMap()
     {
         mLighting.init(mShaderProgram);
         initUniformLocations();
+        setUp();
     }
 
     void SceneShaderProgram::setLightSourcePos(const Point3D& lightSourcePos)
@@ -47,13 +51,6 @@ namespace RenderSystem
         });
     }
 
-    void SceneShaderProgram::setModel(const glm::mat4& model)
-    {
-        invokeAction([this, &model]() {
-            glUniformMatrix4fv(mModel, 1, false, glm::value_ptr(model));
-        });
-    }
-
     void SceneShaderProgram::setView(const glm::mat4& view)
     {
         invokeAction([this, &view]() {
@@ -68,10 +65,26 @@ namespace RenderSystem
         });
     }
 
+    void SceneShaderProgram::setDepthMap(int textureId)
+    {
+        invokeAction([this]() {
+            glUniform1i(mDepthMap, 1);
+        });
+    }
+
     void SceneShaderProgram::initUniformLocations()
     {
         mModel = glGetUniformLocation(mShaderProgram, "model");
         mView = glGetUniformLocation(mShaderProgram, "view");
         mProjection = glGetUniformLocation(mShaderProgram, "projection");
+        mShadowBias = glGetUniformLocation(mShaderProgram, "shadowBias");
+        mDepthMap = glGetUniformLocation(mShaderProgram, "depthMap");
+    }
+
+    void SceneShaderProgram::setUp()
+    {
+        invokeAction([this]() {
+            glUniformMatrix4fv(mShadowBias, 1, false, &SHADOW_BIAS);
+        });
     }
 }

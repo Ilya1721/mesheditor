@@ -2,7 +2,7 @@
 
 #include "GeometryCore/Typedefs.h"
 
-#include "ShaderProgram.h"
+#include "BaseSceneShaderProgram.h"
 #include "Lighting.h"
 #include "Modelable.h"
 
@@ -10,7 +10,7 @@ using namespace GeometryCore;
 
 namespace RenderSystem
 {
-    class SceneShaderProgram : public ShaderProgram, public Modelable
+    class SceneShaderProgram : public BaseSceneShaderProgram
     {
         friend class LightSource;
 
@@ -20,19 +20,21 @@ namespace RenderSystem
         void setCameraPos(const Point3D& cameraPos);
         void setMaterial(const Material& material);
         void setLight(const Light& light);
-        void setModel(const glm::mat4& model) override;
         void setView(const glm::mat4& view);
         void setProjection(const glm::mat4& projection);
+        void setDepthMap(int textureId);
 
     private:
         void setLightSourcePos(const Point3D& lightSourcePos);
         void initUniformLocations();
+        void setUp();
 
     private:
         Lighting mLighting;
-        int mModel;
         int mView;
         int mProjection;
+        int mShadowBias;
+        int mDepthMap;
     };
 }
 

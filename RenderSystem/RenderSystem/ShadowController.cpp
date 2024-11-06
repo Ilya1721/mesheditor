@@ -44,28 +44,17 @@ namespace RenderSystem
         mShaderProgram.setModel(model);
     }
 
-    void ShadowController::calcLightView(const Point3D& lightSourcePos)
+    void ShadowController::setLightView(const glm::mat4& lightView)
     {
-        const auto& lightViewMatrix = glm::lookAt(lightSourcePos, Point3D(0.0f, 0.0f, 0.0f), Vector3D(0.0f, 1.0f, 0.0f));
-        mShaderProgram.invokeAction([this, &lightViewMatrix]() {
-            mShaderProgram.setLightView(lightViewMatrix);
+        mShaderProgram.invokeAction([this, &lightView]() {
+            mShaderProgram.setLightView(lightView);
         });
     }
 
-    void ShadowController::calcLightProjection(const AABBox& sceneBBox)
+    void ShadowController::setLightProjection(const glm::mat4& lightProjection)
     {
-        const auto bboxHeight = sceneBBox.getHeight();
-        float orthoSize = bboxHeight / 2.0f;
-        float left = -orthoSize;
-        float right = orthoSize;
-        float bottom = -orthoSize;
-        float top = orthoSize;
-        float near_plane = 0.1f;
-        float far_plane = bboxHeight * 2;
-        const auto& lightProjectionMatrix = glm::ortho(left, right, bottom, top, near_plane, far_plane);
-
-        mShaderProgram.invokeAction([this, &lightProjectionMatrix]() {
-            mShaderProgram.setLightProjection(lightProjectionMatrix);
+        mShaderProgram.invokeAction([this, &lightProjection]() {
+            mShaderProgram.setLightProjection(lightProjection);
         });
     }
 

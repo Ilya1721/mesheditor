@@ -4,17 +4,12 @@
 
 #include "GeometryCore/Typedefs.h"
 
-#include "DepthMapShaderProgram.h"
+#include "BaseSceneShaderProgram.h"
 #include "DepthTexture.h"
 #include "FrameBufferObject.h"
 #include "Modelable.h"
 
 using namespace GeometryCore;
-
-namespace MeshCore
-{
-    class AABBox;
-}
 
 namespace RenderSystem
 {
@@ -24,8 +19,8 @@ namespace RenderSystem
         ShadowController(const path& vertexShaderPath, const path& fragmentShaderPath, int windowWidth, int windowHeight);
 
         void setModel(const glm::mat4& model) override;
-        void calcLightView(const Point3D& lightSourcePos);
-        void calcLightProjection(const MeshCore::AABBox& sceneBBox);
+        void setLightView(const glm::mat4& lightView);
+        void setLightProjection(const glm::mat4& lightProjection);
         void setTextureDimensions(int width, int height);
         void renderSceneToDepthMap(const std::function<void()>& renderSceneFunc);
 
@@ -35,7 +30,7 @@ namespace RenderSystem
     private:
         int mWindowWidth;
         int mWindowHeight;
-        DepthMapShaderProgram mShaderProgram;
+        BaseSceneShaderProgram mShaderProgram;
         DepthTexture mTexture;
         FrameBufferObject mFBO;
     };

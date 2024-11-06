@@ -56,6 +56,7 @@ namespace RenderSystem
 		void renderHighlightedFaces();
 		void renderWireframe();
 		void renderWholeObjectHighlighted();
+		void updateLightProjection();
 
 	private:
 		Renderer* mRenderer;

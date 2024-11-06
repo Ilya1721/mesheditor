@@ -128,7 +128,6 @@
     <ClCompile Include="RenderSystem\Bindable.cpp" />
     <ClCompile Include="RenderSystem\Camera.cpp" />
     <ClCompile Include="RenderSystem\Cloner.cpp" />
-    <ClCompile Include="RenderSystem\DepthMapShaderProgram.cpp" />
     <ClCompile Include="RenderSystem\DepthTexture.cpp" />
     <ClCompile Include="RenderSystem\FrameBufferObject.cpp" />
     <ClCompile Include="RenderSystem\glad.c" />
@@ -150,6 +149,7 @@
     <ClCompile Include="RenderSystem\SceneDecoration.cpp" />
     <ClCompile Include="RenderSystem\Scene.cpp" />
     <ClCompile Include="RenderSystem\SceneShaderProgram.cpp" />
+    <ClCompile Include="RenderSystem\BaseSceneShaderProgram.cpp" />
     <ClCompile Include="RenderSystem\ShaderProgram.cpp" />
     <ClCompile Include="RenderSystem\ShadowController.cpp" />
     <ClCompile Include="RenderSystem\SurfaceExtruder.cpp" />
@@ -165,7 +165,6 @@
     <ClInclude Include="RenderSystem\Camera.h" />
     <ClInclude Include="RenderSystem\Cloner.h" />
     <ClInclude Include="RenderSystem\Constants.h" />
-    <ClInclude Include="RenderSystem\DepthMapShaderProgram.h" />
     <ClInclude Include="RenderSystem\DepthTexture.h" />
     <ClInclude Include="RenderSystem\FrameBufferObject.h" />
     <ClInclude Include="RenderSystem\glad.h" />
@@ -194,6 +193,7 @@
     <ClInclude Include="RenderSystem\Scene.h" />
     <ClInclude Include="RenderSystem\Modelable.h" />
     <ClInclude Include="RenderSystem\SceneShaderProgram.h" />
+    <ClInclude Include="RenderSystem\BaseSceneShaderProgram.h" />
     <ClInclude Include="RenderSystem\ShaderProgram.h" />
     <ClInclude Include="RenderSystem\ShadowController.h" />
     <ClInclude Include="RenderSystem\SurfaceExtruder.h" />

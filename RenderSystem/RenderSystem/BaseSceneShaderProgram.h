@@ -9,10 +9,11 @@ using namespace std::filesystem;
 
 namespace RenderSystem
 {
-    class DepthMapShaderProgram : public ShaderProgram, public Modelable
+    class BaseSceneShaderProgram : public ShaderProgram, public Modelable
     {
     public:
-        DepthMapShaderProgram(const path& vertexShaderPath, const path& fragmentShaderPath);
+        BaseSceneShaderProgram(const path& vertexShaderPath, const path& fragmentShaderPath);
+        virtual ~BaseSceneShaderProgram() = default;
 
         void setModel(const glm::mat4& model) override;
         void setLightView(const glm::mat4& lightView);
@@ -21,7 +22,7 @@ namespace RenderSystem
     private:
         void initUniformLocations();
 
-    private:
+    protected:
         int mModel;
         int mLightView;
         int mLightProjection;

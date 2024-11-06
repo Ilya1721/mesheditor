@@ -96,6 +96,7 @@ namespace RenderSystem
 	constexpr float FLOOR_BBOX_HEIGHT_COEF = 1.0f;
 	constexpr float LIGHT_SOURCE_POS_Y = FAR_PLANE_DISTANCE * 0.6f;
 	constexpr float ARCBALL_SENSITIVITY = 0.01f;
+	constexpr float SHADOW_BIAS = 0.005f;
 	inline const std::string WINDOW_TITLE = "Mesh Editor";
 
 	constexpr bool DEBUG_RENDER = true;

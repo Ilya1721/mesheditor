@@ -2,9 +2,11 @@
 
 in vec3 vertexPosInCameraSpace;
 in vec3 vertexNormalInCameraSpace;
+in vec4 fragPosLightSpace;
 
 uniform vec3 lightSourcePosInCameraSpace;
 uniform vec3 cameraPosInCameraSpace;
+uniform float shadowBias;
 uniform sampler2D depthMap;
 
 struct Material 
@@ -28,19 +30,16 @@ uniform Light light;
 
 out vec4 fragColor;
 
-bool canSeePixelFromLightSource()
-{
-    return true;
-}
-
 float getShadowFactor()
 {
-    if (!canSeePixelFromLightSource()) 
-    {
-        return 0.0;
-    }
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    projCoords = projCoords * 0.5 + 0.5;
 
-    return 1.0;
+    float closestDepth = texture(depthMap, projCoords.xy).r;
+    float currentDepth = projCoords.z;
+    float shadow = (currentDepth - shadowBias > closestDepth) ? 1.0 : 0.0;
+
+    return shadow;
 }
 
 void main()

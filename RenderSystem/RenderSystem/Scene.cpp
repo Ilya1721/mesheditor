@@ -87,7 +87,7 @@ namespace RenderSystem
 
 	void Scene::onSceneObjectBBoxUpdated()
 	{
-		mShadowController->calcLightProjection(mRootObject.getBBox());
+		updateLightProjection();
 	}
 
 	void Scene::renderScene(Modelable* modelableComponent)
@@ -167,6 +167,22 @@ namespace RenderSystem
 		mSceneShaderProgram->setMaterial(MAIN_MATERIAL);
 	}
 
+	void Scene::updateLightProjection()
+	{
+		const auto bboxHeight = mRootObject.getBBox().getHeight();
+		float orthoSize = bboxHeight / 2.0f;
+		float left = -orthoSize;
+		float right = orthoSize;
+		float bottom = -orthoSize;
+		float top = orthoSize;
+		float near_plane = 0.1f;
+		float far_plane = bboxHeight * 2;
+		const auto& lightProjectionMatrix = glm::ortho(left, right, bottom, top, near_plane, far_plane);
+
+		mShadowController->setLightProjection(lightProjectionMatrix);
+		mSceneShaderProgram->setLightProjection(lightProjectionMatrix);
+	}
+
 	void Scene::setPickedObject(Object3D* pickedObject)
 	{
 		mPickedObject = pickedObject;
@@ -202,6 +218,7 @@ namespace RenderSystem
 	void Scene::render()
 	{
 		renderDepthMap();
+		mSceneShaderProgram->setDepthMap(0);
 		mSceneShaderProgram->invokeAction([this]() {
 			mRenderer->cleanScreen();
 			renderScene(mSceneShaderProgram);
