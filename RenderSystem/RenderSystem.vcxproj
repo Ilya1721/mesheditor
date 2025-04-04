@@ -119,10 +119,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\DepthMapFragmentShader.frag" />
-    <None Include="Shaders\DepthMapVertexShader.vert" />
-    <None Include="Shaders\FragmentShader.frag" />
-    <None Include="Shaders\VertexShader.vert" />
+    <None Include="Shaders\DepthMapShader.frag" />
+    <None Include="Shaders\DepthMapShader.vert" />
+    <None Include="Shaders\SceneShader.frag" />
+    <None Include="Shaders\TextureToScreenShader.frag" />
+    <None Include="Shaders\TextureToScreenShader.vert" />
+    <None Include="Shaders\SceneShader.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="RenderSystem\Bindable.cpp" />
@@ -155,6 +157,8 @@
     <ClCompile Include="RenderSystem\SurfaceExtruder.cpp" />
     <ClCompile Include="RenderSystem\SurfaceHighlighter.cpp" />
     <ClCompile Include="RenderSystem\Texture.cpp" />
+    <ClCompile Include="RenderSystem\TextureToScreenController.cpp" />
+    <ClCompile Include="RenderSystem\TextureToScreenShaderProgram.cpp" />
     <ClCompile Include="RenderSystem\Viewport.cpp" />
     <ClCompile Include="RenderSystem\Window.cpp" />
     <ClCompile Include="RenderSystem\WireframeRenderer.cpp" />
@@ -199,6 +203,8 @@
     <ClInclude Include="RenderSystem\SurfaceExtruder.h" />
     <ClInclude Include="RenderSystem\SurfaceHighlighter.h" />
     <ClInclude Include="RenderSystem\Texture.h" />
+    <ClInclude Include="RenderSystem\TextureToScreenController.h" />
+    <ClInclude Include="RenderSystem\TextureToScreenShaderProgram.h" />
     <ClInclude Include="RenderSystem\Typedefs.h" />
     <ClInclude Include="RenderSystem\Viewport.h" />
     <ClInclude Include="RenderSystem\Window.h" />

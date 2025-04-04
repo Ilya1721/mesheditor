@@ -10,6 +10,8 @@ using namespace GeometryCore;
 
 namespace RenderSystem
 {
+    class Texture;
+
     class SceneShaderProgram : public BaseSceneShaderProgram
     {
         friend class LightSource;
@@ -22,7 +24,7 @@ namespace RenderSystem
         void setLight(const Light& light);
         void setView(const glm::mat4& view);
         void setProjection(const glm::mat4& projection);
-        void setDepthMap(int textureId);
+        void setDepthMap(const Texture& texture);
 
     private:
         void setLightSourcePos(const Point3D& lightSourcePos);

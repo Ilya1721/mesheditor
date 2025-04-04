@@ -21,13 +21,21 @@ namespace RenderSystem
         }
     }
 
-    void Texture::invokeEditAction(const std::function<void()>& action)
+    void Texture::invokeAction(const std::function<void()>& action) const
     {
         GLint textureToRestore;
         glGetIntegerv(GL_TEXTURE_BINDING_2D, &textureToRestore);
         glBindTexture(GL_TEXTURE_2D, mTexture);
         action();
         glBindTexture(GL_TEXTURE_2D, textureToRestore);
+    }
+
+    void Texture::bind() const
+    {
+        invokeAction([this]() {
+            glActiveTexture(GL_TEXTURE0);
+            glUniform1i(mTexture, 0);
+        });
     }
 
     unsigned int Texture::getId() const
@@ -38,7 +46,7 @@ namespace RenderSystem
     void Texture::init()
     {
         glGenTextures(1, &mTexture);
-        invokeEditAction([]() {
+        invokeAction([]() {
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
             float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };

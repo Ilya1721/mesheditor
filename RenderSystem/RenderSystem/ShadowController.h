@@ -16,13 +16,13 @@ namespace RenderSystem
     class ShadowController : public Modelable
     {
     public:
-        ShadowController(const path& vertexShaderPath, const path& fragmentShaderPath, int windowWidth, int windowHeight);
+        ShadowController(int windowWidth, int windowHeight);
 
         void setModel(const glm::mat4& model) override;
         void setLightView(const glm::mat4& lightView);
         void setLightProjection(const glm::mat4& lightProjection);
         void setTextureDimensions(int width, int height);
-        void renderSceneToDepthMap(const std::function<void()>& renderSceneFunc);
+        const Texture& renderSceneToDepthMap(const std::function<void()>& renderSceneFunc);
 
     private:
         void init();

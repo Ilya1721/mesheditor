@@ -12,6 +12,7 @@
 #include "ShadowController.h"
 #include "SceneShaderProgram.h"
 #include "Renderer.h"
+#include "TextureToScreenController.h"
 
 using namespace GeometryCore;
 
@@ -25,10 +26,17 @@ namespace RenderSystem
 
 namespace RenderSystem
 {
-	Scene::Scene(const std::string& meshFilePath, Renderer* renderer, ShadowController* shadowController, SceneShaderProgram* sceneShaderProgram) :
+	Scene::Scene(
+		const std::string& meshFilePath,
+		Renderer* renderer,
+		ShadowController* shadowController,
+		SceneShaderProgram* sceneShaderProgram,
+		TextureToScreenController* textureToScreenController
+	) :
 		mRenderer(renderer),
 		mShadowController(shadowController),
 		mSceneShaderProgram(sceneShaderProgram),
+		mTextureToScreenController(textureToScreenController),
 		mPickedObject(nullptr),
 		mRenderWireframe(false),
 		mHighlightedObject(nullptr),
@@ -99,9 +107,9 @@ namespace RenderSystem
 		}
 	}
 
-	void Scene::renderDepthMap()
+	const Texture& Scene::renderDepthMap()
 	{
-		mShadowController->renderSceneToDepthMap([this]() {
+		return mShadowController->renderSceneToDepthMap([this]() {
 			renderScene(mShadowController);
 		});
 	}
@@ -217,16 +225,18 @@ namespace RenderSystem
 
 	void Scene::render()
 	{
-		renderDepthMap();
-		mSceneShaderProgram->setDepthMap(0);
-		mSceneShaderProgram->invokeAction([this]() {
+		const auto& depthTexture = renderDepthMap();
+		mSceneShaderProgram->setDepthMap(depthTexture);
+		mTextureToScreenController->setTexture(depthTexture);
+		mTextureToScreenController->render();
+		/*mSceneShaderProgram->invokeAction([this]() {
 			mRenderer->cleanScreen();
 			renderScene(mSceneShaderProgram);
 			renderSceneDecorations();
 			renderHighlightedFaces();
 			renderWireframe();
 			renderWholeObjectHighlighted();
-		});
+		});*/
 	}
 
 	Object3DIntersectionData Scene::getClosestIntersection(const Ray& cursorRay, bool intersectSurface)

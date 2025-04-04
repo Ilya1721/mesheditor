@@ -26,19 +26,35 @@ namespace RenderSystem
 		glGenVertexArrays(1, &mVAO);
 	}
 
-	void RenderBuffer::bind() const
+	void RenderBuffer::bind(unsigned int vbo, unsigned int vao) const
 	{
-		glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-		glBindVertexArray(mVAO);
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		glBindVertexArray(vao);
 	}
 
-	void RenderBuffer::loadRenderData(const RenderData& renderData)
+	void RenderBuffer::invokeAction(const std::function<void()>& action) const
 	{
-		const auto& compactData = renderData.getCompactData();
-		glBufferData(GL_ARRAY_BUFFER, compactData.size() * sizeof(float), compactData.data(), GL_DYNAMIC_DRAW);
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
+		GLint vaoToRestore = 0;
+		glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &vaoToRestore);
+		GLint vboToRestore = 0;
+		glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &vboToRestore);
+		bind(mVBO, mVAO);
+		action();
+		bind(vaoToRestore, vboToRestore);
+	}
+
+	void RenderBuffer::loadRenderData(const RenderData& renderData, int attributesPerVertex)
+	{
+		invokeAction([&renderData, attributesPerVertex]() {
+			const auto& compactData = renderData.getCompactData();
+			glBufferData(GL_ARRAY_BUFFER, compactData.size() * sizeof(float), compactData.data(), GL_DYNAMIC_DRAW);
+			glEnableVertexAttribArray(0);
+			glVertexAttribPointer(0, attributesPerVertex, GL_FLOAT, GL_FALSE, attributesPerVertex * 2 * sizeof(float), 0);
+			glEnableVertexAttribArray(1);
+			glVertexAttribPointer(
+				1, attributesPerVertex, GL_FLOAT, GL_FALSE, attributesPerVertex * 2 * sizeof(float),
+				reinterpret_cast<void*>(attributesPerVertex * sizeof(float))
+			);
+		});
 	}
 }

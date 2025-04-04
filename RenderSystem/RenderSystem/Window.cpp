@@ -22,10 +22,8 @@ namespace
 {
 	using namespace RenderSystem;
 
-	const std::string DEPTH_MAP_VERTEX_SHADER_PATH = R"(../RenderSystem/Shaders/DepthMapVertexShader.vert)";
-	const std::string DEPTH_MAP_FRAGMENT_SHADER_PATH = R"(../RenderSystem/Shaders/DepthMapFragmentShader.frag)";
-	const std::string SCENE_VERTEX_SHADER_PATH = R"(../RenderSystem/Shaders/VertexShader.vert)";
-	const std::string SCENE_FRAGMENT_SHADER_PATH = R"(../RenderSystem/Shaders/FragmentShader.frag)";
+	const std::string SCENE_VERTEX_SHADER_PATH = R"(../RenderSystem/Shaders/SceneShader.vert)";
+	const std::string SCENE_FRAGMENT_SHADER_PATH = R"(../RenderSystem/Shaders/SceneShader.frag)";
 
 	Window* instance = nullptr;
 
@@ -98,8 +96,11 @@ namespace RenderSystem
 	{
 		mSceneShaderProgram = std::make_unique<SceneShaderProgram>(SCENE_VERTEX_SHADER_PATH, SCENE_FRAGMENT_SHADER_PATH);
 		mRenderer = std::make_unique<Renderer>(mSceneShaderProgram.get());
-		mShadowController = std::make_unique<ShadowController>(DEPTH_MAP_VERTEX_SHADER_PATH, DEPTH_MAP_FRAGMENT_SHADER_PATH, mWidth, mHeight);
-		mScene = std::make_unique<Scene>(meshFilePath, mRenderer.get(), mShadowController.get(), mSceneShaderProgram.get());
+		mShadowController = std::make_unique<ShadowController>(mWidth, mHeight);
+		mTextureToScreenController = std::make_unique<TextureToScreenController>(mRenderer.get());
+		mScene = std::make_unique<Scene>(
+			meshFilePath, mRenderer.get(), mShadowController.get(), mSceneShaderProgram.get(), mTextureToScreenController.get()
+		);
 		mCamera = std::make_unique<Camera>(mSceneShaderProgram.get());
 		mViewport = std::make_unique<Viewport>(mWidth, mHeight, &mScene->getRootObject().getBBox(), mSceneShaderProgram.get());
 		mOperationsDispatcher = std::make_unique<OperationsDispatcher>(this);

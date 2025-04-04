@@ -17,6 +17,7 @@
 #include "HighlightedFacesData.h"
 #include "ShadowController.h"
 #include "SceneShaderProgram.h"
+#include "TextureToScreenController.h"
 
 namespace RenderSystem
 {
@@ -89,6 +90,7 @@ namespace RenderSystem
 		std::unique_ptr<Camera> mCamera;
 		std::unique_ptr<Renderer> mRenderer;
 		std::unique_ptr<ShadowController> mShadowController;
+		std::unique_ptr<TextureToScreenController> mTextureToScreenController;
 		std::unique_ptr<SceneShaderProgram> mSceneShaderProgram;
 		std::unique_ptr<OperationsDispatcher> mOperationsDispatcher;
 	};

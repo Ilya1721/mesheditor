@@ -19,12 +19,20 @@ namespace RenderSystem
 	class Renderer;
 	class ShadowController;
 	class SceneShaderProgram;
+	class TextureToScreenController;
+	class Texture;
 	struct Modelable;
 
 	class Scene
 	{
 	public:
-		Scene(const std::string& meshFilePath, Renderer* renderer, ShadowController* shadowController, SceneShaderProgram* sceneShaderProgram);
+		Scene(
+			const std::string& meshFilePath,
+			Renderer* renderer,
+			ShadowController* shadowController,
+			SceneShaderProgram* sceneShaderProgram,
+			TextureToScreenController* textureToScreenController
+		);
 		Scene(Scene&& scene) = delete;
 
 		Object3DIntersectionData getClosestIntersection(const Ray& cursorRay, bool intersectSurface);
@@ -51,7 +59,7 @@ namespace RenderSystem
 		void onSceneObjectUpdated(const Object3D* object, const std::unordered_set<UniqueVertex*>& vertices);
 		void onSceneObjectBBoxUpdated();
 		void renderScene(Modelable* modelableComponent);
-		void renderDepthMap();
+		const Texture& renderDepthMap();
 		void renderSceneDecorations();
 		void renderHighlightedFaces();
 		void renderWireframe();
@@ -62,6 +70,7 @@ namespace RenderSystem
 		Renderer* mRenderer;
 		ShadowController* mShadowController;
 		SceneShaderProgram* mSceneShaderProgram;
+		TextureToScreenController* mTextureToScreenController;
 
 		std::vector<SceneDecoration> mSceneDecorations;
 		RenderData mSceneDecorationsRenderData;

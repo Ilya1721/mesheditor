@@ -8,6 +8,7 @@
 #include "glad.h"
 
 #include "Constants.h"
+#include "Texture.h"
 
 namespace RenderSystem
 {
@@ -65,10 +66,10 @@ namespace RenderSystem
         });
     }
 
-    void SceneShaderProgram::setDepthMap(int textureId)
+    void SceneShaderProgram::setDepthMap(const Texture& texture)
     {
-        invokeAction([this]() {
-            glUniform1i(mDepthMap, 1);
+        invokeAction([this, &texture]() {
+            texture.bind();
         });
     }
 

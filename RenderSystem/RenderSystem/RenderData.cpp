@@ -46,6 +46,18 @@ namespace RenderSystem
 		}
 	}
 
+	void RenderData::append(const TextureData& textureData)
+	{
+		for (int coordIdx = 0; coordIdx < 2; ++coordIdx)
+		{
+			mCompactData.emplace_back(textureData.vertexPos[coordIdx]);
+		}
+		for (int coordIdx = 0; coordIdx < 2; ++coordIdx)
+		{
+			mCompactData.emplace_back(textureData.texturePos[coordIdx]);
+		}
+	}
+
 	void RenderData::updateVertex(const OriginalVertexData& vertexData, int startVertexOffset)
 	{
 		for (unsigned int compactDataIdx = 6 * (startVertexOffset + vertexData.index), coordIdx = 0; coordIdx < 3; ++compactDataIdx, ++coordIdx)
@@ -68,8 +80,8 @@ namespace RenderSystem
 	RenderData RenderData::createRenderData(const Ray& ray, float length)
 	{
 		RenderData renderData;
-		renderData.append({ ray.origin, ray.direction });
-		renderData.append({ ray.origin + ray.direction * length, ray.direction });
+		renderData.append(Vertex { ray.origin, ray.direction });
+		renderData.append(Vertex { ray.origin + ray.direction * length, ray.direction });
 		
 		return renderData;
 	}

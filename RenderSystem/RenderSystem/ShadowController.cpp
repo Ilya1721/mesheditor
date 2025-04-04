@@ -13,6 +13,12 @@ using namespace MeshCore;
 
 namespace
 {
+    namespace
+    {
+        const std::string VERTEX_SHADER_PATH = R"(../RenderSystem/Shaders/DepthMapShader.vert)";
+        const std::string FRAGMENT_SHADER_PATH = R"(../RenderSystem/Shaders/DepthMapShader.frag)";
+    }
+
     glm::mat4 calcLightSpaceProjectionMatrix(const AABBox& sceneBBox) {
         const auto bboxHeight = sceneBBox.getHeight();
         float orthoSize = bboxHeight / 2.0f;
@@ -29,10 +35,10 @@ namespace
 
 namespace RenderSystem
 {
-    ShadowController::ShadowController(const path& vertexShaderPath, const path& fragmentShaderPath, int windowWidth, int windowHeight) :
+    ShadowController::ShadowController(int windowWidth, int windowHeight) :
         mWindowWidth(windowWidth),
         mWindowHeight(windowHeight),
-        mShaderProgram(vertexShaderPath, fragmentShaderPath),
+        mShaderProgram(VERTEX_SHADER_PATH, FRAGMENT_SHADER_PATH),
         mTexture(windowWidth, windowHeight),
         mFBO()
     {
@@ -63,13 +69,15 @@ namespace RenderSystem
         mTexture.setDimensions(width, height);
     }
 
-    void ShadowController::renderSceneToDepthMap(const std::function<void()>& renderSceneFunc)
+    const Texture& ShadowController::renderSceneToDepthMap(const std::function<void()>& renderSceneFunc)
     {
         mFBO.invokeAction([this, &renderSceneFunc]() {
             glViewport(0, 0, mWindowWidth, mWindowHeight);
             glClear(GL_DEPTH_BUFFER_BIT);
             mShaderProgram.invokeAction(renderSceneFunc);
         });
+
+        return mTexture;
     }
 
     void ShadowController::init()

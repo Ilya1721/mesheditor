@@ -32,14 +32,7 @@ namespace RenderSystem
 		mSceneShaderProgram(sceneShaderProgram),
 		mModelRenderBuffer(),
 		mDecorationsRenderBuffer()
-	{
-		init();
-	}
-
-	void Renderer::init()
-	{
-		mModelRenderBuffer.bind();
-	}
+	{}
 
 	void Renderer::renderHighlightedFace(int faceIdx, int vertexOffset)
 	{
@@ -64,16 +57,25 @@ namespace RenderSystem
 		});
 	}
 
+	void Renderer::renderRect()
+	{
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+	}
+
 	void Renderer::renderObject3D(const Object3D& object, int vertexOffset)
 	{
-		glDrawArrays(GL_TRIANGLES, vertexOffset, object.getVertexCount());
+		mModelRenderBuffer.invokeAction([&object, &vertexOffset]() {
+			glDrawArrays(GL_TRIANGLES, vertexOffset, object.getVertexCount());
+		});
 	}
 
 	void Renderer::renderOverlayPrimitive(const std::function<void()>& renderFunc)
 	{
-		glDepthFunc(GL_LEQUAL);
-		renderFunc();
-		glDepthFunc(GL_LESS);
+		mModelRenderBuffer.invokeAction([&renderFunc]() {
+			glDepthFunc(GL_LEQUAL);
+			renderFunc();
+			glDepthFunc(GL_LESS);
+		});
 	}
 
 	void Renderer::cleanScreen()
@@ -83,9 +85,7 @@ namespace RenderSystem
 
 	void Renderer::loadDecorationsRenderData(const RenderData& renderData)
 	{
-		mDecorationsRenderBuffer.bind();
 		mDecorationsRenderBuffer.loadRenderData(renderData);
-		mModelRenderBuffer.bind();
 	}
 
 	void Renderer::loadModelRenderData(const RenderData& renderData)
@@ -95,10 +95,10 @@ namespace RenderSystem
 
 	void Renderer::renderSceneDecoration(const SceneDecoration& sceneDecoration, int& startIndex)
 	{
-		mDecorationsRenderBuffer.bind();
-		auto vertexCount = sceneDecoration.renderData.getVertexCount();
-		glDrawArrays(sceneDecoration.renderMode, startIndex, vertexCount);
-		startIndex += vertexCount;
-		mModelRenderBuffer.bind();
+		mDecorationsRenderBuffer.invokeAction([&sceneDecoration, &startIndex]() {
+			auto vertexCount = sceneDecoration.renderData.getVertexCount();
+			glDrawArrays(sceneDecoration.renderMode, startIndex, vertexCount);
+			startIndex += vertexCount;
+		});
 	}
 }

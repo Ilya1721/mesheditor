@@ -2,6 +2,8 @@
 
 #include <vector>
 
+#include "GeometryCore/Typedefs.h"
+
 namespace GeometryCore
 {
 	struct Ray;
@@ -16,6 +18,13 @@ namespace MeshCore
 }
 
 using namespace MeshCore;
+using namespace GeometryCore;
+
+struct TextureData
+{
+	Point2D vertexPos;
+	Point2D texturePos;
+};
 
 namespace RenderSystem
 {
@@ -24,6 +33,7 @@ namespace RenderSystem
 	public:
 		void append(const RenderData& other);
 		void append(const Vertex& vertex);
+		void append(const TextureData& textureData);
 		void updateVertex(const OriginalVertexData& vertexData, int startVertexOffset);
 
 		const std::vector<float>& getCompactData() const;

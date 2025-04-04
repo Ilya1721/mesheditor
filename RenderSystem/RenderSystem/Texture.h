@@ -12,7 +12,8 @@ namespace RenderSystem
 
         virtual void setDimensions(int width, int height) = 0;
 
-        void invokeEditAction(const std::function<void()>& action);
+        void invokeAction(const std::function<void()>& action) const;
+        void bind() const;
 
         unsigned int getId() const;
 
