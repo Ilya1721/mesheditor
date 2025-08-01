@@ -75,6 +75,9 @@
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
     </Lib>
+    <PostBuildEvent>
+      <Command>xcopy /E /I /Y "$(ProjectDir)Shaders" "$(OutDir)$(ProjectName)\Shaders"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -106,6 +109,9 @@
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
     </Lib>
+    <PostBuildEvent>
+      <Command>xcopy /E /I /Y "$(ProjectDir)Shaders" "$(OutDir)$(ProjectName)\Shaders"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ProjectReference Include="..\MeshCore\MeshCore.vcxproj">

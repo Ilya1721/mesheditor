@@ -67,7 +67,9 @@ namespace RenderSystem
 
     void SceneShaderProgram::setDepthMap(int textureId)
     {
-        invokeAction([this]() {
+        invokeAction([this, textureId]() {
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, textureId);
             glUniform1i(mDepthMap, 1);
         });
     }

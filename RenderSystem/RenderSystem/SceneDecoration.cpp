@@ -53,7 +53,7 @@ namespace RenderSystem
         Point3D planeOrigin(0.0f, originY, 0.0f);
         Vector3D planeNormal(0.0f, -1.0f, 0.0f);
 
-        return createPlane(planeOrigin, planeNormal, FAR_PLANE_DISTANCE, FAR_PLANE_DISTANCE, floorMaterial);
+        return createPlane(planeOrigin, planeNormal, FAR_PLANE_DISTANCE * 0.5, FAR_PLANE_DISTANCE * 0.5, floorMaterial);
     }
 
     SceneDecoration SceneDecoration::createPlane(const Point3D& origin, const Vector3D& normal, float width, float height, const Material& material)

@@ -32,12 +32,12 @@ out vec4 fragColor;
 
 float getShadowFactor()
 {
-    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
-    projCoords = projCoords * 0.5 + 0.5;
+    vec3 fragPosClipSpace = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    vec3 fragPosNDC = fragPosClipSpace * 0.5 + 0.5;
 
-    float closestDepth = texture(depthMap, projCoords.xy).r;
-    float currentDepth = projCoords.z;
-    float shadow = (currentDepth - shadowBias > closestDepth) ? 1.0 : 0.0;
+    float fragDepthOnTexture = texture(depthMap, fragPosNDC.xy).r;
+    float fragDepthOnScreen = fragPosNDC.z;
+    float shadow = (fragDepthOnScreen - 0.005 < fragDepthOnTexture) ? 1.0 : 0.0;
 
     return shadow;
 }

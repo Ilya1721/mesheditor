@@ -22,10 +22,10 @@ namespace
 {
 	using namespace RenderSystem;
 
-	const std::string DEPTH_MAP_VERTEX_SHADER_PATH = R"(../RenderSystem/Shaders/DepthMapVertexShader.vert)";
-	const std::string DEPTH_MAP_FRAGMENT_SHADER_PATH = R"(../RenderSystem/Shaders/DepthMapFragmentShader.frag)";
-	const std::string SCENE_VERTEX_SHADER_PATH = R"(../RenderSystem/Shaders/VertexShader.vert)";
-	const std::string SCENE_FRAGMENT_SHADER_PATH = R"(../RenderSystem/Shaders/FragmentShader.frag)";
+	const std::string DEPTH_MAP_VERTEX_SHADER_PATH = R"(./RenderSystem/Shaders/DepthMapVertexShader.vert)";
+	const std::string DEPTH_MAP_FRAGMENT_SHADER_PATH = R"(./RenderSystem/Shaders/DepthMapFragmentShader.frag)";
+	const std::string SCENE_VERTEX_SHADER_PATH = R"(./RenderSystem/Shaders/VertexShader.vert)";
+	const std::string SCENE_FRAGMENT_SHADER_PATH = R"(./RenderSystem/Shaders/FragmentShader.frag)";
 
 	Window* instance = nullptr;
 
@@ -125,7 +125,8 @@ namespace RenderSystem
 
 	void Window::adjustLightSourcePos()
 	{
-		Point3D lightSourcePosInCameraSpace = transformPoint(Point3D(0.0f, LIGHT_SOURCE_POS_Y, FAR_PLANE_DISTANCE), mCamera->getViewMatrix());
+		const auto lightPos = Point3D(0.0f, LIGHT_SOURCE_POS_Y, LIGHT_SOURCE_POS_Z);
+		Point3D lightSourcePosInCameraSpace = transformPoint(lightPos, mCamera->getViewMatrix());
 		mScene->setLightSourcePos(lightSourcePosInCameraSpace);
 	}
 

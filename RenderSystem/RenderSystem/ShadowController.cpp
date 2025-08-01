@@ -39,9 +39,16 @@ namespace RenderSystem
         init();
     }
 
+    unsigned int ShadowController::getDepthTextureId() const
+    {
+        return mTexture.getId();
+    }
+
     void ShadowController::setModel(const glm::mat4& model)
     {
-        mShaderProgram.setModel(model);
+        mShaderProgram.invokeAction([this, &model]() {
+            mShaderProgram.setModel(model);
+        });
     }
 
     void ShadowController::setLightView(const glm::mat4& lightView)

@@ -34,10 +34,10 @@ namespace RenderSystem
 
 		if (mProjectionType == PROJECTION_TYPE::ORTHOGRAPHIC)
 		{
-			float halfOrthoHeight = mRootBBox->getHeight() * 0.5f * mBBoxViewportGapCoef;
-			float halfOrthoWidth = mRootBBox->getHeight() * aspectRatio * 0.5f * mBBoxViewportGapCoef;
+			float height = mRootBBox->getHeight();
+			float width = height * aspectRatio;
 
-			return glm::ortho(-halfOrthoWidth, halfOrthoWidth, -halfOrthoHeight, halfOrthoHeight, mNearPlaneDistance, mFarPlaneDistance);
+			return glm::ortho(-width, width, -height, height, mNearPlaneDistance, mFarPlaneDistance);
 		}
 
 		return glm::perspective(glm::radians(mFov), aspectRatio, mNearPlaneDistance, mFarPlaneDistance);

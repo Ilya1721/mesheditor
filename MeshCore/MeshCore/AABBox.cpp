@@ -108,6 +108,16 @@ namespace MeshCore
 		return mMax.y - mMin.y;
 	}
 
+	float AABBox::getWidth() const
+	{
+		return mMax.x - mMin.x;
+	}
+
+	float AABBox::getDepth() const
+	{
+		return mMax.z - mMin.z;
+	}
+
 	std::optional<Point3D> AABBox::findIntersectionPoint(const Ray& ray) const
 	{
 		for (auto& bboxPlane : mBBoxPlanes)

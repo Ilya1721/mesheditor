@@ -32,6 +32,8 @@ namespace MeshCore
 		const Point3D& getMin() const;
 		const Point3D& getMax() const;
 		float getHeight() const;
+		float getWidth() const;
+		float getDepth() const;
 		std::optional<Point3D> findIntersectionPoint(const Ray& ray) const override;
 		bool isPointInsideBBox(const Point3D& point) const;
 

@@ -103,6 +103,7 @@ namespace RenderSystem
 	{
 		mShadowController->renderSceneToDepthMap([this]() {
 			renderScene(mShadowController);
+			renderSceneDecorations();
 		});
 	}
 
@@ -169,18 +170,14 @@ namespace RenderSystem
 
 	void Scene::updateLightProjection()
 	{
-		const auto bboxHeight = mRootObject.getBBox().getHeight();
-		float orthoSize = bboxHeight / 2.0f;
-		float left = -orthoSize;
-		float right = orthoSize;
-		float bottom = -orthoSize;
-		float top = orthoSize;
-		float near_plane = 0.1f;
-		float far_plane = bboxHeight * 2;
-		const auto& lightProjectionMatrix = glm::ortho(left, right, bottom, top, near_plane, far_plane);
+		const auto& bbox = mRootObject.getBBox();
+        auto halfWidth = bbox.getWidth() * 0.5f;
+        auto halfHeight = bbox.getHeight() * 0.5f;
 
-		mShadowController->setLightProjection(lightProjectionMatrix);
+		//glm::mat4 lightProjectionMatrix = glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, 0.01f, 1000.0f);
+		glm::mat4 lightProjectionMatrix = glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, -halfWidth, halfWidth);
 		mSceneShaderProgram->setLightProjection(lightProjectionMatrix);
+		mShadowController->setLightProjection(lightProjectionMatrix);
 	}
 
 	void Scene::setPickedObject(Object3D* pickedObject)
@@ -218,7 +215,7 @@ namespace RenderSystem
 	void Scene::render()
 	{
 		renderDepthMap();
-		mSceneShaderProgram->setDepthMap(0);
+		mSceneShaderProgram->setDepthMap(mShadowController->getDepthTextureId());
 		mSceneShaderProgram->invokeAction([this]() {
 			mRenderer->cleanScreen();
 			renderScene(mSceneShaderProgram);

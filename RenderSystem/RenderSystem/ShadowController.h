@@ -18,6 +18,8 @@ namespace RenderSystem
     public:
         ShadowController(const path& vertexShaderPath, const path& fragmentShaderPath, int windowWidth, int windowHeight);
 
+        unsigned int getDepthTextureId() const;
+
         void setModel(const glm::mat4& model) override;
         void setLightView(const glm::mat4& lightView);
         void setLightProjection(const glm::mat4& lightProjection);
