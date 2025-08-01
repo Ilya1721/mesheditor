@@ -4,15 +4,14 @@
 
 namespace RenderSystem
 {
-    class DepthTexture : public Texture
-    {
-    public:
-        DepthTexture(int width, int height);
+  class DepthTexture : public Texture
+  {
+   public:
+    DepthTexture(int width, int height);
 
-        void setDimensions(int width, int height) override;
+    void setDimensions(int width, int height) override;
 
-    private:
-        void init();
-    };
-}
-
+   private:
+    void init();
+  };
+}  // namespace RenderSystem

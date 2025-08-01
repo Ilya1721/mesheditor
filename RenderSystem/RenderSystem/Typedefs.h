@@ -4,6 +4,6 @@
 
 namespace RenderSystem
 {
-    using RGB = glm::vec3;
-    using RGBA = glm::vec4;
-}
+  using RGB = glm::vec3;
+  using RGBA = glm::vec4;
+}  // namespace RenderSystem

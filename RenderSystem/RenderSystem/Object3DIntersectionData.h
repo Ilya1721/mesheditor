@@ -4,11 +4,11 @@
 
 namespace RenderSystem
 {
-    class Object3D;
+  class Object3D;
 
-    struct Object3DIntersectionData
-    {
-        Object3D* intersectedObject;
-        RaySurfaceIntersection intersection;
-    };
-}
+  struct Object3DIntersectionData
+  {
+    Object3D* intersectedObject;
+    RaySurfaceIntersection intersection;
+  };
+}  // namespace RenderSystem

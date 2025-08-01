@@ -1,32 +1,32 @@
 #pragma once
 
-#include <unordered_set>
 #include <glm/glm.hpp>
+#include <unordered_set>
 
 #include "GeometryCore/Typedefs.h"
 
 namespace GeometryCore
 {
-    struct Plane;
+  struct Plane;
 }
 
 namespace MeshCore
 {
-    using namespace GeometryCore;
+  using namespace GeometryCore;
 
-    struct Face;
+  struct Face;
 
-    struct Surface
-    {
-        Surface() = default;
-        Surface(Face* initialFace, bool collectAdjacentFaces = true);
+  struct Surface
+  {
+    Surface() = default;
+    Surface(Face* initialFace, bool collectAdjacentFaces = true);
 
-        Plane getPerpendicularPlane() const;
+    Plane getPerpendicularPlane() const;
 
-        std::unordered_set<Face*> faces;
-        Vector3D normal{};
+    std::unordered_set<Face*> faces;
+    Vector3D normal {};
 
-    private:
-        Face* mInitialFace = nullptr;
-    };
-}
+   private:
+    Face* mInitialFace = nullptr;
+  };
+}  // namespace MeshCore

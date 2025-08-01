@@ -1,22 +1,22 @@
 #pragma once
 
-#include <vector>
 #include <optional>
+#include <vector>
 
 #include "Surface.h"
 
 namespace MeshCore
 {
-	struct IntersectionTempData
-	{
-		int intersectedFaceIdx;
-		int passedFacesCount;
-	};
+  struct IntersectionTempData
+  {
+    int intersectedFaceIdx;
+    int passedFacesCount;
+  };
 
-	struct MeshIntersectionData
-	{
-		std::vector<int> interestedFacesIndices;
-		Point3D intersectionPoint;
-		Surface intersectedSurface;
-	};
-}
+  struct MeshIntersectionData
+  {
+    std::vector<int> interestedFacesIndices;
+    Point3D intersectionPoint;
+    Surface intersectedSurface;
+  };
+}  // namespace MeshCore

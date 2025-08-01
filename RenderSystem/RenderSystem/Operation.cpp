@@ -4,7 +4,5 @@
 
 namespace RenderSystem
 {
-    Operation::Operation(Window* window) :
-        mWindow(window)
-    {}
-}
+  Operation::Operation(Window* window) : mWindow(window) {}
+}  // namespace RenderSystem

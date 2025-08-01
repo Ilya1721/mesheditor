@@ -4,6 +4,5 @@
 
 namespace Utility
 {
-	std::string readFile(const std::filesystem::path& filePath);
+  std::string readFile(const std::filesystem::path& filePath);
 }
-

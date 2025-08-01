@@ -6,10 +6,10 @@
 
 namespace RenderSystem
 {
-    struct Light
-    {
-        RGB ambient;
-        RGB diffuse;
-        RGB specular;
-    };
-}
+  struct Light
+  {
+    RGB ambient;
+    RGB diffuse;
+    RGB specular;
+  };
+}  // namespace RenderSystem

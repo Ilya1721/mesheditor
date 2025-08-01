@@ -4,15 +4,14 @@
 
 namespace RenderSystem
 {
-    class ImageTexture : public Texture
-    {
-    public:
-        ImageTexture(int width, int height);
+  class ImageTexture : public Texture
+  {
+   public:
+    ImageTexture(int width, int height);
 
-        void setDimensions(int width, int height) override;
+    void setDimensions(int width, int height) override;
 
-    private:
-        void init();
-    };
-}
-
+   private:
+    void init();
+  };
+}  // namespace RenderSystem

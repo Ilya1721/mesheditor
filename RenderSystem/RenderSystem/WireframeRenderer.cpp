@@ -4,15 +4,10 @@
 
 namespace RenderSystem
 {
-    WireframeRenderer::WireframeRenderer(Window* window) :
-        Operation(window)
-    {}
+  WireframeRenderer::WireframeRenderer(Window* window) : Operation(window) {}
 
-    void WireframeRenderer::onKeyPressed(int key)
-    {
-        if (key == GLFW_KEY_W)
-        {
-            mWindow->toggleWireframe();
-        }
-    }
-}
+  void WireframeRenderer::onKeyPressed(int key)
+  {
+    if (key == GLFW_KEY_W) { mWindow->toggleWireframe(); }
+  }
+}  // namespace RenderSystem

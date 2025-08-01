@@ -4,13 +4,12 @@
 
 namespace RenderSystem
 {
-	enum class SHADER_TYPE
-	{
-		SHADER,
-		SHADER_PROGRAM
-	};
+  enum class SHADER_TYPE
+  {
+    SHADER,
+    SHADER_PROGRAM
+  };
 
-	std::string getShaderInfoLog(int shaderId, SHADER_TYPE shaderType);
-	void printOpenGLErrorMessage();
-}
-
+  std::string getShaderInfoLog(int shaderId, SHADER_TYPE shaderType);
+  void printOpenGLErrorMessage();
+}  // namespace RenderSystem

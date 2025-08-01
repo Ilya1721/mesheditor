@@ -1,30 +1,29 @@
 #pragma once
 
 #include "GeometryCore/Typedefs.h"
-
 #include "Object3DIntersectionData.h"
 #include "Operation.h"
 
 namespace RenderSystem
 {
-    using namespace GeometryCore;
+  using namespace GeometryCore;
 
-    class SurfaceExtruder : public Operation
-    {
-    public:
-        SurfaceExtruder(Window* window);
+  class SurfaceExtruder : public Operation
+  {
+   public:
+    SurfaceExtruder(Window* window);
 
-        void onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos) override;
-        void onMouseScroll(double offset) override {};
-        void onMouseClick() override;
-        void onKeyPressed(int key) override;
+    void onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos) override;
+    void onMouseScroll(double offset) override {};
+    void onMouseClick() override;
+    void onKeyPressed(int key) override;
 
-    private:
-        void toggleSurfaceMovement(bool isSurfaceIntersected = false);
-        void highlightIntersectedSurface() const;
+   private:
+    void toggleSurfaceMovement(bool isSurfaceIntersected = false);
+    void highlightIntersectedSurface() const;
 
-    private:
-        Object3DIntersectionData mIntersectionData;
-        bool mSurfaceMovementEnabled;
-    };
-}
+   private:
+    Object3DIntersectionData mIntersectionData;
+    bool mSurfaceMovementEnabled;
+  };
+}  // namespace RenderSystem

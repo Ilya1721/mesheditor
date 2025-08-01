@@ -7,43 +7,38 @@
 
 namespace GeometryCore
 {
-    Plane::Plane(const Point3D& origin, const Vector3D& normal) :
-        origin(origin), normal(normal)
-    {}
+  Plane::Plane(const Point3D& origin, const Vector3D& normal)
+    : origin(origin), normal(normal)
+  {
+  }
 
-    Point3D Plane::projectPoint(const Point3D& point) const
-    {
-        auto dotProduct = glm::dot(origin - point, normal);
+  Point3D Plane::projectPoint(const Point3D& point) const
+  {
+    auto dotProduct = glm::dot(origin - point, normal);
+    if (glm::epsilonEqual(dotProduct, 0.0f, 1e-5f)) { return point; }
+    auto rayDirection = dotProduct > 0.0f ? normal : -normal;
 
-        if (glm::epsilonEqual(dotProduct, 0.0f, 1e-5f))
-        {
-            return point;
-        }
-        
-        auto rayDirection = dotProduct > 0.0f ? normal : -normal;
+    return findIntersectionPoint({point, rayDirection}).value();
+  }
 
-        return findIntersectionPoint({ point, rayDirection }).value();
-    }
+  glm::mat4 Plane::getTransformToSelf(const Plane& source) const
+  {
+    auto rotationAxis = glm::cross(normal, source.normal);
+    auto rotationAngle =
+      glm::angle(glm::normalize(normal), glm::normalize(source.normal));
+    auto rotationTransform = getRotationTransform(rotationAngle, rotationAxis);
+    auto translationTransform = getTranslationTransform(origin, source.origin);
 
-    glm::mat4 Plane::getTransformToSelf(const Plane& source) const
-    {
-        auto rotationAxis = glm::cross(normal, source.normal);
-        auto rotationAngle = glm::angle(glm::normalize(normal), glm::normalize(source.normal));
-        auto rotationTransform = getRotationTransform(rotationAngle, rotationAxis);
-        auto translationTransform = getTranslationTransform(origin, source.origin);
-        
-        return translationTransform * rotationTransform;
-    }
+    return translationTransform * rotationTransform;
+  }
 
-    std::optional<Point3D> Plane::findIntersectionPoint(const Ray& ray) const
-    {
-        if (glm::epsilonEqual(glm::dot(normal, ray.direction), 0.0f, 1e-6f))
-        {
-            return {};
-        }
+  std::optional<Point3D> Plane::findIntersectionPoint(const Ray& ray) const
+  {
+    if (glm::epsilonEqual(glm::dot(normal, ray.direction), 0.0f, 1e-6f)) { return {}; }
 
-        auto distanceToPlane = (glm::dot(normal, origin) - glm::dot(normal, ray.origin)) / glm::dot(normal, ray.direction);
+    auto distanceToPlane = (glm::dot(normal, origin) - glm::dot(normal, ray.origin)) /
+                           glm::dot(normal, ray.direction);
 
-        return std::make_optional(ray.origin + ray.direction * distanceToPlane);
-    }
-}
+    return std::make_optional(ray.origin + ray.direction * distanceToPlane);
+  }
+}  // namespace GeometryCore

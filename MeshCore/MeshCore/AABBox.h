@@ -3,49 +3,48 @@
 #include <glm/glm.hpp>
 #include <vector>
 
-#include "GeometryCore/Typedefs.h"
 #include "GeometryCore/Intersectable.h"
 #include "GeometryCore/Plane.h"
+#include "GeometryCore/Typedefs.h"
 
 namespace GeometryCore
 {
-	struct Ray;
+  struct Ray;
 }
 
 namespace MeshCore
 {
-	using namespace GeometryCore;
+  using namespace GeometryCore;
 
-	class Mesh;
+  class Mesh;
 
-	class AABBox : public GeometryCore::Intersectable
-	{
-	public:
-		AABBox();
+  class AABBox : public GeometryCore::Intersectable
+  {
+   public:
+    AABBox();
 
-		void applyMesh(const Mesh& mesh);
-		void applyBBox(const AABBox& other);
-		void applyTransform(const glm::mat4& transform);
-		void clear();
+    void applyMesh(const Mesh& mesh);
+    void applyBBox(const AABBox& other);
+    void applyTransform(const glm::mat4& transform);
+    void clear();
 
-		Point3D getCenter() const;
-		const Point3D& getMin() const;
-		const Point3D& getMax() const;
-		float getHeight() const;
-		float getWidth() const;
-		float getDepth() const;
-		std::optional<Point3D> findIntersectionPoint(const Ray& ray) const override;
-		bool isPointInsideBBox(const Point3D& point) const;
+    Point3D getCenter() const;
+    const Point3D& getMin() const;
+    const Point3D& getMax() const;
+    float getHeight() const;
+    float getWidth() const;
+    float getDepth() const;
+    std::optional<Point3D> findIntersectionPoint(const Ray& ray) const override;
+    bool isPointInsideBBox(const Point3D& point) const;
 
-	private:
-		void calcBBoxPlanes();
-		void init();
-		void setMinMax(const Point3D& min, const Point3D& max);
+   private:
+    void calcBBoxPlanes();
+    void init();
+    void setMinMax(const Point3D& min, const Point3D& max);
 
-	private:
-		Point3D mMin;
-		Point3D mMax;
-		std::vector<Plane> mBBoxPlanes;
-	};
-}
-
+   private:
+    Point3D mMin;
+    Point3D mMax;
+    std::vector<Plane> mBBoxPlanes;
+  };
+}  // namespace MeshCore

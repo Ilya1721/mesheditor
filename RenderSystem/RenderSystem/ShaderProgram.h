@@ -5,26 +5,29 @@
 
 namespace RenderSystem
 {
-    class ShaderProgram
-    {
-    public:
-        ShaderProgram(const std::filesystem::path& vertexShaderPath, const std::filesystem::path& fragmentShaderPath);
+  class ShaderProgram
+  {
+   public:
+    ShaderProgram(
+      const std::filesystem::path& vertexShaderPath,
+      const std::filesystem::path& fragmentShaderPath
+    );
 
-        void invokeAction(const std::function<void()>& action);
+    void invokeAction(const std::function<void()>& action);
 
-    protected:
-        virtual ~ShaderProgram();
+   protected:
+    virtual ~ShaderProgram();
 
-    private:
-        void init();
-        void initShaderProgram();
+   private:
+    void init();
+    void initShaderProgram();
 
-    protected:
-        std::filesystem::path mVertexShaderPath;
-        std::filesystem::path mFragmentShaderPath;
+   protected:
+    std::filesystem::path mVertexShaderPath;
+    std::filesystem::path mFragmentShaderPath;
 
-        int mVertexShader;
-        int mFragmentShader;
-        int mShaderProgram;
-    };
-}
+    int mVertexShader;
+    int mFragmentShader;
+    int mShaderProgram;
+  };
+}  // namespace RenderSystem

@@ -4,16 +4,15 @@
 
 namespace RenderSystem
 {
-    class Bindable
-    {
-    public:
-        virtual ~Bindable() = default;
+  class Bindable
+  {
+   public:
+    virtual ~Bindable() = default;
 
-        void invokeAction(const std::function<void()>& action);
+    void invokeAction(const std::function<void()>& action);
 
-    protected:
-        virtual void bind() = 0;
-        virtual void unbind() = 0;
-    };
-}
-
+   protected:
+    virtual void bind() = 0;
+    virtual void unbind() = 0;
+  };
+}  // namespace RenderSystem

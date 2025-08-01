@@ -8,12 +8,11 @@
 
 namespace GeometryCore
 {
-    bool isCloser(const Point3D& first, const Point3D& second, const Point3D& reference);
-    float getTriangleSquare(const std::array<float, 3>& edgesLengths);
+  bool isCloser(const Point3D& first, const Point3D& second, const Point3D& reference);
+  float getTriangleSquare(const std::array<float, 3>& edgesLengths);
 
-    template <typename Vector>
-    bool isEqual(const Vector& first, const Vector& second)
-    {
-        return glm::all(glm::epsilonEqual(first, second, 1e-6f));
-    }
-}
+  template <typename Vector> bool isEqual(const Vector& first, const Vector& second)
+  {
+    return glm::all(glm::epsilonEqual(first, second, 1e-6f));
+  }
+}  // namespace GeometryCore

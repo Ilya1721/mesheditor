@@ -2,10 +2,10 @@
 
 namespace RenderSystem
 {
-    void Bindable::invokeAction(const std::function<void()>& action)
-    {
-        bind();
-        action();
-        unbind();
-    }
-}
+  void Bindable::invokeAction(const std::function<void()>& action)
+  {
+    bind();
+    action();
+    unbind();
+  }
+}  // namespace RenderSystem

@@ -4,18 +4,18 @@
 
 namespace MeshCore
 {
-    struct HalfEdge;
+  struct HalfEdge;
 
-    using EdgeFunction = std::function<void(HalfEdge*)>;
+  using EdgeFunction = std::function<void(HalfEdge*)>;
 
-    class EdgeWalker
-    {
-    public:
-        EdgeWalker(HalfEdge* startEdge);
+  class EdgeWalker
+  {
+   public:
+    EdgeWalker(HalfEdge* startEdge);
 
-        void forEach(const EdgeFunction& function);
+    void forEach(const EdgeFunction& function);
 
-    private:
-        HalfEdge* mStartHalfEdge;
-    };
-}
+   private:
+    HalfEdge* mStartHalfEdge;
+  };
+}  // namespace MeshCore

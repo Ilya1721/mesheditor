@@ -6,11 +6,11 @@
 
 namespace RenderSystem
 {
-    struct Material
-    {
-        RGB ambient;
-        RGB diffuse;
-        RGB specular;
-        float shininess;
-    };
-}
+  struct Material
+  {
+    RGB ambient;
+    RGB diffuse;
+    RGB specular;
+    float shininess;
+  };
+}  // namespace RenderSystem

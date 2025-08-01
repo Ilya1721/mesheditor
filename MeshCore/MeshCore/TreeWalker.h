@@ -5,54 +5,43 @@
 
 namespace MeshCore
 {
-    template <typename T>
-    concept Pointer = std::is_pointer_v<T>;
+  template <typename T>
+  concept Pointer = std::is_pointer_v<T>;
 
-    template <typename T>
-    concept Tree = requires(T& tree)
+  template <typename T>
+  concept Tree = requires(T& tree) {
+    { tree.getChildren() } -> std::ranges::range;
+    { (*tree.getChildren().begin()).get() } -> Pointer;
+  };
+
+  template <Tree T> using TreeNodeFunction = std::function<void(T*)>;
+
+  template <Tree T> class TreeWalker
+  {
+   public:
+    TreeWalker(T* root, bool invokeFunctionForRoot = false)
+      : mRoot(root), mInvokeFunctionForRoot(invokeFunctionForRoot) {};
+
+    void forEach(const TreeNodeFunction<T>& function)
     {
-        { tree.getChildren() } -> std::ranges::range;
-        { (*tree.getChildren().begin()).get() } -> Pointer;
-    };
+      depthFirstTraversal(mRoot, function);
+    }
 
-    template <Tree T>
-    using TreeNodeFunction = std::function<void(T*)>;
-
-    template<Tree T>
-    class TreeWalker
+   private:
+    void depthFirstTraversal(T* node, const TreeNodeFunction<T>& function)
     {
-    public:
-        TreeWalker(T* root, bool invokeFunctionForRoot = false) :
-            mRoot(root),
-            mInvokeFunctionForRoot(invokeFunctionForRoot)
-        {};
+      if (!node) { return; }
 
-        void forEach(const TreeNodeFunction<T>& function)
-        {
-            depthFirstTraversal(mRoot, function);
-        }
+      if (mInvokeFunctionForRoot || node != mRoot) { function(node); }
 
-    private:
-        void depthFirstTraversal(T* node, const TreeNodeFunction<T>& function)
-        {
-            if (!node)
-            {
-                return;
-            }
+      for (auto& child : node->getChildren())
+      {
+        depthFirstTraversal(child.get(), function);
+      }
+    }
 
-            if (mInvokeFunctionForRoot || node != mRoot)
-            {
-                function(node);
-            }
-
-            for (auto& child : node->getChildren())
-            {
-                depthFirstTraversal(child.get(), function);
-            }
-        }
-
-    private:
-        T* mRoot;
-        bool mInvokeFunctionForRoot;
-    };
-}
+   private:
+    T* mRoot;
+    bool mInvokeFunctionForRoot;
+  };
+}  // namespace MeshCore
