@@ -109,7 +109,7 @@ namespace RenderSystem
     );
     mRenderer = std::make_unique<Renderer>(mSceneShaderProgram.get());
     mShadowController = std::make_unique<ShadowController>(
-      DEPTH_MAP_VERTEX_SHADER_PATH, DEPTH_MAP_FRAGMENT_SHADER_PATH, mWidth, mHeight
+      DEPTH_MAP_VERTEX_SHADER_PATH, DEPTH_MAP_FRAGMENT_SHADER_PATH
     );
     mScene = std::make_unique<Scene>(
       meshFilePath, mRenderer.get(), mShadowController.get(), mSceneShaderProgram.get()
@@ -119,6 +119,7 @@ namespace RenderSystem
       mWidth, mHeight, &mScene->getRootObject().getBBox(), mSceneShaderProgram.get()
     );
     mOperationsDispatcher = std::make_unique<OperationsDispatcher>(this);
+    resizeViewport(mWidth, mHeight);
   }
 
   void Window::setCallbacks()

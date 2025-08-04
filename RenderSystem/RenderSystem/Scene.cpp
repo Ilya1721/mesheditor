@@ -241,7 +241,7 @@ namespace RenderSystem
     return mSceneDecorations;
   }
 
-  bool Scene::getRenderWireframe() { return mRenderWireframe; }
+  bool Scene::getRenderWireframe() const { return mRenderWireframe; }
 
   const Object3D* Scene::getHighlightedObject() { return mHighlightedObject; }
 

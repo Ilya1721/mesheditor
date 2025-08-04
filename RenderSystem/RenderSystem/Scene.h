@@ -36,7 +36,7 @@ namespace RenderSystem
     );
     Object3D* getPickedObject() const;
     const std::vector<SceneDecoration>& getSceneDecorations() const;
-    bool getRenderWireframe();
+    bool getRenderWireframe() const;
     const Object3D* getHighlightedObject();
     const HighlightedFacesData& getHighlightedFacesData();
 

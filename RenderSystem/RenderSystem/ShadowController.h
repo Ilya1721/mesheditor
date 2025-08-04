@@ -15,12 +15,7 @@ namespace RenderSystem
   class ShadowController : public Modelable
   {
    public:
-    ShadowController(
-      const path& vertexShaderPath,
-      const path& fragmentShaderPath,
-      int windowWidth,
-      int windowHeight
-    );
+    ShadowController(const path& vertexShaderPath, const path& fragmentShaderPath);
 
     unsigned int getDepthTextureId() const;
 
@@ -34,8 +29,6 @@ namespace RenderSystem
     void init();
 
    private:
-    int mWindowWidth;
-    int mWindowHeight;
     BaseSceneShaderProgram mShaderProgram;
     DepthTexture mTexture;
     FrameBufferObject mFBO;

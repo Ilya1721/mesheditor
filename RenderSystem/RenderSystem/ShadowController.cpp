@@ -30,16 +30,9 @@ namespace
 namespace RenderSystem
 {
   ShadowController::ShadowController(
-    const path& vertexShaderPath,
-    const path& fragmentShaderPath,
-    int windowWidth,
-    int windowHeight
+    const path& vertexShaderPath, const path& fragmentShaderPath
   )
-    : mWindowWidth(windowWidth),
-      mWindowHeight(windowHeight),
-      mShaderProgram(vertexShaderPath, fragmentShaderPath),
-      mTexture(windowWidth, windowHeight),
-      mFBO()
+    : mShaderProgram(vertexShaderPath, fragmentShaderPath), mTexture(0, 0), mFBO()
   {
     init();
   }
@@ -75,7 +68,7 @@ namespace RenderSystem
     mFBO.invokeAction(
       [this, &renderSceneFunc]()
       {
-        glViewport(0, 0, mWindowWidth, mWindowHeight);
+        glViewport(0, 0, mTexture.getWidth(), mTexture.getHeight());
         glClear(GL_DEPTH_BUFFER_BIT);
         mShaderProgram.invokeAction(renderSceneFunc);
       }

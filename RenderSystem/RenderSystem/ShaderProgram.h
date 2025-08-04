@@ -13,7 +13,7 @@ namespace RenderSystem
       const std::filesystem::path& fragmentShaderPath
     );
 
-    void invokeAction(const std::function<void()>& action);
+    void invokeAction(const std::function<void()>& action) const;
 
    protected:
     virtual ~ShaderProgram();

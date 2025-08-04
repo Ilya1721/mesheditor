@@ -14,7 +14,7 @@ namespace RenderSystem
     if (mTexture != 0) { glDeleteTextures(1, &mTexture); }
   }
 
-  void Texture::invokeEditAction(const std::function<void()>& action)
+  void Texture::invokeEditAction(const std::function<void()>& action) const
   {
     GLint textureToRestore;
     glGetIntegerv(GL_TEXTURE_BINDING_2D, &textureToRestore);
@@ -38,4 +38,8 @@ namespace RenderSystem
       }
     );
   }
+
+  int Texture::getWidth() const { return mWidth; }
+
+  int Texture::getHeight() const { return mHeight; }
 }  // namespace RenderSystem

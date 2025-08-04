@@ -69,7 +69,7 @@ namespace RenderSystem
     glDeleteProgram(mShaderProgram);
   }
 
-  void ShaderProgram::invokeAction(const std::function<void()>& action)
+  void ShaderProgram::invokeAction(const std::function<void()>& action) const
   {
     GLint shaderProgramToRestore;
     glGetIntegerv(GL_CURRENT_PROGRAM, &shaderProgramToRestore);

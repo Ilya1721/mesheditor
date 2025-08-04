@@ -29,7 +29,6 @@ namespace RenderSystem
       mSceneShaderProgram(sceneShaderProgram),
       mBBoxViewportGapCoef(BBOX_VIEWPORT_GAP_COEF)
   {
-    resize(width, height);
   }
 
   glm::mat4 Viewport::createProjectionMatrix() const

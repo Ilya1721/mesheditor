@@ -12,12 +12,14 @@ namespace RenderSystem
   void DepthTexture::setDimensions(int width, int height)
   {
     invokeEditAction(
-      [&width, &height]()
+      [&width, &height, this]()
       {
         glTexImage2D(
           GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT,
           GL_FLOAT, 0
         );
+        mWidth = width;
+        mHeight = height;
       }
     );
   }
