@@ -28,7 +28,8 @@ namespace RenderSystem
     const std::string& meshFilePath,
     Renderer* renderer,
     ShadowController* shadowController,
-    SceneShaderProgram* sceneShaderProgram
+    SceneShaderProgram* sceneShaderProgram,
+    float aspectRatio
   )
     : mRenderer(renderer),
       mShadowController(shadowController),
@@ -36,7 +37,8 @@ namespace RenderSystem
       mPickedObject(nullptr),
       mRenderWireframe(false),
       mHighlightedObject(nullptr),
-      mLightSource(sceneShaderProgram, shadowController)
+      mLightSource(sceneShaderProgram, shadowController),
+      mAspectRatio(aspectRatio)
   {
     registerRootObjectCallbacks();
     addModelObject(meshFilePath);
@@ -171,13 +173,12 @@ namespace RenderSystem
   void Scene::updateLightProjection()
   {
     const auto& bbox = mRootObject.getBBox();
-    auto halfWidth = bbox.getWidth() * 0.5f;
-    auto halfHeight = bbox.getHeight() * 0.5f;
+    const auto orthoSize = std::max(bbox.getWidth(), bbox.getHeight());
+    const auto width = orthoSize * mAspectRatio;
 
-    // glm::mat4 lightProjectionMatrix = glm::ortho(-halfWidth, halfWidth, -halfHeight,
-    // halfHeight, 0.01f, 1000.0f);
-    glm::mat4 lightProjectionMatrix =
-      glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, -halfWidth, halfWidth);
+    glm::mat4 lightProjectionMatrix = glm::ortho(
+      -width, width, -orthoSize, orthoSize, NEAR_PLANE_DISTANCE, FAR_PLANE_DISTANCE
+    );
     mSceneShaderProgram->setLightProjection(lightProjectionMatrix);
     mShadowController->setLightProjection(lightProjectionMatrix);
   }
@@ -204,6 +205,11 @@ namespace RenderSystem
   }
 
   void Scene::setLightSourcePos(const Point3D& pos) { mLightSource.setPosition(pos); }
+
+  void Scene::setAspectRatio(float aspectRatio)
+  {
+    mAspectRatio = aspectRatio;
+  }
 
   void Scene::render()
   {

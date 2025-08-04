@@ -84,6 +84,6 @@ namespace RenderSystem
 
   void SceneShaderProgram::setUp()
   {
-    invokeAction([this]() { glUniformMatrix4fv(mShadowBias, 1, false, &SHADOW_BIAS); });
+    invokeAction([this]() { glUniform1f(mShadowBias, SHADOW_BIAS); });
   }
 }  // namespace RenderSystem

@@ -111,8 +111,10 @@ namespace RenderSystem
     mShadowController = std::make_unique<ShadowController>(
       DEPTH_MAP_VERTEX_SHADER_PATH, DEPTH_MAP_FRAGMENT_SHADER_PATH
     );
+    auto aspectRatio = static_cast<float>(mWidth) / mHeight;
     mScene = std::make_unique<Scene>(
-      meshFilePath, mRenderer.get(), mShadowController.get(), mSceneShaderProgram.get()
+      meshFilePath, mRenderer.get(), mShadowController.get(), mSceneShaderProgram.get(),
+      aspectRatio
     );
     mCamera = std::make_unique<Camera>(mSceneShaderProgram.get());
     mViewport = std::make_unique<Viewport>(
@@ -142,7 +144,8 @@ namespace RenderSystem
 
   void Window::adjustLightSourcePos()
   {
-    const auto lightPos = Point3D(0.0f, LIGHT_SOURCE_POS_Y, LIGHT_SOURCE_POS_Z);
+    const auto lightPos =
+      Point3D(LIGHT_SOURCE_POS_X, LIGHT_SOURCE_POS_Y, LIGHT_SOURCE_POS_Z);
     Point3D lightSourcePosInCameraSpace =
       transformPoint(lightPos, mCamera->getViewMatrix());
     mScene->setLightSourcePos(lightSourcePosInCameraSpace);
@@ -175,6 +178,7 @@ namespace RenderSystem
     mViewport->resize(width, height);
     mSceneShaderProgram->setProjection(mViewport->getProjectionMatrix());
     mShadowController->setTextureDimensions(width, height);
+    mScene->setAspectRatio(static_cast<float>(width) / height);
   }
 
   Point3D Window::unProject(const Point2D& cursorPos, float depth) const

@@ -27,7 +27,8 @@ namespace RenderSystem
       const std::string& meshFilePath,
       Renderer* renderer,
       ShadowController* shadowController,
-      SceneShaderProgram* sceneShaderProgram
+      SceneShaderProgram* sceneShaderProgram,
+      float aspectRatio
     );
     Scene(Scene&& scene) = delete;
 
@@ -46,6 +47,7 @@ namespace RenderSystem
     void highlightWholeObject(const Object3D* object);
     void setHighlightedFacesData(const HighlightedFacesData& data);
     void setLightSourcePos(const Point3D& pos);
+    void setAspectRatio(float aspectRatio);
     void render();
 
     const Object3D& getRootObject() const;
@@ -77,6 +79,7 @@ namespace RenderSystem
     const Object3D* mHighlightedObject;
     HighlightedFacesData mHighlightedFacesData;
     Object3D* mPickedObject;
+    float mAspectRatio;
 
     RenderData mSceneRenderData;
     std::unordered_map<const Object3D*, int> mSceneObjectVertexOffsetMap;

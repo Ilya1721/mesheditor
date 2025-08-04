@@ -21,8 +21,8 @@ namespace RenderSystem
     mPos = pos;
     mSceneShaderProgram->setLightSourcePos(pos);
 
-    const auto upVector = glm::normalize(glm::cross(pos, Vector3D(1.0, 0.0, 0.0)));
-    const auto& lightViewMatrix = glm::lookAt(pos, Point3D(0.0f, 0.0f, 0.0f), upVector);
+    const auto& lightViewMatrix =
+      glm::lookAt(pos, Point3D(0.0f, 0.0f, 0.0f), Vector3D(0.0f, 1.0f, 0.0f));
     mShadowController->setLightView(lightViewMatrix);
     mSceneShaderProgram->setLightView(lightViewMatrix);
   }
