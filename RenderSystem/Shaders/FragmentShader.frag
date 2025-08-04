@@ -37,7 +37,7 @@ float getShadowFactor()
 
     float fragDepthOnTexture = texture(depthMap, fragPosNDC.xy).r;
     float fragDepthOnScreen = fragPosNDC.z;
-    float shadow = (fragDepthOnScreen - shadowBias < fragDepthOnTexture) ? 1.0 : 0.0;
+    float shadow = (fragDepthOnScreen - shadowBias < fragDepthOnTexture) ? 1.0 : 0.5;
 
     return shadow;
 }
