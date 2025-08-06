@@ -115,7 +115,6 @@
     <ClInclude Include="MeshCore\HalfEdge.h" />
     <ClInclude Include="MeshCore\Intersection.h" />
     <ClInclude Include="MeshCore\Mesh.h" />
-    <ClInclude Include="MeshCore\Movable.h" />
     <ClInclude Include="MeshCore\OutgoingEdgeFinder.h" />
     <ClInclude Include="MeshCore\Surface.h" />
     <ClInclude Include="MeshCore\TreeWalker.h" />

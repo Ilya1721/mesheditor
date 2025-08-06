@@ -8,7 +8,6 @@ namespace GeometryCore
   glm::mat4 getRotationTransform(float rotationAngle, const Vector3D& rotationAxis)
   {
     if (isEqual(rotationAxis, Vector3D(0.0f, 0.0f, 0.0f))) { return glm::mat4(1.0f); }
-
     return glm::rotate(rotationAngle, rotationAxis);
   }
 
@@ -17,7 +16,6 @@ namespace GeometryCore
   )
   {
     if (isEqual(destinationPoint, sourcePoint)) { return glm::mat4(1.0f); }
-
     return glm::translate(destinationPoint - sourcePoint);
   }
 

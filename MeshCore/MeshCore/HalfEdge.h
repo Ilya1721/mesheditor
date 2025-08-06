@@ -10,7 +10,6 @@ namespace MeshCore
     HalfEdge* prev = nullptr;
     HalfEdge* next = nullptr;
     HalfEdge* twin = nullptr;
-
     UniqueVertex* vertex = nullptr;
     Face* face = nullptr;
   };

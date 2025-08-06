@@ -28,8 +28,7 @@ namespace MeshCore
     Plane facePlane(halfEdge->vertex->pos, calcNormal());
     auto rayPlaneIntersectionPoint = facePlane.getIntersectionPoint(ray);
 
-    if (rayPlaneIntersectionPoint.has_value() &&
-        isPointInside(rayPlaneIntersectionPoint.value()))
+    if (rayPlaneIntersectionPoint && isPointInside(rayPlaneIntersectionPoint.value()))
     {
       return rayPlaneIntersectionPoint;
     }
@@ -80,7 +79,7 @@ namespace MeshCore
         glm::cross(vertexPointEdges[triangleIdx][1], vertexPointEdges[triangleIdx][2]);
       if (!isEqual(crossProduct, Vector3D(0.0f, 0.0f, 0.0f)))
       {
-        trianglesSquaresSum += getTriangleSquare(vertexPointEdgesLengths[triangleIdx]);
+        trianglesSquaresSum += getSquareOfTriangle(vertexPointEdgesLengths[triangleIdx]);
       }
     }
 
@@ -89,7 +88,7 @@ namespace MeshCore
     );
   }
 
-  std::vector<Vector3D> Face::getAllGeometryEdges() const
+  std::vector<Vector3D> Face::getAllEdges() const
   {
     std::vector<Vector3D> edges;
     EdgeWalker edgeWalker(halfEdge);
@@ -101,7 +100,7 @@ namespace MeshCore
     return edges;
   }
 
-  std::vector<HalfEdge*> Face::getAllEdges() const
+  std::vector<HalfEdge*> Face::getAllHalfEdges() const
   {
     std::vector<HalfEdge*> edges;
     EdgeWalker edgeWalker(halfEdge);
@@ -116,7 +115,7 @@ namespace MeshCore
   {
     std::unordered_set<Face*> uniqueAdjacentFaces;
 
-    for (const auto& edge : getAllEdges())
+    for (const auto& edge : getAllHalfEdges())
     {
       OutgoingEdgeFinder finder(edge);
       finder.collectAll();
@@ -160,8 +159,8 @@ namespace MeshCore
 
   float Face::getSquare() const
   {
-    auto edges = getAllGeometryEdges();
-    return getTriangleSquare(
+    auto edges = getAllEdges();
+    return getSquareOfTriangle(
       {glm::length(edges[0]), glm::length(edges[1]), glm::length(edges[2])}
     );
   }

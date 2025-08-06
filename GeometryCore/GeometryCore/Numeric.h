@@ -9,7 +9,7 @@
 namespace GeometryCore
 {
   bool isCloser(const Point3D& first, const Point3D& second, const Point3D& reference);
-  float getTriangleSquare(const std::array<float, 3>& edgesLengths);
+  float getSquareOfTriangle(const std::array<float, 3>& edgesLengths);
 
   template <typename Vector> bool isEqual(const Vector& first, const Vector& second)
   {

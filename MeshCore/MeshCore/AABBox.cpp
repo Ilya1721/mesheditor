@@ -110,7 +110,7 @@ namespace MeshCore
     for (auto& bboxPlane : mBBoxPlanes)
     {
       auto intersectionPoint = bboxPlane.getIntersectionPoint(ray);
-      if (intersectionPoint.has_value() && isPointInsideBBox(intersectionPoint.value()))
+      if (intersectionPoint && isPointInsideBBox(intersectionPoint.value()))
       {
         return intersectionPoint;
       }

@@ -6,7 +6,6 @@
 #include <vector>
 
 #include "GeometryCore/Typedefs.h"
-#include "Movable.h"
 
 namespace GeometryCore
 {
@@ -21,7 +20,7 @@ namespace MeshCore
   struct UniqueVertex;
   class Mesh;
 
-  struct Face : Movable
+  struct Face
   {
     Face(Mesh* parentMesh, HalfEdge* halfEdge = nullptr);
 
@@ -31,8 +30,8 @@ namespace MeshCore
     std::optional<Point3D> getIntersectionPoint(const Ray& ray) const;
     Vector3D calcNormal() const;
     bool isPointInside(const Point3D& point) const;
-    std::vector<Vector3D> getAllGeometryEdges() const;
-    std::vector<HalfEdge*> getAllEdges() const;
+    std::vector<Vector3D> getAllEdges() const;
+    std::vector<HalfEdge*> getAllHalfEdges() const;
     std::unordered_set<Face*> getAdjacentFaces(
       bool filterByNormal = false, const Vector3D* normalPtr = nullptr
     ) const;
@@ -42,6 +41,6 @@ namespace MeshCore
 
     void move(
       const Vector3D& movement, std::unordered_set<UniqueVertex*>& alreadyChangedVertices
-    ) override;
+    );
   };
 }  // namespace MeshCore
