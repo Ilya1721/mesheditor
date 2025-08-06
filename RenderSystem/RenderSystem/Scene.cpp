@@ -206,10 +206,7 @@ namespace RenderSystem
 
   void Scene::setLightSourcePos(const Point3D& pos) { mLightSource.setPosition(pos); }
 
-  void Scene::setAspectRatio(float aspectRatio)
-  {
-    mAspectRatio = aspectRatio;
-  }
+  void Scene::setAspectRatio(float aspectRatio) { mAspectRatio = aspectRatio; }
 
   void Scene::render()
   {
@@ -228,13 +225,13 @@ namespace RenderSystem
     );
   }
 
-  Object3DIntersectionData Scene::getClosestIntersection(
-    const Ray& cursorRay, bool intersectSurface
+  Object3DIntersection Scene::getIntersection(
+    const Ray& cursorRay, IntersectionMode intersectionMode
   )
   {
-    if (mRootObject.getBBox().findIntersectionPoint(cursorRay).has_value())
+    if (mRootObject.getBBox().getIntersectionPoint(cursorRay))
     {
-      return mRootObject.findIntersection(cursorRay, intersectSurface);
+      return mRootObject.getIntersection(cursorRay, intersectionMode);
     }
 
     return {};

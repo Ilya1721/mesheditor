@@ -6,9 +6,9 @@ namespace RenderSystem
 {
   class Object3D;
 
-  struct Object3DIntersectionData
+  struct Object3DIntersection
   {
-    Object3D* intersectedObject;
-    RaySurfaceIntersection intersection;
+    Object3D* intersectedObject = nullptr;
+    RaySurfaceIntersection raySurfaceIntersection;
   };
 }  // namespace RenderSystem

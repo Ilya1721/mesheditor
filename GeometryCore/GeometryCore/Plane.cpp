@@ -18,7 +18,7 @@ namespace GeometryCore
     if (glm::epsilonEqual(dotProduct, 0.0f, 1e-5f)) { return point; }
     auto rayDirection = dotProduct > 0.0f ? normal : -normal;
 
-    return findIntersectionPoint({point, rayDirection}).value();
+    return getIntersectionPoint({point, rayDirection}).value();
   }
 
   glm::mat4 Plane::getTransformToSelf(const Plane& source) const
@@ -32,7 +32,7 @@ namespace GeometryCore
     return translationTransform * rotationTransform;
   }
 
-  std::optional<Point3D> Plane::findIntersectionPoint(const Ray& ray) const
+  std::optional<Point3D> Plane::getIntersectionPoint(const Ray& ray) const
   {
     if (glm::epsilonEqual(glm::dot(normal, ray.direction), 0.0f, 1e-6f)) { return {}; }
 

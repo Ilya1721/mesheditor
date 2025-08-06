@@ -105,11 +105,11 @@ namespace MeshCore
 
   float AABBox::getDepth() const { return mMax.z - mMin.z; }
 
-  std::optional<Point3D> AABBox::findIntersectionPoint(const Ray& ray) const
+  std::optional<Point3D> AABBox::getIntersectionPoint(const Ray& ray) const
   {
     for (auto& bboxPlane : mBBoxPlanes)
     {
-      auto intersectionPoint = bboxPlane.findIntersectionPoint(ray);
+      auto intersectionPoint = bboxPlane.getIntersectionPoint(ray);
       if (intersectionPoint.has_value() && isPointInsideBBox(intersectionPoint.value()))
       {
         return intersectionPoint;

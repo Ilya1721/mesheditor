@@ -1,7 +1,7 @@
 #pragma once
 
 #include "GeometryCore/Typedefs.h"
-#include "Object3DIntersectionData.h"
+#include "Object3DIntersection.h"
 #include "Operation.h"
 
 namespace RenderSystem
@@ -23,7 +23,7 @@ namespace RenderSystem
     void highlightIntersectedSurface() const;
 
    private:
-    Object3DIntersectionData mIntersectionData;
+    Object3DIntersection mIntersectionData;
     bool mSurfaceMovementEnabled;
   };
 }  // namespace RenderSystem

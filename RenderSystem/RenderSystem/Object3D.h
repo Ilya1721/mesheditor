@@ -8,7 +8,7 @@
 #include "MeshCore/AABBox.h"
 #include "MeshCore/TreeWalker.h"
 #include "MeshCore/Vertex.h"
-#include "Object3DIntersectionData.h"
+#include "Object3DIntersection.h"
 #include "RenderData.h"
 #include "Utility/CallbackMechanism.h"
 
@@ -33,8 +33,10 @@ namespace RenderSystem
     const std::vector<std::unique_ptr<Object3D>>& getChildren() const;
     const glm::mat4& getTransform() const;
     const AABBox& getBBox() const;
-    Object3DIntersectionData findIntersection(
-      const GeometryCore::Ray& ray, bool intersectSurface, int passedFacesCount = 0
+    Object3DIntersection getIntersection(
+      const GeometryCore::Ray& ray,
+      IntersectionMode intersectionMode,
+      int facesIndexOffset = 0
     );
     std::unique_ptr<Object3D> clone();
     int getVertexCount() const;

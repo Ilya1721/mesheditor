@@ -19,7 +19,7 @@ namespace MeshCore
   struct Surface
   {
     Surface() = default;
-    Surface(Face* initialFace, bool collectAdjacentFaces = true);
+    Surface(Face* initialFace);
 
     Plane getPerpendicularPlane() const;
 

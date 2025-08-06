@@ -23,10 +23,10 @@ namespace MeshCore
   {
   }
 
-  std::optional<Point3D> Face::findIntersectionPoint(const Ray& ray) const
+  std::optional<Point3D> Face::getIntersectionPoint(const Ray& ray) const
   {
     Plane facePlane(halfEdge->vertex->pos, calcNormal());
-    auto rayPlaneIntersectionPoint = facePlane.findIntersectionPoint(ray);
+    auto rayPlaneIntersectionPoint = facePlane.getIntersectionPoint(ray);
 
     if (rayPlaneIntersectionPoint.has_value() &&
         isPointInside(rayPlaneIntersectionPoint.value()))

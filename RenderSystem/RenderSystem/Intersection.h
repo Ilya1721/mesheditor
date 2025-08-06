@@ -18,7 +18,7 @@ namespace RenderSystem
     Point3D point {};
 
     void setClosest(
-      const MeshCore::MeshIntersectionData& meshIntersectionData,
+      const MeshCore::MeshIntersection& meshIntersectionData,
       const Point3D& referencePoint
     );
   };

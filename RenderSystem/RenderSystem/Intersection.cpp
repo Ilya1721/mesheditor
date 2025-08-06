@@ -6,7 +6,7 @@
 namespace RenderSystem
 {
   void RaySurfaceIntersection::setClosest(
-    const MeshCore::MeshIntersectionData& meshIntersectionData,
+    const MeshCore::MeshIntersection& meshIntersectionData,
     const Point3D& referencePoint
   )
   {
@@ -14,7 +14,7 @@ namespace RenderSystem
         isCloser(meshIntersectionData.intersectionPoint, point, referencePoint))
     {
       surface = meshIntersectionData.intersectedSurface;
-      surfaceIndices = meshIntersectionData.interestedFacesIndices;
+      surfaceIndices = meshIntersectionData.intersectedFacesIndices;
       point = meshIntersectionData.intersectionPoint;
     }
   }

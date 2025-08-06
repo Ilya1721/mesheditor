@@ -14,9 +14,9 @@ namespace RenderSystem
   {
     if (mEnabled)
     {
-      auto intersectionData = mWindow->getClosestIntersection();
+      auto intersectionData = mWindow->getIntersection();
       mWindow->setHighlightedFacesData(
-        {intersectionData.intersection.surfaceIndices, intersectionData.intersectedObject}
+        {intersectionData.raySurfaceIntersection.surfaceIndices, intersectionData.intersectedObject}
       );
     }
   }

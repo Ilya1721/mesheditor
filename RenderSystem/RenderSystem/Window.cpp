@@ -231,9 +231,9 @@ namespace RenderSystem
 
   bool Window::isCameraMovementEnabled() const { return mCamera->isMovementEnabled(); }
 
-  Object3DIntersectionData Window::getClosestIntersection(bool intersectSurface)
+  Object3DIntersection Window::getIntersection(IntersectionMode intersectionMode)
   {
-    return mScene->getClosestIntersection(castCursorRay(), intersectSurface);
+    return mScene->getIntersection(castCursorRay(), intersectionMode);
   }
 
   Ray Window::castCursorRay() const

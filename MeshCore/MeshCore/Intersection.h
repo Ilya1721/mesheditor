@@ -7,16 +7,22 @@
 
 namespace MeshCore
 {
-  struct IntersectionTempData
+  struct MeshIntersectionTempData
   {
-    int intersectedFaceIdx;
-    int passedFacesCount;
+    std::optional<Point3D> intersectionPoint;
+    int intersectedFaceIdx = -1;
   };
 
-  struct MeshIntersectionData
+  struct MeshIntersection
   {
-    std::vector<int> interestedFacesIndices;
-    Point3D intersectionPoint;
-    Surface intersectedSurface;
+    std::vector<int> intersectedFacesIndices;
+    Point3D intersectionPoint {};
+    Surface intersectedSurface {};
+  };
+
+  enum class IntersectionMode
+  {
+    SURFACE,
+    FACE
   };
 }  // namespace MeshCore

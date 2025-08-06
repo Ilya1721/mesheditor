@@ -8,7 +8,7 @@
 #include "HighlightedFacesData.h"
 #include "LightSource.h"
 #include "Object3D.h"
-#include "Object3DIntersectionData.h"
+#include "Object3DIntersection.h"
 #include "SceneDecoration.h"
 
 namespace RenderSystem
@@ -32,8 +32,8 @@ namespace RenderSystem
     );
     Scene(Scene&& scene) = delete;
 
-    Object3DIntersectionData getClosestIntersection(
-      const Ray& cursorRay, bool intersectSurface
+    Object3DIntersection getIntersection(
+      const Ray& cursorRay, IntersectionMode intersectionMode
     );
     Object3D* getPickedObject() const;
     const std::vector<SceneDecoration>& getSceneDecorations() const;

@@ -47,11 +47,7 @@ namespace
 
 namespace MeshCore
 {
-  Mesh::Mesh(const std::vector<Vertex>& vertices)
-    : mVertices(vertices), mIntersectionTempData {-1, 0}
-  {
-    init();
-  }
+  Mesh::Mesh(const std::vector<Vertex>& vertices) : mVertices(vertices) { init(); }
 
   Mesh::~Mesh() = default;
 
@@ -199,32 +195,32 @@ namespace MeshCore
     }
   }
 
-  MeshIntersectionData Mesh::findIntersection(
-    const Ray& ray, bool intersectSurface, int passedFacesCount
+  MeshIntersection Mesh::getIntersection(
+    const Ray& ray, IntersectionMode intersectionMode, int facesIndexOffset
   ) const
   {
-    const auto& intersectionPoint = getIntersectionPoint(ray);
-    MeshIntersectionData meshIntersectionData;
+    const auto& intersectionTempData = getIntersectionTempData(ray);
 
-    if (!intersectionPoint.has_value()) { return meshIntersectionData; }
+    if (!intersectionTempData.intersectionPoint) { return {}; }
 
-    auto faceIdx = mIntersectionTempData.intersectedFaceIdx;
+    auto faceIdx = intersectionTempData.intersectedFaceIdx;
+    MeshIntersection meshIntersection;
 
-    if (intersectSurface)
+    if (intersectionMode == IntersectionMode::SURFACE)
     {
-      Surface surface(mFaces[faceIdx].get(), intersectSurface);
-      meshIntersectionData.interestedFacesIndices = getIntersectedSurfaceIndices(surface);
-      meshIntersectionData.intersectedSurface = surface;
+      Surface surface(mFaces[faceIdx].get());
+      meshIntersection.intersectedFacesIndices = getIntersectedSurfaceIndices(surface);
+      meshIntersection.intersectedSurface = surface;
     }
     else
     {
-      meshIntersectionData.interestedFacesIndices =
-        std::vector<int> {faceIdx + passedFacesCount};
+      meshIntersection.intersectedFacesIndices =
+        std::vector<int> {faceIdx + facesIndexOffset};
     }
 
-    meshIntersectionData.intersectionPoint = intersectionPoint.value();
+    meshIntersection.intersectionPoint = intersectionTempData.intersectionPoint.value();
 
-    return meshIntersectionData;
+    return meshIntersection;
   }
 
   std::vector<int> Mesh::getIntersectedSurfaceIndices(const Surface& surface) const
@@ -243,26 +239,25 @@ namespace MeshCore
     return indices;
   }
 
-  std::optional<Point3D> Mesh::getIntersectionPoint(const Ray& ray) const
+  MeshIntersectionTempData Mesh::getIntersectionTempData(const Ray& ray) const
   {
-    std::optional<Point3D> finalIntersectionPoint;
+    MeshIntersectionTempData finalTempData;
 
     for (int faceIdx = 0; faceIdx < mFaces.size(); ++faceIdx)
     {
-      auto& face = mFaces[faceIdx];
-      auto intersectionPoint = face->findIntersectionPoint(ray);
+      auto intersectionPoint = mFaces[faceIdx]->getIntersectionPoint(ray);
       if (!intersectionPoint) { continue; }
 
-      if (!finalIntersectionPoint.has_value() ||
-          isCloser(intersectionPoint.value(), finalIntersectionPoint.value(), ray.origin))
+      if (!finalTempData.intersectionPoint ||
+          isCloser(
+            intersectionPoint.value(), finalTempData.intersectionPoint.value(), ray.origin
+          ))
       {
-        finalIntersectionPoint = intersectionPoint;
-        mIntersectionTempData.intersectedFaceIdx = faceIdx;
+        finalTempData.intersectionPoint = intersectionPoint;
+        finalTempData.intersectedFaceIdx = faceIdx;
       }
     }
 
-    mIntersectionTempData.passedFacesCount += mFaces.size();
-
-    return finalIntersectionPoint;
+    return finalTempData;
   }
 }  // namespace MeshCore

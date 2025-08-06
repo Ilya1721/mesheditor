@@ -5,7 +5,6 @@
 #include <unordered_set>
 #include <vector>
 
-#include "GeometryCore/Intersectable.h"
 #include "GeometryCore/Typedefs.h"
 #include "Movable.h"
 
@@ -22,14 +21,14 @@ namespace MeshCore
   struct UniqueVertex;
   class Mesh;
 
-  struct Face : GeometryCore::Intersectable, Movable
+  struct Face : Movable
   {
     Face(Mesh* parentMesh, HalfEdge* halfEdge = nullptr);
 
     Mesh* parentMesh = nullptr;
     HalfEdge* halfEdge = nullptr;
 
-    std::optional<Point3D> findIntersectionPoint(const Ray& ray) const override;
+    std::optional<Point3D> getIntersectionPoint(const Ray& ray) const;
     Vector3D calcNormal() const;
     bool isPointInside(const Point3D& point) const;
     std::vector<Vector3D> getAllGeometryEdges() const;

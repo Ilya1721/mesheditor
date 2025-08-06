@@ -1,12 +1,13 @@
 #pragma once
 
+#include "Ray.h"
+#include "Typedefs.h"
 #include <glm/glm.hpp>
-
-#include "Intersectable.h"
+#include <optional>
 
 namespace GeometryCore
 {
-  struct Plane : Intersectable
+  struct Plane
   {
     Plane(const Point3D& origin, const Vector3D& normal);
 
@@ -15,6 +16,6 @@ namespace GeometryCore
 
     Point3D projectPoint(const Point3D& point) const;
     glm::mat4 getTransformToSelf(const Plane& source) const;
-    std::optional<Point3D> findIntersectionPoint(const Ray& ray) const override;
+    std::optional<Point3D> getIntersectionPoint(const Ray& ray) const;
   };
 }  // namespace GeometryCore

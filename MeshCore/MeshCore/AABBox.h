@@ -3,7 +3,6 @@
 #include <glm/glm.hpp>
 #include <vector>
 
-#include "GeometryCore/Intersectable.h"
 #include "GeometryCore/Plane.h"
 #include "GeometryCore/Typedefs.h"
 
@@ -18,7 +17,7 @@ namespace MeshCore
 
   class Mesh;
 
-  class AABBox : public GeometryCore::Intersectable
+  class AABBox
   {
    public:
     AABBox();
@@ -34,7 +33,7 @@ namespace MeshCore
     float getHeight() const;
     float getWidth() const;
     float getDepth() const;
-    std::optional<Point3D> findIntersectionPoint(const Ray& ray) const override;
+    std::optional<Point3D> getIntersectionPoint(const Ray& ray) const;
     bool isPointInsideBBox(const Point3D& point) const;
 
    private:

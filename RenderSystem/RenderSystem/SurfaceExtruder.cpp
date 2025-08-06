@@ -20,13 +20,13 @@ namespace RenderSystem
     const Point2D& startCursorPos, const Point2D& endCursorPos
   )
   {
-    if (!mEnabled || mIntersectionData.intersection.surfaceIndices.empty() ||
+    if (!mEnabled || mIntersectionData.raySurfaceIntersection.surfaceIndices.empty() ||
         !mSurfaceMovementEnabled)
     {
       return;
     }
 
-    auto& surface = mIntersectionData.intersection.surface;
+    auto& surface = mIntersectionData.raySurfaceIntersection.surface;
     auto startCursorPosInWorld = mWindow->unProject(startCursorPos);
     auto endCursorPosInWorld = mWindow->unProject(endCursorPos);
     auto surfaceNormal = glm::normalize(surface.normal);
@@ -43,8 +43,8 @@ namespace RenderSystem
   {
     if (mEnabled && mWindow->isMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT))
     {
-      mIntersectionData = mWindow->getClosestIntersection();
-      toggleSurfaceMovement(!mIntersectionData.intersection.surfaceIndices.empty());
+      mIntersectionData = mWindow->getIntersection();
+      toggleSurfaceMovement(!mIntersectionData.raySurfaceIntersection.surfaceIndices.empty());
       highlightIntersectedSurface();
     }
   }
@@ -68,7 +68,7 @@ namespace RenderSystem
     if (mSurfaceMovementEnabled)
     {
       mWindow->setHighlightedFacesData(
-        {mIntersectionData.intersection.surfaceIndices,
+        {mIntersectionData.raySurfaceIntersection.surfaceIndices,
          mIntersectionData.intersectedObject}
       );
     }

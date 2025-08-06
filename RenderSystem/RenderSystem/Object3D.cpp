@@ -41,28 +41,30 @@ namespace RenderSystem
 
   const AABBox& Object3D::getBBox() const { return mBBox; }
 
-  Object3DIntersectionData Object3D::findIntersection(
-    const Ray& ray, bool intersectSurface, int passedFacesCount
+  Object3DIntersection Object3D::getIntersection(
+    const Ray& ray, IntersectionMode intersectionMode, int facesIndexOffset
   )
   {
-    Object3DIntersectionData intersectionData;
+    Object3DIntersection intersection;
     TreeWalker walker(this);
     walker.forEach(
-      [&ray, &intersectionData, &intersectSurface, &passedFacesCount,
-       this](Object3D* object)
+      [&ray, &intersection, &intersectionMode, &facesIndexOffset, this](Object3D* object)
       {
-        const auto numberOfFaces = object->mMesh->getFaces().size() + passedFacesCount;
+        const auto& faces = object->mMesh->getFaces();
+        const auto currentFacesIndexOffset = faces.size() + facesIndexOffset;
         auto invertedRay = glm::inverse(object->getTransform()) * ray;
-        auto meshIntersectionData =
-          object->mMesh->findIntersection(invertedRay, intersectSurface, numberOfFaces);
-        intersectionData.intersectedObject = object;
-        intersectionData.intersection.setClosest(
-          meshIntersectionData, invertedRay.origin
+        auto meshIntersection = object->mMesh->getIntersection(
+          invertedRay, intersectionMode, currentFacesIndexOffset
         );
+        intersection.intersectedObject = object;
+        intersection.raySurfaceIntersection.setClosest(
+          meshIntersection, invertedRay.origin
+        );
+        facesIndexOffset += faces.size();
       }
     );
 
-    return intersectionData;
+    return intersection;
   }
 
   std::unique_ptr<Object3D> Object3D::clone()

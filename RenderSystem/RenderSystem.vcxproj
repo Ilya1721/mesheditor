@@ -185,7 +185,7 @@
     <ClInclude Include="RenderSystem\Material.h" />
     <ClInclude Include="RenderSystem\Mover.h" />
     <ClInclude Include="RenderSystem\Object3D.h" />
-    <ClInclude Include="RenderSystem\Object3DIntersectionData.h" />
+    <ClInclude Include="RenderSystem\Object3DIntersection.h" />
     <ClInclude Include="RenderSystem\Operation.h" />
     <ClInclude Include="RenderSystem\OperationsDispatcher.h" />
     <ClInclude Include="RenderSystem\Orbit.h" />

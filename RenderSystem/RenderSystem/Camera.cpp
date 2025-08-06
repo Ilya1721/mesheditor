@@ -51,7 +51,7 @@ namespace RenderSystem
   Point3D Camera::projectToTargetPlane(const Point3D& cursorPosInWorldSpace) const
   {
     Ray cursorRay(cursorPosInWorldSpace, cursorPosInWorldSpace - mEye);
-    return getTargetPlane().findIntersectionPoint(cursorRay).value();
+    return getTargetPlane().getIntersectionPoint(cursorRay).value();
   }
 
   bool Camera::isMovementEnabled() const { return mIsMovementEnabled; }

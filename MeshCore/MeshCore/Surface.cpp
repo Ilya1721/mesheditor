@@ -6,11 +6,10 @@
 
 namespace MeshCore
 {
-  Surface::Surface(Face* initialFace, bool collectAdjacentFaces)
+  Surface::Surface(Face* initialFace)
     : mInitialFace(initialFace), normal(initialFace->calcNormal())
   {
-    if (collectAdjacentFaces) { faces = initialFace->getAdjacentFaces(true, &normal); }
-
+    faces = initialFace->getAdjacentFaces(true, &normal);
     faces.insert(initialFace);
   }
 

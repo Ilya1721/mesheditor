@@ -16,8 +16,8 @@ namespace RenderSystem
       return;
     }
 
-    auto intersectionData = mWindow->getClosestIntersection();
-    if (!intersectionData.intersection.surfaceIndices.empty())
+    auto intersectionData = mWindow->getIntersection();
+    if (!intersectionData.raySurfaceIntersection.surfaceIndices.empty())
     {
       auto pickedObject = intersectionData.intersectedObject;
       mWindow->setPickedObject(pickedObject);

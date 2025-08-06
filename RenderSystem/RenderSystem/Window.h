@@ -11,7 +11,7 @@
 #include "GeometryCore/Typedefs.h"
 #include "HighlightedFacesData.h"
 #include "Intersection.h"
-#include "Object3DIntersectionData.h"
+#include "Object3DIntersection.h"
 #include "Renderer.h"
 #include "SceneShaderProgram.h"
 #include "ShadowController.h"
@@ -51,7 +51,9 @@ namespace RenderSystem
     Object3D* getPickedObject() const;
     Point3D projectToCameraTargetPlane(const Point3D& cursorPosInWorldSpace) const;
     bool isCameraMovementEnabled() const;
-    Object3DIntersectionData getClosestIntersection(bool intersectSurface = true);
+    Object3DIntersection getIntersection(
+      IntersectionMode intersectionMode = IntersectionMode::SURFACE
+    );
     Ray castCursorRay() const;
 
     void setPickedObject(Object3D* pickedObject);
