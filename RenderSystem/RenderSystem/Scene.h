@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 
+#include "AbstractShaderProgram.h"
 #include "GeometryCore/Typedefs.h"
 #include "HighlightedFacesData.h"
 #include "LightSource.h"
@@ -60,7 +61,7 @@ namespace RenderSystem
       const Object3D* object, const std::unordered_set<UniqueVertex*>& vertices
     );
     void onSceneObjectBBoxUpdated();
-    void renderScene(Modelable* modelableComponent);
+    void renderScene(AbstractShaderProgram* shaderProgram);
     void renderDepthMap();
     void renderSceneDecorations();
     void renderHighlightedFaces();

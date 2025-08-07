@@ -2,18 +2,18 @@
 
 #include <glm/glm.hpp>
 
-#include "Modelable.h"
+#include "AbstractShaderProgram.h"
 #include "ShaderProgram.h"
 
 using namespace std::filesystem;
 
 namespace RenderSystem
 {
-  class BaseSceneShaderProgram : public ShaderProgram, public Modelable
+  class ShadowMapShaderProgram : public ShaderProgram, public AbstractShaderProgram
   {
    public:
-    BaseSceneShaderProgram(const path& vertexShaderPath, const path& fragmentShaderPath);
-    virtual ~BaseSceneShaderProgram() = default;
+    ShadowMapShaderProgram(const path& vertexShaderPath, const path& fragmentShaderPath);
+    virtual ~ShadowMapShaderProgram() = default;
 
     void setModel(const glm::mat4& model) override;
     void setLightView(const glm::mat4& lightView);

@@ -92,11 +92,11 @@ namespace RenderSystem
 
   void Scene::onSceneObjectBBoxUpdated() { updateLightProjection(); }
 
-  void Scene::renderScene(Modelable* modelableComponent)
+  void Scene::renderScene(AbstractShaderProgram* shaderProgram)
   {
     for (auto& [object, vertexOffset] : mSceneObjectVertexOffsetMap)
     {
-      modelableComponent->setModel(object->getTransform());
+      shaderProgram->setModel(object->getTransform());
       mRenderer->renderObject3D(*object, vertexOffset);
     }
   }
@@ -212,7 +212,7 @@ namespace RenderSystem
   {
     renderDepthMap();
     mSceneShaderProgram->setDepthMap(mShadowController->getDepthTextureId());
-    mSceneShaderProgram->invokeAction(
+    mSceneShaderProgram->invoke(
       [this]()
       {
         mRenderer->cleanScreen();

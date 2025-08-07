@@ -17,7 +17,7 @@ namespace RenderSystem
     const Texture& texture, const std::function<void()>& textureSetupFunc
   )
   {
-    invokeAction(
+    invoke(
       [&texture, &textureSetupFunc]()
       {
         glFramebufferTexture2D(

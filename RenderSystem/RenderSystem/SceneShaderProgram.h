@@ -1,15 +1,15 @@
 #pragma once
 
-#include "BaseSceneShaderProgram.h"
+#include "AbstractShaderProgram.h"
 #include "GeometryCore/Typedefs.h"
 #include "Lighting.h"
-#include "Modelable.h"
+#include "ShaderProgram.h"
 
 using namespace GeometryCore;
 
 namespace RenderSystem
 {
-  class SceneShaderProgram : public BaseSceneShaderProgram
+  class SceneShaderProgram : public ShaderProgram, public AbstractShaderProgram
   {
     friend class LightSource;
 
@@ -19,12 +19,15 @@ namespace RenderSystem
       const std::filesystem::path& fragmentShaderPath
     );
 
+    void setModel(const glm::mat4& model) override;
     void setCameraPos(const Point3D& cameraPos);
     void setMaterial(const Material& material);
     void setLight(const Light& light);
     void setView(const glm::mat4& view);
     void setProjection(const glm::mat4& projection);
     void setDepthMap(int textureId);
+    void setLightView(const glm::mat4& lightView);
+    void setLightProjection(const glm::mat4& lightProjection);
 
    private:
     void setLightSourcePos(const Point3D& lightSourcePos);
@@ -33,6 +36,9 @@ namespace RenderSystem
 
    private:
     Lighting mLighting;
+    int mModel;
+    int mLightView;
+    int mLightProjection;
     int mView;
     int mProjection;
     int mShadowBias;

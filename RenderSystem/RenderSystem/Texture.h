@@ -2,9 +2,11 @@
 
 #include <functional>
 
+#include "RequiresBindBeforeInvoke.h"
+
 namespace RenderSystem
 {
-  class Texture
+  class Texture : public RequiresBindBeforeInvoke
   {
    public:
     Texture(int width, int height);
@@ -12,14 +14,14 @@ namespace RenderSystem
 
     virtual void setDimensions(int width, int height) = 0;
 
-    void invokeEditAction(const std::function<void()>& action) const;
-
     unsigned int getId() const;
     int getWidth() const;
     int getHeight() const;
 
    private:
     void init();
+    void bind() override;
+    void unbind() override;
 
    protected:
     unsigned int mTexture;

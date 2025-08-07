@@ -14,21 +14,12 @@ namespace RenderSystem
     if (mTexture != 0) { glDeleteTextures(1, &mTexture); }
   }
 
-  void Texture::invokeEditAction(const std::function<void()>& action) const
-  {
-    GLint textureToRestore;
-    glGetIntegerv(GL_TEXTURE_BINDING_2D, &textureToRestore);
-    glBindTexture(GL_TEXTURE_2D, mTexture);
-    action();
-    glBindTexture(GL_TEXTURE_2D, textureToRestore);
-  }
-
   unsigned int Texture::getId() const { return mTexture; }
 
   void Texture::init()
   {
     glGenTextures(1, &mTexture);
-    invokeEditAction(
+    invoke(
       []()
       {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
@@ -37,6 +28,17 @@ namespace RenderSystem
         glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
       }
     );
+  }
+
+  void Texture::bind()
+  {
+    glGetIntegerv(GL_TEXTURE_BINDING_2D, &mResourceToRestore);
+    glBindTexture(GL_TEXTURE_2D, mTexture);
+  }
+
+  void Texture::unbind()
+  {
+    glBindTexture(GL_TEXTURE_2D, mResourceToRestore);
   }
 
   int Texture::getWidth() const { return mWidth; }

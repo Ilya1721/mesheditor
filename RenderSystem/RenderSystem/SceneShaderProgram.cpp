@@ -14,7 +14,10 @@ namespace RenderSystem
     const std::filesystem::path& vertexShaderPath,
     const std::filesystem::path& fragmentShaderPath
   )
-    : BaseSceneShaderProgram(vertexShaderPath, fragmentShaderPath),
+    : ShaderProgram(vertexShaderPath, fragmentShaderPath),
+      mModel(),
+      mLightView(),
+      mLightProjection(),
       mView(),
       mProjection(),
       mShadowBias(),
@@ -25,51 +28,68 @@ namespace RenderSystem
     setUp();
   }
 
+  void SceneShaderProgram::setModel(const glm::mat4& model)
+  {
+    invoke([this, &model]()
+           { glUniformMatrix4fv(mModel, 1, false, glm::value_ptr(model)); });
+  }
+
   void SceneShaderProgram::setLightSourcePos(const Point3D& lightSourcePos)
   {
-    invokeAction([this, &lightSourcePos]()
-                 { mLighting.setLightSourcePos(glm::value_ptr(lightSourcePos)); });
+    invoke([this, &lightSourcePos]()
+           { mLighting.setLightSourcePos(glm::value_ptr(lightSourcePos)); });
   }
 
   void SceneShaderProgram::setCameraPos(const Point3D& cameraPos)
   {
-    invokeAction([this, &cameraPos]()
-                 { mLighting.setCameraPos(glm::value_ptr(cameraPos)); });
+    invoke([this, &cameraPos]() { mLighting.setCameraPos(glm::value_ptr(cameraPos)); });
   }
 
   void SceneShaderProgram::setMaterial(const Material& material)
   {
-    invokeAction([this, &material]() { mLighting.setMaterial(material); });
+    invoke([this, &material]() { mLighting.setMaterial(material); });
   }
 
   void SceneShaderProgram::setLight(const Light& light)
   {
-    invokeAction([this, &light]() { mLighting.setLight(light); });
+    invoke([this, &light]() { mLighting.setLight(light); });
   }
 
   void SceneShaderProgram::setView(const glm::mat4& view)
   {
-    invokeAction([this, &view]()
-                 { glUniformMatrix4fv(mView, 1, false, glm::value_ptr(view)); });
+    invoke([this, &view]() { glUniformMatrix4fv(mView, 1, false, glm::value_ptr(view)); }
+    );
   }
 
   void SceneShaderProgram::setProjection(const glm::mat4& projection)
   {
-    invokeAction(
-      [this, &projection]()
-      { glUniformMatrix4fv(mProjection, 1, false, glm::value_ptr(projection)); }
-    );
+    invoke([this, &projection]()
+           { glUniformMatrix4fv(mProjection, 1, false, glm::value_ptr(projection)); });
   }
 
   void SceneShaderProgram::setDepthMap(int textureId)
   {
-    invokeAction(
+    invoke(
       [this, textureId]()
       {
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, textureId);
         glUniform1i(mDepthMap, 1);
       }
+    );
+  }
+
+  void SceneShaderProgram::setLightView(const glm::mat4& lightView)
+  {
+    invoke([this, &lightView]()
+      { glUniformMatrix4fv(mLightView, 1, false, glm::value_ptr(lightView)); });
+  }
+
+  void SceneShaderProgram::setLightProjection(const glm::mat4& lightProjection)
+  {
+    invoke(
+      [this, &lightProjection]()
+      { glUniformMatrix4fv(mLightProjection, 1, false, glm::value_ptr(lightProjection)); }
     );
   }
 
@@ -80,10 +100,12 @@ namespace RenderSystem
     mProjection = glGetUniformLocation(mShaderProgram, "projection");
     mShadowBias = glGetUniformLocation(mShaderProgram, "shadowBias");
     mDepthMap = glGetUniformLocation(mShaderProgram, "depthMap");
+    mLightView = glGetUniformLocation(mShaderProgram, "lightView");
+    mLightProjection = glGetUniformLocation(mShaderProgram, "lightProjection");
   }
 
   void SceneShaderProgram::setUp()
   {
-    invokeAction([this]() { glUniform1f(mShadowBias, SHADOW_BIAS); });
+    invoke([this]() { glUniform1f(mShadowBias, SHADOW_BIAS); });
   }
 }  // namespace RenderSystem

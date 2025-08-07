@@ -11,7 +11,7 @@ namespace RenderSystem
 
   void DepthTexture::setDimensions(int width, int height)
   {
-    invokeEditAction(
+    invoke(
       [&width, &height, this]()
       {
         glTexImage2D(
@@ -26,7 +26,7 @@ namespace RenderSystem
 
   void DepthTexture::init()
   {
-    invokeEditAction(
+    invoke(
       [this]()
       {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);

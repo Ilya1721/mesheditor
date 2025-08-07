@@ -69,15 +69,6 @@ namespace RenderSystem
     glDeleteProgram(mShaderProgram);
   }
 
-  void ShaderProgram::invokeAction(const std::function<void()>& action) const
-  {
-    GLint shaderProgramToRestore;
-    glGetIntegerv(GL_CURRENT_PROGRAM, &shaderProgramToRestore);
-    glUseProgram(mShaderProgram);
-    action();
-    glUseProgram(shaderProgramToRestore);
-  }
-
   void ShaderProgram::init()
   {
     mVertexShader = loadShader(mVertexShaderPath.string(), GL_VERTEX_SHADER);
@@ -96,5 +87,16 @@ namespace RenderSystem
       "Shader program has not been linked"
     );
     glUseProgram(mShaderProgram);
+  }
+
+  void ShaderProgram::bind()
+  {
+    glGetIntegerv(GL_CURRENT_PROGRAM, &mResourceToRestore);
+    glUseProgram(mShaderProgram);
+  }
+
+  void ShaderProgram::unbind()
+  {
+    glUseProgram(mResourceToRestore);
   }
 }  // namespace RenderSystem

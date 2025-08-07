@@ -1,4 +1,4 @@
-#include "BaseSceneShaderProgram.h"
+#include "ShadowMapShaderProgram.h"
 
 #include <glm/gtc/type_ptr.hpp>
 
@@ -9,7 +9,7 @@
 
 namespace RenderSystem
 {
-  BaseSceneShaderProgram::BaseSceneShaderProgram(
+  ShadowMapShaderProgram::ShadowMapShaderProgram(
     const path& vertexShaderPath, const path& fragmentShaderPath
   )
     : ShaderProgram(vertexShaderPath, fragmentShaderPath),
@@ -20,28 +20,27 @@ namespace RenderSystem
     initUniformLocations();
   }
 
-  void BaseSceneShaderProgram::setModel(const glm::mat4& model)
+  void ShadowMapShaderProgram::setModel(const glm::mat4& model)
   {
-    invokeAction([this, &model]()
-                 { glUniformMatrix4fv(mModel, 1, false, glm::value_ptr(model)); });
+    invoke([this, &model]()
+           { glUniformMatrix4fv(mModel, 1, false, glm::value_ptr(model)); });
   }
 
-  void BaseSceneShaderProgram::setLightView(const glm::mat4& lightView)
+  void ShadowMapShaderProgram::setLightView(const glm::mat4& lightView)
   {
-    invokeAction([this, &lightView]()
-                 { glUniformMatrix4fv(mLightView, 1, false, glm::value_ptr(lightView)); }
-    );
+    invoke([this, &lightView]()
+           { glUniformMatrix4fv(mLightView, 1, false, glm::value_ptr(lightView)); });
   }
 
-  void BaseSceneShaderProgram::setLightProjection(const glm::mat4& lightProjection)
+  void ShadowMapShaderProgram::setLightProjection(const glm::mat4& lightProjection)
   {
-    invokeAction(
+    invoke(
       [this, &lightProjection]()
       { glUniformMatrix4fv(mLightProjection, 1, false, glm::value_ptr(lightProjection)); }
     );
   }
 
-  void BaseSceneShaderProgram::initUniformLocations()
+  void ShadowMapShaderProgram::initUniformLocations()
   {
     mModel = glGetUniformLocation(mShaderProgram, "model");
     mLightView = glGetUniformLocation(mShaderProgram, "lightView");

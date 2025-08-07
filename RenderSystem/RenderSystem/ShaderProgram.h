@@ -3,9 +3,11 @@
 #include <filesystem>
 #include <functional>
 
+#include "RequiresBindBeforeInvoke.h"
+
 namespace RenderSystem
 {
-  class ShaderProgram
+  class ShaderProgram : public RequiresBindBeforeInvoke
   {
    public:
     ShaderProgram(
@@ -13,14 +15,14 @@ namespace RenderSystem
       const std::filesystem::path& fragmentShaderPath
     );
 
-    void invokeAction(const std::function<void()>& action) const;
-
    protected:
     virtual ~ShaderProgram();
 
    private:
     void init();
     void initShaderProgram();
+    void bind() override;
+    void unbind() override;
 
    protected:
     std::filesystem::path mVertexShaderPath;

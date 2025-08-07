@@ -11,7 +11,7 @@ namespace RenderSystem
 
   void ImageTexture::setDimensions(int width, int height)
   {
-    invokeEditAction(
+    invoke(
       [&width, &height]()
       {
         glTexImage2D(
@@ -24,7 +24,12 @@ namespace RenderSystem
   void ImageTexture::init()
   {
     setDimensions(mWidth, mHeight);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    invoke(
+      []()
+      {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      }
+    );
   }
 }  // namespace RenderSystem

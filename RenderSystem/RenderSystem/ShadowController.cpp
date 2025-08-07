@@ -41,18 +41,18 @@ namespace RenderSystem
 
   void ShadowController::setModel(const glm::mat4& model)
   {
-    mShaderProgram.invokeAction([this, &model]() { mShaderProgram.setModel(model); });
+    mShaderProgram.invoke([this, &model]() { mShaderProgram.setModel(model); });
   }
 
   void ShadowController::setLightView(const glm::mat4& lightView)
   {
-    mShaderProgram.invokeAction([this, &lightView]()
+    mShaderProgram.invoke([this, &lightView]()
                                 { mShaderProgram.setLightView(lightView); });
   }
 
   void ShadowController::setLightProjection(const glm::mat4& lightProjection)
   {
-    mShaderProgram.invokeAction([this, &lightProjection]()
+    mShaderProgram.invoke([this, &lightProjection]()
                                 { mShaderProgram.setLightProjection(lightProjection); });
   }
 
@@ -65,12 +65,12 @@ namespace RenderSystem
     const std::function<void()>& renderSceneFunc
   )
   {
-    mFBO.invokeAction(
+    mFBO.invoke(
       [this, &renderSceneFunc]()
       {
         glViewport(0, 0, mTexture.getWidth(), mTexture.getHeight());
         glClear(GL_DEPTH_BUFFER_BIT);
-        mShaderProgram.invokeAction(renderSceneFunc);
+        mShaderProgram.invoke(renderSceneFunc);
       }
     );
   }

@@ -2,17 +2,17 @@
 
 #include <functional>
 
-#include "BaseSceneShaderProgram.h"
+#include "AbstractShaderProgram.h"
 #include "DepthTexture.h"
 #include "FrameBufferObject.h"
 #include "GeometryCore/Typedefs.h"
-#include "Modelable.h"
+#include "ShadowMapShaderProgram.h"
 
 using namespace GeometryCore;
 
 namespace RenderSystem
 {
-  class ShadowController : public Modelable
+  class ShadowController : public AbstractShaderProgram
   {
    public:
     ShadowController(const path& vertexShaderPath, const path& fragmentShaderPath);
@@ -29,7 +29,7 @@ namespace RenderSystem
     void init();
 
    private:
-    BaseSceneShaderProgram mShaderProgram;
+    ShadowMapShaderProgram mShaderProgram;
     DepthTexture mTexture;
     FrameBufferObject mFBO;
   };

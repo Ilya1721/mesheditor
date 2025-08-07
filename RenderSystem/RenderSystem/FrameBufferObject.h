@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Bindable.h"
+#include "RequiresBindBeforeInvoke.h"
 #include "Texture.h"
 
 namespace RenderSystem
 {
-  class FrameBufferObject : public Bindable
+  class FrameBufferObject : public RequiresBindBeforeInvoke
   {
    public:
     FrameBufferObject();
