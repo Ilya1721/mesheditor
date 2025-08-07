@@ -1,8 +1,8 @@
 #pragma once
 
 #include "AbstractShaderProgram.h"
+#include "DirectionalLight.h"
 #include "GeometryCore/Typedefs.h"
-#include "Lighting.h"
 #include "ShaderProgram.h"
 
 using namespace GeometryCore;
@@ -22,7 +22,7 @@ namespace RenderSystem
     void setModel(const glm::mat4& model) override;
     void setCameraPos(const Point3D& cameraPos);
     void setMaterial(const Material& material);
-    void setLight(const Light& light);
+    void setDirectionalLightParams(const DirectionalLightParams& light);
     void setView(const glm::mat4& view);
     void setProjection(const glm::mat4& projection);
     void setDepthMap(int textureId);
@@ -35,7 +35,7 @@ namespace RenderSystem
     void setUp();
 
    private:
-    Lighting mLighting;
+    DirectionalLight mDirectionalLight;
     int mModel;
     int mLightView;
     int mLightProjection;

@@ -4,7 +4,7 @@
 #include <string>
 
 #include "GeometryCore/Typedefs.h"
-#include "Light.h"
+#include "LightParams.h"
 #include "Material.h"
 #include "Typedefs.h"
 
@@ -48,7 +48,7 @@ namespace RenderSystem
     RGB(0.296648f, 0.296648f, 0.296648f), 11.264f
   };
 
-  static inline constexpr Light DEFAULT_LIGHT {
+  static inline constexpr DirectionalLightParams DIRECTIONAL_LIGHT_PARAMS {
     RGB(1.0f, 1.0f, 1.0f), RGB(1.0f, 1.0f, 1.0f), RGB(0.1f, 0.1f, 0.1f)
   };
 

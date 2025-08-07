@@ -3,16 +3,16 @@
 namespace RenderSystem
 {
   struct Material;
-  struct Light;
+  struct DirectionalLightParams;
 
-  class Lighting
+  class DirectionalLight
   {
    public:
     void init(int shaderProgram);
     void setLightSourcePos(const float* lightSourcePos) const;
     void setCameraPos(const float* cameraPos) const;
     void setMaterial(const Material& material);
-    void setLight(const Light& light);
+    void setLightParams(const DirectionalLightParams& light);
 
    private:
     void setLightAmbient(const float* ambient) const;

@@ -139,7 +139,7 @@
     <ClCompile Include="RenderSystem\glad.c" />
     <ClCompile Include="RenderSystem\ImageTexture.cpp" />
     <ClCompile Include="RenderSystem\Intersection.cpp" />
-    <ClCompile Include="RenderSystem\Lighting.cpp" />
+    <ClCompile Include="RenderSystem\DirectionalLight.cpp" />
     <ClCompile Include="RenderSystem\LightSource.cpp" />
     <ClCompile Include="RenderSystem\Mover.cpp" />
     <ClCompile Include="RenderSystem\Object3D.cpp" />
@@ -179,8 +179,8 @@
     <ClInclude Include="RenderSystem\ImageTexture.h" />
     <ClInclude Include="RenderSystem\Intersection.h" />
     <ClInclude Include="RenderSystem\khrplatform.h" />
-    <ClInclude Include="RenderSystem\Light.h" />
-    <ClInclude Include="RenderSystem\Lighting.h" />
+    <ClInclude Include="RenderSystem\LightParams.h" />
+    <ClInclude Include="RenderSystem\DirectionalLight.h" />
     <ClInclude Include="RenderSystem\LightSource.h" />
     <ClInclude Include="RenderSystem\Material.h" />
     <ClInclude Include="RenderSystem\Mover.h" />

@@ -6,7 +6,7 @@
 
 namespace RenderSystem
 {
-  struct Light
+  struct DirectionalLightParams
   {
     RGB ambient;
     RGB diffuse;
