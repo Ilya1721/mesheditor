@@ -3,29 +3,7 @@
 #ifdef __gl_h_
 #undef __gl_h_
 #endif
-#include <glm/gtc/type_ptr.hpp>
-
-#include "MeshCore/AABBox.h"
 #include "glad.h"
-
-using namespace MeshCore;
-
-namespace
-{
-  glm::mat4 calcLightSpaceProjectionMatrix(const AABBox& sceneBBox)
-  {
-    const auto bboxHeight = sceneBBox.getHeight();
-    float orthoSize = bboxHeight / 2.0f;
-    float left = -orthoSize;
-    float right = orthoSize;
-    float bottom = -orthoSize;
-    float top = orthoSize;
-    float near_plane = 0.1f;
-    float far_plane = bboxHeight * 2;
-
-    return glm::ortho(left, right, bottom, top, near_plane, far_plane);
-  }
-}  // namespace
 
 namespace RenderSystem
 {
@@ -39,22 +17,7 @@ namespace RenderSystem
 
   unsigned int ShadowController::getDepthTextureId() const { return mTexture.getId(); }
 
-  void ShadowController::setModel(const glm::mat4& model)
-  {
-    mShaderProgram.invoke([this, &model]() { mShaderProgram.setModel(model); });
-  }
-
-  void ShadowController::setLightView(const glm::mat4& lightView)
-  {
-    mShaderProgram.invoke([this, &lightView]()
-                                { mShaderProgram.setLightView(lightView); });
-  }
-
-  void ShadowController::setLightProjection(const glm::mat4& lightProjection)
-  {
-    mShaderProgram.invoke([this, &lightProjection]()
-                                { mShaderProgram.setLightProjection(lightProjection); });
-  }
+  ShadowMapShaderProgram* ShadowController::getShaderProgram() { return &mShaderProgram; }
 
   void ShadowController::setTextureDimensions(int width, int height)
   {

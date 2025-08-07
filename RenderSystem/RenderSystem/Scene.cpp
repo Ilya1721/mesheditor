@@ -106,7 +106,7 @@ namespace RenderSystem
     mShadowController->renderSceneToDepthMap(
       [this]()
       {
-        renderScene(mShadowController);
+        renderScene(mShadowController->getShaderProgram());
         renderSceneDecorations();
       }
     );
@@ -180,7 +180,7 @@ namespace RenderSystem
       -width, width, -orthoSize, orthoSize, NEAR_PLANE_DISTANCE, FAR_PLANE_DISTANCE
     );
     mSceneShaderProgram->setLightProjection(lightProjectionMatrix);
-    mShadowController->setLightProjection(lightProjectionMatrix);
+    mShadowController->getShaderProgram()->setLightProjection(lightProjectionMatrix);
   }
 
   void Scene::setPickedObject(Object3D* pickedObject) { mPickedObject = pickedObject; }
