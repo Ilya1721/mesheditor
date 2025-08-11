@@ -9,10 +9,10 @@ namespace RenderSystem
   class SceneShaderProgram;
   class ShadowController;
 
-  class LightSource
+  class DirLightSource
   {
    public:
-    LightSource(
+    DirLightSource(
       SceneShaderProgram* sceneShaderProgram, ShadowController* shadowController
     );
 

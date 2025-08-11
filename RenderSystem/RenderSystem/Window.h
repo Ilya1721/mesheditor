@@ -60,6 +60,10 @@ namespace RenderSystem
     void toggleWireframe();
     void highlightWholeObject(const Object3D* object);
     void setHighlightedFacesData(const HighlightedFacesData& data);
+    void addPointLight(const PointLightParams& params);
+    void removePointLight(unsigned int index);
+    void setPointLightParams(unsigned int index, const PointLightParams& params);
+    void setPointLightSourcePos(unsigned int index, const Point3D& lightSourcePos);
 
     void render();
     void zoom(float step);

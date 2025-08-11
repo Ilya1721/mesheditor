@@ -5,9 +5,10 @@
 #include <string>
 
 #include "AbstractShaderProgram.h"
+#include "DirLightSource.h"
 #include "GeometryCore/Typedefs.h"
 #include "HighlightedFacesData.h"
-#include "LightSource.h"
+#include "LightParams.h"
 #include "Object3D.h"
 #include "Object3DIntersection.h"
 #include "SceneDecoration.h"
@@ -49,6 +50,10 @@ namespace RenderSystem
     void setHighlightedFacesData(const HighlightedFacesData& data);
     void setLightSourcePos(const Point3D& pos);
     void setAspectRatio(float aspectRatio);
+    void addPointLight(const PointLightParams& params);
+    void removePointLight(unsigned int index);
+    void setPointLightParams(unsigned int index, const PointLightParams& params);
+    void setPointLightSourcePos(unsigned int index, const Point3D& lightSourcePos);
     void render();
 
     const Object3D& getRootObject() const;
@@ -85,6 +90,6 @@ namespace RenderSystem
     RenderData mSceneRenderData;
     std::unordered_map<const Object3D*, int> mSceneObjectVertexOffsetMap;
     Object3D mRootObject;
-    LightSource mLightSource;
+    DirLightSource mLightSource;
   };
 }  // namespace RenderSystem

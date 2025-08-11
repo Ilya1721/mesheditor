@@ -3,6 +3,8 @@
 #include "AbstractShaderProgram.h"
 #include "DirectionalLight.h"
 #include "GeometryCore/Typedefs.h"
+#include "Material.h"
+#include "PointLights.h"
 #include "ShaderProgram.h"
 
 using namespace GeometryCore;
@@ -11,7 +13,7 @@ namespace RenderSystem
 {
   class SceneShaderProgram : public ShaderProgram, public AbstractShaderProgram
   {
-    friend class LightSource;
+    friend class DirLightSource;
 
    public:
     SceneShaderProgram(
@@ -21,21 +23,27 @@ namespace RenderSystem
 
     void setModel(const glm::mat4& model) override;
     void setCameraPos(const Point3D& cameraPos);
-    void setMaterial(const Material& material);
+    void setMaterialParams(const MaterialParams& materialParams);
     void setDirectionalLightParams(const DirectionalLightParams& light);
     void setView(const glm::mat4& view);
     void setProjection(const glm::mat4& projection);
     void setDepthMap(int textureId);
     void setLightView(const glm::mat4& lightView);
     void setLightProjection(const glm::mat4& lightProjection);
+    void addPointLight(const PointLightParams& params);
+    void removePointLight(unsigned int index);
+    void setPointLightParams(unsigned int index, const PointLightParams& params);
+    void setPointLightSourcePos(unsigned int index, const Point3D& lightSourcePos);
 
    private:
-    void setLightSourcePos(const Point3D& lightSourcePos);
+    void setDirLightSourcePos(const Point3D& lightSourcePos);
     void initUniformLocations();
     void setUp();
 
    private:
     DirectionalLight mDirectionalLight;
+    PointLights mPointLights;
+    Material mMaterial;
     int mModel;
     int mLightView;
     int mLightProjection;

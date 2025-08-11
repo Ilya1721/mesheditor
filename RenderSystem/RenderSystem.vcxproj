@@ -131,6 +131,9 @@
     <None Include="Shaders\VertexShader.vert" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="RenderSystem\Material.cpp" />
+    <ClCompile Include="RenderSystem\PointLight.cpp" />
+    <ClCompile Include="RenderSystem\PointLights.cpp" />
     <ClCompile Include="RenderSystem\RequiresBindBeforeInvoke.cpp" />
     <ClCompile Include="RenderSystem\Camera.cpp" />
     <ClCompile Include="RenderSystem\Cloner.cpp" />
@@ -140,7 +143,7 @@
     <ClCompile Include="RenderSystem\ImageTexture.cpp" />
     <ClCompile Include="RenderSystem\Intersection.cpp" />
     <ClCompile Include="RenderSystem\DirectionalLight.cpp" />
-    <ClCompile Include="RenderSystem\LightSource.cpp" />
+    <ClCompile Include="RenderSystem\DirLightSource.cpp" />
     <ClCompile Include="RenderSystem\Mover.cpp" />
     <ClCompile Include="RenderSystem\Object3D.cpp" />
     <ClCompile Include="RenderSystem\Operation.cpp" />
@@ -167,6 +170,9 @@
     <ClCompile Include="RenderSystem\Zoom.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="RenderSystem\Material.h" />
+    <ClInclude Include="RenderSystem\PointLight.h" />
+    <ClInclude Include="RenderSystem\PointLights.h" />
     <ClInclude Include="RenderSystem\RequiresBindBeforeInvoke.h" />
     <ClInclude Include="RenderSystem\Camera.h" />
     <ClInclude Include="RenderSystem\Cloner.h" />
@@ -181,8 +187,8 @@
     <ClInclude Include="RenderSystem\khrplatform.h" />
     <ClInclude Include="RenderSystem\LightParams.h" />
     <ClInclude Include="RenderSystem\DirectionalLight.h" />
-    <ClInclude Include="RenderSystem\LightSource.h" />
-    <ClInclude Include="RenderSystem\Material.h" />
+    <ClInclude Include="RenderSystem\DirLightSource.h" />
+    <ClInclude Include="RenderSystem\MaterialParams.h" />
     <ClInclude Include="RenderSystem\Mover.h" />
     <ClInclude Include="RenderSystem\Object3D.h" />
     <ClInclude Include="RenderSystem\Object3DIntersection.h" />

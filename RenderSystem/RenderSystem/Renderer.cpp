@@ -19,9 +19,9 @@ namespace
 {
   using namespace RenderSystem;
 
-  constexpr Material MAIN_MATERIAL = GOLD_MATERIAL;
-  constexpr Material HIGHLIGHT_MATERIAL = RUBY_MATERIAL;
-  constexpr Material WIREFRAME_MATERIAL = BLACK_MATERIAL;
+  constexpr MaterialParams MAIN_MATERIAL = GOLD_MATERIAL;
+  constexpr MaterialParams HIGHLIGHT_MATERIAL = RUBY_MATERIAL;
+  constexpr MaterialParams WIREFRAME_MATERIAL = BLACK_MATERIAL;
 }  // namespace
 
 namespace RenderSystem

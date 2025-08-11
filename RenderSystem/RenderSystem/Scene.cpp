@@ -16,10 +16,10 @@ using namespace GeometryCore;
 
 namespace RenderSystem
 {
-  constexpr Material FLOOR_MATERIAL = PEARL_MATERIAL;
-  constexpr Material MAIN_MATERIAL = GOLD_MATERIAL;
-  constexpr Material HIGHLIGHT_MATERIAL = RUBY_MATERIAL;
-  constexpr Material WIREFRAME_MATERIAL = BLACK_MATERIAL;
+  constexpr MaterialParams FLOOR_MATERIAL = PEARL_MATERIAL;
+  constexpr MaterialParams MAIN_MATERIAL = GOLD_MATERIAL;
+  constexpr MaterialParams HIGHLIGHT_MATERIAL = RUBY_MATERIAL;
+  constexpr MaterialParams WIREFRAME_MATERIAL = BLACK_MATERIAL;
 }  // namespace RenderSystem
 
 namespace RenderSystem
@@ -119,17 +119,17 @@ namespace RenderSystem
     int startIndex = 0;
     for (const auto& sceneDecoration : mSceneDecorations)
     {
-      mSceneShaderProgram->setMaterial(sceneDecoration.material);
+      mSceneShaderProgram->setMaterialParams(sceneDecoration.materialParams);
       mRenderer->renderSceneDecoration(sceneDecoration, startIndex);
     }
 
-    mSceneShaderProgram->setMaterial(MAIN_MATERIAL);
+    mSceneShaderProgram->setMaterialParams(MAIN_MATERIAL);
     mSceneShaderProgram->setModel(mRootObject.getTransform());
   }
 
   void Scene::renderHighlightedFaces()
   {
-    mSceneShaderProgram->setMaterial(HIGHLIGHT_MATERIAL);
+    mSceneShaderProgram->setMaterialParams(HIGHLIGHT_MATERIAL);
 
     for (const auto& faceIdx : mHighlightedFacesData.facesIndices)
     {
@@ -139,14 +139,14 @@ namespace RenderSystem
       );
     }
 
-    mSceneShaderProgram->setMaterial(MAIN_MATERIAL);
+    mSceneShaderProgram->setMaterialParams(MAIN_MATERIAL);
   }
 
   void Scene::renderWireframe()
   {
     if (!mRenderWireframe) { return; }
 
-    mSceneShaderProgram->setMaterial(WIREFRAME_MATERIAL);
+    mSceneShaderProgram->setMaterialParams(WIREFRAME_MATERIAL);
 
     for (const auto& [object, vertexOffset] : mSceneObjectVertexOffsetMap)
     {
@@ -154,7 +154,7 @@ namespace RenderSystem
       mRenderer->renderWireframe(object->getVertexCount());
     }
 
-    mSceneShaderProgram->setMaterial(MAIN_MATERIAL);
+    mSceneShaderProgram->setMaterialParams(MAIN_MATERIAL);
   }
 
   void Scene::renderWholeObjectHighlighted()
@@ -163,11 +163,11 @@ namespace RenderSystem
       mSceneObjectVertexOffsetMap.find(mHighlightedObject);
     if (highlightedObjectIt == mSceneObjectVertexOffsetMap.end()) { return; }
 
-    mSceneShaderProgram->setMaterial(HIGHLIGHT_MATERIAL);
+    mSceneShaderProgram->setMaterialParams(HIGHLIGHT_MATERIAL);
     const auto& [object, vertexCount] = *highlightedObjectIt;
     mSceneShaderProgram->setModel(object->getTransform());
     mRenderer->renderWholeObjectHighlighted(*object, vertexCount);
-    mSceneShaderProgram->setMaterial(MAIN_MATERIAL);
+    mSceneShaderProgram->setMaterialParams(MAIN_MATERIAL);
   }
 
   void Scene::updateLightProjection()
@@ -207,6 +207,26 @@ namespace RenderSystem
   void Scene::setLightSourcePos(const Point3D& pos) { mLightSource.setPosition(pos); }
 
   void Scene::setAspectRatio(float aspectRatio) { mAspectRatio = aspectRatio; }
+
+  void Scene::addPointLight(const PointLightParams& params)
+  {
+    mSceneShaderProgram->addPointLight(params);
+  }
+
+  void Scene::removePointLight(unsigned int index)
+  {
+    mSceneShaderProgram->removePointLight(index);
+  }
+
+  void Scene::setPointLightParams(unsigned int index, const PointLightParams& params)
+  {
+    mSceneShaderProgram->setPointLightParams(index, params);
+  }
+
+  void Scene::setPointLightSourcePos(unsigned int index, const Point3D& lightSourcePos)
+  {
+    mSceneShaderProgram->setPointLightSourcePos(index, lightSourcePos);
+  }
 
   void Scene::render()
   {

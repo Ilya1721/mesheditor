@@ -1,4 +1,4 @@
-#include "LightSource.h"
+#include "DirLightSource.h"
 
 #include <glm/ext/matrix_transform.hpp>
 
@@ -7,19 +7,19 @@
 
 namespace RenderSystem
 {
-  LightSource::LightSource(
+  DirLightSource::DirLightSource(
     SceneShaderProgram* sceneShaderProgram, ShadowController* shadowController
   )
     : mPos(), mSceneShaderProgram(sceneShaderProgram), mShadowController(shadowController)
   {
   }
 
-  const Point3D& LightSource::getPosition() const { return mPos; }
+  const Point3D& DirLightSource::getPosition() const { return mPos; }
 
-  void LightSource::setPosition(const Point3D& pos)
+  void DirLightSource::setPosition(const Point3D& pos)
   {
     mPos = pos;
-    mSceneShaderProgram->setLightSourcePos(pos);
+    mSceneShaderProgram->setDirLightSourcePos(pos);
 
     const auto& lightViewMatrix =
       glm::lookAt(pos, Point3D(0.0f, 0.0f, 0.0f), Vector3D(0.0f, 1.0f, 0.0f));

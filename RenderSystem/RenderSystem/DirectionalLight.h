@@ -2,7 +2,6 @@
 
 namespace RenderSystem
 {
-  struct Material;
   struct DirectionalLightParams;
 
   class DirectionalLight
@@ -11,17 +10,12 @@ namespace RenderSystem
     void init(int shaderProgram);
     void setLightSourcePos(const float* lightSourcePos) const;
     void setCameraPos(const float* cameraPos) const;
-    void setMaterial(const Material& material);
-    void setLightParams(const DirectionalLightParams& light);
+    void setParams(const DirectionalLightParams& light);
 
    private:
-    void setLightAmbient(const float* ambient) const;
-    void setLightDiffuse(const float* diffuse) const;
-    void setLightSpecular(const float* specular) const;
-    void setMaterialAmbient(const float* ambient) const;
-    void setMaterialDiffuse(const float* diffuse) const;
-    void setMaterialSpecular(const float* specular) const;
-    void setMaterialShininess(float shininess) const;
+    void setAmbient(const float* ambient) const;
+    void setDiffuse(const float* diffuse) const;
+    void setSpecular(const float* specular) const;
 
     void initUniformLocations();
     void setupSettings();
@@ -32,12 +26,8 @@ namespace RenderSystem
     int mShaderProgram;
     int mLightSourcePos;
     int mCameraPos;
-    int mLightAmbient;
-    int mLightDiffuse;
-    int mLightSpecular;
-    int mMaterialAmbient;
-    int mMaterialDiffuse;
-    int mMaterialSpecular;
-    int mMaterialShininess;
+    int mAmbient;
+    int mDiffuse;
+    int mSpecular;
   };
 }  // namespace RenderSystem

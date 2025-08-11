@@ -24,6 +24,8 @@ namespace RenderSystem
       mDepthMap()
   {
     mDirectionalLight.init(mShaderProgram);
+    mPointLights.init(mShaderProgram);
+    mMaterial.init(mShaderProgram);
     initUniformLocations();
     setUp();
   }
@@ -31,28 +33,29 @@ namespace RenderSystem
   void SceneShaderProgram::setModel(const glm::mat4& model)
   {
     invoke([this, &model]()
-      { glUniformMatrix4fv(mModel, 1, false, glm::value_ptr(model)); });
+           { glUniformMatrix4fv(mModel, 1, false, glm::value_ptr(model)); });
   }
 
-  void SceneShaderProgram::setLightSourcePos(const Point3D& lightSourcePos)
+  void SceneShaderProgram::setDirLightSourcePos(const Point3D& lightSourcePos)
   {
     invoke([this, &lightSourcePos]()
-      { mDirectionalLight.setLightSourcePos(glm::value_ptr(lightSourcePos)); });
+           { mDirectionalLight.setLightSourcePos(glm::value_ptr(lightSourcePos)); });
   }
 
   void SceneShaderProgram::setCameraPos(const Point3D& cameraPos)
   {
-    invoke([this, &cameraPos]() { mDirectionalLight.setCameraPos(glm::value_ptr(cameraPos)); });
+    invoke([this, &cameraPos]()
+           { mDirectionalLight.setCameraPos(glm::value_ptr(cameraPos)); });
   }
 
-  void SceneShaderProgram::setMaterial(const Material& material)
+  void SceneShaderProgram::setMaterialParams(const MaterialParams& materialParams)
   {
-    invoke([this, &material]() { mDirectionalLight.setMaterial(material); });
+    invoke([this, &materialParams]() { mMaterial.setParams(materialParams); });
   }
 
   void SceneShaderProgram::setDirectionalLightParams(const DirectionalLightParams& params)
   {
-    invoke([this, &params]() { mDirectionalLight.setLightParams(params); });
+    invoke([this, &params]() { mDirectionalLight.setParams(params); });
   }
 
   void SceneShaderProgram::setView(const glm::mat4& view)
@@ -82,7 +85,7 @@ namespace RenderSystem
   void SceneShaderProgram::setLightView(const glm::mat4& lightView)
   {
     invoke([this, &lightView]()
-      { glUniformMatrix4fv(mLightView, 1, false, glm::value_ptr(lightView)); });
+           { glUniformMatrix4fv(mLightView, 1, false, glm::value_ptr(lightView)); });
   }
 
   void SceneShaderProgram::setLightProjection(const glm::mat4& lightProjection)
@@ -91,6 +94,32 @@ namespace RenderSystem
       [this, &lightProjection]()
       { glUniformMatrix4fv(mLightProjection, 1, false, glm::value_ptr(lightProjection)); }
     );
+  }
+
+  void SceneShaderProgram::addPointLight(const PointLightParams& params)
+  {
+    mPointLights.addLight(params);
+  }
+
+  void SceneShaderProgram::removePointLight(unsigned int index)
+  {
+    mPointLights.removeLight(index);
+  }
+
+  void SceneShaderProgram::setPointLightParams(
+    unsigned int index, const PointLightParams& params
+  )
+  {
+    const auto& light = mPointLights.getLight(index);
+    if (light) { light->setParams(params); }
+  }
+
+  void SceneShaderProgram::setPointLightSourcePos(
+    unsigned int index, const Point3D& lightSourcePos
+  )
+  {
+    const auto& light = mPointLights.getLight(index);
+    if (light) { light->setLightSourcePos(glm::value_ptr(lightSourcePos)); }
   }
 
   void SceneShaderProgram::initUniformLocations()

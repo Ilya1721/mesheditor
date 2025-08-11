@@ -7,7 +7,6 @@
 
 #include "Constants.h"
 #include "LightParams.h"
-#include "Material.h"
 #include "glad.h"
 
 namespace RenderSystem
@@ -25,8 +24,7 @@ namespace RenderSystem
       BACKGROUND_COLOR.r, BACKGROUND_COLOR.g, BACKGROUND_COLOR.b, BACKGROUND_COLOR.a
     );
     glEnable(GL_DEPTH_TEST);
-    setLightParams(DIRECTIONAL_LIGHT_PARAMS);
-    setMaterial(GOLD_MATERIAL);
+    setParams(DIRECTIONAL_LIGHT_PARAMS);
   }
 
   int DirectionalLight::getUniformLocation(const char* name) const
@@ -36,30 +34,18 @@ namespace RenderSystem
 
   void DirectionalLight::initUniformLocations()
   {
-    mLightSourcePos = getUniformLocation("lightSourcePosInCameraSpace");
-    mCameraPos = getUniformLocation("cameraPosInCameraSpace");
-    mLightAmbient = getUniformLocation("directionalLight.ambient");
-    mLightDiffuse = getUniformLocation("directionalLight.diffuse");
-    mLightSpecular = getUniformLocation("directionalLight.specular");
-    mMaterialAmbient = getUniformLocation("material.ambient");
-    mMaterialDiffuse = getUniformLocation("material.diffuse");
-    mMaterialSpecular = getUniformLocation("material.specular");
-    mMaterialShininess = getUniformLocation("material.shininess");
+    mCameraPos = getUniformLocation("cameraPosCameraSpace");
+    mLightSourcePos = getUniformLocation("dirLightPosCameraSpace");
+    mAmbient = getUniformLocation("directionalLightParams.ambient");
+    mDiffuse = getUniformLocation("directionalLightParams.diffuse");
+    mSpecular = getUniformLocation("directionalLightParams.specular");
   }
 
-  void DirectionalLight::setMaterial(const Material& material)
+  void DirectionalLight::setParams(const DirectionalLightParams& params)
   {
-    setMaterialAmbient(glm::value_ptr(material.ambient));
-    setMaterialDiffuse(glm::value_ptr(material.diffuse));
-    setMaterialSpecular(glm::value_ptr(material.specular));
-    setMaterialShininess(material.shininess);
-  }
-
-  void DirectionalLight::setLightParams(const DirectionalLightParams& params)
-  {
-    setLightAmbient(glm::value_ptr(params.ambient));
-    setLightDiffuse(glm::value_ptr(params.diffuse));
-    setLightSpecular(glm::value_ptr(params.specular));
+    setAmbient(glm::value_ptr(params.ambient));
+    setDiffuse(glm::value_ptr(params.diffuse));
+    setSpecular(glm::value_ptr(params.specular));
   }
 
   void DirectionalLight::setLightSourcePos(const float* lightSourcePos) const
@@ -72,38 +58,18 @@ namespace RenderSystem
     glUniform3fv(mCameraPos, 1, cameraPos);
   }
 
-  void DirectionalLight::setLightAmbient(const float* ambient) const
+  void DirectionalLight::setAmbient(const float* ambient) const
   {
-    glUniform3fv(mLightAmbient, 1, ambient);
+    glUniform3fv(mAmbient, 1, ambient);
   }
 
-  void DirectionalLight::setLightDiffuse(const float* diffuse) const
+  void DirectionalLight::setDiffuse(const float* diffuse) const
   {
-    glUniform3fv(mLightDiffuse, 1, diffuse);
+    glUniform3fv(mDiffuse, 1, diffuse);
   }
 
-  void DirectionalLight::setLightSpecular(const float* specular) const
+  void DirectionalLight::setSpecular(const float* specular) const
   {
-    glUniform3fv(mLightSpecular, 1, specular);
-  }
-
-  void DirectionalLight::setMaterialAmbient(const float* ambient) const
-  {
-    glUniform3fv(mMaterialAmbient, 1, ambient);
-  }
-
-  void DirectionalLight::setMaterialDiffuse(const float* diffuse) const
-  {
-    glUniform3fv(mMaterialDiffuse, 1, diffuse);
-  }
-
-  void DirectionalLight::setMaterialSpecular(const float* specular) const
-  {
-    glUniform3fv(mMaterialSpecular, 1, specular);
-  }
-
-  void DirectionalLight::setMaterialShininess(float shininess) const
-  {
-    glUniform1f(mMaterialShininess, shininess);
+    glUniform3fv(mSpecular, 1, specular);
   }
 }  // namespace RenderSystem

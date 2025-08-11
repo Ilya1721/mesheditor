@@ -18,11 +18,11 @@ namespace
   using namespace RenderSystem;
 
   SceneDecoration getBaseSceneDecoration(
-    const Material& material, int renderMode, const RenderData& renderData
+    const MaterialParams& materialParams, int renderMode, const RenderData& renderData
   )
   {
     SceneDecoration primitive;
-    primitive.material = material;
+    primitive.materialParams = materialParams;
     primitive.renderMode = renderMode;
     primitive.renderData = renderData;
 
@@ -33,34 +33,39 @@ namespace
 namespace RenderSystem
 {
   SceneDecoration SceneDecoration::createDecoration(
-    const GeometryCore::Ray& ray, float length, const Material& material
+    const GeometryCore::Ray& ray, float length, const MaterialParams& materialParams
   )
   {
     return getBaseSceneDecoration(
-      material, GL_LINES, RenderData::createRenderData(ray, length)
+      materialParams, GL_LINES, RenderData::createRenderData(ray, length)
     );
   }
 
   SceneDecoration SceneDecoration::createDecoration(
-    const GeometryCore::Line& line, bool withArrowHead, const Material& material
+    const GeometryCore::Line& line,
+    bool withArrowHead,
+    const MaterialParams& materialParams
   )
   {
     return getBaseSceneDecoration(
-      material, GL_LINES, RenderData::createRenderData(line, withArrowHead)
+      materialParams, GL_LINES, RenderData::createRenderData(line, withArrowHead)
     );
   }
 
   SceneDecoration SceneDecoration::createDecoration(
-    const GeometryCore::Plane& plane, float width, float length, const Material& material
+    const GeometryCore::Plane& plane,
+    float width,
+    float length,
+    const MaterialParams& materialParams
   )
   {
     return getBaseSceneDecoration(
-      material, GL_TRIANGLES, RenderData::createRenderData(plane, width, length)
+      materialParams, GL_TRIANGLES, RenderData::createRenderData(plane, width, length)
     );
   }
 
   SceneDecoration SceneDecoration::createSceneFloor(
-    float sceneBBoxHeight, const Material& floorMaterial
+    float sceneBBoxHeight, const MaterialParams& floorMaterialParams
   )
   {
     auto originY = -sceneBBoxHeight * FLOOR_BBOX_HEIGHT_COEF;
@@ -69,7 +74,7 @@ namespace RenderSystem
 
     return createPlane(
       planeOrigin, planeNormal, FAR_PLANE_DISTANCE * 0.5, FAR_PLANE_DISTANCE * 0.5,
-      floorMaterial
+      floorMaterialParams
     );
   }
 
@@ -78,14 +83,16 @@ namespace RenderSystem
     const Vector3D& normal,
     float width,
     float height,
-    const Material& material
+    const MaterialParams& materialParams
   )
   {
-    return SceneDecoration::createDecoration({origin, normal}, width, height, material);
+    return SceneDecoration::createDecoration(
+      {origin, normal}, width, height, materialParams
+    );
   }
 
   SceneDecoration SceneDecoration::createLine(
-    const Point3D& start, const Point3D& end, const Material& material
+    const Point3D& start, const Point3D& end, const MaterialParams& material
   )
   {
     return SceneDecoration::createDecoration({start, end}, true, material);
