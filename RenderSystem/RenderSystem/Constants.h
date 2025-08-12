@@ -52,6 +52,13 @@ namespace RenderSystem
     RGB(1.0f, 1.0f, 1.0f), RGB(1.0f, 1.0f, 1.0f), RGB(0.1f, 0.1f, 0.1f)
   };
 
+  static inline constexpr PointLightParams POINT_LIGHT_PARAMS {RGB(1.0f, 1.0f, 1.0f),
+                                                               RGB(1.0f, 1.0f, 1.0f),
+                                                               RGB(0.1f, 0.1f, 0.1f),
+                                                               1.0f,
+                                                               0.009f,
+                                                               0.003f};
+
   constexpr RGBA BACKGROUND_COLOR = RGBA(0.725f, 0.9f, 1.0f, 1.0f);
   constexpr Point3D DEFAULT_CAMERA_POSITION = Point3D(0.0f, 0.0f, 5.0f);
   constexpr Point3D DEFAULT_CAMERA_TARGET = Point3D(0.0f, 0.0f, 0.0f);
@@ -76,6 +83,7 @@ namespace RenderSystem
   constexpr float LIGHT_SOURCE_POS_Z = FAR_PLANE_DISTANCE * 0.6f;
   constexpr float ARCBALL_SENSITIVITY = 0.01f;
   constexpr float SHADOW_BIAS = 0.00025f;
+  constexpr float POINT_LIGHT_BBOX_Y_COEF = 0.2f;
   inline const std::string WINDOW_TITLE = "Mesh Editor";
 
   constexpr bool DEBUG_RENDER = true;

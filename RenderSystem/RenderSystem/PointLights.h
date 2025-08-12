@@ -2,27 +2,29 @@
 
 #include <unordered_map>
 
+#include "GeometryCore/Typedefs.h"
 #include "LightParams.h"
 #include "PointLight.h"
+
+using namespace GeometryCore;
 
 namespace RenderSystem
 {
   class PointLights
   {
-  public:
+   public:
     void init(int shaderProgram);
-    void addLight(const PointLightParams& params);
+    void addLight(const PointLightParams& params, const Point3D& lightSourcePos);
     void removeLight(unsigned int index);
     PointLight* getLight(unsigned int index);
 
-  private:
+   private:
     void initUniformLocations();
     int getUniformLocation(const char* name) const;
 
-  private:
+   private:
     int mShaderProgram;
     int mLightsCount;
     std::unordered_map<unsigned int, PointLight> mLights;
   };
-}
-
+}  // namespace RenderSystem

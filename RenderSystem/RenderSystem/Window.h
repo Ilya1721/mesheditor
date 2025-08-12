@@ -55,12 +55,13 @@ namespace RenderSystem
       IntersectionMode intersectionMode = IntersectionMode::SURFACE
     );
     Ray castCursorRay() const;
+    Point3D getDefaultPointLightSourcePos() const;
 
     void setPickedObject(Object3D* pickedObject);
     void toggleWireframe();
     void highlightWholeObject(const Object3D* object);
     void setHighlightedFacesData(const HighlightedFacesData& data);
-    void addPointLight(const PointLightParams& params);
+    void addPointLight(const PointLightParams& params, const Point3D& lightSourcePos);
     void removePointLight(unsigned int index);
     void setPointLightParams(unsigned int index, const PointLightParams& params);
     void setPointLightSourcePos(unsigned int index, const Point3D& lightSourcePos);
@@ -87,7 +88,7 @@ namespace RenderSystem
     void resizeViewport(int width, int height);
     void setCallbacks();
     void adjustCamera();
-    void adjustLightSourcePos();
+    void adjustDirLightSourcePos();
 
    private:
     int mWidth;

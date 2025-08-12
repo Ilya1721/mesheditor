@@ -37,7 +37,7 @@ namespace RenderSystem
       mPickedObject(nullptr),
       mRenderWireframe(false),
       mHighlightedObject(nullptr),
-      mLightSource(sceneShaderProgram, shadowController),
+      mDirLightSource(sceneShaderProgram, shadowController),
       mAspectRatio(aspectRatio)
   {
     registerRootObjectCallbacks();
@@ -204,13 +204,16 @@ namespace RenderSystem
     mHighlightedFacesData = data;
   }
 
-  void Scene::setLightSourcePos(const Point3D& pos) { mLightSource.setPosition(pos); }
+  void Scene::setDirLightSourcePos(const Point3D& pos)
+  {
+    mDirLightSource.setPosition(pos);
+  }
 
   void Scene::setAspectRatio(float aspectRatio) { mAspectRatio = aspectRatio; }
 
-  void Scene::addPointLight(const PointLightParams& params)
+  void Scene::addPointLight(const PointLightParams& params, const Point3D& lightSourcePos)
   {
-    mSceneShaderProgram->addPointLight(params);
+    mSceneShaderProgram->addPointLight(params, lightSourcePos);
   }
 
   void Scene::removePointLight(unsigned int index)
@@ -271,6 +274,15 @@ namespace RenderSystem
   const HighlightedFacesData& Scene::getHighlightedFacesData()
   {
     return mHighlightedFacesData;
+  }
+
+  Point3D Scene::getDefaultPointLightSourcePos() const
+  {
+    const auto& bbox = mRootObject.getBBox();
+    const auto& bboxCenter = bbox.getCenter();
+    const auto& bboxMax = bbox.getMax();
+    auto yOffset = bboxMax.y * 0.2f;
+    return {bboxCenter.x, bboxMax.y + yOffset, bboxCenter.z};
   }
 
   const Object3D& Scene::getRootObject() const { return mRootObject; }

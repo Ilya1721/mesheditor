@@ -7,6 +7,7 @@
 #include "Orbit.h"
 #include "Pan.h"
 #include "Picker.h"
+#include "PointLightOperations.h"
 #include "SurfaceExtruder.h"
 #include "SurfaceHighlighter.h"
 #include "WireframeRenderer.h"
@@ -55,5 +56,6 @@ namespace RenderSystem
     addOperation<Picker>();
     addOperation<Mover>();
     addOperation<Cloner>();
+    addOperation<PointLightOperations>();
   }
 }  // namespace RenderSystem

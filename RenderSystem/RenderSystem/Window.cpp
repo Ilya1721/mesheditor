@@ -73,7 +73,7 @@ namespace RenderSystem
     initGLFW();
     init(meshFilePath);
     adjustCamera();
-    adjustLightSourcePos();
+    adjustDirLightSourcePos();
     setCallbacks();
   }
 
@@ -142,13 +142,13 @@ namespace RenderSystem
     mSceneShaderProgram->setCameraPos(cameraPosInCameraSpace);
   }
 
-  void Window::adjustLightSourcePos()
+  void Window::adjustDirLightSourcePos()
   {
-    const auto lightPos =
+    const auto dirLightPos =
       Point3D(LIGHT_SOURCE_POS_X, LIGHT_SOURCE_POS_Y, LIGHT_SOURCE_POS_Z);
-    Point3D lightSourcePosInCameraSpace =
-      transformPoint(lightPos, mCamera->getViewMatrix());
-    mScene->setLightSourcePos(lightSourcePosInCameraSpace);
+    Point3D dirLightSourcePosInCameraSpace =
+      transformPoint(dirLightPos, mCamera->getViewMatrix());
+    mScene->setDirLightSourcePos(dirLightSourcePosInCameraSpace);
   }
 
   void Window::render()
@@ -245,6 +245,11 @@ namespace RenderSystem
     };
   }
 
+  Point3D Window::getDefaultPointLightSourcePos() const
+  {
+    return mScene->getDefaultPointLightSourcePos();
+  }
+
   void Window::setPickedObject(Object3D* pickedObject)
   {
     mScene->setPickedObject(pickedObject);
@@ -262,9 +267,13 @@ namespace RenderSystem
     mScene->setHighlightedFacesData(data);
   }
 
-  void Window::addPointLight(const PointLightParams& params)
+  void Window::addPointLight(
+    const PointLightParams& params, const Point3D& lightSourcePos
+  )
   {
-    mScene->addPointLight(params);
+    Point3D lightSourcePosInCameraSpace =
+      transformPoint(lightSourcePos, mCamera->getViewMatrix());
+    mScene->addPointLight(params, lightSourcePosInCameraSpace);
   }
 
   void Window::removePointLight(unsigned int index) { mScene->removePointLight(index); }

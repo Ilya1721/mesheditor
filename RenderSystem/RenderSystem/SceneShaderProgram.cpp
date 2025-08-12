@@ -96,9 +96,11 @@ namespace RenderSystem
     );
   }
 
-  void SceneShaderProgram::addPointLight(const PointLightParams& params)
+  void SceneShaderProgram::addPointLight(
+    const PointLightParams& params, const Point3D& lightSourcePos
+  )
   {
-    mPointLights.addLight(params);
+    mPointLights.addLight(params, lightSourcePos);
   }
 
   void SceneShaderProgram::removePointLight(unsigned int index)

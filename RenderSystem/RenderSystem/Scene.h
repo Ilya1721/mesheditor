@@ -42,15 +42,16 @@ namespace RenderSystem
     bool getRenderWireframe() const;
     const Object3D* getHighlightedObject();
     const HighlightedFacesData& getHighlightedFacesData();
+    Point3D getDefaultPointLightSourcePos() const;
 
     void setPickedObject(Object3D* pickedObject);
     void addSceneDecoration(const SceneDecoration& sceneDecoration);
     void toggleWireframe();
     void highlightWholeObject(const Object3D* object);
     void setHighlightedFacesData(const HighlightedFacesData& data);
-    void setLightSourcePos(const Point3D& pos);
+    void setDirLightSourcePos(const Point3D& pos);
     void setAspectRatio(float aspectRatio);
-    void addPointLight(const PointLightParams& params);
+    void addPointLight(const PointLightParams& params, const Point3D& lightSourcePos);
     void removePointLight(unsigned int index);
     void setPointLightParams(unsigned int index, const PointLightParams& params);
     void setPointLightSourcePos(unsigned int index, const Point3D& lightSourcePos);
@@ -90,6 +91,6 @@ namespace RenderSystem
     RenderData mSceneRenderData;
     std::unordered_map<const Object3D*, int> mSceneObjectVertexOffsetMap;
     Object3D mRootObject;
-    DirLightSource mLightSource;
+    DirLightSource mDirLightSource;
   };
 }  // namespace RenderSystem
