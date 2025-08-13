@@ -15,16 +15,20 @@ namespace RenderSystem
     initUniformLocations();
   }
 
-  void PointLights::addLight(
+  PointLight* PointLights::addLight(
     const PointLightParams& params, const Point3D& lightSourcePos
   )
   {
+    auto index = mLights.size();
     PointLight light {};
-    light.init(mShaderProgram);
+    light.init(mShaderProgram, index);
     light.setParams(params);
     light.setLightSourcePos(glm::value_ptr(lightSourcePos));
-    mLights.emplace(mLights.size(), std::move(light));
+
+    mLights.emplace(index, std::move(light));
     glUniform1i(mLightsCount, mLights.size());
+
+    return getLight(index);
   }
 
   void PointLights::removeLight(unsigned int index)

@@ -51,7 +51,11 @@ namespace RenderSystem
     void setHighlightedFacesData(const HighlightedFacesData& data);
     void setDirLightSourcePos(const Point3D& pos);
     void setAspectRatio(float aspectRatio);
-    void addPointLight(const PointLightParams& params, const Point3D& lightSourcePos);
+    void addPointLight(
+      const PointLightParams& params,
+      const Point3D& lightSourcePos,
+      const glm::mat4& viewMatrix
+    );
     void removePointLight(unsigned int index);
     void setPointLightParams(unsigned int index, const PointLightParams& params);
     void setPointLightSourcePos(unsigned int index, const Point3D& lightSourcePos);
@@ -73,7 +77,7 @@ namespace RenderSystem
     void renderHighlightedFaces();
     void renderWireframe();
     void renderWholeObjectHighlighted();
-    void updateLightProjection();
+    void updateDirLightProjection();
 
    private:
     Renderer* mRenderer;

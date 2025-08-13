@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "MeshCore/AABBox.h"
+#include "MeshCore/Mesh.h"
 #include "MeshCore/TreeWalker.h"
 #include "MeshCore/Vertex.h"
 #include "Object3DIntersection.h"
@@ -50,14 +51,14 @@ namespace RenderSystem
     void onMeshUpdated(const std::unordered_set<UniqueVertex*>& vertices);
     void moveToOrigin();
 
-   private:
+   protected:
     void init();
     void invokeTransformAction(
       const std::function<void()>& action, const glm::mat4& transform
     );
     void propagateBBoxToRoot();
 
-   private:
+   protected:
     Object3D* mParent;
     std::vector<std::unique_ptr<Object3D>> mChildren;
     std::unique_ptr<Mesh> mMesh;

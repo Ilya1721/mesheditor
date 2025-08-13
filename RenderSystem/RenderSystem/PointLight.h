@@ -9,7 +9,7 @@ namespace RenderSystem
   class PointLight
   {
   public:
-    void init(int shaderProgram);
+    void init(int shaderProgram, unsigned int index);
     void setParams(const PointLightParams& light);
     void setLightSourcePos(const float* lightSourcePos) const;
 

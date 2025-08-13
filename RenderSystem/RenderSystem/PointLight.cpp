@@ -3,17 +3,18 @@
 #ifdef __gl_h_
 #undef __gl_h_
 #endif
-#include <glm/gtc/type_ptr.hpp>
 #include <format>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "LightParams.h"
 #include "glad.h"
 
 namespace RenderSystem
 {
-  void PointLight::init(int shaderProgram)
+  void PointLight::init(int shaderProgram, unsigned int index)
   {
     mShaderProgram = shaderProgram;
+    mIndex = index;
     initUniformLocations();
   }
 
@@ -26,7 +27,7 @@ namespace RenderSystem
     const auto constant = getParamsUniformName("constant");
     const auto linear = getParamsUniformName("linear");
     const auto quadratic = getParamsUniformName("quadratic");
-    
+
     mLightSourcePos = getUniformLocation(position.c_str());
     mAmbient = getUniformLocation(ambient.c_str());
     mDiffuse = getUniformLocation(diffuse.c_str());
@@ -84,5 +85,4 @@ namespace RenderSystem
   {
     glUniform1f(mQuadratic, quadratic);
   }
-
 }  // namespace RenderSystem

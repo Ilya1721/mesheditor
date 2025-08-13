@@ -102,9 +102,13 @@ vec3 getPointLights(vec3 pixelColorAfterDirLight)
 
 void main()
 {
-  vec3 pixelColor = getDirectionalLight(directionalLightParams.ambient,
+  /*vec3 pixelColor = getDirectionalLight(directionalLightParams.ambient,
+                                        directionalLightParams.diffuse,
+                                        directionalLightParams.specular);*/
+  vec3 pixelColor = vec3(0.0);
+  vec3 testColor = getDirectionalLight(directionalLightParams.ambient,
                                         directionalLightParams.diffuse,
                                         directionalLightParams.specular);
-  pixelColor += getPointLights(pixelColor);
+  pixelColor += getPointLights(testColor);
   fragColor = vec4(pixelColor * getShadowFactor(), 1.0);
 }

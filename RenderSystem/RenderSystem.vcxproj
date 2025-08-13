@@ -133,6 +133,7 @@
   <ItemGroup>
     <ClCompile Include="RenderSystem\Material.cpp" />
     <ClCompile Include="RenderSystem\PointLight.cpp" />
+    <ClCompile Include="RenderSystem\PointLightObject3D.cpp" />
     <ClCompile Include="RenderSystem\PointLightOperations.cpp" />
     <ClCompile Include="RenderSystem\PointLights.cpp" />
     <ClCompile Include="RenderSystem\RequiresBindBeforeInvoke.cpp" />
@@ -173,6 +174,7 @@
   <ItemGroup>
     <ClInclude Include="RenderSystem\Material.h" />
     <ClInclude Include="RenderSystem\PointLight.h" />
+    <ClInclude Include="RenderSystem\PointLightObject3D.h" />
     <ClInclude Include="RenderSystem\PointLightOperations.h" />
     <ClInclude Include="RenderSystem\PointLights.h" />
     <ClInclude Include="RenderSystem\RequiresBindBeforeInvoke.h" />

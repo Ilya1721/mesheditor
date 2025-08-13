@@ -1,13 +1,11 @@
 #include "Scene.h"
 
-#include <iostream>
-
 #include "Constants.h"
 #include "GeometryCore/Ray.h"
 #include "GeometryCore/Transforms.h"
 #include "MeshCore/Intersection.h"
-#include "MeshCore/Mesh.h"
 #include "MeshFilesLoader/MeshFilesLoader.h"
+#include "PointLightObject3D.h"
 #include "Renderer.h"
 #include "SceneShaderProgram.h"
 #include "ShadowController.h"
@@ -90,7 +88,7 @@ namespace RenderSystem
     mRenderer->loadModelRenderData(mSceneRenderData);
   }
 
-  void Scene::onSceneObjectBBoxUpdated() { updateLightProjection(); }
+  void Scene::onSceneObjectBBoxUpdated() { updateDirLightProjection(); }
 
   void Scene::renderScene(AbstractShaderProgram* shaderProgram)
   {
@@ -170,7 +168,7 @@ namespace RenderSystem
     mSceneShaderProgram->setMaterialParams(MAIN_MATERIAL);
   }
 
-  void Scene::updateLightProjection()
+  void Scene::updateDirLightProjection()
   {
     const auto& bbox = mRootObject.getBBox();
     const auto orthoSize = std::max(bbox.getWidth(), bbox.getHeight());
@@ -211,9 +209,16 @@ namespace RenderSystem
 
   void Scene::setAspectRatio(float aspectRatio) { mAspectRatio = aspectRatio; }
 
-  void Scene::addPointLight(const PointLightParams& params, const Point3D& lightSourcePos)
+  void Scene::addPointLight(
+    const PointLightParams& params,
+    const Point3D& lightSourcePos,
+    const glm::mat4& viewMatrix
+  )
   {
-    mSceneShaderProgram->addPointLight(params, lightSourcePos);
+    Point3D lightSourcePosInCameraSpace = transformPoint(lightSourcePos, viewMatrix);
+    auto pointLight =
+      mSceneShaderProgram->addPointLight(params, lightSourcePosInCameraSpace);
+    PointLightObject3D pointLightObject3D(pointLight);
   }
 
   void Scene::removePointLight(unsigned int index)

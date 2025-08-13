@@ -14,7 +14,7 @@ namespace RenderSystem
   {
    public:
     void init(int shaderProgram);
-    void addLight(const PointLightParams& params, const Point3D& lightSourcePos);
+    PointLight* addLight(const PointLightParams& params, const Point3D& lightSourcePos);
     void removeLight(unsigned int index);
     PointLight* getLight(unsigned int index);
 

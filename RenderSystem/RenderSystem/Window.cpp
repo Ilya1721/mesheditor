@@ -271,9 +271,7 @@ namespace RenderSystem
     const PointLightParams& params, const Point3D& lightSourcePos
   )
   {
-    Point3D lightSourcePosInCameraSpace =
-      transformPoint(lightSourcePos, mCamera->getViewMatrix());
-    mScene->addPointLight(params, lightSourcePosInCameraSpace);
+    mScene->addPointLight(params, lightSourcePos, mCamera->getViewMatrix());
   }
 
   void Window::removePointLight(unsigned int index) { mScene->removePointLight(index); }

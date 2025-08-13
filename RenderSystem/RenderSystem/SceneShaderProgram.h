@@ -30,7 +30,9 @@ namespace RenderSystem
     void setDepthMap(int textureId);
     void setLightView(const glm::mat4& lightView);
     void setLightProjection(const glm::mat4& lightProjection);
-    void addPointLight(const PointLightParams& params, const Point3D& lightSourcePos);
+    PointLight* addPointLight(
+      const PointLightParams& params, const Point3D& lightSourcePos
+    );
     void removePointLight(unsigned int index);
     void setPointLightParams(unsigned int index, const PointLightParams& params);
     void setPointLightSourcePos(unsigned int index, const Point3D& lightSourcePos);
