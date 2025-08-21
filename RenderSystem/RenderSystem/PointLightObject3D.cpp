@@ -10,5 +10,6 @@ namespace RenderSystem
   PointLightObject3D::PointLightObject3D(PointLight* pointLight) : mPointLight(pointLight)
   {
     mMesh = createSphere(POINT_LIGHT_RADIUS);
+    init();
   }
 }  // namespace RenderSystem

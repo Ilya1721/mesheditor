@@ -1,75 +1,72 @@
 #include "MeshFactory.h"
 
 #include <cmath>
+#include <numbers>
 #include <vector>
+
+using namespace std::numbers;
 
 namespace MeshCore
 {
-  // Generates a UV sphere mesh with a given radius
   std::unique_ptr<Mesh> createSphere(float radius)
   {
-    constexpr int latitudeSegments = 16;
-    constexpr int longitudeSegments = 32;
-    std::vector<Vertex> vertices;
+    std::vector<Vertex> tempVertices;
+    constexpr size_t horizontalDivisions = 3;
+    constexpr size_t verticalDivisions = 3;
 
-    for (int lat = 0; lat < latitudeSegments; ++lat)
+    for (int i = 0; i <= horizontalDivisions; ++i)
     {
-      float theta1 = float(lat) * glm::pi<float>() / float(latitudeSegments);
-      float theta2 = float(lat + 1) * glm::pi<float>() / float(latitudeSegments);
-      for (int lon = 0; lon < longitudeSegments; ++lon)
+      float horizontalAngle = 2.0 * pi * i / horizontalDivisions;
+      float sinHorizontal = std::sin(horizontalAngle);
+      float cosHorizontal = std::cos(horizontalAngle);
+
+      for (int j = 0; j <= verticalDivisions; ++j)
       {
-        float phi1 = float(lon) * 2.0f * glm::pi<float>() / float(longitudeSegments);
-        float phi2 = float(lon + 1) * 2.0f * glm::pi<float>() / float(longitudeSegments);
+        float verticalAngle = pi * j / verticalDivisions;
+        float sinVertical = std::sin(verticalAngle);
+        float cosVertical = std::cos(verticalAngle);
 
-        // Points on the sphere
-        glm::vec3 p1 = glm::vec3(
-          std::sin(theta1) * std::cos(phi1),
-          std::cos(theta1),
-          std::sin(theta1) * std::sin(phi1)
-        );
-        glm::vec3 p2 = glm::vec3(
-          std::sin(theta2) * std::cos(phi1),
-          std::cos(theta2),
-          std::sin(theta2) * std::sin(phi1)
-        );
-        glm::vec3 p3 = glm::vec3(
-          std::sin(theta2) * std::cos(phi2),
-          std::cos(theta2),
-          std::sin(theta2) * std::sin(phi2)
-        );
-        glm::vec3 p4 = glm::vec3(
-          std::sin(theta1) * std::cos(phi2),
-          std::cos(theta1),
-          std::sin(theta1) * std::sin(phi2)
-        );
+        float posX = radius * sinVertical * sinHorizontal;
+        float posY = radius * cosVertical;
+        float posZ = radius * sinVertical * cosHorizontal;
 
-        // Scale by radius
-        glm::vec3 v1 = radius * p1;
-        glm::vec3 v2 = radius * p2;
-        glm::vec3 v3 = radius * p3;
-        glm::vec3 v4 = radius * p4;
-
-        // Normals are just the normalized positions for a sphere
-        glm::vec3 n1 = glm::normalize(p1);
-        glm::vec3 n2 = glm::normalize(p2);
-        glm::vec3 n3 = glm::normalize(p3);
-        glm::vec3 n4 = glm::normalize(p4);
-
-        // Each quad is split into two triangles
-        if (lat != 0)
-        {
-          vertices.emplace_back(v1, n1);
-          vertices.emplace_back(v2, n2);
-          vertices.emplace_back(v4, n4);
-        }
-        if (lat != latitudeSegments - 1)
-        {
-          vertices.emplace_back(v2, n2);
-          vertices.emplace_back(v3, n3);
-          vertices.emplace_back(v4, n4);
-        }
+        Vertex vertex;
+        vertex.pos = Vector3D(posX, posY, posZ);
+        vertex.normal = vertex.pos / radius;  // pos length is always radius
+        tempVertices.push_back(vertex);
       }
     }
+
+    std::vector<Vertex> vertices;
+    for (size_t i = 0; i < tempVertices.size() - verticalDivisions - 2; ++i)
+    {
+      size_t nextIdx = i + 1;
+      size_t nextDivIdxLower = (i + verticalDivisions + 2);
+      size_t nextDivIdxHigher = (i + verticalDivisions + 1);
+
+      if (i % (verticalDivisions + 1) == 0)
+      {
+        vertices.push_back(tempVertices[i]);
+        vertices.push_back(tempVertices[nextIdx]);
+        vertices.push_back(tempVertices[nextDivIdxLower]);
+      }
+      else if ((i + 2) % (verticalDivisions + 1) == 0)
+      {
+        vertices.push_back(tempVertices[i]);
+        vertices.push_back(tempVertices[nextIdx]);
+        vertices.push_back(tempVertices[nextDivIdxHigher]);
+      }
+      else if ((i + 1) % (verticalDivisions + 1) != 0)
+      {
+        vertices.push_back(tempVertices[i]);
+        vertices.push_back(tempVertices[nextIdx]);
+        vertices.push_back(tempVertices[nextDivIdxLower]);
+        vertices.push_back(tempVertices[i]);
+        vertices.push_back(tempVertices[nextDivIdxLower]);
+        vertices.push_back(tempVertices[nextDivIdxHigher]);
+      }
+    }
+
     return std::make_unique<Mesh>(vertices);
   }
 }  // namespace MeshCore

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "GeometryCore/Numeric.h"
 #include "Vertex.h"
 
 namespace std
@@ -8,7 +9,7 @@ namespace std
   {
     std::size_t operator()(const MeshCore::Vertex& vertex) const noexcept
     {
-      return std::hash<glm::vec3> {}(vertex.pos);
+      return std::hash<glm::vec3> {}(GeometryCore::roundToDigits(vertex.pos, 6));
     }
   };
 

@@ -1,5 +1,7 @@
 #include "Scene.h"
 
+#include <glm/gtx/transform.hpp>
+
 #include "Constants.h"
 #include "GeometryCore/Ray.h"
 #include "GeometryCore/Transforms.h"
@@ -45,12 +47,10 @@ namespace RenderSystem
   void Scene::addModelObject(const std::string& meshFilePath)
   {
     auto modelObject = std::make_unique<Object3D>(MeshFilesLoader::loadSTL(meshFilePath));
-    modelObject->moveToOrigin();
     mRootObject.addChild(std::move(modelObject));
     addSceneDecoration(
       SceneDecoration::createSceneFloor(mRootObject.getBBox().getHeight(), FLOOR_MATERIAL)
     );
-    mSceneShaderProgram->setModel(mRootObject.getTransform());
   }
 
   void Scene::registerRootObjectCallbacks()
@@ -122,7 +122,6 @@ namespace RenderSystem
     }
 
     mSceneShaderProgram->setMaterialParams(MAIN_MATERIAL);
-    mSceneShaderProgram->setModel(mRootObject.getTransform());
   }
 
   void Scene::renderHighlightedFaces()
@@ -218,7 +217,9 @@ namespace RenderSystem
     Point3D lightSourcePosInCameraSpace = transformPoint(lightSourcePos, viewMatrix);
     auto pointLight =
       mSceneShaderProgram->addPointLight(params, lightSourcePosInCameraSpace);
-    PointLightObject3D pointLightObject3D(pointLight);
+    auto pointLightObject3D = std::make_unique<PointLightObject3D>(pointLight);
+    pointLightObject3D->updateTransform(glm::translate(lightSourcePos));
+    mRootObject.addChild(std::move(pointLightObject3D));
   }
 
   void Scene::removePointLight(unsigned int index)

@@ -2,9 +2,7 @@
 
 #include <glm/gtx/transform.hpp>
 
-#include "GeometryCore/Numeric.h"
 #include "GeometryCore/Ray.h"
-#include "MeshCore/Constants.h"
 #include "MeshCore/Mesh.h"
 
 using namespace GeometryCore;
@@ -21,7 +19,11 @@ namespace RenderSystem
 
   Object3D::~Object3D() = default;
 
-  void Object3D::init() { mBBox.applyMesh(*mMesh); }
+  void Object3D::init()
+  {
+    mBBox.applyMesh(*mMesh);
+    moveToOrigin();
+  }
 
   Object3D* Object3D::getParent() const { return mParent; }
 

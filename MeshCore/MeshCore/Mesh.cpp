@@ -1,11 +1,6 @@
 #include "Mesh.h"
 
-#include <chrono>
-#include <numeric>
-#include <thread>
-
 #include "Constants.h"
-#include "EdgeWalker.h"
 #include "Face.h"
 #include "GeometryCore/Numeric.h"
 #include "GeometryCore/Ray.h"
@@ -53,8 +48,7 @@ namespace MeshCore
 
   void Mesh::init()
   {
-    std::thread secondaryThread(&Mesh::prepareHalfEdgeDataStructure, this);
-    secondaryThread.detach();
+    prepareHalfEdgeDataStructure();
   }
 
   void Mesh::prepareHalfEdgeDataStructure()
@@ -100,7 +94,7 @@ namespace MeshCore
   {
     std::unordered_map<HalfEdgeVerticesPair, HalfEdge*> halfEdgeVerticesMap;
 
-    for (unsigned int halfEdgeIdx = 0; halfEdgeIdx < mHalfEdges.size(); halfEdgeIdx += 3)
+    for (size_t halfEdgeIdx = 0; halfEdgeIdx < mHalfEdges.size(); halfEdgeIdx += 3)
     {
       auto firstVerticesPair = std::make_pair(
         *mHalfEdges[halfEdgeIdx]->vertex, *mHalfEdges[halfEdgeIdx + 1]->vertex

@@ -19,4 +19,16 @@ namespace GeometryCore
       (halfPerimeter - edgesLengths[1]) * (halfPerimeter - edgesLengths[2])
     );
   }
+
+  double roundToDigits(double value, int digits)
+  {
+    double factor = std::pow(10.0, digits);
+    return std::round(value * factor) / factor;
+  }
+
+  glm::vec3 roundToDigits(glm::vec3 value, int digits)
+  {
+    float factor = std::pow(10.0f, digits);
+    return glm::round(value * factor) / factor;
+  }
 }  // namespace GeometryCore

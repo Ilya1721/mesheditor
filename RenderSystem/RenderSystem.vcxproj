@@ -131,6 +131,7 @@
     <None Include="Shaders\VertexShader.vert" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="RenderSystem\DebugVisualization.cpp" />
     <ClCompile Include="RenderSystem\Material.cpp" />
     <ClCompile Include="RenderSystem\PointLight.cpp" />
     <ClCompile Include="RenderSystem\PointLightObject3D.cpp" />
@@ -172,6 +173,7 @@
     <ClCompile Include="RenderSystem\Zoom.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="RenderSystem\DebugVisualization.h" />
     <ClInclude Include="RenderSystem\Material.h" />
     <ClInclude Include="RenderSystem\PointLight.h" />
     <ClInclude Include="RenderSystem\PointLightObject3D.h" />
