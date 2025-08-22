@@ -1,5 +1,6 @@
 #version 330 core
 
+in vec3 vertexPos;
 in vec3 vertexPosCameraSpace;
 in vec3 vertexNormalCameraSpace;
 in vec4 fragPosLightSpace;
@@ -41,7 +42,7 @@ struct PointLightParams
 struct PointLight
 {
   PointLightParams params;
-  vec3 posCameraSpace;
+  vec3 pos;
 };
 
 #define MAX_POINT_LIGHTS 4
@@ -84,7 +85,7 @@ vec3 getDirectionalLight(vec3 lightAmbient, vec3 lightDiffuse, vec3 lightSpecula
 
 float getPointLightAttenuation(PointLight light)
 {
-  float distanceToLightSource = length(light.posCameraSpace - vertexPosCameraSpace);
+  float distanceToLightSource = length(light.pos - vertexPos);
   float linear = light.params.linear * distanceToLightSource;
   float quadratic = light.params.quadratic * pow(distanceToLightSource, 2);
   return 1.0 / (light.params.constant + linear + quadratic);

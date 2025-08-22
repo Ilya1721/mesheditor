@@ -20,7 +20,7 @@ namespace RenderSystem
 
   void PointLight::initUniformLocations()
   {
-    const auto position = std::format("pointLights[{}].posCameraSpace", mIndex);
+    const auto position = std::format("pointLights[{}].pos", mIndex);
     const auto ambient = getParamsUniformName("ambient");
     const auto diffuse = getParamsUniformName("diffuse");
     const auto specular = getParamsUniformName("specular");

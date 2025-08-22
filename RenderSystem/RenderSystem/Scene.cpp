@@ -208,15 +208,9 @@ namespace RenderSystem
 
   void Scene::setAspectRatio(float aspectRatio) { mAspectRatio = aspectRatio; }
 
-  void Scene::addPointLight(
-    const PointLightParams& params,
-    const Point3D& lightSourcePos,
-    const glm::mat4& viewMatrix
-  )
+  void Scene::addPointLight(const PointLightParams& params, const Point3D& lightSourcePos)
   {
-    Point3D lightSourcePosInCameraSpace = transformPoint(lightSourcePos, viewMatrix);
-    auto pointLight =
-      mSceneShaderProgram->addPointLight(params, lightSourcePosInCameraSpace);
+    auto pointLight = mSceneShaderProgram->addPointLight(params, lightSourcePos);
     auto pointLightObject3D = std::make_unique<PointLightObject3D>(pointLight);
     pointLightObject3D->updateTransform(glm::translate(lightSourcePos));
     mRootObject.addChild(std::move(pointLightObject3D));
