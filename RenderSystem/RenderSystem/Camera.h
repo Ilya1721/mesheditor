@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 
 #include "GeometryCore/Typedefs.h"
+#include "Utility/CallbackMechanism.h"
 #include "Viewport.h"
 
 namespace GeometryCore
@@ -20,6 +21,9 @@ namespace MeshCore
 namespace RenderSystem
 {
   using namespace GeometryCore;
+  using namespace Utility;
+
+  using cameraPosChangedCallback = void(const Point3D&);
 
   class SceneShaderProgram;
 
@@ -48,8 +52,11 @@ namespace RenderSystem
     void perspectiveAdjust(const MeshCore::AABBox& bbox, float fov);
     void orthoAdjust(const MeshCore::AABBox& bbox);
     void enableMovement(bool isEnabled);
-    Point3D adjust(
+    void adjust(
       PROJECTION_TYPE projectionType, const MeshCore::AABBox& sceneBBox, float fov
+    );
+    void addOnCameraPosChangedCallback(
+      const std::function<cameraPosChangedCallback>& callback
     );
 
    private:
@@ -85,5 +92,6 @@ namespace RenderSystem
     glm::mat4 mViewMatrix;
     SceneShaderProgram* mSceneShaderProgram;
     bool mIsMovementEnabled;
+    CallbackMechanism<cameraPosChangedCallback> mCameraPosChangedCallbacks;
   };
 }  // namespace RenderSystem

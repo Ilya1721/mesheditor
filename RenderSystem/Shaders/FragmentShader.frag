@@ -1,12 +1,11 @@
 #version 330 core
 
 in vec3 vertexPos;
-in vec3 vertexPosCameraSpace;
-in vec3 vertexNormalCameraSpace;
+in vec3 vertexNormal;
 in vec4 fragPosLightSpace;
 
-uniform vec3 dirLightPosCameraSpace;
-uniform vec3 cameraPosCameraSpace;
+uniform vec3 dirLightPos;
+uniform vec3 cameraPos;
 uniform float shadowBias;
 uniform sampler2D depthMap;
 
@@ -66,13 +65,12 @@ float getShadowFactor()
 
 vec3 getDirectionalLight(vec3 lightAmbient, vec3 lightDiffuse, vec3 lightSpecular)
 {
-  vec3 reversedLightUnitDir = normalize(dirLightPosCameraSpace - vertexPosCameraSpace);
-  float diffuseStrength = max(dot(vertexNormalCameraSpace, reversedLightUnitDir), 0.0);
+  vec3 reversedLightUnitDir = normalize(dirLightPos - vertexPos);
+  float diffuseStrength = max(dot(vertexNormal, reversedLightUnitDir), 0.0);
   vec3 diffuse = diffuseStrength * lightDiffuse * material.diffuse;
 
-  vec3 reversedCameraUnitDir = normalize(cameraPosCameraSpace - vertexPosCameraSpace);
-  vec3 reflectDir = reflect(-reversedLightUnitDir, vertexNormalCameraSpace);
-
+  vec3 reversedCameraUnitDir = normalize(cameraPos - vertexPos);
+  vec3 reflectDir = reflect(-reversedLightUnitDir, vertexNormal);
   float specValue =
     pow(max(dot(reversedCameraUnitDir, reflectDir), 0.0), material.shininess);
   vec3 specular = specValue * lightSpecular * material.specular;
@@ -103,13 +101,9 @@ vec3 getPointLights(vec3 pixelColorAfterDirLight)
 
 void main()
 {
-  /*vec3 pixelColor = getDirectionalLight(directionalLightParams.ambient,
-                                        directionalLightParams.diffuse,
-                                        directionalLightParams.specular);*/
-  vec3 pixelColor = vec3(0.0);
-  vec3 testColor = getDirectionalLight(directionalLightParams.ambient,
+  vec3 pixelColor = getDirectionalLight(directionalLightParams.ambient,
                                         directionalLightParams.diffuse,
                                         directionalLightParams.specular);
-  pixelColor += getPointLights(testColor);
+  pixelColor += getPointLights(pixelColor);
   fragColor = vec4(pixelColor * getShadowFactor(), 1.0);
 }

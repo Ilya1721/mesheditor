@@ -117,6 +117,9 @@ namespace RenderSystem
       aspectRatio
     );
     mCamera = std::make_unique<Camera>(mSceneShaderProgram.get());
+    // mCamera->addOnCameraPosChangedCallback(&Window::onCameraPosChanged);
+    mCamera->addOnCameraPosChangedCallback([this](const Point3D& cameraPos)
+                                           { onCameraPosChanged(cameraPos); });
     mViewport = std::make_unique<Viewport>(
       mWidth, mHeight, &mScene->getRootObject().getBBox(), mSceneShaderProgram.get()
     );
@@ -138,17 +141,19 @@ namespace RenderSystem
     const auto& projectionType = mViewport->getProjectionType();
     const auto& sceneBBox = mScene->getRootObject().getBBox();
     const auto& fov = mViewport->getFov();
-    auto cameraPosInCameraSpace = mCamera->adjust(projectionType, sceneBBox, fov);
-    mSceneShaderProgram->setCameraPos(cameraPosInCameraSpace);
+    mCamera->adjust(projectionType, sceneBBox, fov);
   }
 
   void Window::adjustDirLightSourcePos()
   {
     const auto dirLightPos =
       Point3D(LIGHT_SOURCE_POS_X, LIGHT_SOURCE_POS_Y, LIGHT_SOURCE_POS_Z);
-    Point3D dirLightSourcePosInCameraSpace =
-      transformPoint(dirLightPos, mCamera->getViewMatrix());
-    mScene->setDirLightSourcePos(dirLightSourcePosInCameraSpace);
+    mScene->setDirLightSourcePos(dirLightPos);
+  }
+
+  void Window::onCameraPosChanged(const Point3D& cameraPos)
+  {
+    mSceneShaderProgram->setCameraPos(cameraPos);
   }
 
   void Window::render()

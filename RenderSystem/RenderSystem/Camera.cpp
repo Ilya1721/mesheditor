@@ -61,6 +61,7 @@ namespace RenderSystem
     action();
     mViewMatrix = createViewMatrix();
     mSceneShaderProgram->setView(mViewMatrix);
+    mCameraPosChangedCallbacks.invokeCallbacks(mEye);
   }
 
   void Camera::setEyeTargetUp(
@@ -257,7 +258,7 @@ namespace RenderSystem
 
   void Camera::enableMovement(bool isEnabled) { mIsMovementEnabled = isEnabled; }
 
-  Point3D Camera::adjust(
+  void Camera::adjust(
     PROJECTION_TYPE projectionType, const MeshCore::AABBox& sceneBBox, float fov
   )
   {
@@ -266,7 +267,12 @@ namespace RenderSystem
       perspectiveAdjust(sceneBBox, fov);
     }
     else { orthoAdjust(sceneBBox); }
+  }
 
-    return transformPoint(mEye, mViewMatrix);
+  void Camera::addOnCameraPosChangedCallback(
+    const std::function<cameraPosChangedCallback>& callback
+  )
+  {
+    mCameraPosChangedCallbacks.addCallback(callback);
   }
 }  // namespace RenderSystem

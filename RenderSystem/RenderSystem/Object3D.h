@@ -2,18 +2,16 @@
 
 #include <functional>
 #include <memory>
-#include <unordered_map>
 #include <vector>
 
 #include "MeshCore/AABBox.h"
 #include "MeshCore/Mesh.h"
-#include "MeshCore/TreeWalker.h"
 #include "MeshCore/Vertex.h"
 #include "Object3DIntersection.h"
-#include "RenderData.h"
 #include "Utility/CallbackMechanism.h"
 
 using namespace MeshCore;
+using namespace Utility;
 
 namespace RenderSystem
 {
@@ -64,8 +62,8 @@ namespace RenderSystem
     std::unique_ptr<Mesh> mMesh;
     glm::mat4 mTransform;
     AABBox mBBox;
-    Utility::CallbackMechanism<childAddedCallback> mChildAddedCM;
-    Utility::CallbackMechanism<objectUpdatedCallback> mObjectUpdatedCM;
-    Utility::CallbackMechanism<bboxUpdatedCallback> mBBoxUpdatedCM;
+    CallbackMechanism<childAddedCallback> mChildAddedCM;
+    CallbackMechanism<objectUpdatedCallback> mObjectUpdatedCM;
+    CallbackMechanism<bboxUpdatedCallback> mBBoxUpdatedCM;
   };
 }  // namespace RenderSystem

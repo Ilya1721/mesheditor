@@ -65,7 +65,7 @@
       <BuildStlModules>false</BuildStlModules>
       <AdditionalModuleDependencies>
       </AdditionalModuleDependencies>
-      <AdditionalIncludeDirectories>$(SolutionDir)RenderSystem\;$(SolutionDir)ThirdParty\;$(SolutionDir)GeometryCore\;$(SolutionDir)MeshCore\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)RenderSystem\;$(SolutionDir)ThirdParty\;$(SolutionDir)GeometryCore\;$(SolutionDir)MeshCore\;$(SolutionDir)Utility\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
       <TranslateIncludes>false</TranslateIncludes>
     </ClCompile>
@@ -89,7 +89,7 @@
       <BuildStlModules>false</BuildStlModules>
       <AdditionalModuleDependencies>
       </AdditionalModuleDependencies>
-      <AdditionalIncludeDirectories>$(SolutionDir)RenderSystem\;$(SolutionDir)ThirdParty\;$(SolutionDir)GeometryCore\;$(SolutionDir)MeshCore\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)RenderSystem\;$(SolutionDir)ThirdParty\;$(SolutionDir)GeometryCore\;$(SolutionDir)MeshCore\;$(SolutionDir)Utility\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
       <TranslateIncludes>false</TranslateIncludes>
     </ClCompile>

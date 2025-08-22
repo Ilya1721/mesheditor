@@ -89,6 +89,7 @@ namespace RenderSystem
     void setCallbacks();
     void adjustCamera();
     void adjustDirLightSourcePos();
+    void onCameraPosChanged(const Point3D& cameraPos);
 
    private:
     int mWidth;

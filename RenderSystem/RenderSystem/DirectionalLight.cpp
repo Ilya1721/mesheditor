@@ -34,8 +34,8 @@ namespace RenderSystem
 
   void DirectionalLight::initUniformLocations()
   {
-    mCameraPos = getUniformLocation("cameraPosCameraSpace");
-    mLightSourcePos = getUniformLocation("dirLightPosCameraSpace");
+    mCameraPos = getUniformLocation("cameraPos");
+    mLightSourcePos = getUniformLocation("dirLightPos");
     mAmbient = getUniformLocation("directionalLightParams.ambient");
     mDiffuse = getUniformLocation("directionalLightParams.diffuse");
     mSpecular = getUniformLocation("directionalLightParams.specular");

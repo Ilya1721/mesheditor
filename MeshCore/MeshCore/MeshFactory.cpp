@@ -11,8 +11,8 @@ namespace MeshCore
   std::unique_ptr<Mesh> createSphere(float radius)
   {
     std::vector<Vertex> tempVertices;
-    constexpr size_t horizontalDivisions = 3;
-    constexpr size_t verticalDivisions = 3;
+    constexpr size_t horizontalDivisions = 20;
+    constexpr size_t verticalDivisions = 20;
 
     for (int i = 0; i <= horizontalDivisions; ++i)
     {

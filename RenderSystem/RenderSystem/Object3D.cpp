@@ -4,6 +4,7 @@
 
 #include "GeometryCore/Ray.h"
 #include "MeshCore/Mesh.h"
+#include <MeshCore/TreeWalker.h>
 
 using namespace GeometryCore;
 
