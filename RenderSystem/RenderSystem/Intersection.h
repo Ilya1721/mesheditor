@@ -1,11 +1,14 @@
 #pragma once
 
-#include <glm/glm.hpp>
 #include <vector>
 
 #include "GeometryCore/Typedefs.h"
-#include "MeshCore/Intersection.h"
 #include "MeshCore/Surface.h"
+
+namespace MeshCore
+{
+  struct MeshIntersection;
+}
 
 namespace RenderSystem
 {
@@ -17,9 +20,6 @@ namespace RenderSystem
     std::vector<int> surfaceIndices;
     Point3D point {};
 
-    void setClosest(
-      const MeshCore::MeshIntersection& meshIntersectionData,
-      const Point3D& referencePoint
-    );
+    void assign(const MeshCore::MeshIntersection& meshIntersection);
   };
 }  // namespace RenderSystem

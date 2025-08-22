@@ -1,10 +1,11 @@
 #include "Object3D.h"
 
+#include <MeshCore/TreeWalker.h>
+
 #include <glm/gtx/transform.hpp>
 
 #include "GeometryCore/Ray.h"
 #include "MeshCore/Mesh.h"
-#include <MeshCore/TreeWalker.h>
 
 using namespace GeometryCore;
 
@@ -48,10 +49,11 @@ namespace RenderSystem
     const Ray& ray, IntersectionMode intersectionMode, int facesIndexOffset
   )
   {
-    Object3DIntersection intersection;
+    Object3DIntersection objectIntersection;
     TreeWalker walker(this);
     walker.forEach(
-      [&ray, &intersection, &intersectionMode, &facesIndexOffset, this](Object3D* object)
+      [&ray, &objectIntersection, &intersectionMode, &facesIndexOffset,
+       this](Object3D* object)
       {
         const auto& faces = object->mMesh->getFaces();
         const auto currentFacesIndexOffset = faces.size() + facesIndexOffset;
@@ -59,15 +61,22 @@ namespace RenderSystem
         auto meshIntersection = object->mMesh->getIntersection(
           invertedRay, intersectionMode, currentFacesIndexOffset
         );
-        intersection.intersectedObject = object;
-        intersection.raySurfaceIntersection.setClosest(
-          meshIntersection, invertedRay.origin
-        );
         facesIndexOffset += faces.size();
+
+        if (meshIntersection.intersectedFacesIndices.empty()) { return; }
+
+        if (isCloser(
+              meshIntersection.intersectionPoint,
+              objectIntersection.raySurfaceIntersection.point, invertedRay.origin
+            ))
+        {
+          objectIntersection.intersectedObject = object;
+          objectIntersection.raySurfaceIntersection.assign(meshIntersection);
+        }
       }
     );
 
-    return intersection;
+    return objectIntersection;
   }
 
   std::unique_ptr<Object3D> Object3D::clone()

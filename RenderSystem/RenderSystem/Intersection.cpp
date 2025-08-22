@@ -1,21 +1,15 @@
 #include "Intersection.h"
 
-#include "GeometryCore/Numeric.h"
-#include "Object3D.h"
+#include "MeshCore/Intersection.h"
+
+using namespace MeshCore;
 
 namespace RenderSystem
 {
-  void RaySurfaceIntersection::setClosest(
-    const MeshCore::MeshIntersection& meshIntersectionData,
-    const Point3D& referencePoint
-  )
+  void RaySurfaceIntersection::assign(const MeshIntersection& meshIntersection) 
   {
-    if (surfaceIndices.empty() ||
-        isCloser(meshIntersectionData.intersectionPoint, point, referencePoint))
-    {
-      surface = meshIntersectionData.intersectedSurface;
-      surfaceIndices = meshIntersectionData.intersectedFacesIndices;
-      point = meshIntersectionData.intersectionPoint;
-    }
+    surface = meshIntersection.intersectedSurface;
+    surfaceIndices = meshIntersection.intersectedFacesIndices;
+    point = meshIntersection.intersectionPoint;
   }
 }  // namespace RenderSystem

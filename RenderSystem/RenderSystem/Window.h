@@ -10,7 +10,7 @@
 #include "Constants.h"
 #include "GeometryCore/Typedefs.h"
 #include "HighlightedFacesData.h"
-#include "Intersection.h"
+#include "MeshCore/Intersection.h"
 #include "Object3DIntersection.h"
 #include "Renderer.h"
 #include "SceneShaderProgram.h"
