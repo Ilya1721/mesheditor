@@ -113,6 +113,7 @@ namespace RenderSystem
   void Scene::renderSceneDecorations()
   {
     mSceneShaderProgram->setModel(glm::mat4(1.0f));
+    mShadowController->getShaderProgram()->setModel(glm::mat4(1.0f));
 
     int startIndex = 0;
     for (const auto& sceneDecoration : mSceneDecorations)
