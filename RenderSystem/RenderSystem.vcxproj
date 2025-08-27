@@ -194,7 +194,6 @@
     <ClInclude Include="RenderSystem\LightParams.h" />
     <ClInclude Include="RenderSystem\DirectionalLight.h" />
     <ClInclude Include="RenderSystem\DirLightSource.h" />
-    <ClInclude Include="RenderSystem\MaterialParams.h" />
     <ClInclude Include="RenderSystem\Mover.h" />
     <ClInclude Include="RenderSystem\Object3D.h" />
     <ClInclude Include="RenderSystem\Object3DIntersection.h" />
@@ -217,7 +216,6 @@
     <ClInclude Include="RenderSystem\SurfaceExtruder.h" />
     <ClInclude Include="RenderSystem\SurfaceHighlighter.h" />
     <ClInclude Include="RenderSystem\Texture.h" />
-    <ClInclude Include="RenderSystem\Typedefs.h" />
     <ClInclude Include="RenderSystem\Viewport.h" />
     <ClInclude Include="RenderSystem\Window.h" />
     <ClInclude Include="RenderSystem\WireframeRenderer.h" />

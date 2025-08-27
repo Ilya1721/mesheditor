@@ -99,6 +99,11 @@ namespace RenderSystem
     return mMesh->getVertices();
   }
 
+  const MaterialParams& Object3D::getMaterialParams() const
+  {
+    return mMesh->getMaterialParams();
+  }
+
   void Object3D::addChild(std::unique_ptr<Object3D>&& child)
   {
     child->mParent = this;

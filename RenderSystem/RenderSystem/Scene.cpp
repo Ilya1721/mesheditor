@@ -17,7 +17,6 @@ using namespace GeometryCore;
 namespace RenderSystem
 {
   constexpr MaterialParams FLOOR_MATERIAL = PEARL_MATERIAL;
-  constexpr MaterialParams MAIN_MATERIAL = GOLD_MATERIAL;
   constexpr MaterialParams HIGHLIGHT_MATERIAL = RUBY_MATERIAL;
   constexpr MaterialParams WIREFRAME_MATERIAL = BLACK_MATERIAL;
 }  // namespace RenderSystem
@@ -96,6 +95,7 @@ namespace RenderSystem
     for (auto& [object, vertexOffset] : mSceneObjectVertexOffsetMap)
     {
       shaderProgram->setModel(object->getTransform());
+      mSceneShaderProgram->setMaterialParams(object->getMaterialParams());
       mRenderer->renderObject3D(*object, vertexOffset);
     }
   }
@@ -122,14 +122,11 @@ namespace RenderSystem
       mSceneShaderProgram->setMaterialParams(sceneDecoration.materialParams);
       mRenderer->renderSceneDecoration(sceneDecoration, startIndex);
     }
-
-    mSceneShaderProgram->setMaterialParams(MAIN_MATERIAL);
   }
 
   void Scene::renderHighlightedFaces()
   {
     mSceneShaderProgram->setMaterialParams(HIGHLIGHT_MATERIAL);
-
     for (const auto& faceIdx : mHighlightedFacesData.facesIndices)
     {
       mSceneShaderProgram->setModel(mHighlightedFacesData.parentObject->getTransform());
@@ -137,8 +134,6 @@ namespace RenderSystem
         faceIdx, mSceneObjectVertexOffsetMap.at(mHighlightedFacesData.parentObject)
       );
     }
-
-    mSceneShaderProgram->setMaterialParams(MAIN_MATERIAL);
   }
 
   void Scene::renderWireframe()
@@ -146,14 +141,11 @@ namespace RenderSystem
     if (!mRenderWireframe) { return; }
 
     mSceneShaderProgram->setMaterialParams(WIREFRAME_MATERIAL);
-
     for (const auto& [object, vertexOffset] : mSceneObjectVertexOffsetMap)
     {
       mSceneShaderProgram->setModel(object->getTransform());
       mRenderer->renderWireframe(object->getVertexCount());
     }
-
-    mSceneShaderProgram->setMaterialParams(MAIN_MATERIAL);
   }
 
   void Scene::renderWholeObjectHighlighted()
@@ -166,7 +158,6 @@ namespace RenderSystem
     const auto& [object, vertexCount] = *highlightedObjectIt;
     mSceneShaderProgram->setModel(object->getTransform());
     mRenderer->renderWholeObjectHighlighted(*object, vertexCount);
-    mSceneShaderProgram->setMaterialParams(MAIN_MATERIAL);
   }
 
   void Scene::updateDirLightProjection()

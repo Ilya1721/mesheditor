@@ -40,6 +40,7 @@ namespace RenderSystem
     std::unique_ptr<Object3D> clone();
     int getVertexCount() const;
     const std::vector<Vertex>& getVertices() const;
+    const MaterialParams& getMaterialParams() const;
 
     void addChild(std::unique_ptr<Object3D>&& child);
     void addOnChildAddedCallback(const std::function<childAddedCallback>& callback);

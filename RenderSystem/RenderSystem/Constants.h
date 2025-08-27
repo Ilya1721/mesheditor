@@ -5,18 +5,13 @@
 
 #include "GeometryCore/Typedefs.h"
 #include "LightParams.h"
-#include "MaterialParams.h"
-#include "Typedefs.h"
+#include "MeshCore/MaterialParams.h"
+#include "MeshCore/Typedefs.h"
 
 using namespace GeometryCore;
 
 namespace RenderSystem
 {
-  static inline constexpr MaterialParams GOLD_MATERIAL {
-    RGB(0.24725f, 0.1995f, 0.0745f), RGB(0.75164f, 0.60648f, 0.22648f),
-    RGB(0.628281f, 0.555802f, 0.366065f), 2.0f
-  };
-
   static inline constexpr MaterialParams RUBY_MATERIAL {
     RGB(0.1745f, 0.01175f, 0.01175f), RGB(0.61424f, 0.04136f, 0.04136f),
     RGB(0.727811f, 0.626959f, 0.626959f), 2.0f

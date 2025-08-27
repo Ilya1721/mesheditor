@@ -1,7 +1,7 @@
 #pragma once
 
 #include "GeometryCore/Typedefs.h"
-#include "MaterialParams.h"
+#include "MeshCore/MaterialParams.h"
 #include "RenderData.h"
 
 namespace GeometryCore

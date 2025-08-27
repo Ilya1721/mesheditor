@@ -2,8 +2,8 @@
 
 #include <glm/glm.hpp>
 
-namespace RenderSystem
+namespace MeshCore
 {
   using RGB = glm::vec3;
   using RGBA = glm::vec4;
-}  // namespace RenderSystem
+}  // namespace MeshCore

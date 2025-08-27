@@ -114,11 +114,13 @@
     <ClInclude Include="MeshCore\Face.h" />
     <ClInclude Include="MeshCore\HalfEdge.h" />
     <ClInclude Include="MeshCore\Intersection.h" />
+    <ClInclude Include="MeshCore\MaterialParams.h" />
     <ClInclude Include="MeshCore\Mesh.h" />
     <ClInclude Include="MeshCore\MeshFactory.h" />
     <ClInclude Include="MeshCore\OutgoingEdgeFinder.h" />
     <ClInclude Include="MeshCore\Surface.h" />
     <ClInclude Include="MeshCore\TreeWalker.h" />
+    <ClInclude Include="MeshCore\Typedefs.h" />
     <ClInclude Include="MeshCore\Vertex.h" />
     <ClInclude Include="MeshCore\VerticesHash.h" />
   </ItemGroup>

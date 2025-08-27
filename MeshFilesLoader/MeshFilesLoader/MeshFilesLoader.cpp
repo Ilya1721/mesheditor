@@ -2,6 +2,7 @@
 
 #include "Constants.h"
 #include "GeometryCore/Typedefs.h"
+#include "MeshCore/Constants.h"
 #include "MeshCore/Mesh.h"
 #include "Utility/FileHelper.h"
 #include "Utility/StringHelper.h"
@@ -182,6 +183,7 @@ namespace
     std::vector<Point2D> textures;
     std::vector<Vector3D> normals;
     std::vector<MeshCore::Vertex> vertices;
+    MeshCore::MaterialParams materialParams = MeshCore::GOLD_MATERIAL;
 
     parseText(
       fileContent,
@@ -209,7 +211,7 @@ namespace
       }
     );
 
-    return std::make_unique<MeshCore::Mesh>(vertices);
+    return std::make_unique<MeshCore::Mesh>(vertices, materialParams);
   }
 
   std::unique_ptr<MeshCore::Mesh> loadSTL(const std::filesystem::path& filePath)

@@ -1,6 +1,8 @@
 #pragma once
 
-#include "Typedefs.h"
+#include "MeshCore/Typedefs.h"
+
+using namespace MeshCore;
 
 namespace RenderSystem
 {

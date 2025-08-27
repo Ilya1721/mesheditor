@@ -5,7 +5,6 @@
 #endif
 #include "glad.h"
 #include <glm/gtc/type_ptr.hpp>
-#include "Constants.h"
 
 namespace RenderSystem
 {
@@ -13,12 +12,6 @@ namespace RenderSystem
   {
     mShaderProgram = shaderProgram;
     initUniformLocations();
-    setupSettings();
-  }
-
-  void Material::setupSettings()
-  {
-    setParams(GOLD_MATERIAL);
   }
 
   int Material::getUniformLocation(const char* name) const
@@ -26,7 +19,7 @@ namespace RenderSystem
     return glGetUniformLocation(mShaderProgram, name);
   }
 
-  void Material::setParams(const MaterialParams& material)
+  void Material::setParams(const MeshCore::MaterialParams& material)
   {
     setAmbient(glm::value_ptr(material.ambient));
     setDiffuse(glm::value_ptr(material.diffuse));

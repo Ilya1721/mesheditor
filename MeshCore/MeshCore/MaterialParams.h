@@ -4,7 +4,7 @@
 
 #include "Typedefs.h"
 
-namespace RenderSystem
+namespace MeshCore
 {
   struct MaterialParams
   {
@@ -13,4 +13,4 @@ namespace RenderSystem
     RGB specular;
     float shininess;
   };
-}  // namespace RenderSystem
+}  // namespace MeshCore

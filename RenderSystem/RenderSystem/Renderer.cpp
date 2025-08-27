@@ -15,15 +15,6 @@
 
 using namespace MeshCore;
 
-namespace
-{
-  using namespace RenderSystem;
-
-  constexpr MaterialParams MAIN_MATERIAL = GOLD_MATERIAL;
-  constexpr MaterialParams HIGHLIGHT_MATERIAL = RUBY_MATERIAL;
-  constexpr MaterialParams WIREFRAME_MATERIAL = BLACK_MATERIAL;
-}  // namespace
-
 namespace RenderSystem
 {
   Renderer::Renderer(SceneShaderProgram* sceneShaderProgram)

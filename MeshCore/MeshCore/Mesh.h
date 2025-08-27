@@ -1,12 +1,12 @@
 #pragma once
 
-#include <array>
 #include <memory>
-#include <optional>
 #include <unordered_map>
 #include <vector>
 
+#include "Constants.h"
 #include "Intersection.h"
+#include "MaterialParams.h"
 #include "VerticesHash.h"
 
 namespace GeometryCore
@@ -24,19 +24,24 @@ namespace MeshCore
   class Mesh
   {
    public:
-    Mesh() = default;
-    Mesh(const std::vector<Vertex>& vertices);
+    Mesh();
+    Mesh(
+      const std::vector<Vertex>& vertices,
+      const MaterialParams& materialParams = GOLD_MATERIAL
+    );
     Mesh(Mesh&& other) = delete;
     ~Mesh();
     bool operator==(const Mesh& other) const = default;
 
     std::unique_ptr<Mesh> clone() const;
+    void setMaterialParams(const MaterialParams& materialParams);
 
     const std::vector<Vertex>& getVertices() const;
     const std::vector<std::unique_ptr<Face>>& getFaces() const;
     MeshIntersection getIntersection(
       const Ray& ray, IntersectionMode intersectionMode, int facesIndexOffset
     ) const;
+    const MaterialParams& getMaterialParams() const;
 
    private:
     void init();
@@ -59,5 +64,6 @@ namespace MeshCore
     std::vector<std::unique_ptr<Face>> mFaces;
     std::unordered_map<Vertex, UniqueVertex> mUniqueVerticesMap;
     std::unordered_map<Face*, int> mFaceIndexMap;
+    MaterialParams mMaterialParams;
   };
 }  // namespace MeshCore
