@@ -15,10 +15,13 @@ namespace MeshCore
   struct Vertex
   {
     Vertex() = default;
-    Vertex(const Point3D& otherPos, const Vector3D& otherNormal);
+    Vertex(
+      const Point3D& otherPos, const Vector3D& otherNormal, const Point2D& otherTexture = {}
+    );
 
     Point3D pos {};
     Vector3D normal {};
+    Point2D texture {};
     HalfEdge* halfEdge = nullptr;
 
     bool operator==(const Vertex& other) const;

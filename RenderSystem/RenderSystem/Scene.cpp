@@ -3,8 +3,8 @@
 #include <glm/gtx/transform.hpp>
 
 #include "Constants.h"
+#include "DebugVisualization.h"
 #include "GeometryCore/Ray.h"
-#include "GeometryCore/Transforms.h"
 #include "MeshCore/Intersection.h"
 #include "MeshFilesLoader/MeshFilesLoader.h"
 #include "PointLightObject3D.h"
@@ -46,7 +46,8 @@ namespace RenderSystem
 
   void Scene::addModelObject(const std::string& meshFilePath)
   {
-    auto modelObject = std::make_unique<Object3D>(MeshFilesLoader::loadSTL(meshFilePath));
+    auto modelObject =
+      std::make_unique<Object3D>(MeshFilesLoader::loadMeshFromFile(meshFilePath));
     mRootObject.addChild(std::move(modelObject));
     addSceneDecoration(
       SceneDecoration::createSceneFloor(mRootObject.getBBox().getHeight(), FLOOR_MATERIAL)

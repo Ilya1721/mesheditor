@@ -5,8 +5,10 @@
 
 namespace MeshCore
 {
-  Vertex::Vertex(const Point3D& otherPos, const Vector3D& otherNormal)
-    : pos(otherPos), normal(otherNormal)
+  Vertex::Vertex(
+    const Point3D& otherPos, const Vector3D& otherNormal, const Point2D& otherTexture
+  )
+    : pos(otherPos), normal(otherNormal), texture(otherTexture)
   {
   }
 

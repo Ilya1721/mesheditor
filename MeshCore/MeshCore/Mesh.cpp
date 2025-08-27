@@ -46,10 +46,7 @@ namespace MeshCore
 
   Mesh::~Mesh() = default;
 
-  void Mesh::init()
-  {
-    prepareHalfEdgeDataStructure();
-  }
+  void Mesh::init() { prepareHalfEdgeDataStructure(); }
 
   void Mesh::prepareHalfEdgeDataStructure()
   {

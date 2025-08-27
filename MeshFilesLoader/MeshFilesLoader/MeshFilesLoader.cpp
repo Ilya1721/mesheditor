@@ -1,7 +1,5 @@
 #include "MeshFilesLoader.h"
 
-#include <array>
-
 #include "Constants.h"
 #include "GeometryCore/Typedefs.h"
 #include "MeshCore/Mesh.h"
@@ -10,9 +8,12 @@
 
 namespace
 {
+  using parseTokenFunc =
+    void(char*& currentToken, char*& context, const char* delimeters);
+
   using namespace GeometryCore;
 
-  bool isBinaryFile(const std::string& fileContent)
+  bool isBinarySTL(const std::string& fileContent)
   {
     if (fileContent.empty()) { throw std::exception("File content is empty"); }
 
@@ -25,13 +26,18 @@ namespace
     return correctBinaryFileSize == fileContent.size();
   }
 
+  template <typename Vec>
   void readTokenAsVector(
-    char*& currentToken, const char* delimiter, char*& nextToken, glm::vec3& coordinates
+    char*& currentToken,
+    const char* delimiter,
+    char*& context,
+    Vec& coordinates,
+    int dimensions = 3
   )
   {
-    for (int coordIdx = 0; coordIdx < 3; ++coordIdx)
+    for (int coordIdx = 0; coordIdx < dimensions; ++coordIdx)
     {
-      currentToken = strtok_s(nullptr, delimiter, &nextToken);
+      currentToken = strtok_s(nullptr, delimiter, &context);
       coordinates[coordIdx] = std::stof(currentToken);
     }
   }
@@ -45,35 +51,48 @@ namespace
     }
   }
 
-  std::unique_ptr<MeshCore::Mesh> readText(std::string& fileContent)
+  void parseText(
+    std::string& fileContent, const std::function<parseTokenFunc>& parseToken
+  )
+  {
+    char* context = nullptr;
+    auto delimiters = MeshFilesLoader::DELIMITERS.c_str();
+    char* currentToken = strtok_s(fileContent.data(), delimiters, &context);
+
+    while (currentToken != nullptr)
+    {
+      parseToken(currentToken, context, delimiters);
+      currentToken = strtok_s(nullptr, delimiters, &context);
+    }
+  }
+
+  std::unique_ptr<MeshCore::Mesh> parseTextSTL(std::string& fileContent)
   {
     std::vector<MeshCore::Vertex> vertices;
     Vector3D faceNormal {};
 
-    char* nextToken = nullptr;
-    auto delimiters = MeshFilesLoader::STL_DELIMITERS.c_str();
-    char* currentToken = strtok_s(fileContent.data(), delimiters, &nextToken);
-
-    while (currentToken != nullptr)
-    {
-      if (Utility::isEqual(currentToken, MeshFilesLoader::KEYWORD_NORMAL))
+    parseText(
+      fileContent,
+      [&vertices,
+       &faceNormal](char*& currentToken, char*& context, const char* delimiters)
       {
-        readTokenAsVector(currentToken, delimiters, nextToken, faceNormal);
+        if (Utility::isEqual(currentToken, "normal"))
+        {
+          readTokenAsVector(currentToken, delimiters, context, faceNormal);
+        }
+        else if (Utility::isEqual(currentToken, "vertex"))
+        {
+          Point3D pos {};
+          readTokenAsVector(currentToken, delimiters, context, pos);
+          vertices.push_back({pos, faceNormal});
+        }
       }
-      else if (Utility::isEqual(currentToken, MeshFilesLoader::KEYWORD_VERTEX))
-      {
-        Point3D pos {};
-        readTokenAsVector(currentToken, delimiters, nextToken, pos);
-        vertices.push_back({pos, faceNormal});
-      }
-
-      currentToken = strtok_s(nullptr, delimiters, &nextToken);
-    }
+    );
 
     return std::make_unique<MeshCore::Mesh>(vertices);
   }
 
-  std::unique_ptr<MeshCore::Mesh> readBinary(const std::string& fileContent)
+  std::unique_ptr<MeshCore::Mesh> parseBinarySTL(const std::string& fileContent)
   {
     const char* buffer = fileContent.c_str();
     buffer += MeshFilesLoader::STL_HEADER_SIZE;
@@ -82,7 +101,6 @@ namespace
     buffer += sizeof(uint32_t);
 
     std::vector<MeshCore::Vertex> vertices;
-
     for (size_t faceIdx = 0; faceIdx < facesCount; ++faceIdx)
     {
       Vector3D faceNormal {};
@@ -100,19 +118,126 @@ namespace
 
     return std::make_unique<MeshCore::Mesh>(vertices);
   }
+
+  void parseFaceOBJ(
+    std::vector<MeshCore::Vertex>& vertices,
+    const std::vector<Point3D>& positions,
+    const std::vector<Point2D>& textures,
+    const std::vector<Vector3D>& normals,
+    char*& currentToken,
+    char*& context,
+    const char* delimiters
+  )
+  {
+    std::vector<MeshCore::Vertex> tempVertices;
+    auto nextToken = context[0];
+    while (nextToken != 'f' && nextToken != '\0')
+    {
+      std::vector<size_t> vertexIndices;
+      for (size_t i = 0; i < 3; ++i)
+      {
+        currentToken = strtok_s(nullptr, delimiters, &context);
+        vertexIndices.push_back(std::stoul(currentToken) - 1ull);
+      }
+      MeshCore::Vertex vertex;
+      vertex.pos = positions[vertexIndices[0]];
+      vertex.texture = textures[vertexIndices[1]];
+      vertex.normal = normals[vertexIndices[2]];
+      tempVertices.push_back(vertex);
+      nextToken = context[0];
+    }
+
+    if (tempVertices.size() == 3)
+    {
+      vertices.insert(vertices.end(), tempVertices.begin(), tempVertices.end());
+    }
+    else if (tempVertices.size() == 4)
+    {
+      vertices.push_back(tempVertices[0]);
+      vertices.push_back(tempVertices[1]);
+      vertices.push_back(tempVertices[2]);
+      vertices.push_back(tempVertices[0]);
+      vertices.push_back(tempVertices[2]);
+      vertices.push_back(tempVertices[3]);
+    }
+  }
+
+  template <typename T>
+  void addParsedVecToArray(
+    std::vector<T>& arr,
+    char*& currentToken,
+    char*& context,
+    const char* delimiters,
+    int dimensions = 3
+  )
+  {
+    T vec {};
+    readTokenAsVector(currentToken, delimiters, context, vec, dimensions);
+    arr.push_back(vec);
+  }
+
+  std::unique_ptr<MeshCore::Mesh> parseTextOBJ(std::string& fileContent)
+  {
+    std::vector<Point3D> positions;
+    std::vector<Point2D> textures;
+    std::vector<Vector3D> normals;
+    std::vector<MeshCore::Vertex> vertices;
+
+    parseText(
+      fileContent,
+      [&positions, &normals, &textures,
+       &vertices](char*& currentToken, char*& context, const char* delimiters)
+      {
+        if (Utility::isEqual(currentToken, "v"))
+        {
+          addParsedVecToArray(positions, currentToken, context, delimiters);
+        }
+        else if (Utility::isEqual(currentToken, "vt"))
+        {
+          addParsedVecToArray(textures, currentToken, context, delimiters, 2);
+        }
+        else if (Utility::isEqual(currentToken, "vn"))
+        {
+          addParsedVecToArray(normals, currentToken, context, delimiters);
+        }
+        else if (Utility::isEqual(currentToken, "f"))
+        {
+          parseFaceOBJ(
+            vertices, positions, textures, normals, currentToken, context, delimiters
+          );
+        }
+      }
+    );
+
+    return std::make_unique<MeshCore::Mesh>(vertices);
+  }
+
+  std::unique_ptr<MeshCore::Mesh> loadSTL(const std::filesystem::path& filePath)
+  {
+    auto fileContent = Utility::readFile(filePath);
+    return isBinarySTL(fileContent) ? parseBinarySTL(fileContent)
+                                    : parseTextSTL(fileContent);
+  }
+
+  std::unique_ptr<MeshCore::Mesh> loadOBJ(const std::filesystem::path& filePath)
+  {
+    auto fileContent = Utility::readFile(filePath);
+    return parseTextOBJ(fileContent);
+  }
 }  // namespace
 
 namespace MeshFilesLoader
 {
-  std::unique_ptr<MeshCore::Mesh> loadSTL(const std::filesystem::path& filePath)
+  std::unique_ptr<MeshCore::Mesh> loadMeshFromFile(const std::filesystem::path& filePath)
   {
-    if (!Utility::isEqual(filePath.extension().string(), ".stl"))
+    if (Utility::isEqual(filePath.extension().string(), ".stl"))
     {
-      throw std::exception("This file is not of stl format");
+      return loadSTL(filePath);
     }
-
-    auto fileContent = Utility::readFile(filePath);
-
-    return isBinaryFile(fileContent) ? readBinary(fileContent) : readText(fileContent);
+    else if (Utility::isEqual(filePath.extension().string(), ".obj"))
+    {
+      return loadOBJ(filePath);
+    }
+    else { throw std::exception("Unsupported file format"); }
   }
 }  // namespace MeshFilesLoader
