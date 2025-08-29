@@ -1,5 +1,7 @@
 #include "MeshFilesLoader.h"
 
+#include <numeric>
+
 #include "Constants.h"
 #include "GeometryCore/Typedefs.h"
 #include "MeshCore/Constants.h"
@@ -30,7 +32,7 @@ namespace
   template <typename Vec>
   void readTokenAsVector(
     char*& currentToken,
-    const char* delimiter,
+    const char* delimiters,
     char*& context,
     Vec& coordinates,
     int dimensions = 3
@@ -38,7 +40,7 @@ namespace
   {
     for (int coordIdx = 0; coordIdx < dimensions; ++coordIdx)
     {
-      currentToken = strtok_s(nullptr, delimiter, &context);
+      currentToken = strtok_s(nullptr, delimiters, &context);
       coordinates[coordIdx] = std::stof(currentToken);
     }
   }
@@ -163,6 +165,23 @@ namespace
     }
   }
 
+  std::string parseMaterialFileName(
+    char*& currentToken, char*& context, const char* delimiters
+  )
+  {
+    std::vector<std::string> nameParts;
+    while (!std::string(currentToken).ends_with(".mtl"))
+    {
+      currentToken = strtok_s(nullptr, delimiters, &context);
+      nameParts.push_back(currentToken);
+    }
+
+    return std::accumulate(
+      std::next(nameParts.begin()), nameParts.end(), nameParts[0],
+      [](const std::string& a, const std::string& b) { return a + " " + b; }
+    );
+  }
+
   template <typename T>
   void addParsedVecToArray(
     std::vector<T>& arr,
@@ -177,8 +196,45 @@ namespace
     arr.push_back(vec);
   }
 
-  std::unique_ptr<MeshCore::Mesh> parseTextOBJ(std::string& fileContent)
+  void parseTextMTL(
+    const std::filesystem::path& filePath, MeshCore::MaterialParams& materialParams
+  )
   {
+    auto fileContent = Utility::readFile(filePath);
+    parseText(
+      fileContent,
+      [&materialParams](char*& currentToken, char*& context, const char* delimiters)
+      {
+        if (Utility::isEqual(currentToken, "Ns"))
+        {
+          currentToken = strtok_s(nullptr, delimiters, &context);
+          materialParams.shininess = std::stof(currentToken);
+        }
+        else if (Utility::isEqual(currentToken, "Ka"))
+        {
+          readTokenAsVector(
+            currentToken, delimiters, context, materialParams.ambient, 3
+          );
+        }
+        else if (Utility::isEqual(currentToken, "Kd"))
+        {
+          readTokenAsVector(
+            currentToken, delimiters, context, materialParams.diffuse, 3
+          );
+        }
+        else if (Utility::isEqual(currentToken, "Ks"))
+        {
+          readTokenAsVector(
+            currentToken, delimiters, context, materialParams.specular, 3
+          );
+        }
+      }
+    );
+  }
+
+  std::unique_ptr<MeshCore::Mesh> parseTextOBJ(const std::filesystem::path& filePath)
+  {
+    auto fileContent = Utility::readFile(filePath);
     std::vector<Point3D> positions;
     std::vector<Point2D> textures;
     std::vector<Vector3D> normals;
@@ -187,8 +243,8 @@ namespace
 
     parseText(
       fileContent,
-      [&positions, &normals, &textures,
-       &vertices](char*& currentToken, char*& context, const char* delimiters)
+      [&positions, &normals, &textures, &vertices, &filePath,
+       &materialParams](char*& currentToken, char*& context, const char* delimiters)
       {
         if (Utility::isEqual(currentToken, "v"))
         {
@@ -208,23 +264,23 @@ namespace
             vertices, positions, textures, normals, currentToken, context, delimiters
           );
         }
+        else if (Utility::isEqual(currentToken, "mtllib"))
+        {
+          auto mtlFileName = parseMaterialFileName(currentToken, context, delimiters);
+          auto mtlFilePath = filePath.parent_path() / mtlFileName;
+          parseTextMTL(mtlFilePath, materialParams);
+        }
       }
     );
 
     return std::make_unique<MeshCore::Mesh>(vertices, materialParams);
   }
 
-  std::unique_ptr<MeshCore::Mesh> loadSTL(const std::filesystem::path& filePath)
+  std::unique_ptr<MeshCore::Mesh> parseSTL(const std::filesystem::path& filePath)
   {
     auto fileContent = Utility::readFile(filePath);
     return isBinarySTL(fileContent) ? parseBinarySTL(fileContent)
                                     : parseTextSTL(fileContent);
-  }
-
-  std::unique_ptr<MeshCore::Mesh> loadOBJ(const std::filesystem::path& filePath)
-  {
-    auto fileContent = Utility::readFile(filePath);
-    return parseTextOBJ(fileContent);
   }
 }  // namespace
 
@@ -234,11 +290,11 @@ namespace MeshFilesLoader
   {
     if (Utility::isEqual(filePath.extension().string(), ".stl"))
     {
-      return loadSTL(filePath);
+      return parseSTL(filePath);
     }
     else if (Utility::isEqual(filePath.extension().string(), ".obj"))
     {
-      return loadOBJ(filePath);
+      return parseTextOBJ(filePath);
     }
     else { throw std::exception("Unsupported file format"); }
   }
