@@ -133,8 +133,7 @@ namespace
   )
   {
     std::vector<MeshCore::Vertex> tempVertices;
-    auto nextToken = context[0];
-    while (nextToken != 'f' && nextToken != '\0')
+    while (context[0] != 'f' && context[0] != '\0')
     {
       std::vector<size_t> vertexIndices;
       for (size_t i = 0; i < 3; ++i)
@@ -147,7 +146,6 @@ namespace
       vertex.texture = textures[vertexIndices[1]];
       vertex.normal = normals[vertexIndices[2]];
       tempVertices.push_back(vertex);
-      nextToken = context[0];
     }
 
     if (tempVertices.size() == 3)
@@ -163,6 +161,23 @@ namespace
       vertices.push_back(tempVertices[2]);
       vertices.push_back(tempVertices[3]);
     }
+  }
+
+  std::string parseTextureRelativePath(
+    char*& currentToken, char*& context, const char* delimiters
+  )
+  {
+    std::vector<std::string> pathParts;
+    while (!std::string(currentToken).ends_with(".png"))
+    {
+      currentToken = strtok_s(nullptr, delimiters, &context);
+      pathParts.push_back(currentToken);
+    }
+
+    return std::accumulate(
+      std::next(pathParts.begin() + 1), pathParts.end(), pathParts[1],
+      [](const std::string& a, const std::string& b) { return a + "\\" + b; }
+    );
   }
 
   std::string parseMaterialFileName(
@@ -203,7 +218,8 @@ namespace
     auto fileContent = Utility::readFile(filePath);
     parseText(
       fileContent,
-      [&materialParams](char*& currentToken, char*& context, const char* delimiters)
+      [&materialParams,
+       &filePath](char*& currentToken, char*& context, const char* delimiters)
       {
         if (Utility::isEqual(currentToken, "Ns"))
         {
@@ -212,21 +228,24 @@ namespace
         }
         else if (Utility::isEqual(currentToken, "Ka"))
         {
-          readTokenAsVector(
-            currentToken, delimiters, context, materialParams.ambient, 3
-          );
+          readTokenAsVector(currentToken, delimiters, context, materialParams.ambient, 3);
         }
         else if (Utility::isEqual(currentToken, "Kd"))
         {
-          readTokenAsVector(
-            currentToken, delimiters, context, materialParams.diffuse, 3
-          );
+          readTokenAsVector(currentToken, delimiters, context, materialParams.diffuse, 3);
         }
         else if (Utility::isEqual(currentToken, "Ks"))
         {
           readTokenAsVector(
             currentToken, delimiters, context, materialParams.specular, 3
           );
+        }
+        else if (Utility::isEqual(currentToken, "map_Kd"))
+        {
+          auto textureRelativePath =
+            parseTextureRelativePath(currentToken, context, delimiters);
+          materialParams.diffuseTexturePath =
+            filePath.parent_path() / std::filesystem::path(textureRelativePath);
         }
       }
     );

@@ -12,33 +12,33 @@ using namespace GeometryCore;
 
 namespace RenderSystem
 {
-  static inline constexpr MaterialParams RUBY_MATERIAL {
+  const MaterialParams RUBY_MATERIAL {
     RGB(0.1745f, 0.01175f, 0.01175f), RGB(0.61424f, 0.04136f, 0.04136f),
     RGB(0.727811f, 0.626959f, 0.626959f), 2.0f
   };
 
-  static inline constexpr MaterialParams EMERALD_MATERIAL {
+  const MaterialParams EMERALD_MATERIAL {
     RGB(0.0215f, 0.1745f, 0.0215f), RGB(0.07568f, 0.61424f, 0.07568f),
     RGB(0.633f, 0.727811f, 0.633f), 0.6f
   };
 
-  static inline constexpr MaterialParams RED_MATERIAL {
+  const MaterialParams RED_MATERIAL {
     RGB(1.0f, 0.0f, 0.0f), RGB(0.0f, 0.0f, 0.0f), RGB(0.0f, 0.0f, 0.0f), 0.6f
   };
 
-  static inline constexpr MaterialParams GREEN_MATERIAL {
+  const MaterialParams GREEN_MATERIAL {
     RGB(0.0f, 1.0f, 0.0f), RGB(0.0f, 0.0f, 0.0f), RGB(0.0f, 0.0f, 0.0f), 0.6f
   };
 
-  static inline constexpr MaterialParams BLUE_MATERIAL {
+  const MaterialParams BLUE_MATERIAL {
     RGB(0.0f, 0.0f, 1.0f), RGB(0.0f, 0.0f, 0.0f), RGB(0.0f, 0.0f, 0.0f), 0.6f
   };
 
-  static inline constexpr MaterialParams BLACK_MATERIAL {
+  const MaterialParams BLACK_MATERIAL {
     RGB(0.0f, 0.0f, 0.0f), RGB(0.0f, 0.0f, 0.0f), RGB(0.0f, 0.0f, 0.0f), 0.6f
   };
 
-  static inline constexpr MaterialParams PEARL_MATERIAL {
+  const MaterialParams PEARL_MATERIAL {
     RGB(0.25f, 0.20725f, 0.20725f), RGB(1.0f, 0.829f, 0.829f),
     RGB(0.296648f, 0.296648f, 0.296648f), 11.264f
   };

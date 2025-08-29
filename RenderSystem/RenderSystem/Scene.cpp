@@ -16,9 +16,9 @@ using namespace GeometryCore;
 
 namespace RenderSystem
 {
-  constexpr MaterialParams FLOOR_MATERIAL = PEARL_MATERIAL;
-  constexpr MaterialParams HIGHLIGHT_MATERIAL = RUBY_MATERIAL;
-  constexpr MaterialParams WIREFRAME_MATERIAL = BLACK_MATERIAL;
+  const MaterialParams FLOOR_MATERIAL = PEARL_MATERIAL;
+  const MaterialParams HIGHLIGHT_MATERIAL = RUBY_MATERIAL;
+  const MaterialParams WIREFRAME_MATERIAL = BLACK_MATERIAL;
 }  // namespace RenderSystem
 
 namespace RenderSystem
