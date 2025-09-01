@@ -13,7 +13,7 @@ namespace RenderSystem
    public:
     ShadowController(const path& vertexShaderPath, const path& fragmentShaderPath);
 
-    unsigned int getDepthTextureId() const;
+    const DepthTexture& getDepthMap() const;
     ShadowMapShaderProgram* getShaderProgram();
 
     void setTextureDimensions(int width, int height);

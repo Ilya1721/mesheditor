@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AbstractShaderProgram.h"
+#include "DepthTexture.h"
 #include "DirectionalLight.h"
 #include "GeometryCore/Typedefs.h"
 #include "Material.h"
@@ -23,11 +24,11 @@ namespace RenderSystem
 
     void setModel(const glm::mat4& model) override;
     void setCameraPos(const Point3D& cameraPos);
-    void setMaterialParams(const MaterialParams& materialParams);
+    void setMaterialParams(const Object3DMaterialParams& materialParams);
     void setDirectionalLightParams(const DirectionalLightParams& light);
     void setView(const glm::mat4& view);
     void setProjection(const glm::mat4& projection);
-    void setDepthMap(int textureId);
+    void setDepthMap(const DepthTexture& texture) const;
     void setLightView(const glm::mat4& lightView);
     void setLightProjection(const glm::mat4& lightProjection);
     PointLight* addPointLight(

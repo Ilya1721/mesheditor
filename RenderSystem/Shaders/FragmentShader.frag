@@ -8,6 +8,7 @@ uniform vec3 dirLightPos;
 uniform vec3 cameraPos;
 uniform float shadowBias;
 uniform sampler2D depthMap;
+uniform sampler2D diffuseTexture;
 
 struct Material
 {

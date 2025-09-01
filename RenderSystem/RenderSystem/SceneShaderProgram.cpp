@@ -48,7 +48,7 @@ namespace RenderSystem
            { mDirectionalLight.setCameraPos(glm::value_ptr(cameraPos)); });
   }
 
-  void SceneShaderProgram::setMaterialParams(const MaterialParams& materialParams)
+  void SceneShaderProgram::setMaterialParams(const Object3DMaterialParams& materialParams)
   {
     invoke([this, &materialParams]() { mMaterial.setParams(materialParams); });
   }
@@ -70,14 +70,12 @@ namespace RenderSystem
            { glUniformMatrix4fv(mProjection, 1, false, glm::value_ptr(projection)); });
   }
 
-  void SceneShaderProgram::setDepthMap(int textureId)
+  void SceneShaderProgram::setDepthMap(const DepthTexture& texture) const
   {
     invoke(
-      [this, textureId]()
+      [this, &texture]()
       {
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, textureId);
-        glUniform1i(mDepthMap, 1);
+        texture.passToFragmentShader(mDepthMap);
       }
     );
   }

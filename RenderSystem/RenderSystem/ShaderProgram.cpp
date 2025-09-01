@@ -89,13 +89,13 @@ namespace RenderSystem
     glUseProgram(mShaderProgram);
   }
 
-  void ShaderProgram::bind()
+  void ShaderProgram::bind() const
   {
     glGetIntegerv(GL_CURRENT_PROGRAM, &mResourceToRestore);
     glUseProgram(mShaderProgram);
   }
 
-  void ShaderProgram::unbind()
+  void ShaderProgram::unbind() const
   {
     glUseProgram(mResourceToRestore);
   }

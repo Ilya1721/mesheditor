@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MeshCore/MaterialParams.h"
+#include "Object3DMaterialParams.h"
 
 namespace RenderSystem
 {
@@ -8,13 +8,14 @@ namespace RenderSystem
   {
   public:
     void init(int shaderProgram);
-    void setParams(const MeshCore::MaterialParams& material);
+    void setParams(const Object3DMaterialParams& materialParams);
 
   private:
     void setAmbient(const float* ambient) const;
     void setDiffuse(const float* diffuse) const;
     void setSpecular(const float* specular) const;
     void setShininess(float shininess) const;
+    void setDiffuseTexture(const ImageTexture& texture) const;
     void initUniformLocations();
 
     int getUniformLocation(const char* name) const;
@@ -25,5 +26,6 @@ namespace RenderSystem
     int mDiffuse;
     int mSpecular;
     int mShininess;
+    int mDiffuseTexture;
   };
 }

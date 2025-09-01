@@ -14,6 +14,13 @@ namespace RenderSystem
     if (mTexture != 0) { glDeleteTextures(1, &mTexture); }
   }
 
+  void Texture::passToFragmentShader(int textureLocation) const
+  {
+    glActiveTexture(GL_TEXTURE0 + mTexture);
+    glBindTexture(GL_TEXTURE_2D, mTexture);
+    glUniform1i(textureLocation, mTexture);
+  }
+
   unsigned int Texture::getId() const { return mTexture; }
 
   void Texture::init()
@@ -30,16 +37,13 @@ namespace RenderSystem
     );
   }
 
-  void Texture::bind()
+  void Texture::bind() const
   {
     glGetIntegerv(GL_TEXTURE_BINDING_2D, &mResourceToRestore);
     glBindTexture(GL_TEXTURE_2D, mTexture);
   }
 
-  void Texture::unbind()
-  {
-    glBindTexture(GL_TEXTURE_2D, mResourceToRestore);
-  }
+  void Texture::unbind() const { glBindTexture(GL_TEXTURE_2D, mResourceToRestore); }
 
   int Texture::getWidth() const { return mWidth; }
 

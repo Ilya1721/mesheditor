@@ -15,7 +15,10 @@ namespace RenderSystem
     init();
   }
 
-  unsigned int ShadowController::getDepthTextureId() const { return mTexture.getId(); }
+  const DepthTexture& ShadowController::getDepthMap() const
+  {
+    return mTexture;
+  }
 
   ShadowMapShaderProgram* ShadowController::getShaderProgram() { return &mShaderProgram; }
 

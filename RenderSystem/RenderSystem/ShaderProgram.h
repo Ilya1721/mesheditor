@@ -21,8 +21,8 @@ namespace RenderSystem
    private:
     void init();
     void initShaderProgram();
-    void bind() override;
-    void unbind() override;
+    void bind() const override;
+    void unbind() const override;
 
    protected:
     std::filesystem::path mVertexShaderPath;

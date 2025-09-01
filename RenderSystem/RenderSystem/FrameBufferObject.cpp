@@ -9,9 +9,9 @@ namespace RenderSystem
 {
   FrameBufferObject::FrameBufferObject() { init(); }
 
-  void FrameBufferObject::bind() { glBindFramebuffer(GL_FRAMEBUFFER, mFBO); }
+  void FrameBufferObject::bind() const { glBindFramebuffer(GL_FRAMEBUFFER, mFBO); }
 
-  void FrameBufferObject::unbind() { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
+  void FrameBufferObject::unbind() const { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
 
   void FrameBufferObject::attachTexture(
     const Texture& texture, const std::function<void()>& textureSetupFunc

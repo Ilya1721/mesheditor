@@ -16,8 +16,8 @@ namespace RenderSystem
 
    private:
     void init();
-    void bind() override;
-    void unbind() override;
+    void bind() const override;
+    void unbind() const override;
 
    private:
     unsigned int mFBO;

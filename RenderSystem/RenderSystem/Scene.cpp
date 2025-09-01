@@ -227,7 +227,7 @@ namespace RenderSystem
   void Scene::render()
   {
     renderDepthMap();
-    mSceneShaderProgram->setDepthMap(mShadowController->getDepthTextureId());
+    mSceneShaderProgram->setDepthMap(mShadowController->getDepthMap());
     mSceneShaderProgram->invoke(
       [this]()
       {

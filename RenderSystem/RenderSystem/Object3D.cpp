@@ -14,7 +14,10 @@ namespace RenderSystem
   Object3D::Object3D() : mParent(nullptr), mTransform(1.0f) {}
 
   Object3D::Object3D(std::unique_ptr<Mesh> mesh)
-    : mParent(nullptr), mMesh(std::move(mesh)), mTransform(1.0f)
+    : mParent(nullptr),
+      mMesh(std::move(mesh)),
+      mTransform(1.0f),
+      mMaterialParams(mMesh->getMaterialParams())
   {
     init();
   }
@@ -99,9 +102,9 @@ namespace RenderSystem
     return mMesh->getVertices();
   }
 
-  const MaterialParams& Object3D::getMaterialParams() const
+  const Object3DMaterialParams& Object3D::getMaterialParams() const
   {
-    return mMesh->getMaterialParams();
+    return mMaterialParams;
   }
 
   void Object3D::addChild(std::unique_ptr<Object3D>&& child)

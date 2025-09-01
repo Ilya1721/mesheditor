@@ -3,8 +3,9 @@
 #ifdef __gl_h_
 #undef __gl_h_
 #endif
-#include "glad/glad.h"
 #include <glm/gtc/type_ptr.hpp>
+
+#include "glad/glad.h"
 
 namespace RenderSystem
 {
@@ -19,12 +20,13 @@ namespace RenderSystem
     return glGetUniformLocation(mShaderProgram, name);
   }
 
-  void Material::setParams(const MeshCore::MaterialParams& material)
+  void Material::setParams(const Object3DMaterialParams& materialParams)
   {
-    setAmbient(glm::value_ptr(material.ambient));
-    setDiffuse(glm::value_ptr(material.diffuse));
-    setSpecular(glm::value_ptr(material.specular));
-    setShininess(material.shininess);
+    setAmbient(glm::value_ptr(materialParams.ambient));
+    setDiffuse(glm::value_ptr(materialParams.diffuse));
+    setSpecular(glm::value_ptr(materialParams.specular));
+    setShininess(materialParams.shininess);
+    setDiffuseTexture(materialParams.diffuseTexture);
   }
 
   void Material::initUniformLocations()
@@ -33,6 +35,7 @@ namespace RenderSystem
     mDiffuse = getUniformLocation("material.diffuse");
     mSpecular = getUniformLocation("material.specular");
     mShininess = getUniformLocation("material.shininess");
+    mDiffuseTexture = getUniformLocation("diffuseTexture");
   }
 
   void Material::setAmbient(const float* ambient) const
@@ -53,5 +56,10 @@ namespace RenderSystem
   void Material::setShininess(float shininess) const
   {
     glUniform1f(mShininess, shininess);
+  }
+
+  void Material::setDiffuseTexture(const ImageTexture& texture) const
+  {
+    texture.passToFragmentShader(mDiffuseTexture);
   }
 }  // namespace RenderSystem

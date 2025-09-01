@@ -9,13 +9,13 @@ namespace RenderSystem
    public:
     virtual ~RequiresBindBeforeInvoke() = default;
 
-    void invoke(const std::function<void()>& action);
+    void invoke(const std::function<void()>& action) const;
 
    private:
-    virtual void bind() = 0;
-    virtual void unbind() = 0;
+    virtual void bind() const = 0;
+    virtual void unbind() const = 0;
 
   protected:
-    int mResourceToRestore;
+    mutable int mResourceToRestore;
   };
 }  // namespace RenderSystem

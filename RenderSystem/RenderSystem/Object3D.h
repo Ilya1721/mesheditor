@@ -8,6 +8,7 @@
 #include "MeshCore/Mesh.h"
 #include "MeshCore/Vertex.h"
 #include "Object3DIntersection.h"
+#include "Object3DMaterialParams.h"
 #include "Utility/CallbackMechanism.h"
 
 using namespace MeshCore;
@@ -40,7 +41,7 @@ namespace RenderSystem
     std::unique_ptr<Object3D> clone();
     int getVertexCount() const;
     const std::vector<Vertex>& getVertices() const;
-    const MaterialParams& getMaterialParams() const;
+    const Object3DMaterialParams& getMaterialParams() const;
 
     void addChild(std::unique_ptr<Object3D>&& child);
     void addOnChildAddedCallback(const std::function<childAddedCallback>& callback);
@@ -66,5 +67,6 @@ namespace RenderSystem
     CallbackMechanism<childAddedCallback> mChildAddedCM;
     CallbackMechanism<objectUpdatedCallback> mObjectUpdatedCM;
     CallbackMechanism<bboxUpdatedCallback> mBBoxUpdatedCM;
+    Object3DMaterialParams mMaterialParams;
   };
 }  // namespace RenderSystem

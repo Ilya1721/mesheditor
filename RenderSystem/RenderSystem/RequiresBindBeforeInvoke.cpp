@@ -2,7 +2,7 @@
 
 namespace RenderSystem
 {
-  void RequiresBindBeforeInvoke::invoke(const std::function<void()>& action)
+  void RequiresBindBeforeInvoke::invoke(const std::function<void()>& action) const
   {
     bind();
     action();
