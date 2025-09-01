@@ -142,7 +142,6 @@
     <ClCompile Include="RenderSystem\Cloner.cpp" />
     <ClCompile Include="RenderSystem\DepthTexture.cpp" />
     <ClCompile Include="RenderSystem\FrameBufferObject.cpp" />
-    <ClCompile Include="RenderSystem\glad.c" />
     <ClCompile Include="RenderSystem\ImageTexture.cpp" />
     <ClCompile Include="RenderSystem\Intersection.cpp" />
     <ClCompile Include="RenderSystem\DirectionalLight.cpp" />
@@ -185,12 +184,10 @@
     <ClInclude Include="RenderSystem\Constants.h" />
     <ClInclude Include="RenderSystem\DepthTexture.h" />
     <ClInclude Include="RenderSystem\FrameBufferObject.h" />
-    <ClInclude Include="RenderSystem\glad.h" />
     <ClInclude Include="RenderSystem\GladTypedefs.h" />
     <ClInclude Include="RenderSystem\HighlightedFacesData.h" />
     <ClInclude Include="RenderSystem\ImageTexture.h" />
     <ClInclude Include="RenderSystem\Intersection.h" />
-    <ClInclude Include="RenderSystem\khrplatform.h" />
     <ClInclude Include="RenderSystem\LightParams.h" />
     <ClInclude Include="RenderSystem\DirectionalLight.h" />
     <ClInclude Include="RenderSystem\DirLightSource.h" />

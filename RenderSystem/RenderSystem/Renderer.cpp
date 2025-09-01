@@ -11,7 +11,7 @@
 #include "MeshCore/Mesh.h"
 #include "Object3D.h"
 #include "SceneShaderProgram.h"
-#include "glad.h"
+#include "glad/glad.h"
 
 using namespace MeshCore;
 

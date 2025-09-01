@@ -7,7 +7,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "LightParams.h"
-#include "glad.h"
+#include "glad/glad.h"
 
 namespace RenderSystem
 {

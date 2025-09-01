@@ -15,7 +15,7 @@
 #include "OperationsDispatcher.h"
 #include "Scene.h"
 #include "Viewport.h"
-#include "glad.h"
+#include "glad/glad.h"
 
 namespace
 {

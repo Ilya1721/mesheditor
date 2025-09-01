@@ -7,7 +7,7 @@
 
 #include "Constants.h"
 #include "SceneShaderProgram.h"
-#include "glad.h"
+#include "glad/glad.h"
 
 namespace RenderSystem
 {

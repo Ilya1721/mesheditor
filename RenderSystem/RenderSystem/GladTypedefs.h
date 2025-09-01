@@ -5,7 +5,7 @@
 #endif
 #include <functional>
 
-#include "glad.h"
+#include "glad/glad.h"
 
 namespace RenderSystem
 {

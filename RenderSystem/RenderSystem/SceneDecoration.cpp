@@ -9,7 +9,7 @@
 #include "GeometryCore/Ray.h"
 #include "MeshCore/Constants.h"
 #include "MeshCore/Vertex.h"
-#include "glad.h"
+#include "glad/glad.h"
 
 using namespace MeshCore;
 

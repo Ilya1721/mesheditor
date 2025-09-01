@@ -4,8 +4,7 @@
 #undef __gl_h_
 #endif
 #include <glm/gtc/type_ptr.hpp>
-
-#include "glad.h"
+#include "glad/glad.h"
 
 namespace RenderSystem
 {

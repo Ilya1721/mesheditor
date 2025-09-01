@@ -3,7 +3,7 @@
 #ifdef __gl_h_
 #undef __gl_h_
 #endif
-#include "glad.h"
+#include "glad/glad.h"
 #include <glm/gtc/type_ptr.hpp>
 
 namespace RenderSystem

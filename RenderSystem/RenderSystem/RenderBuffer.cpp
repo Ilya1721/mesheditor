@@ -4,7 +4,7 @@
 #undef __gl_h_
 #endif
 #include "MeshCore/Constants.h"
-#include "glad.h"
+#include "glad/glad.h"
 
 namespace RenderSystem
 {
