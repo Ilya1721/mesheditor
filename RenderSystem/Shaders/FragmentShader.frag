@@ -2,6 +2,7 @@
 
 in vec3 vertexPos;
 in vec3 vertexNormal;
+in vec2 vertexTexture;
 in vec4 fragPosLightSpace;
 
 uniform vec3 dirLightPos;
@@ -16,6 +17,7 @@ struct Material
   vec3 diffuse;
   vec3 specular;
   float shininess;
+  bool hasDiffuseTexture;
 };
 
 uniform Material material;
@@ -78,6 +80,11 @@ vec3 getDirectionalLight(vec3 lightAmbient, vec3 lightDiffuse, vec3 lightSpecula
 
   vec3 ambient = lightAmbient * material.ambient;
   vec3 pixelColor = ambient + diffuse + specular;
+
+  if (material.hasDiffuseTexture)
+  {
+    pixelColor *= texture(diffuseTexture, vertexTexture).rgb;
+  } 
 
   return pixelColor;
 }

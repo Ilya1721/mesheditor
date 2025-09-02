@@ -36,6 +36,7 @@ namespace RenderSystem
     mSpecular = getUniformLocation("material.specular");
     mShininess = getUniformLocation("material.shininess");
     mDiffuseTexture = getUniformLocation("diffuseTexture");
+    mHasDiffuseTexture = getUniformLocation("material.hasDiffuseTexture");
   }
 
   void Material::setAmbient(const float* ambient) const
@@ -60,6 +61,11 @@ namespace RenderSystem
 
   void Material::setDiffuseTexture(const ImageTexture& texture) const
   {
-    texture.passToFragmentShader(mDiffuseTexture);
+    if (texture.getId() == 0) { glUniform1i(mHasDiffuseTexture, false); }
+    else
+    {
+      glUniform1i(mHasDiffuseTexture, true);
+      texture.passToFragmentShader(mDiffuseTexture);
+    }
   }
 }  // namespace RenderSystem

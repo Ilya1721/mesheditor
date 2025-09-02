@@ -6,6 +6,20 @@
 #include "glad/glad.h"
 #include "stb_image/stb_image.h"
 
+namespace
+{
+  int getColorFormat(int colorChannels)
+  {
+    switch (colorChannels)
+    {
+      case 1: return GL_RED;
+      case 3: return GL_RGB;
+      case 4: return GL_RGBA;
+      default: return GL_RGB;
+    }
+  }
+}
+
 namespace RenderSystem
 {
   ImageTexture::ImageTexture(int width, int height) : Texture(width, height)
@@ -25,8 +39,10 @@ namespace RenderSystem
     invoke(
       [&width, &height, this]()
       {
+        const auto colorFormat = getColorFormat(mColorChannels);
         glTexImage2D(
-          GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, mData
+          GL_TEXTURE_2D, 0, colorFormat, width, height, 0, colorFormat, GL_UNSIGNED_BYTE,
+          mData
         );
       }
     );
@@ -34,7 +50,8 @@ namespace RenderSystem
 
   ImageTexture::ImageTexture(const std::string& filePath) : Texture()
   {
-    mData = stbi_load(filePath.c_str(), &mWidth, &mHeight, 0, 0);
+    if (filePath.empty()) { return; }
+    mData = stbi_load(filePath.c_str(), &mWidth, &mHeight, &mColorChannels, 0);
     glGenTextures(1, &mTexture);
     setDimensions(mWidth, mHeight);
     invoke(

@@ -35,19 +35,23 @@ namespace RenderSystem
       file << "v " << vertex.pos.x << " " << vertex.pos.y << " " << vertex.pos.z << "\n";
     }
 
-    // Write vertex normals
     for (const auto& vertex : vertices)
     {
       file << "vn " << vertex.normal.x << " " << vertex.normal.y << " " << vertex.normal.z
            << "\n";
     }
 
+    for (const auto& vertex : vertices)
+    {
+      file << "vt " << vertex.texture.x << " " << vertex.texture.y << "\n";
+    }
+
     for (size_t i = 1; i < vertices.size(); i += 3)
     {
       file << "f ";
-      file << i << "//" << i << " ";
-      file << i + 1 << "//" << i + 1 << " ";
-      file << i + 2 << "//" << i + 2 << "\n";
+      file << i << "/" << i << "/" << i << " ";
+      file << i + 1 << "/" << i + 1 << "/" << i + 1 << " ";
+      file << i + 2 << "/" << i + 2 << "/" << i + 2 << "\n";
     }
   }
 }  // namespace RenderSystem

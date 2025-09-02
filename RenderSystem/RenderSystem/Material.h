@@ -27,5 +27,6 @@ namespace RenderSystem
     int mSpecular;
     int mShininess;
     int mDiffuseTexture;
+    int mHasDiffuseTexture;
   };
 }

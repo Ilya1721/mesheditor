@@ -17,5 +17,6 @@ namespace RenderSystem
 
   private:
     unsigned char* mData = nullptr;
+    int mColorChannels = 3;
   };
 }  // namespace RenderSystem

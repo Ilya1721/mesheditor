@@ -45,24 +45,28 @@ namespace RenderSystem
     {
       mCompactData.emplace_back(vertex.normal[coordIdx]);
     }
+    for (int coordIdx = 0; coordIdx < 2; ++coordIdx)
+    {
+      mCompactData.emplace_back(vertex.texture[coordIdx]);
+    }
   }
 
   void RenderData::updateVertex(
     const OriginalVertexData& vertexData, int startVertexOffset
   )
   {
-    for (unsigned int compactDataIdx = 6 * (startVertexOffset + vertexData.index),
+    for (unsigned int compactDataIdx = 8 * (startVertexOffset + vertexData.index),
                       coordIdx = 0;
          coordIdx < 3; ++compactDataIdx, ++coordIdx)
     {
       mCompactData[compactDataIdx] = vertexData.vertex->pos[coordIdx];
-      mCompactData[compactDataIdx + 3] = vertexData.vertex->normal[coordIdx];
+      mCompactData[compactDataIdx + 3ull] = vertexData.vertex->normal[coordIdx];
     }
   }
 
   const std::vector<float>& RenderData::getCompactData() const { return mCompactData; }
 
-  int RenderData::getVertexCount() const { return mCompactData.size() / 6; }
+  int RenderData::getVertexCount() const { return mCompactData.size() / 8; }
 
   RenderData RenderData::createRenderData(const Ray& ray, float length)
   {
