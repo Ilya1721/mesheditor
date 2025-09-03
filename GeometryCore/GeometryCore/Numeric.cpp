@@ -13,7 +13,7 @@ namespace GeometryCore
   float getSquareOfTriangle(const std::array<float, 3>& edgesLengths)
   {
     auto halfPerimeter =
-      std::accumulate(edgesLengths.begin(), edgesLengths.end(), 0.0f) / 2.0f;
+      std::accumulate(edgesLengths.begin(), edgesLengths.end(), 0.0f) * 0.5f;
     return sqrtf(
       halfPerimeter * (halfPerimeter - edgesLengths[0]) *
       (halfPerimeter - edgesLengths[1]) * (halfPerimeter - edgesLengths[2])

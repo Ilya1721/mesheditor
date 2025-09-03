@@ -47,27 +47,27 @@ namespace MeshCore
   bool Face::isPointInside(const Point3D& point) const
   {
     auto verticesPositions = getVerticesPositions();
-    std::array<std::array<Vector3D, 3>, 3> vertexPointEdges {};
-    vertexPointEdges[0] = {
-      point - verticesPositions[1], point - verticesPositions[0],
-      verticesPositions[1] - verticesPositions[0]
+    std::array<std::array<Vector3D, 3>, 3> littleTriangles {};
+    littleTriangles[0] = {
+      verticesPositions[0] - point, verticesPositions[1] - verticesPositions[0],
+      point - verticesPositions[1]
     };
-    vertexPointEdges[1] = {
-      point - verticesPositions[2], point - verticesPositions[0],
-      verticesPositions[2] - verticesPositions[0]
+    littleTriangles[1] = {
+      verticesPositions[1] - point, verticesPositions[2] - verticesPositions[1],
+      point - verticesPositions[2]
     };
-    vertexPointEdges[2] = {
-      point - verticesPositions[1], point - verticesPositions[2],
-      verticesPositions[2] - verticesPositions[1]
+    littleTriangles[2] = {
+      verticesPositions[2] - point, verticesPositions[0] - verticesPositions[2],
+      point - verticesPositions[0]
     };
 
-    std::array<std::array<float, 3>, 3> vertexPointEdgesLengths {};
+    std::array<std::array<float, 3>, 3> littleTrianglesEdgesLengths {};
     for (int triangleIdx = 0; triangleIdx < 3; ++triangleIdx)
     {
       for (int edgeIdx = 0; edgeIdx < 3; ++edgeIdx)
       {
-        vertexPointEdgesLengths[triangleIdx][edgeIdx] =
-          glm::length(vertexPointEdges[triangleIdx][edgeIdx]);
+        littleTrianglesEdgesLengths[triangleIdx][edgeIdx] =
+          glm::length(littleTriangles[triangleIdx][edgeIdx]);
       }
     }
 
@@ -76,16 +76,15 @@ namespace MeshCore
     for (int triangleIdx = 0; triangleIdx < 3; ++triangleIdx)
     {
       auto crossProduct =
-        glm::cross(vertexPointEdges[triangleIdx][1], vertexPointEdges[triangleIdx][2]);
+        glm::cross(littleTriangles[triangleIdx][1], littleTriangles[triangleIdx][2]);
       if (!isEqual(crossProduct, Vector3D(0.0f, 0.0f, 0.0f)))
       {
-        trianglesSquaresSum += getSquareOfTriangle(vertexPointEdgesLengths[triangleIdx]);
+        trianglesSquaresSum +=
+          getSquareOfTriangle(littleTrianglesEdgesLengths[triangleIdx]);
       }
     }
 
-    return glm::epsilonEqual(
-      std::roundf(trianglesSquaresSum), std::roundf(getSquare()), 1e-6f
-    );
+    return glm::epsilonEqual(trianglesSquaresSum, getSquare(), 1e-6f);
   }
 
   std::vector<Vector3D> Face::getAllEdges() const
