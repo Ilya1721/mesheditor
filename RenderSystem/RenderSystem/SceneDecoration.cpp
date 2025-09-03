@@ -7,7 +7,6 @@
 #include "GeometryCore/Line.h"
 #include "GeometryCore/Plane.h"
 #include "GeometryCore/Ray.h"
-#include "MeshCore/Constants.h"
 #include "MeshCore/Vertex.h"
 #include "glad/glad.h"
 
@@ -92,23 +91,26 @@ namespace RenderSystem
   }
 
   SceneDecoration SceneDecoration::createLine(
-    const Point3D& start, const Point3D& end, const MaterialParams& material
+    const Point3D& start,
+    const Point3D& end,
+    bool withArrowHead,
+    const MaterialParams& material
   )
   {
-    return SceneDecoration::createDecoration({start, end}, true, material);
+    return SceneDecoration::createDecoration({start, end}, withArrowHead, material);
   }
 
   std::vector<SceneDecoration> SceneDecoration::createGlobalAxes(float length)
   {
     std::vector<SceneDecoration> globalAxes;
     globalAxes.emplace_back(createLine(
-      glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(length, 0.0f, 0.0f), BLUE_MATERIAL
+      glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(length, 0.0f, 0.0f), true, BLUE_MATERIAL
     ));
-    globalAxes.emplace_back(
-      createLine(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, length, 0.0f), RED_MATERIAL)
-    );
     globalAxes.emplace_back(createLine(
-      glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, length), GREEN_MATERIAL
+      glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, length, 0.0f), true, RED_MATERIAL
+    ));
+    globalAxes.emplace_back(createLine(
+      glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, length), true, GREEN_MATERIAL
     ));
 
     return globalAxes;
@@ -123,10 +125,78 @@ namespace RenderSystem
     for (const auto& vertex : vertices)
     {
       verticesNormals.emplace_back(
-        createLine(vertex.pos, vertex.pos + vertex.normal * 10.0f, GREEN_MATERIAL)
+        createLine(vertex.pos, vertex.pos + vertex.normal * 10.0f, true, GREEN_MATERIAL)
       );
     }
 
     return verticesNormals;
+  }
+
+  std::vector<SceneDecoration> SceneDecoration::createBoundingBox(
+    const MeshCore::AABBox& bbox, const MaterialParams& materialParams
+  )
+  {
+    Point3D leftMinLowerCorner = bbox.getMin();
+    Point3D rightMinLowerCorner = {
+      bbox.getMax().x, leftMinLowerCorner.y, leftMinLowerCorner.z
+    };
+    Point3D leftMaxLowerCorner = {
+      leftMinLowerCorner.x, leftMinLowerCorner.y, bbox.getMax().z
+    };
+    Point3D rightMaxLowerCorner = {
+      rightMinLowerCorner.x, rightMinLowerCorner.y, bbox.getMax().z
+    };
+    Point3D leftMinUpperCorner = {
+      leftMinLowerCorner.x, bbox.getMax().y, leftMinLowerCorner.z
+    };
+    Point3D rightMinUpperCorner = {
+      rightMinLowerCorner.x, bbox.getMax().y, rightMinLowerCorner.z
+    };
+    Point3D leftMaxUpperCorner = {
+      leftMaxLowerCorner.x, bbox.getMax().y, leftMaxLowerCorner.z
+    };
+    Point3D rightMaxUpperCorner = {
+      rightMaxLowerCorner.x, bbox.getMax().y, rightMaxLowerCorner.z
+    };
+
+    std::vector<SceneDecoration> bboxLines;
+    bboxLines.push_back(
+      createLine(leftMinLowerCorner, rightMinLowerCorner, false, materialParams)
+    );
+    bboxLines.push_back(
+      createLine(rightMinLowerCorner, rightMaxLowerCorner, false, materialParams)
+    );
+    bboxLines.push_back(
+      createLine(rightMaxLowerCorner, leftMaxLowerCorner, false, materialParams)
+    );
+    bboxLines.push_back(
+      createLine(leftMaxLowerCorner, leftMinLowerCorner, false, materialParams)
+    );
+    bboxLines.push_back(
+      createLine(leftMinUpperCorner, rightMinUpperCorner, false, materialParams)
+    );
+    bboxLines.push_back(
+      createLine(rightMinUpperCorner, rightMaxUpperCorner, false, materialParams)
+    );
+    bboxLines.push_back(
+      createLine(rightMaxUpperCorner, leftMaxUpperCorner, false, materialParams)
+    );
+    bboxLines.push_back(
+      createLine(leftMaxUpperCorner, leftMinUpperCorner, false, materialParams)
+    );
+    bboxLines.push_back(
+      createLine(leftMinLowerCorner, leftMinUpperCorner, false, materialParams)
+    );
+    bboxLines.push_back(
+      createLine(rightMinLowerCorner, rightMinUpperCorner, false, materialParams)
+    );
+    bboxLines.push_back(
+      createLine(rightMaxLowerCorner, rightMaxUpperCorner, false, materialParams)
+    );
+    bboxLines.push_back(
+      createLine(leftMaxLowerCorner, leftMaxUpperCorner, false, materialParams)
+    );
+
+    return bboxLines;
   }
 }  // namespace RenderSystem

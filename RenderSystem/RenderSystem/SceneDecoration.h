@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GeometryCore/Typedefs.h"
+#include "MeshCore/AABBox.h"
 #include "MeshCore/MaterialParams.h"
 #include "RenderData.h"
 
@@ -42,11 +43,14 @@ namespace RenderSystem
       const MaterialParams& materialParams
     );
     static SceneDecoration createLine(
-      const Point3D& start, const Point3D& end, const MaterialParams& materialParams
+      const Point3D& start, const Point3D& end, bool withArrowHead, const MaterialParams& materialParams
     );
     static std::vector<SceneDecoration> createGlobalAxes(float length = 10.0f);
     static std::vector<SceneDecoration> createVerticesNormals(
       const std::vector<MeshCore::Vertex>& vertices
+    );
+    static std::vector<SceneDecoration> createBoundingBox(
+      const MeshCore::AABBox& bbox, const MaterialParams& materialParams
     );
   };
 }  // namespace RenderSystem
