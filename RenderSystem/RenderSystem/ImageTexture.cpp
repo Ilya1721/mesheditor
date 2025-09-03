@@ -18,7 +18,7 @@ namespace
       default: return GL_RGB;
     }
   }
-}
+}  // namespace
 
 namespace RenderSystem
 {
@@ -32,6 +32,21 @@ namespace RenderSystem
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
       }
     );
+  }
+
+  ImageTexture::ImageTexture(ImageTexture&& other) noexcept { *this = std::move(other); }
+
+  ImageTexture& ImageTexture::operator=(ImageTexture&& other) noexcept
+  {
+    if (this != &other)
+    {
+      Texture::operator=(std::move(other));
+      mData = other.mData;
+      mColorChannels = other.mColorChannels;
+      other.mData = nullptr;
+      other.mColorChannels = 0;
+    }
+    return *this;
   }
 
   void ImageTexture::setDimensions(int width, int height)

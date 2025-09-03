@@ -14,10 +14,7 @@ namespace RenderSystem
   Object3D::Object3D() : mParent(nullptr), mTransform(1.0f) {}
 
   Object3D::Object3D(std::unique_ptr<Mesh> mesh)
-    : mParent(nullptr),
-      mMesh(std::move(mesh)),
-      mTransform(1.0f),
-      mMaterialParams(mMesh->getMaterialParams())
+    : mParent(nullptr), mMesh(std::move(mesh)), mTransform(1.0f)
   {
     init();
   }
@@ -26,6 +23,7 @@ namespace RenderSystem
 
   void Object3D::init()
   {
+    mMaterialParams = mMesh->getMaterialParams();
     mBBox.applyMesh(*mMesh);
     moveToOrigin();
   }

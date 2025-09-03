@@ -9,6 +9,29 @@ namespace RenderSystem
 {
   Texture::Texture(int width, int height) : mWidth(width), mHeight(height) { init(); }
 
+  Texture::Texture(Texture&& other) noexcept
+  {
+    *this = std::move(other);
+  }
+
+  Texture& Texture::operator=(Texture&& other) noexcept
+  {
+    if (this != &other)
+    {
+      if (mTexture != 0) { glDeleteTextures(1, &mTexture); }
+      mTexture = other.mTexture;
+      mWidth = other.mWidth;
+      mHeight = other.mHeight;
+      mResourceToRestore = other.mResourceToRestore;
+      other.mTexture = 0;
+      other.mWidth = 0;
+      other.mHeight = 0;
+      other.mResourceToRestore = 0;
+    }
+
+    return *this;
+  }
+
   Texture::~Texture()
   {
     if (mTexture != 0) { glDeleteTextures(1, &mTexture); }

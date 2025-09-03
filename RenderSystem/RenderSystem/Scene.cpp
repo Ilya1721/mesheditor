@@ -204,7 +204,9 @@ namespace RenderSystem
   void Scene::addPointLight(const PointLightParams& params, const Point3D& lightSourcePos)
   {
     auto pointLight = mSceneShaderProgram->addPointLight(params, lightSourcePos);
-    auto pointLightObject3D = std::make_unique<PointLightObject3D>(pointLight);
+    auto pointLightRadius = mRootObject.getBBox().getHeight() * 0.05f;
+    auto pointLightObject3D =
+      std::make_unique<PointLightObject3D>(pointLight, pointLightRadius);
     pointLightObject3D->updateTransform(glm::translate(lightSourcePos));
     mRootObject.addChild(std::move(pointLightObject3D));
   }

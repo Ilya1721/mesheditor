@@ -8,7 +8,7 @@ namespace RenderSystem
   class PointLightObject3D : public Object3D
   {
    public:
-    PointLightObject3D(PointLight* pointLight);
+    PointLightObject3D(PointLight* pointLight, float radius);
 
    private:
     PointLight* mPointLight;

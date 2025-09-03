@@ -7,9 +7,9 @@ using namespace MeshCore;
 
 namespace RenderSystem
 {
-  PointLightObject3D::PointLightObject3D(PointLight* pointLight) : mPointLight(pointLight)
+  PointLightObject3D::PointLightObject3D(PointLight* pointLight, float radius) : mPointLight(pointLight)
   {
-    mMesh = createSphere(POINT_LIGHT_RADIUS);
+    mMesh = createSphere(radius);
     init();
   }
 }  // namespace RenderSystem
