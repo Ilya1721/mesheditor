@@ -10,6 +10,8 @@ namespace RenderSystem
    public:
     PointLightObject3D(PointLight* pointLight, float radius);
 
+    void updateTransform(const glm::mat4& transform) override;
+
    private:
     PointLight* mPointLight;
   };

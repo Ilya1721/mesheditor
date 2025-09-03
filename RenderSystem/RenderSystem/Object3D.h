@@ -47,9 +47,10 @@ namespace RenderSystem
     void addOnChildAddedCallback(const std::function<childAddedCallback>& callback);
     void addOnObjectUpdatedCallback(const std::function<objectUpdatedCallback>& callback);
     void addOnBBoxUpdatedCallback(const std::function<bboxUpdatedCallback>& callback);
-    void updateTransform(const glm::mat4& transform);
     void onMeshUpdated(const std::unordered_set<UniqueVertex*>& vertices);
     void moveToOrigin();
+
+    virtual void updateTransform(const glm::mat4& transform);
 
    protected:
     void init();

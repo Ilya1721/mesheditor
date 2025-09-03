@@ -63,8 +63,6 @@ namespace RenderSystem
     void setHighlightedFacesData(const HighlightedFacesData& data);
     void addPointLight(const PointLightParams& params, const Point3D& lightSourcePos);
     void removePointLight(unsigned int index);
-    void setPointLightParams(unsigned int index, const PointLightParams& params);
-    void setPointLightSourcePos(unsigned int index, const Point3D& lightSourcePos);
 
     void render();
     void zoom(float step);

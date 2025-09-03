@@ -216,16 +216,6 @@ namespace RenderSystem
     mSceneShaderProgram->removePointLight(index);
   }
 
-  void Scene::setPointLightParams(unsigned int index, const PointLightParams& params)
-  {
-    mSceneShaderProgram->setPointLightParams(index, params);
-  }
-
-  void Scene::setPointLightSourcePos(unsigned int index, const Point3D& lightSourcePos)
-  {
-    mSceneShaderProgram->setPointLightSourcePos(index, lightSourcePos);
-  }
-
   void Scene::render()
   {
     renderDepthMap();

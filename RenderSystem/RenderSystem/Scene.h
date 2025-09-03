@@ -53,8 +53,6 @@ namespace RenderSystem
     void setAspectRatio(float aspectRatio);
     void addPointLight(const PointLightParams& params, const Point3D& lightSourcePos);
     void removePointLight(unsigned int index);
-    void setPointLightParams(unsigned int index, const PointLightParams& params);
-    void setPointLightSourcePos(unsigned int index, const Point3D& lightSourcePos);
     void render();
 
     const Object3D& getRootObject() const;

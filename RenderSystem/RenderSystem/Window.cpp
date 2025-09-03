@@ -281,16 +281,6 @@ namespace RenderSystem
 
   void Window::removePointLight(unsigned int index) { mScene->removePointLight(index); }
 
-  void Window::setPointLightParams(unsigned int index, const PointLightParams& params)
-  {
-    mScene->setPointLightParams(index, params);
-  }
-
-  void Window::setPointLightSourcePos(unsigned int index, const Point3D& lightSourcePos)
-  {
-    mScene->setPointLightSourcePos(index, lightSourcePos);
-  }
-
   void Window::onMouseMove(double cursorX, double cursorY)
   {
     Point2D currentCursorPosition(cursorX, cursorY);

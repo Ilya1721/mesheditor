@@ -106,22 +106,6 @@ namespace RenderSystem
     mPointLights.removeLight(index);
   }
 
-  void SceneShaderProgram::setPointLightParams(
-    unsigned int index, const PointLightParams& params
-  )
-  {
-    const auto& light = mPointLights.getLight(index);
-    if (light) { light->setParams(params); }
-  }
-
-  void SceneShaderProgram::setPointLightSourcePos(
-    unsigned int index, const Point3D& lightSourcePos
-  )
-  {
-    const auto& light = mPointLights.getLight(index);
-    if (light) { light->setLightSourcePos(glm::value_ptr(lightSourcePos)); }
-  }
-
   void SceneShaderProgram::initUniformLocations()
   {
     mModel = glGetUniformLocation(mShaderProgram, "model");
