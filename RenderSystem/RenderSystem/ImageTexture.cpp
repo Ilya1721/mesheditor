@@ -22,7 +22,7 @@ namespace
 
 namespace RenderSystem
 {
-  ImageTexture::ImageTexture(int width, int height) : Texture(width, height)
+  ImageTexture::ImageTexture(int width, int height) : Texture2D(width, height)
   {
     setDimensions(mWidth, mHeight);
     invoke(
@@ -40,12 +40,13 @@ namespace RenderSystem
   {
     if (this != &other)
     {
-      Texture::operator=(std::move(other));
+      Texture2D::operator=(std::move(other));
       mData = other.mData;
       mColorChannels = other.mColorChannels;
       other.mData = nullptr;
       other.mColorChannels = 0;
     }
+
     return *this;
   }
 
@@ -63,11 +64,12 @@ namespace RenderSystem
     );
   }
 
-  ImageTexture::ImageTexture(const std::string& filePath) : Texture()
+  bool ImageTexture::isEmpty() const { return mWidth == 0 || mHeight == 0; }
+
+  ImageTexture::ImageTexture(const std::string& filePath) : Texture2D()
   {
     if (filePath.empty()) { return; }
     mData = stbi_load(filePath.c_str(), &mWidth, &mHeight, &mColorChannels, 0);
-    glGenTextures(1, &mTexture);
     setDimensions(mWidth, mHeight);
     invoke(
       []()

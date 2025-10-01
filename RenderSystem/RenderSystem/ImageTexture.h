@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Texture.h"
+#include "Texture2D.h"
 
 #include <string>
 
 namespace RenderSystem
 {
-  class ImageTexture : public Texture
+  class ImageTexture : public Texture2D
   {
    public:
     ImageTexture() = default;
@@ -14,10 +14,10 @@ namespace RenderSystem
     ImageTexture(const std::string& filePath);
     ImageTexture(const ImageTexture& other) = delete;
     ImageTexture(ImageTexture&& other) noexcept;
-
     ImageTexture& operator=(ImageTexture&& other) noexcept;
 
     void setDimensions(int width, int height) override;
+    bool isEmpty() const;
 
   private:
     unsigned char* mData = nullptr;

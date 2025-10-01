@@ -117,7 +117,6 @@ namespace RenderSystem
       aspectRatio
     );
     mCamera = std::make_unique<Camera>(mSceneShaderProgram.get());
-    // mCamera->addOnCameraPosChangedCallback(&Window::onCameraPosChanged);
     mCamera->addOnCameraPosChangedCallback([this](const Point3D& cameraPos)
                                            { onCameraPosChanged(cameraPos); });
     mViewport = std::make_unique<Viewport>(

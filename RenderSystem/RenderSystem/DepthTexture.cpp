@@ -7,7 +7,7 @@
 
 namespace RenderSystem
 {
-  DepthTexture::DepthTexture(int width, int height) : Texture(width, height) { init(); }
+  DepthTexture::DepthTexture(int width, int height) : Texture2D(width, height) { init(); }
 
   void DepthTexture::setDimensions(int width, int height)
   {

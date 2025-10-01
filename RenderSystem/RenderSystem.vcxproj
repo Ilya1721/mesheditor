@@ -128,9 +128,12 @@
     <None Include="Shaders\DepthMapFragmentShader.frag" />
     <None Include="Shaders\DepthMapVertexShader.vert" />
     <None Include="Shaders\FragmentShader.frag" />
+    <None Include="Shaders\SkyboxShader.frag" />
+    <None Include="Shaders\SkyboxShader.vert" />
     <None Include="Shaders\VertexShader.vert" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="RenderSystem\CubemapTexture.cpp" />
     <ClCompile Include="RenderSystem\DebugVisualization.cpp" />
     <ClCompile Include="RenderSystem\Material.cpp" />
     <ClCompile Include="RenderSystem\PointLight.cpp" />
@@ -163,15 +166,19 @@
     <ClCompile Include="RenderSystem\ShadowMapShaderProgram.cpp" />
     <ClCompile Include="RenderSystem\ShaderProgram.cpp" />
     <ClCompile Include="RenderSystem\ShadowController.cpp" />
+    <ClCompile Include="RenderSystem\SkyboxController.cpp" />
+    <ClCompile Include="RenderSystem\SkyboxShaderProgram.cpp" />
     <ClCompile Include="RenderSystem\SurfaceExtruder.cpp" />
     <ClCompile Include="RenderSystem\SurfaceHighlighter.cpp" />
     <ClCompile Include="RenderSystem\Texture.cpp" />
+    <ClCompile Include="RenderSystem\Texture2D.cpp" />
     <ClCompile Include="RenderSystem\Viewport.cpp" />
     <ClCompile Include="RenderSystem\Window.cpp" />
     <ClCompile Include="RenderSystem\WireframeRenderer.cpp" />
     <ClCompile Include="RenderSystem\Zoom.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="RenderSystem\CubemapTexture.h" />
     <ClInclude Include="RenderSystem\DebugVisualization.h" />
     <ClInclude Include="RenderSystem\Material.h" />
     <ClInclude Include="RenderSystem\Object3DMaterialParams.h" />
@@ -211,9 +218,12 @@
     <ClInclude Include="RenderSystem\ShadowMapShaderProgram.h" />
     <ClInclude Include="RenderSystem\ShaderProgram.h" />
     <ClInclude Include="RenderSystem\ShadowController.h" />
+    <ClInclude Include="RenderSystem\SkyboxController.h" />
+    <ClInclude Include="RenderSystem\SkyboxShaderProgram.h" />
     <ClInclude Include="RenderSystem\SurfaceExtruder.h" />
     <ClInclude Include="RenderSystem\SurfaceHighlighter.h" />
     <ClInclude Include="RenderSystem\Texture.h" />
+    <ClInclude Include="RenderSystem\Texture2D.h" />
     <ClInclude Include="RenderSystem\Viewport.h" />
     <ClInclude Include="RenderSystem\Window.h" />
     <ClInclude Include="RenderSystem\WireframeRenderer.h" />

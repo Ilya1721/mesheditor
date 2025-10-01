@@ -61,7 +61,7 @@ namespace RenderSystem
 
   void Material::setDiffuseTexture(const ImageTexture& texture) const
   {
-    if (texture.getId() == 0) { glUniform1i(mHasDiffuseTexture, false); }
+    if (texture.isEmpty()) { glUniform1i(mHasDiffuseTexture, false); }
     else
     {
       glUniform1i(mHasDiffuseTexture, true);

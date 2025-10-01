@@ -13,6 +13,7 @@ namespace RenderSystem
         diffuseTexture(materialParams.diffuseTexturePath.string())
     {
     }
+
     Object3DMaterialParams& operator=(const MeshCore::MaterialParams& materialParams)
     {
       MeshCore::MaterialParams::operator=(materialParams);

@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Texture.h"
+#include "Texture2D.h"
 
 namespace RenderSystem
 {
-  class DepthTexture : public Texture
+  class DepthTexture : public Texture2D
   {
    public:
     DepthTexture(int width, int height);
