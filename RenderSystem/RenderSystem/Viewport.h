@@ -4,30 +4,31 @@
 #include <glm/glm.hpp>
 
 #include "MeshCore/AABBox.h"
+#include "Utility/CallbackMechanism.h"
 
 namespace RenderSystem
 {
+  using namespace Utility;
+
   enum class PROJECTION_TYPE
   {
     ORTHOGRAPHIC,
     PERSPECTIVE
   };
 
-  class SceneShaderProgram;
+  using viewportChangedCallback = void();
 
   class Viewport
   {
    public:
-    Viewport(
-      int width,
-      int height,
-      const MeshCore::AABBox* rootBBox,
-      SceneShaderProgram* sceneShaderProgram
-    );
+    Viewport(int width, int height, const MeshCore::AABBox* rootBBox);
 
     void setProjectionType(PROJECTION_TYPE projectionType);
     void resize(int width, int height);
     void zoom(float step);
+    void addOnViewportChangedCallback(
+      const std::function<viewportChangedCallback>& callback
+    );
 
     float getFov() const;
     float getNearPlaneDistance() const;
@@ -54,6 +55,6 @@ namespace RenderSystem
     PROJECTION_TYPE mProjectionType;
     glm::mat4 mProjectionMatrix;
     const MeshCore::AABBox* mRootBBox;
-    SceneShaderProgram* mSceneShaderProgram;
+    CallbackMechanism<viewportChangedCallback> mViewportChangedCallbacks;
   };
 }  // namespace RenderSystem

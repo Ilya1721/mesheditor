@@ -17,13 +17,7 @@ using namespace MeshCore;
 
 namespace RenderSystem
 {
-  Renderer::Renderer(SceneShaderProgram* sceneShaderProgram)
-    : mSceneShaderProgram(sceneShaderProgram),
-      mModelRenderBuffer(),
-      mDecorationsRenderBuffer()
-  {
-    init();
-  }
+  Renderer::Renderer() : mModelRenderBuffer(), mDecorationsRenderBuffer() { init(); }
 
   void Renderer::init() { mModelRenderBuffer.bind(); }
 

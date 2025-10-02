@@ -1,22 +1,17 @@
 #include "Viewport.h"
 
+#include <glm/gtc/matrix_transform.hpp>
+
 #ifdef __gl_h_
 #undef __gl_h_
 #endif
-#include <glm/gtc/matrix_transform.hpp>
+#include "glad/glad.h"
 
 #include "Constants.h"
-#include "SceneShaderProgram.h"
-#include "glad/glad.h"
 
 namespace RenderSystem
 {
-  Viewport::Viewport(
-    int width,
-    int height,
-    const MeshCore::AABBox* rootBBox,
-    SceneShaderProgram* sceneShaderProgram
-  )
+  Viewport::Viewport(int width, int height, const MeshCore::AABBox* rootBBox)
     : mFov(FOV),
       mNearPlaneDistance(NEAR_PLANE_DISTANCE),
       mFarPlaneDistance(FAR_PLANE_DISTANCE),
@@ -26,7 +21,6 @@ namespace RenderSystem
       mProjectionType(PROJECTION_TYPE::PERSPECTIVE),
       mProjectionMatrix(1.0f),
       mRootBBox(rootBBox),
-      mSceneShaderProgram(sceneShaderProgram),
       mBBoxViewportGapCoef(BBOX_VIEWPORT_GAP_COEF)
   {
   }
@@ -54,7 +48,7 @@ namespace RenderSystem
   {
     action();
     mProjectionMatrix = createProjectionMatrix();
-    mSceneShaderProgram->setProjection(mProjectionMatrix);
+    mViewportChangedCallbacks.invokeCallbacks();
   }
 
   void Viewport::setProjectionType(PROJECTION_TYPE projectionType)
@@ -77,6 +71,13 @@ namespace RenderSystem
   void Viewport::zoom(float step)
   {
     invokeEditOperation([this, &step]() { mBBoxViewportGapCoef += step; });
+  }
+
+  void Viewport::addOnViewportChangedCallback(
+    const std::function<viewportChangedCallback>& callback
+  )
+  {
+    mViewportChangedCallbacks.addCallback(callback);
   }
 
   const glm::mat4& Viewport::getProjectionMatrix() const { return mProjectionMatrix; }

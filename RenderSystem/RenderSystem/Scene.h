@@ -19,6 +19,7 @@ namespace RenderSystem
 
   class Renderer;
   class ShadowController;
+  class SkyboxController;
   class SceneShaderProgram;
   struct Modelable;
 
@@ -29,6 +30,7 @@ namespace RenderSystem
       const std::string& meshFilePath,
       Renderer* renderer,
       ShadowController* shadowController,
+      SkyboxController* skyboxController,
       SceneShaderProgram* sceneShaderProgram,
       float aspectRatio
     );
@@ -71,11 +73,13 @@ namespace RenderSystem
     void renderHighlightedFaces();
     void renderWireframe();
     void renderWholeObjectHighlighted();
+    void renderSkybox();
     void updateDirLightProjection();
 
    private:
     Renderer* mRenderer;
     ShadowController* mShadowController;
+    SkyboxController* mSkyboxController;
     SceneShaderProgram* mSceneShaderProgram;
 
     std::vector<SceneDecoration> mSceneDecorations;

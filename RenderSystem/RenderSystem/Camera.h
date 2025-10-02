@@ -23,14 +23,12 @@ namespace RenderSystem
   using namespace GeometryCore;
   using namespace Utility;
 
-  using cameraPosChangedCallback = void(const Point3D&);
-
-  class SceneShaderProgram;
+  using cameraPosChangedCallback = void();
 
   class Camera
   {
    public:
-    Camera(SceneShaderProgram* sceneShaderProgram);
+    Camera();
 
     const glm::mat4& getViewMatrix() const;
     const Point3D& getTarget() const;
@@ -90,7 +88,6 @@ namespace RenderSystem
     Vector3D mUp;
     Vector3D mRight;
     glm::mat4 mViewMatrix;
-    SceneShaderProgram* mSceneShaderProgram;
     bool mIsMovementEnabled;
     CallbackMechanism<cameraPosChangedCallback> mCameraPosChangedCallbacks;
   };

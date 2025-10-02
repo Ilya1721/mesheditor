@@ -11,7 +11,6 @@
 
 #include "Constants.h"
 #include "GeometryCore/Ray.h"
-#include "GeometryCore/Transforms.h"
 #include "OperationsDispatcher.h"
 #include "Scene.h"
 #include "Viewport.h"
@@ -20,15 +19,6 @@
 namespace
 {
   using namespace RenderSystem;
-
-  const std::string DEPTH_MAP_VERTEX_SHADER_PATH =
-    R"(./RenderSystem/Shaders/DepthMapVertexShader.vert)";
-  const std::string DEPTH_MAP_FRAGMENT_SHADER_PATH =
-    R"(./RenderSystem/Shaders/DepthMapFragmentShader.frag)";
-  const std::string SCENE_VERTEX_SHADER_PATH =
-    R"(./RenderSystem/Shaders/VertexShader.vert)";
-  const std::string SCENE_FRAGMENT_SHADER_PATH =
-    R"(./RenderSystem/Shaders/FragmentShader.frag)";
 
   Window* instance = nullptr;
 
@@ -107,21 +97,23 @@ namespace RenderSystem
     mSceneShaderProgram = std::make_unique<SceneShaderProgram>(
       SCENE_VERTEX_SHADER_PATH, SCENE_FRAGMENT_SHADER_PATH
     );
-    mRenderer = std::make_unique<Renderer>(mSceneShaderProgram.get());
+    mRenderer = std::make_unique<Renderer>();
     mShadowController = std::make_unique<ShadowController>(
       DEPTH_MAP_VERTEX_SHADER_PATH, DEPTH_MAP_FRAGMENT_SHADER_PATH
     );
+    mSkyboxController = std::make_unique<SkyboxController>(
+      SKYBOX_VERTEX_SHADER_PATH, SKYBOX_FRAGMENT_SHADER_PATH, SKYBOX_CUBEMAP_TEXTURES
+    );
     auto aspectRatio = static_cast<float>(mWidth) / mHeight;
     mScene = std::make_unique<Scene>(
-      meshFilePath, mRenderer.get(), mShadowController.get(), mSceneShaderProgram.get(),
-      aspectRatio
+      meshFilePath, mRenderer.get(), mShadowController.get(), mSkyboxController.get(),
+      mSceneShaderProgram.get(), aspectRatio
     );
-    mCamera = std::make_unique<Camera>(mSceneShaderProgram.get());
-    mCamera->addOnCameraPosChangedCallback([this](const Point3D& cameraPos)
-                                           { onCameraPosChanged(cameraPos); });
-    mViewport = std::make_unique<Viewport>(
-      mWidth, mHeight, &mScene->getRootObject().getBBox(), mSceneShaderProgram.get()
-    );
+    mCamera = std::make_unique<Camera>();
+    mCamera->addOnCameraPosChangedCallback([this]() { onCameraPosChanged(); });
+    mViewport =
+      std::make_unique<Viewport>(mWidth, mHeight, &mScene->getRootObject().getBBox());
+    mViewport->addOnViewportChangedCallback([this]() { onViewportChanged(); });
     mOperationsDispatcher = std::make_unique<OperationsDispatcher>(this);
     resizeViewport(mWidth, mHeight);
   }
@@ -150,9 +142,17 @@ namespace RenderSystem
     mScene->setDirLightSourcePos(dirLightPos);
   }
 
-  void Window::onCameraPosChanged(const Point3D& cameraPos)
+  void Window::onCameraPosChanged()
   {
-    mSceneShaderProgram->setCameraPos(cameraPos);
+    mSceneShaderProgram->setCameraPos(mCamera->getEye());
+    mSceneShaderProgram->setView(mCamera->getViewMatrix());
+    mSkyboxController->setView(mCamera->getViewMatrix());
+  }
+
+  void Window::onViewportChanged()
+  {
+    mSceneShaderProgram->setProjection(mViewport->getProjectionMatrix());
+    mSkyboxController->setProjection(mViewport->getProjectionMatrix());
   }
 
   void Window::render()
@@ -180,7 +180,6 @@ namespace RenderSystem
     mHeight = height;
 
     mViewport->resize(width, height);
-    mSceneShaderProgram->setProjection(mViewport->getProjectionMatrix());
     mShadowController->setTextureDimensions(width, height);
     mScene->setAspectRatio(static_cast<float>(width) / height);
   }

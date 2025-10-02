@@ -1,11 +1,9 @@
 #include "Camera.h"
 
-#include <algorithm>
 #include <glm/gtc/epsilon.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/vector_angle.hpp>
-#include <iostream>
 
 #include "Constants.h"
 #include "GeometryCore/Constants.h"
@@ -14,18 +12,16 @@
 #include "GeometryCore/Ray.h"
 #include "GeometryCore/Transforms.h"
 #include "MeshCore/AABBox.h"
-#include "SceneShaderProgram.h"
 
 using namespace GeometryCore;
 
 namespace RenderSystem
 {
-  Camera::Camera(SceneShaderProgram* sceneShaderProgram)
+  Camera::Camera()
     : mTarget(DEFAULT_CAMERA_TARGET),
       mEye(DEFAULT_CAMERA_POSITION),
       mUp(DEFAULT_CAMERA_UP),
       mRight(DEFAULT_CAMERA_RIGHT),
-      mSceneShaderProgram(sceneShaderProgram),
       mIsMovementEnabled(true)
   {
     invokeEditOperation([]() {});
@@ -60,8 +56,7 @@ namespace RenderSystem
   {
     action();
     mViewMatrix = createViewMatrix();
-    mSceneShaderProgram->setView(mViewMatrix);
-    mCameraPosChangedCallbacks.invokeCallbacks(mEye);
+    mCameraPosChangedCallbacks.invokeCallbacks();
   }
 
   void Camera::setEyeTargetUp(

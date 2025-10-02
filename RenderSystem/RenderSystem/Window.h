@@ -15,6 +15,7 @@
 #include "Renderer.h"
 #include "SceneShaderProgram.h"
 #include "ShadowController.h"
+#include "SkyboxController.h"
 #include "Viewport.h"
 
 namespace RenderSystem
@@ -87,7 +88,8 @@ namespace RenderSystem
     void setCallbacks();
     void adjustCamera();
     void adjustDirLightSourcePos();
-    void onCameraPosChanged(const Point3D& cameraPos);
+    void onCameraPosChanged();
+    void onViewportChanged();
 
    private:
     int mWidth;
@@ -100,6 +102,7 @@ namespace RenderSystem
     std::unique_ptr<Camera> mCamera;
     std::unique_ptr<Renderer> mRenderer;
     std::unique_ptr<ShadowController> mShadowController;
+    std::unique_ptr<SkyboxController> mSkyboxController;
     std::unique_ptr<SceneShaderProgram> mSceneShaderProgram;
     std::unique_ptr<OperationsDispatcher> mOperationsDispatcher;
   };

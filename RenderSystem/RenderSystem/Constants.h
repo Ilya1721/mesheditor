@@ -1,5 +1,7 @@
 #pragma once
 
+#include <array>
+#include <filesystem>
 #include <glm/glm.hpp>
 #include <string>
 
@@ -83,4 +85,25 @@ namespace RenderSystem
   inline const std::string WINDOW_TITLE = "Mesh Editor";
 
   constexpr bool DEBUG_RENDER = true;
+
+  const std::string DEPTH_MAP_VERTEX_SHADER_PATH =
+    R"(./RenderSystem/Shaders/DepthMapShader.vert)";
+  const std::string DEPTH_MAP_FRAGMENT_SHADER_PATH =
+    R"(./RenderSystem/Shaders/DepthMapShader.frag)";
+  const std::string SCENE_VERTEX_SHADER_PATH =
+    R"(./RenderSystem/Shaders/VertexShader.vert)";
+  const std::string SCENE_FRAGMENT_SHADER_PATH =
+    R"(./RenderSystem/Shaders/FragmentShader.frag)";
+  const std::filesystem::path SKYBOX_VERTEX_SHADER_PATH =
+    R"(./RenderSystem/Shaders/SkyboxShader.vert)";
+  const std::filesystem::path SKYBOX_FRAGMENT_SHADER_PATH =
+    R"(./RenderSystem/Shaders/SkyboxShader.frag)";
+  const std::array<std::filesystem::path, 6> SKYBOX_CUBEMAP_TEXTURES = {
+    R"(./RenderSystem/Textures/skybox/right.jpg)",
+    R"(./RenderSystem/Textures/skybox/left.jpg)",
+    R"(./RenderSystem/Textures/skybox/top.jpg)",
+    R"(./RenderSystem/Textures/skybox/bottom.jpg)",
+    R"(./RenderSystem/Textures/skybox/front.jpg)",
+    R"(./RenderSystem/Textures/skybox/back.jpg)",
+  };
 }  // namespace RenderSystem

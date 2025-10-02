@@ -20,7 +20,7 @@ namespace RenderSystem
   class Renderer
   {
    public:
-    Renderer(SceneShaderProgram* sceneShaderProgram);
+    Renderer();
     Renderer(Renderer&&) = delete;
 
     void renderObject3D(const Object3D& object, int vertexOffset = 0);
@@ -37,7 +37,6 @@ namespace RenderSystem
     void renderOverlayPrimitive(const std::function<void()>& renderFunc);
 
    private:
-    SceneShaderProgram* mSceneShaderProgram;
     RenderBuffer mModelRenderBuffer;
     RenderBuffer mDecorationsRenderBuffer;
   };

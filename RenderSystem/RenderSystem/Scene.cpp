@@ -27,11 +27,13 @@ namespace RenderSystem
     const std::string& meshFilePath,
     Renderer* renderer,
     ShadowController* shadowController,
+    SkyboxController* skyboxController,
     SceneShaderProgram* sceneShaderProgram,
     float aspectRatio
   )
     : mRenderer(renderer),
       mShadowController(shadowController),
+      mSkyboxController(skyboxController),
       mSceneShaderProgram(sceneShaderProgram),
       mPickedObject(nullptr),
       mRenderWireframe(false),
@@ -158,6 +160,11 @@ namespace RenderSystem
     const auto& [object, vertexCount] = *highlightedObjectIt;
     mSceneShaderProgram->setModel(object->getTransform());
     mRenderer->renderWholeObjectHighlighted(*object, vertexCount);
+  }
+
+  void Scene::renderSkybox()
+  {
+
   }
 
   void Scene::updateDirLightProjection()
