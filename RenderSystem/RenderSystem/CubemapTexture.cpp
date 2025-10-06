@@ -39,11 +39,12 @@ namespace RenderSystem
         {
           unsigned char* data =
             stbi_load(faces[i].string().c_str(), &width, &height, &nrChannels, 0);
+          const auto colorFormat = getColorFormat(nrChannels);
           if (data)
           {
             glTexImage2D(
-              GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB,
-              GL_UNSIGNED_BYTE, data
+              GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, colorFormat, width, height, 0,
+              colorFormat, GL_UNSIGNED_BYTE, data
             );
             stbi_image_free(data);
           }
@@ -64,10 +65,10 @@ namespace RenderSystem
     glBindTexture(GL_TEXTURE_CUBE_MAP, mResourceToRestore);
   }
 
-  void CubemapTexture::passToFragmentShader(int textureLocation) const
+  void CubemapTexture::passToFragmentShader(int textureLocation, int textureSlot) const
   {
-    glActiveTexture(GL_TEXTURE0 + textureLocation);
+    glActiveTexture(GL_TEXTURE0 + textureSlot);
     glBindTexture(GL_TEXTURE_CUBE_MAP, mTexture);
-    glUniform1i(textureLocation, mTexture);
+    glUniform1i(textureLocation, textureSlot);
   }
 }  // namespace RenderSystem

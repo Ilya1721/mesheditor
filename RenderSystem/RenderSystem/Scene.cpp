@@ -11,6 +11,7 @@
 #include "Renderer.h"
 #include "SceneShaderProgram.h"
 #include "ShadowController.h"
+#include "SkyboxController.h"
 
 using namespace GeometryCore;
 
@@ -43,6 +44,7 @@ namespace RenderSystem
   {
     registerRootObjectCallbacks();
     addModelObject(meshFilePath);
+    loadSkyboxVertices();
   }
 
   void Scene::addModelObject(const std::string& meshFilePath)
@@ -164,7 +166,7 @@ namespace RenderSystem
 
   void Scene::renderSkybox()
   {
-
+    mSkyboxController->render([this]() { mRenderer->renderSkybox(); });
   }
 
   void Scene::updateDirLightProjection()
@@ -178,6 +180,11 @@ namespace RenderSystem
     );
     mSceneShaderProgram->setLightProjection(lightProjectionMatrix);
     mShadowController->getShaderProgram()->setLightProjection(lightProjectionMatrix);
+  }
+
+  void Scene::loadSkyboxVertices()
+  {
+    mRenderer->loadSkyboxRenderData(RenderData::getSkyboxRenderData());
   }
 
   void Scene::setPickedObject(Object3D* pickedObject) { mPickedObject = pickedObject; }
@@ -238,6 +245,7 @@ namespace RenderSystem
         renderWholeObjectHighlighted();
       }
     );
+    renderSkybox();
   }
 
   Object3DIntersection Scene::getIntersection(

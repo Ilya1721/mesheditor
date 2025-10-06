@@ -75,7 +75,7 @@ namespace RenderSystem
     invoke(
       [this, &texture]()
       {
-        texture.passToFragmentShader(mDepthMap);
+        texture.passToFragmentShader(mDepthMap, DEPTH_TEXTURE_SLOT);
       }
     );
   }

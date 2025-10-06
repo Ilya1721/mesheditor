@@ -1,10 +1,12 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
-#include "Mesh.h"
+#include "Vertex.h"
 
 namespace MeshCore
 {
-  std::unique_ptr<Mesh> createSphere(float radius);
+  std::vector<Vertex> createSphere(float radius);
+  std::vector<Vertex> createCube(float sideLength);
 }  // namespace MeshCore

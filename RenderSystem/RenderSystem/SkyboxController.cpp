@@ -14,6 +14,7 @@ namespace RenderSystem
   )
     : mShaderProgram(vertexShader, fragmentShader), mCubemapTexture(cubemapTextures)
   {
+    init();
   }
 
   void SkyboxController::setView(const glm::mat4& view) { mShaderProgram.setView(view); }
@@ -23,22 +24,19 @@ namespace RenderSystem
     mShaderProgram.setProjection(projection);
   }
 
-  void SkyboxController::render()
+  void SkyboxController::render(const std::function<void()>& renderFunc)
   {
     mShaderProgram.invoke(
-      []()
+      [&renderFunc, this]()
       {
         GLint previousDepthFunc;
         glGetIntegerv(GL_DEPTH_FUNC, &previousDepthFunc);
         glDepthFunc(GL_LEQUAL);
-
-        //glBindVertexArray(skyboxVAO);
-        //glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-        glBindVertexArray(0);
-
+        renderFunc();
         glDepthFunc(previousDepthFunc);
       }
     );
   }
+
+  void SkyboxController::init() { mShaderProgram.setSkyboxCubemap(mCubemapTexture); }
 }  // namespace RenderSystem

@@ -2,7 +2,6 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
-#include "Constants.h"
 #include "MeshCore/MeshFactory.h"
 
 using namespace MeshCore;
@@ -12,7 +11,7 @@ namespace RenderSystem
   PointLightObject3D::PointLightObject3D(PointLight* pointLight, float radius)
     : mPointLight(pointLight)
   {
-    mMesh = createSphere(radius);
+    mMesh = std::make_unique<Mesh>(createSphere(radius));
     init();
   }
 

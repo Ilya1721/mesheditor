@@ -17,9 +17,7 @@ using namespace MeshCore;
 
 namespace RenderSystem
 {
-  Renderer::Renderer() : mModelRenderBuffer(), mDecorationsRenderBuffer() { init(); }
-
-  void Renderer::init() { mModelRenderBuffer.bind(); }
+  Renderer::Renderer() : mModelRenderBuffer(), mDecorationsRenderBuffer() {}
 
   void Renderer::renderHighlightedFace(int faceIdx, int vertexOffset)
   {
@@ -46,9 +44,17 @@ namespace RenderSystem
                            { renderObject3D(object, vertexOffset); });
   }
 
+  void Renderer::renderSkybox()
+  {
+    mSkyboxRenderBuffer.invoke([]() { glDrawArrays(GL_TRIANGLES, 0, 36); });
+  }
+
   void Renderer::renderObject3D(const Object3D& object, int vertexOffset)
   {
-    glDrawArrays(GL_TRIANGLES, vertexOffset, object.getVertexCount());
+    mModelRenderBuffer.invoke(
+      [&object, &vertexOffset]()
+      { glDrawArrays(GL_TRIANGLES, vertexOffset, object.getVertexCount()); }
+    );
   }
 
   void Renderer::renderOverlayPrimitive(const std::function<void()>& renderFunc)
@@ -62,24 +68,34 @@ namespace RenderSystem
 
   void Renderer::loadDecorationsRenderData(const RenderData& renderData)
   {
-    mDecorationsRenderBuffer.bind();
-    mDecorationsRenderBuffer.loadRenderData(renderData);
-    mModelRenderBuffer.bind();
+    mDecorationsRenderBuffer.invoke(
+      [this, &renderData]() { mDecorationsRenderBuffer.loadRenderData(renderData); }
+    );
+  }
+
+  void Renderer::loadSkyboxRenderData(const RenderData& renderData)
+  {
+    mSkyboxRenderBuffer.invoke([this, &renderData]()
+                               { mSkyboxRenderBuffer.loadRenderData(renderData); });
   }
 
   void Renderer::loadModelRenderData(const RenderData& renderData)
   {
-    mModelRenderBuffer.loadRenderData(renderData);
+    mModelRenderBuffer.invoke([this, &renderData]()
+                              { mModelRenderBuffer.loadRenderData(renderData); });
   }
 
   void Renderer::renderSceneDecoration(
     const SceneDecoration& sceneDecoration, int& startIndex
   )
   {
-    mDecorationsRenderBuffer.bind();
-    auto vertexCount = sceneDecoration.renderData.getVertexCount();
-    glDrawArrays(sceneDecoration.renderMode, startIndex, vertexCount);
-    startIndex += vertexCount;
-    mModelRenderBuffer.bind();
+    mDecorationsRenderBuffer.invoke(
+      [&sceneDecoration, &startIndex]()
+      {
+        auto vertexCount = sceneDecoration.renderData.getVertexCount();
+        glDrawArrays(sceneDecoration.renderMode, startIndex, vertexCount);
+        startIndex += vertexCount;
+      }
+    );
   }
 }  // namespace RenderSystem

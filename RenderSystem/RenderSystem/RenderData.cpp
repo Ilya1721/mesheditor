@@ -1,11 +1,13 @@
 #include "RenderData.h"
 
+#include "DebugVisualization.h"
 #include "GeometryCore/Line.h"
 #include "GeometryCore/Numeric.h"
 #include "GeometryCore/Plane.h"
 #include "GeometryCore/Ray.h"
 #include "GeometryCore/Typedefs.h"
 #include "MeshCore/Constants.h"
+#include "MeshCore/MeshFactory.h"
 #include "MeshCore/Vertex.h"
 
 namespace
@@ -136,5 +138,10 @@ namespace RenderSystem
     auto planeTransform = plane.getTransformToSelf(defaultPlane);
 
     return generateRenderData(vertices, planeTransform);
+  }
+
+  RenderData RenderData::getSkyboxRenderData()
+  {
+    return generateRenderData(createCube(1.0f), glm::mat4(1.0f));
   }
 }  // namespace RenderSystem

@@ -13,7 +13,7 @@ namespace RenderSystem
     virtual ~Texture();
     Texture& operator=(Texture&& other) noexcept;
 
-    virtual void passToFragmentShader(int textureLocation) const = 0;
+    virtual void passToFragmentShader(int textureLocation, int textureSlot) const = 0;
 
     unsigned int getId() const;
 
@@ -24,4 +24,6 @@ namespace RenderSystem
    protected:
     unsigned int mTexture = 0;
   };
+
+  int getColorFormat(int colorChannels);
 }  // namespace RenderSystem

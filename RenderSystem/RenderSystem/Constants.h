@@ -99,11 +99,15 @@ namespace RenderSystem
   const std::filesystem::path SKYBOX_FRAGMENT_SHADER_PATH =
     R"(./RenderSystem/Shaders/SkyboxShader.frag)";
   const std::array<std::filesystem::path, 6> SKYBOX_CUBEMAP_TEXTURES = {
-    R"(./RenderSystem/Textures/skybox/right.jpg)",
-    R"(./RenderSystem/Textures/skybox/left.jpg)",
-    R"(./RenderSystem/Textures/skybox/top.jpg)",
-    R"(./RenderSystem/Textures/skybox/bottom.jpg)",
-    R"(./RenderSystem/Textures/skybox/front.jpg)",
-    R"(./RenderSystem/Textures/skybox/back.jpg)",
+    R"(./ThirdParty/resources/textures/skybox/right.png)",
+    R"(./ThirdParty/resources/textures/skybox/left.png)",
+    R"(./ThirdParty/resources/textures/skybox/top.png)",
+    R"(./ThirdParty/resources/textures/skybox/bottom.png)",
+    R"(./ThirdParty/resources/textures/skybox/front.png)",
+    R"(./ThirdParty/resources/textures/skybox/back.png)",
   };
+
+  constexpr int DEPTH_TEXTURE_SLOT = 0;
+  constexpr int DIFFUSE_TEXTURE_SLOT = 1;
+  constexpr int SKYBOX_TEXTURE_SLOT = 0;
 }  // namespace RenderSystem

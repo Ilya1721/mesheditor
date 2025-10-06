@@ -8,7 +8,7 @@ using namespace std::numbers;
 
 namespace MeshCore
 {
-  std::unique_ptr<Mesh> createSphere(float radius)
+  std::vector<Vertex> createSphere(float radius)
   {
     std::vector<Vertex> tempVertices;
     constexpr size_t horizontalDivisions = 20;
@@ -67,6 +67,84 @@ namespace MeshCore
       }
     }
 
-    return std::make_unique<Mesh>(vertices);
+    return vertices;
+  }
+
+  std::vector<Vertex> createCube(float sideLength)
+  {
+    float halfSide = sideLength * 0.5f;
+    std::vector<Vertex> uniqueVertices;
+    uniqueVertices.emplace_back(
+      Point3D(-halfSide, -halfSide, -halfSide), Vector3D(-1.0f, -1.0f, -1.0f),
+      Point2D(0.0f, 0.0f)
+    );
+    uniqueVertices.emplace_back(
+      Point3D(halfSide, -halfSide, -halfSide), Vector3D(1.0f, -1.0f, -1.0f),
+      Point2D(1.0f, 0.0f)
+    );
+    uniqueVertices.emplace_back(
+      Point3D(halfSide, halfSide, -halfSide), Vector3D(1.0f, 1.0f, -1.0f),
+      Point2D(1.0f, 1.0f)
+    );
+    uniqueVertices.emplace_back(
+      Point3D(-halfSide, halfSide, -halfSide), Vector3D(-1.0f, 1.0f, -1.0f),
+      Point2D(0.0f, 1.0f)
+    );
+    uniqueVertices.emplace_back(
+      Point3D(-halfSide, -halfSide, halfSide), Vector3D(-1.0f, -1.0f, 1.0f),
+      Point2D(0.0f, 0.0f)
+    );
+    uniqueVertices.emplace_back(
+      Point3D(halfSide, -halfSide, halfSide), Vector3D(1.0f, -1.0f, 1.0f),
+      Point2D(1.0f, 0.0f)
+    );
+    uniqueVertices.emplace_back(
+      Point3D(halfSide, halfSide, halfSide), Vector3D(1.0f, 1.0f, 1.0f),
+      Point2D(1.0f, 1.0f)
+    );
+    uniqueVertices.emplace_back(
+      Point3D(-halfSide, halfSide, halfSide), Vector3D(-1.0f, 1.0f, 1.0f),
+      Point2D(0.0f, 1.0f)
+    );
+
+    std::vector<Vertex> vertices;
+    vertices.insert(
+      vertices.end(), {uniqueVertices[0], uniqueVertices[1], uniqueVertices[2]}
+    );
+    vertices.insert(
+      vertices.end(), {uniqueVertices[2], uniqueVertices[3], uniqueVertices[0]}
+    );
+    vertices.insert(
+      vertices.end(), {uniqueVertices[4], uniqueVertices[5], uniqueVertices[6]}
+    );
+    vertices.insert(
+      vertices.end(), {uniqueVertices[6], uniqueVertices[7], uniqueVertices[4]}
+    );
+    vertices.insert(
+      vertices.end(), {uniqueVertices[4], uniqueVertices[0], uniqueVertices[3]}
+    );
+    vertices.insert(
+      vertices.end(), {uniqueVertices[3], uniqueVertices[7], uniqueVertices[4]}
+    );
+    vertices.insert(
+      vertices.end(), {uniqueVertices[1], uniqueVertices[5], uniqueVertices[6]}
+    );
+    vertices.insert(
+      vertices.end(), {uniqueVertices[6], uniqueVertices[2], uniqueVertices[1]}
+    );
+    vertices.insert(
+      vertices.end(), {uniqueVertices[4], uniqueVertices[5], uniqueVertices[1]}
+    );
+    vertices.insert(
+      vertices.end(), {uniqueVertices[1], uniqueVertices[0], uniqueVertices[4]}
+    );
+    vertices.insert(
+      vertices.end(), {uniqueVertices[3], uniqueVertices[2], uniqueVertices[6]}
+    );
+    vertices.insert(
+      vertices.end(), {uniqueVertices[6], uniqueVertices[7], uniqueVertices[3]}
+    );
+
+    return vertices;
   }
 }  // namespace MeshCore

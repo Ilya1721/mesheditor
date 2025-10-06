@@ -5,6 +5,7 @@
 #ifdef __gl_h_
 #undef __gl_h_
 #endif
+#include "Constants.h"
 #include "glad/glad.h"
 
 namespace RenderSystem
@@ -31,7 +32,8 @@ namespace RenderSystem
 
   void SkyboxShaderProgram::setSkyboxCubemap(const CubemapTexture& texture) const
   {
-    invoke([this, &texture]() { texture.passToFragmentShader(mSkybox); });
+    invoke([this, &texture]()
+           { texture.passToFragmentShader(mSkybox, SKYBOX_TEXTURE_SLOT); });
   }
 
   void SkyboxShaderProgram::initUniformLocations()

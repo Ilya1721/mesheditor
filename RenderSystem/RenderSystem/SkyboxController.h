@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <functional>
 
 #include "CubemapTexture.h"
 #include "SkyboxShaderProgram.h"
@@ -18,7 +19,10 @@ namespace RenderSystem
 
     void setView(const glm::mat4& view);
     void setProjection(const glm::mat4& projection);
-    void render();
+    void render(const std::function<void()>& renderFunc);
+
+   private:
+    void init();
 
    private:
     SkyboxShaderProgram mShaderProgram;

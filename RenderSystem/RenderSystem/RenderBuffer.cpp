@@ -24,8 +24,16 @@ namespace RenderSystem
 
   void RenderBuffer::bind() const
   {
+    glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &mSavedVAO);
+    glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &mSavedVBO);
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
     glBindVertexArray(mVAO);
+  }
+
+  void RenderBuffer::unbind() const
+  {
+    glBindBuffer(GL_ARRAY_BUFFER, mSavedVBO);
+    glBindVertexArray(mSavedVAO);
   }
 
   void RenderBuffer::loadRenderData(const RenderData& renderData)

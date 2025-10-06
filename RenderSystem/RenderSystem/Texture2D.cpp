@@ -32,11 +32,11 @@ namespace RenderSystem
 
   int Texture2D::getHeight() const { return mHeight; }
 
-  void Texture2D::passToFragmentShader(int textureLocation) const
+  void Texture2D::passToFragmentShader(int textureLocation, int textureSlot) const
   {
-    glActiveTexture(GL_TEXTURE0 + mTexture);
+    glActiveTexture(GL_TEXTURE0 + textureSlot);
     glBindTexture(GL_TEXTURE_2D, mTexture);
-    glUniform1i(textureLocation, mTexture);
+    glUniform1i(textureLocation, textureSlot);
   }
 
   void Texture2D::init()

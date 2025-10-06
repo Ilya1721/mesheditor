@@ -28,16 +28,18 @@ namespace RenderSystem
     void renderHighlightedFace(int faceIdx, int vertexOffset);
     void renderWireframe(int objectVertexCount);
     void renderWholeObjectHighlighted(const Object3D& object, int vertexOffset);
+    void renderSkybox();
     void loadModelRenderData(const RenderData& renderData);
     void loadDecorationsRenderData(const RenderData& renderData);
+    void loadSkyboxRenderData(const RenderData& renderData);
     void cleanScreen();
 
    private:
-    void init();
     void renderOverlayPrimitive(const std::function<void()>& renderFunc);
 
    private:
     RenderBuffer mModelRenderBuffer;
     RenderBuffer mDecorationsRenderBuffer;
+    RenderBuffer mSkyboxRenderBuffer;
   };
 }  // namespace RenderSystem

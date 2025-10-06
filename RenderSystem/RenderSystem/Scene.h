@@ -75,6 +75,7 @@ namespace RenderSystem
     void renderWholeObjectHighlighted();
     void renderSkybox();
     void updateDirLightProjection();
+    void loadSkyboxVertices();
 
    private:
     Renderer* mRenderer;

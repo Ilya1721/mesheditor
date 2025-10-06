@@ -39,4 +39,15 @@ namespace RenderSystem
   }
 
   void Texture::unbind() const { glBindTexture(GL_TEXTURE_2D, mResourceToRestore); }
+
+  int getColorFormat(int colorChannels)
+  {
+    switch (colorChannels)
+    {
+      case 1: return GL_RED;
+      case 3: return GL_RGB;
+      case 4: return GL_RGBA;
+      default: return GL_RGB;
+    }
+  }
 }  // namespace RenderSystem

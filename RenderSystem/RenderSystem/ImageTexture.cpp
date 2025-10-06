@@ -6,23 +6,10 @@
 #include "glad/glad.h"
 #include "stb_image/stb_image.h"
 
-namespace
-{
-  int getColorFormat(int colorChannels)
-  {
-    switch (colorChannels)
-    {
-      case 1: return GL_RED;
-      case 3: return GL_RGB;
-      case 4: return GL_RGBA;
-      default: return GL_RGB;
-    }
-  }
-}  // namespace
-
 namespace RenderSystem
 {
-  ImageTexture::ImageTexture(int width, int height) : Texture2D(width, height)
+  ImageTexture::ImageTexture(int width, int height, int textureSlot)
+    : Texture2D(width, height), mTextureSlot(textureSlot)
   {
     setDimensions(mWidth, mHeight);
     invoke(
@@ -43,8 +30,10 @@ namespace RenderSystem
       Texture2D::operator=(std::move(other));
       mData = other.mData;
       mColorChannels = other.mColorChannels;
+      mTextureSlot = other.mTextureSlot;
       other.mData = nullptr;
       other.mColorChannels = 0;
+      other.mTextureSlot = 0;
     }
 
     return *this;
@@ -66,7 +55,13 @@ namespace RenderSystem
 
   bool ImageTexture::isEmpty() const { return mWidth == 0 || mHeight == 0; }
 
-  ImageTexture::ImageTexture(const std::string& filePath) : Texture2D()
+  int ImageTexture::getTextureSlot() const
+  {
+    return mTextureSlot;
+  }
+
+  ImageTexture::ImageTexture(const std::string& filePath, int textureSlot)
+    : Texture2D(), mTextureSlot(textureSlot)
   {
     if (filePath.empty()) { return; }
     mData = stbi_load(filePath.c_str(), &mWidth, &mHeight, &mColorChannels, 0);

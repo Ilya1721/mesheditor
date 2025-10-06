@@ -36,6 +36,7 @@ namespace RenderSystem
     static RenderData createRenderData(
       const GeometryCore::Plane& plane, float width, float length
     );
+    static RenderData getSkyboxRenderData();
 
    private:
     std::vector<float> mCompactData;

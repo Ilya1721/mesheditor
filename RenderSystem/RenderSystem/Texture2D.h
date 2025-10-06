@@ -17,7 +17,7 @@ namespace RenderSystem
     int getHeight() const;
 
     virtual void setDimensions(int width, int height) = 0;
-    void passToFragmentShader(int textureLocation) const override;
+    void passToFragmentShader(int textureLocation, int textureSlot) const override;
 
    private:
     void init();
