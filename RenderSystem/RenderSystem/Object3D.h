@@ -49,6 +49,8 @@ namespace RenderSystem
     void addOnBBoxUpdatedCallback(const std::function<bboxUpdatedCallback>& callback);
     void onMeshUpdated(const std::unordered_set<UniqueVertex*>& vertices);
     void moveToOrigin();
+    void makeItGlass(const GlassMaterialParams& params);
+    void makeItBlinnPhong(const BlinnPhongMaterialParams& params);
 
     virtual void updateTransform(const glm::mat4& transform);
 

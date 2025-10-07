@@ -5,6 +5,7 @@
 #endif
 #include <glm/gtc/type_ptr.hpp>
 
+#include "Constants.h"
 #include "glad/glad.h"
 
 namespace RenderSystem
@@ -22,11 +23,12 @@ namespace RenderSystem
 
   void Material::setParams(const Object3DMaterialParams& materialParams)
   {
-    setAmbient(glm::value_ptr(materialParams.ambient));
-    setDiffuse(glm::value_ptr(materialParams.diffuse));
-    setSpecular(glm::value_ptr(materialParams.specular));
-    setShininess(materialParams.shininess);
-    setDiffuseTexture(materialParams.diffuseTexture);
+    const auto& blinnPhong = materialParams.blinnPhongMaterialParams;
+    setAmbient(glm::value_ptr(blinnPhong.ambient));
+    setDiffuse(glm::value_ptr(blinnPhong.diffuse));
+    setSpecular(glm::value_ptr(blinnPhong.specular));
+    setShininess(blinnPhong.shininess);
+    setDiffuseTexture(blinnPhong.diffuseTexture);
   }
 
   void Material::initUniformLocations()
@@ -65,7 +67,7 @@ namespace RenderSystem
     else
     {
       glUniform1i(mHasDiffuseTexture, true);
-      texture.passToFragmentShader(mDiffuseTexture, texture.getTextureSlot());
+      texture.passToFragmentShader(mDiffuseTexture, DIFFUSE_TEXTURE_SLOT);
     }
   }
 }  // namespace RenderSystem

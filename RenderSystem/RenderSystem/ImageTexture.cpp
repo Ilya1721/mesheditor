@@ -8,8 +8,7 @@
 
 namespace RenderSystem
 {
-  ImageTexture::ImageTexture(int width, int height, int textureSlot)
-    : Texture2D(width, height), mTextureSlot(textureSlot)
+  ImageTexture::ImageTexture(int width, int height) : Texture2D(width, height)
   {
     setDimensions(mWidth, mHeight);
     invoke(
@@ -30,10 +29,8 @@ namespace RenderSystem
       Texture2D::operator=(std::move(other));
       mData = other.mData;
       mColorChannels = other.mColorChannels;
-      mTextureSlot = other.mTextureSlot;
       other.mData = nullptr;
       other.mColorChannels = 0;
-      other.mTextureSlot = 0;
     }
 
     return *this;
@@ -55,13 +52,7 @@ namespace RenderSystem
 
   bool ImageTexture::isEmpty() const { return mWidth == 0 || mHeight == 0; }
 
-  int ImageTexture::getTextureSlot() const
-  {
-    return mTextureSlot;
-  }
-
-  ImageTexture::ImageTexture(const std::string& filePath, int textureSlot)
-    : Texture2D(), mTextureSlot(textureSlot)
+  ImageTexture::ImageTexture(const std::string& filePath) : Texture2D()
   {
     if (filePath.empty()) { return; }
     mData = stbi_load(filePath.c_str(), &mWidth, &mHeight, &mColorChannels, 0);

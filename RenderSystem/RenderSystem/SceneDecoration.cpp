@@ -17,7 +17,9 @@ namespace
   using namespace RenderSystem;
 
   SceneDecoration getBaseSceneDecoration(
-    const MaterialParams& materialParams, int renderMode, const RenderData& renderData
+    const BlinnPhongMaterialParams& materialParams,
+    int renderMode,
+    const RenderData& renderData
   )
   {
     SceneDecoration primitive;
@@ -32,7 +34,9 @@ namespace
 namespace RenderSystem
 {
   SceneDecoration SceneDecoration::createDecoration(
-    const GeometryCore::Ray& ray, float length, const MaterialParams& materialParams
+    const GeometryCore::Ray& ray,
+    float length,
+    const BlinnPhongMaterialParams& materialParams
   )
   {
     return getBaseSceneDecoration(
@@ -43,7 +47,7 @@ namespace RenderSystem
   SceneDecoration SceneDecoration::createDecoration(
     const GeometryCore::Line& line,
     bool withArrowHead,
-    const MaterialParams& materialParams
+    const BlinnPhongMaterialParams& materialParams
   )
   {
     return getBaseSceneDecoration(
@@ -55,7 +59,7 @@ namespace RenderSystem
     const GeometryCore::Plane& plane,
     float width,
     float length,
-    const MaterialParams& materialParams
+    const BlinnPhongMaterialParams& materialParams
   )
   {
     return getBaseSceneDecoration(
@@ -64,7 +68,7 @@ namespace RenderSystem
   }
 
   SceneDecoration SceneDecoration::createSceneFloor(
-    float sceneBBoxHeight, const MaterialParams& floorMaterialParams
+    float sceneBBoxHeight, const BlinnPhongMaterialParams& floorMaterialParams
   )
   {
     auto originY = -sceneBBoxHeight * FLOOR_BBOX_HEIGHT_COEF;
@@ -82,7 +86,7 @@ namespace RenderSystem
     const Vector3D& normal,
     float width,
     float height,
-    const MaterialParams& materialParams
+    const BlinnPhongMaterialParams& materialParams
   )
   {
     return SceneDecoration::createDecoration(
@@ -94,7 +98,7 @@ namespace RenderSystem
     const Point3D& start,
     const Point3D& end,
     bool withArrowHead,
-    const MaterialParams& material
+    const BlinnPhongMaterialParams& material
   )
   {
     return SceneDecoration::createDecoration({start, end}, withArrowHead, material);
@@ -133,7 +137,7 @@ namespace RenderSystem
   }
 
   std::vector<SceneDecoration> SceneDecoration::createBoundingBox(
-    const MeshCore::AABBox& bbox, const MaterialParams& materialParams
+    const MeshCore::AABBox& bbox, const BlinnPhongMaterialParams& materialParams
   )
   {
     Point3D leftMinLowerCorner = bbox.getMin();

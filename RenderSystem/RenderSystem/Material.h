@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ImageTexture.h"
 #include "Object3DMaterialParams.h"
 
 namespace RenderSystem

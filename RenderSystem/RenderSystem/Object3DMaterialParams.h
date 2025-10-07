@@ -1,29 +1,54 @@
 #pragma once
 
-#include "Constants.h"
 #include "ImageTexture.h"
 #include "MeshCore/MaterialParams.h"
 
+using namespace MeshCore;
+
 namespace RenderSystem
 {
-  struct Object3DMaterialParams : MeshCore::MaterialParams
+  enum class MaterialType
   {
-    Object3DMaterialParams() = default;
-    Object3DMaterialParams(const MeshCore::MaterialParams& materialParams)
-      : MeshCore::MaterialParams(materialParams),
-        diffuseTexture(materialParams.diffuseTexturePath.string(), DIFFUSE_TEXTURE_SLOT)
+    BLINN_PHONG,
+    GLASS
+  };
+
+  struct ExtraMaterialParams
+  {
+    GlassMaterialParams glassMaterialParams;
+  };
+
+  struct BlinnPhongMaterialParamsExtended : BlinnPhongMaterialParams
+  {
+    BlinnPhongMaterialParamsExtended() = default;
+    BlinnPhongMaterialParamsExtended(const BlinnPhongMaterialParams& params)
+      : BlinnPhongMaterialParams(params),
+        diffuseTexture(params.diffuseTexturePath.string())
     {
     }
-
-    Object3DMaterialParams& operator=(const MeshCore::MaterialParams& materialParams)
+    BlinnPhongMaterialParamsExtended& operator=(const BlinnPhongMaterialParams& params)
     {
-      MeshCore::MaterialParams::operator=(materialParams);
-      diffuseTexture = std::move(
-        ImageTexture(materialParams.diffuseTexturePath.string(), DIFFUSE_TEXTURE_SLOT)
-      );
+      BlinnPhongMaterialParams::operator=(params);
+      diffuseTexture = std::move(ImageTexture(params.diffuseTexturePath.string()));
+
       return *this;
     }
 
     ImageTexture diffuseTexture;
+  };
+
+  struct Object3DMaterialParams
+  {
+    Object3DMaterialParams() = default;
+    Object3DMaterialParams(const BlinnPhongMaterialParams& params)
+      : blinnPhongMaterialParams(params),
+        glassMaterialParams(),
+        materialType(MaterialType::BLINN_PHONG)
+    {
+    }
+
+    BlinnPhongMaterialParamsExtended blinnPhongMaterialParams;
+    GlassMaterialParams glassMaterialParams;
+    MaterialType materialType = MaterialType::BLINN_PHONG;
   };
 }  // namespace RenderSystem

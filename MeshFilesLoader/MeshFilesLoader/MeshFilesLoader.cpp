@@ -212,7 +212,7 @@ namespace
   }
 
   void parseTextMTL(
-    const std::filesystem::path& filePath, MeshCore::MaterialParams& materialParams
+    const std::filesystem::path& filePath, MeshCore::BlinnPhongMaterialParams& materialParams
   )
   {
     auto fileContent = Utility::readFile(filePath);
@@ -258,7 +258,7 @@ namespace
     std::vector<Point2D> textures;
     std::vector<Vector3D> normals;
     std::vector<MeshCore::Vertex> vertices;
-    MeshCore::MaterialParams materialParams = MeshCore::GOLD_MATERIAL;
+    MeshCore::BlinnPhongMaterialParams materialParams = MeshCore::GOLD_MATERIAL;
 
     parseText(
       fileContent,

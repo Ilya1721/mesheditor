@@ -14,33 +14,33 @@ using namespace GeometryCore;
 
 namespace RenderSystem
 {
-  const MaterialParams RUBY_MATERIAL {
+  const BlinnPhongMaterialParams RUBY_MATERIAL {
     RGB(0.1745f, 0.01175f, 0.01175f), RGB(0.61424f, 0.04136f, 0.04136f),
     RGB(0.727811f, 0.626959f, 0.626959f), 2.0f
   };
 
-  const MaterialParams EMERALD_MATERIAL {
+  const BlinnPhongMaterialParams EMERALD_MATERIAL {
     RGB(0.0215f, 0.1745f, 0.0215f), RGB(0.07568f, 0.61424f, 0.07568f),
     RGB(0.633f, 0.727811f, 0.633f), 0.6f
   };
 
-  const MaterialParams RED_MATERIAL {
+  const BlinnPhongMaterialParams RED_MATERIAL {
     RGB(1.0f, 0.0f, 0.0f), RGB(0.0f, 0.0f, 0.0f), RGB(0.0f, 0.0f, 0.0f), 0.6f
   };
 
-  const MaterialParams GREEN_MATERIAL {
+  const BlinnPhongMaterialParams GREEN_MATERIAL {
     RGB(0.0f, 1.0f, 0.0f), RGB(0.0f, 0.0f, 0.0f), RGB(0.0f, 0.0f, 0.0f), 0.6f
   };
 
-  const MaterialParams BLUE_MATERIAL {
+  const BlinnPhongMaterialParams BLUE_MATERIAL {
     RGB(0.0f, 0.0f, 1.0f), RGB(0.0f, 0.0f, 0.0f), RGB(0.0f, 0.0f, 0.0f), 0.6f
   };
 
-  const MaterialParams BLACK_MATERIAL {
+  const BlinnPhongMaterialParams BLACK_MATERIAL {
     RGB(0.0f, 0.0f, 0.0f), RGB(0.0f, 0.0f, 0.0f), RGB(0.0f, 0.0f, 0.0f), 0.6f
   };
 
-  const MaterialParams PEARL_MATERIAL {
+  const BlinnPhongMaterialParams PEARL_MATERIAL {
     RGB(0.25f, 0.20725f, 0.20725f), RGB(1.0f, 0.829f, 0.829f),
     RGB(0.296648f, 0.296648f, 0.296648f), 11.264f
   };
@@ -49,12 +49,14 @@ namespace RenderSystem
     RGB(1.0f, 1.0f, 1.0f), RGB(1.0f, 1.0f, 1.0f), RGB(0.1f, 0.1f, 0.1f)
   };
 
-  static inline constexpr PointLightParams POINT_LIGHT_PARAMS {RGB(1.0f, 1.0f, 1.0f),
-                                                               RGB(1.0f, 1.0f, 1.0f),
-                                                               RGB(0.1f, 0.1f, 0.1f),
-                                                               1.0f,
-                                                               0.009f,
-                                                               0.003f};
+  static inline constexpr PointLightParams POINT_LIGHT_PARAMS {
+    RGB(1.0f, 1.0f, 1.0f),
+    RGB(1.0f, 1.0f, 1.0f),
+    RGB(0.1f, 0.1f, 0.1f),
+    1.0f,
+    0.009f,
+    0.003f
+  };
 
   constexpr RGBA BACKGROUND_COLOR = RGBA(0.725f, 0.9f, 1.0f, 1.0f);
   constexpr Point3D DEFAULT_CAMERA_POSITION = Point3D(0.0f, 0.0f, 5.0f);

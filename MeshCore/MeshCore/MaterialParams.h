@@ -6,10 +6,10 @@
 
 namespace MeshCore
 {
-  struct MaterialParams
+  struct BlinnPhongMaterialParams
   {
-    MaterialParams() = default;
-    MaterialParams(
+    BlinnPhongMaterialParams() = default;
+    BlinnPhongMaterialParams(
       const RGB& ambient, const RGB& diffuse, const RGB& specular, float shininess
     )
       : ambient(ambient), diffuse(diffuse), specular(specular), shininess(shininess)
@@ -22,4 +22,13 @@ namespace MeshCore
     float shininess;
     std::filesystem::path diffuseTexturePath;
   };
-}  // namespace MeshCore
+
+  struct GlassMaterialParams
+  {
+    float refractiveIndex;
+    float reflectionStrength;
+    float transparency;
+    float interpolationFactor;
+    RGB color;
+  };
+}

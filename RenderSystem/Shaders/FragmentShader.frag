@@ -11,13 +11,24 @@ uniform float shadowBias;
 uniform sampler2D depthMap;
 uniform sampler2D diffuseTexture;
 
+struct GlassMaterial
+{
+  float refractiveIndex;
+  float reflectionStrength;
+  float transparency;
+  float interpolationFactor;
+  vec3 color;
+};
+
 struct Material
 {
   vec3 ambient;
   vec3 diffuse;
   vec3 specular;
   float shininess;
+  GlassMaterial glassMaterial;
   bool hasDiffuseTexture;
+  bool isGlass;
 };
 
 uniform Material material;

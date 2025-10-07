@@ -27,21 +27,21 @@ namespace MeshCore
     Mesh();
     Mesh(
       const std::vector<Vertex>& vertices,
-      const MaterialParams& materialParams = GOLD_MATERIAL
+      const BlinnPhongMaterialParams& materialParams = GOLD_MATERIAL
     );
     Mesh(Mesh&& other) = delete;
     ~Mesh();
     bool operator==(const Mesh& other) const = default;
 
     std::unique_ptr<Mesh> clone() const;
-    void setMaterialParams(const MaterialParams& materialParams);
+    void setMaterialParams(const BlinnPhongMaterialParams& materialParams);
 
     const std::vector<Vertex>& getVertices() const;
     const std::vector<std::unique_ptr<Face>>& getFaces() const;
     MeshIntersection getIntersection(
       const Ray& ray, IntersectionMode intersectionMode, int facesIndexOffset
     ) const;
-    const MaterialParams& getMaterialParams() const;
+    const BlinnPhongMaterialParams& getMaterialParams() const;
 
    private:
     void init();
@@ -64,6 +64,6 @@ namespace MeshCore
     std::vector<std::unique_ptr<Face>> mFaces;
     std::unordered_map<Vertex, UniqueVertex> mUniqueVerticesMap;
     std::unordered_map<Face*, int> mFaceIndexMap;
-    MaterialParams mMaterialParams;
+    BlinnPhongMaterialParams mMaterialParams;
   };
 }  // namespace MeshCore

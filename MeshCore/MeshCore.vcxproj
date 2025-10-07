@@ -112,9 +112,9 @@
     <ClInclude Include="MeshCore\Constants.h" />
     <ClInclude Include="MeshCore\EdgeWalker.h" />
     <ClInclude Include="MeshCore\Face.h" />
+    <ClInclude Include="MeshCore\MaterialParams.h" />
     <ClInclude Include="MeshCore\HalfEdge.h" />
     <ClInclude Include="MeshCore\Intersection.h" />
-    <ClInclude Include="MeshCore\MaterialParams.h" />
     <ClInclude Include="MeshCore\Mesh.h" />
     <ClInclude Include="MeshCore\MeshFactory.h" />
     <ClInclude Include="MeshCore\OutgoingEdgeFinder.h" />

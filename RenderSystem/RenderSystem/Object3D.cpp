@@ -23,7 +23,7 @@ namespace RenderSystem
 
   void Object3D::init()
   {
-    mMaterialParams = mMesh->getMaterialParams();
+    mMaterialParams.blinnPhongMaterialParams = mMesh->getMaterialParams();
     mBBox.applyMesh(*mMesh);
     moveToOrigin();
   }
@@ -143,6 +143,18 @@ namespace RenderSystem
   }
 
   void Object3D::moveToOrigin() { updateTransform(glm::translate(-mBBox.getCenter())); }
+
+  void Object3D::makeItGlass(const GlassMaterialParams& params)
+  {
+    mMaterialParams.glassMaterialParams = params;
+    mMaterialParams.materialType = MaterialType::GLASS;
+  }
+
+  void Object3D::makeItBlinnPhong(const BlinnPhongMaterialParams& params)
+  {
+    mMaterialParams.blinnPhongMaterialParams = params;
+    mMaterialParams.materialType = MaterialType::BLINN_PHONG;
+  }
 
   void Object3D::invokeTransformAction(
     const std::function<void()>& action, const glm::mat4& transform

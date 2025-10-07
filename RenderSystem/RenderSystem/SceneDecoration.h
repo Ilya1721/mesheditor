@@ -19,38 +19,44 @@ namespace RenderSystem
   struct SceneDecoration
   {
     RenderData renderData;
-    MaterialParams materialParams {};
+    BlinnPhongMaterialParams materialParams {};
     unsigned int renderMode {};
 
     static SceneDecoration createDecoration(
-      const Ray& ray, float length, const MaterialParams& materialParams
+      const Ray& ray, float length, const BlinnPhongMaterialParams& materialParams
     );
     static SceneDecoration createDecoration(
-      const Line& line, bool withArrowHead, const MaterialParams& materialParams
+      const Line& line, bool withArrowHead, const BlinnPhongMaterialParams& materialParams
     );
     static SceneDecoration createDecoration(
-      const Plane& plane, float width, float length, const MaterialParams& materialParams
+      const Plane& plane,
+      float width,
+      float length,
+      const BlinnPhongMaterialParams& materialParams
     );
 
     static SceneDecoration createSceneFloor(
-      float sceneBBoxHeight, const MaterialParams& floorMaterialParams
+      float sceneBBoxHeight, const BlinnPhongMaterialParams& floorBlinnPhongMaterialParams
     );
     static SceneDecoration createPlane(
       const Point3D& origin,
       const Vector3D& normal,
       float width,
       float height,
-      const MaterialParams& materialParams
+      const BlinnPhongMaterialParams& materialParams
     );
     static SceneDecoration createLine(
-      const Point3D& start, const Point3D& end, bool withArrowHead, const MaterialParams& materialParams
+      const Point3D& start,
+      const Point3D& end,
+      bool withArrowHead,
+      const BlinnPhongMaterialParams& materialParams
     );
     static std::vector<SceneDecoration> createGlobalAxes(float length = 10.0f);
     static std::vector<SceneDecoration> createVerticesNormals(
       const std::vector<MeshCore::Vertex>& vertices
     );
     static std::vector<SceneDecoration> createBoundingBox(
-      const MeshCore::AABBox& bbox, const MaterialParams& materialParams
+      const MeshCore::AABBox& bbox, const BlinnPhongMaterialParams& materialParams
     );
   };
 }  // namespace RenderSystem
