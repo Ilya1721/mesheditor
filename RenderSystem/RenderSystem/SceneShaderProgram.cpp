@@ -25,7 +25,8 @@ namespace RenderSystem
   {
     mDirectionalLight.init(mShaderProgram);
     mPointLights.init(mShaderProgram);
-    mMaterial.init(mShaderProgram);
+    mBlinnPhongMaterial.init(mShaderProgram);
+    mGlassMaterial.init(mShaderProgram);
     initUniformLocations();
     setUp();
   }
@@ -48,9 +49,16 @@ namespace RenderSystem
            { mDirectionalLight.setCameraPos(glm::value_ptr(cameraPos)); });
   }
 
-  void SceneShaderProgram::setMaterialParams(const Object3DMaterialParams& materialParams)
+  void SceneShaderProgram::setBlinnPhongMaterialParams(
+    const BlinnPhongMaterialParamsExtended& params
+  )
   {
-    invoke([this, &materialParams]() { mMaterial.setParams(materialParams); });
+    invoke([this, &params]() { mBlinnPhongMaterial.setParams(params); });
+  }
+
+  void SceneShaderProgram::setGlassMaterialParams(const GlassMaterialParams& params)
+  {
+    invoke([this, &params]() { mGlassMaterial.setParams(params); });
   }
 
   void SceneShaderProgram::setDirectionalLightParams(const DirectionalLightParams& params)
@@ -72,12 +80,8 @@ namespace RenderSystem
 
   void SceneShaderProgram::setDepthMap(const DepthTexture& texture) const
   {
-    invoke(
-      [this, &texture]()
-      {
-        texture.passToFragmentShader(mDepthMap, DEPTH_TEXTURE_SLOT);
-      }
-    );
+    invoke([this, &texture]()
+           { texture.passToFragmentShader(mDepthMap, DEPTH_TEXTURE_SLOT); });
   }
 
   void SceneShaderProgram::setLightView(const glm::mat4& lightView)
@@ -94,6 +98,18 @@ namespace RenderSystem
     );
   }
 
+  void SceneShaderProgram::setMaterialType(const MaterialType& materialType)
+  {
+    invoke([this, &materialType]()
+           { glUniform1i(mMaterialType, static_cast<int>(materialType)); });
+  }
+
+  void SceneShaderProgram::setSkyboxCubemap(const CubemapTexture& texture) const
+  {
+    invoke([this, &texture]()
+           { texture.passToFragmentShader(mSkybox, SKYBOX_TEXTURE_SLOT); });
+  }
+
   PointLight* SceneShaderProgram::addPointLight(
     const PointLightParams& params, const Point3D& lightSourcePos
   )
@@ -108,17 +124,30 @@ namespace RenderSystem
 
   void SceneShaderProgram::initUniformLocations()
   {
-    mModel = glGetUniformLocation(mShaderProgram, "model");
-    mView = glGetUniformLocation(mShaderProgram, "view");
-    mProjection = glGetUniformLocation(mShaderProgram, "projection");
-    mShadowBias = glGetUniformLocation(mShaderProgram, "shadowBias");
-    mDepthMap = glGetUniformLocation(mShaderProgram, "depthMap");
-    mLightView = glGetUniformLocation(mShaderProgram, "lightView");
-    mLightProjection = glGetUniformLocation(mShaderProgram, "lightProjection");
+    mModel = getUniformLocation("model");
+    mView = getUniformLocation("view");
+    mProjection = getUniformLocation("projection");
+    mShadowBias = getUniformLocation("shadowBias");
+    mDepthMap = getUniformLocation("depthMap");
+    mLightView = getUniformLocation("lightView");
+    mLightProjection = getUniformLocation("lightProjection");
+    mSkybox = getUniformLocation("skybox");
+    mMaterialType = getUniformLocation("material.type");
+  }
+
+  int SceneShaderProgram::getUniformLocation(const char* name) const
+  {
+    return glGetUniformLocation(mShaderProgram, name);
+  }
+
+  void SceneShaderProgram::setShadowBias(float shadowBias)
+  {
+    invoke([this, &shadowBias]() { glUniform1f(mShadowBias, shadowBias); });
   }
 
   void SceneShaderProgram::setUp()
   {
-    invoke([this]() { glUniform1f(mShadowBias, SHADOW_BIAS); });
+    setShadowBias(SHADOW_BIAS);
+    setMaterialType(MaterialType::BLINN_PHONG);
   }
 }  // namespace RenderSystem

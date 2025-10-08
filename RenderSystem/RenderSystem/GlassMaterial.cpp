@@ -51,12 +51,11 @@ namespace RenderSystem
 
   void GlassMaterial::initUniformLocations()
   {
-    mRefractiveIndex = getUniformLocation("material.glassMaterial.refractiveIndex");
-    mReflectionStrength = getUniformLocation("material.glassMaterial.reflectionStrength");
-    mTransparency = getUniformLocation("material.glassMaterial.transparency");
-    mInterpolationFactor =
-      getUniformLocation("material.glassMaterial.interpolationFactor");
-    mColor = getUniformLocation("material.glassMaterial.color");
+    mRefractiveIndex = getUniformLocation("material.glass.refractiveIndex");
+    mReflectionStrength = getUniformLocation("material.glass.reflectionStrength");
+    mTransparency = getUniformLocation("material.glass.transparency");
+    mInterpolationFactor = getUniformLocation("material.glass.interpolationFactor");
+    mColor = getUniformLocation("material.glass.color");
   }
 
   int GlassMaterial::getUniformLocation(const char* name) const

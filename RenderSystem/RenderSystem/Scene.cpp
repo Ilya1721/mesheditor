@@ -51,6 +51,9 @@ namespace RenderSystem
   {
     auto modelObject =
       std::make_unique<Object3D>(MeshFilesLoader::loadMeshFromFile(meshFilePath));
+    //
+    modelObject->makeItGlass(GLASS_MATERIAL_PARAMS);
+    //
     mRootObject.addChild(std::move(modelObject));
     addSceneDecoration(
       SceneDecoration::createSceneFloor(mRootObject.getBBox().getHeight(), FLOOR_MATERIAL)
@@ -98,10 +101,16 @@ namespace RenderSystem
   {
     for (auto& [object, vertexOffset] : mSceneObjectVertexOffsetMap)
     {
+      const auto& materialParams = object->getMaterialParams();
       shaderProgram->setModel(object->getTransform());
-      mSceneShaderProgram->setMaterialParams(object->getMaterialParams());
+      mSceneShaderProgram->setBlinnPhongMaterialParams(
+        materialParams.blinnPhongMaterialParams
+      );
+      mSceneShaderProgram->setGlassMaterialParams(materialParams.glassMaterialParams);
+      mSceneShaderProgram->setMaterialType(materialParams.materialType);
       mRenderer->renderObject3D(*object, vertexOffset);
     }
+    mSceneShaderProgram->setMaterialType(MaterialType::BLINN_PHONG);
   }
 
   void Scene::renderDepthMap()
@@ -123,14 +132,14 @@ namespace RenderSystem
     int startIndex = 0;
     for (const auto& sceneDecoration : mSceneDecorations)
     {
-      mSceneShaderProgram->setMaterialParams(sceneDecoration.materialParams);
+      mSceneShaderProgram->setBlinnPhongMaterialParams(sceneDecoration.materialParams);
       mRenderer->renderSceneDecoration(sceneDecoration, startIndex);
     }
   }
 
   void Scene::renderHighlightedFaces()
   {
-    mSceneShaderProgram->setMaterialParams(HIGHLIGHT_MATERIAL);
+    mSceneShaderProgram->setBlinnPhongMaterialParams(HIGHLIGHT_MATERIAL);
     for (const auto& faceIdx : mHighlightedFacesData.facesIndices)
     {
       mSceneShaderProgram->setModel(mHighlightedFacesData.parentObject->getTransform());
@@ -144,7 +153,7 @@ namespace RenderSystem
   {
     if (!mRenderWireframe) { return; }
 
-    mSceneShaderProgram->setMaterialParams(WIREFRAME_MATERIAL);
+    mSceneShaderProgram->setBlinnPhongMaterialParams(WIREFRAME_MATERIAL);
     for (const auto& [object, vertexOffset] : mSceneObjectVertexOffsetMap)
     {
       mSceneShaderProgram->setModel(object->getTransform());
@@ -158,7 +167,7 @@ namespace RenderSystem
       mSceneObjectVertexOffsetMap.find(mHighlightedObject);
     if (highlightedObjectIt == mSceneObjectVertexOffsetMap.end()) { return; }
 
-    mSceneShaderProgram->setMaterialParams(HIGHLIGHT_MATERIAL);
+    mSceneShaderProgram->setBlinnPhongMaterialParams(HIGHLIGHT_MATERIAL);
     const auto& [object, vertexCount] = *highlightedObjectIt;
     mSceneShaderProgram->setModel(object->getTransform());
     mRenderer->renderWholeObjectHighlighted(*object, vertexCount);
@@ -232,20 +241,21 @@ namespace RenderSystem
 
   void Scene::render()
   {
+    mRenderer->cleanScreen();
     renderDepthMap();
+    renderSkybox();
+
     mSceneShaderProgram->setDepthMap(mShadowController->getDepthMap());
     mSceneShaderProgram->invoke(
       [this]()
       {
-        mRenderer->cleanScreen();
-        renderScene(mSceneShaderProgram);
         renderSceneDecorations();
         renderHighlightedFaces();
         renderWireframe();
         renderWholeObjectHighlighted();
+        renderScene(mSceneShaderProgram);
       }
     );
-    renderSkybox();
   }
 
   Object3DIntersection Scene::getIntersection(

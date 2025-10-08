@@ -102,7 +102,8 @@ namespace RenderSystem
       DEPTH_MAP_VERTEX_SHADER_PATH, DEPTH_MAP_FRAGMENT_SHADER_PATH
     );
     mSkyboxController = std::make_unique<SkyboxController>(
-      SKYBOX_VERTEX_SHADER_PATH, SKYBOX_FRAGMENT_SHADER_PATH, SKYBOX_CUBEMAP_TEXTURES
+      SKYBOX_VERTEX_SHADER_PATH, SKYBOX_FRAGMENT_SHADER_PATH, SKYBOX_CUBEMAP_TEXTURES,
+      mSceneShaderProgram.get()
     );
     auto aspectRatio = static_cast<float>(mWidth) / mHeight;
     mScene = std::make_unique<Scene>(

@@ -1,10 +1,12 @@
 #pragma once
 
 #include "AbstractShaderProgram.h"
+#include "BlinnPhongMaterial.h"
+#include "CubemapTexture.h"
 #include "DepthTexture.h"
 #include "DirectionalLight.h"
 #include "GeometryCore/Typedefs.h"
-#include "Material.h"
+#include "GlassMaterial.h"
 #include "PointLights.h"
 #include "ShaderProgram.h"
 
@@ -24,13 +26,17 @@ namespace RenderSystem
 
     void setModel(const glm::mat4& model) override;
     void setCameraPos(const Point3D& cameraPos);
-    void setMaterialParams(const Object3DMaterialParams& materialParams);
+    void setBlinnPhongMaterialParams(const BlinnPhongMaterialParamsExtended& params);
+    void setGlassMaterialParams(const GlassMaterialParams& params);
     void setDirectionalLightParams(const DirectionalLightParams& light);
     void setView(const glm::mat4& view);
     void setProjection(const glm::mat4& projection);
     void setDepthMap(const DepthTexture& texture) const;
     void setLightView(const glm::mat4& lightView);
     void setLightProjection(const glm::mat4& lightProjection);
+    void setShadowBias(float shadowBias);
+    void setMaterialType(const MaterialType& materialType);
+    void setSkyboxCubemap(const CubemapTexture& texture) const;
     PointLight* addPointLight(
       const PointLightParams& params, const Point3D& lightSourcePos
     );
@@ -39,12 +45,15 @@ namespace RenderSystem
    private:
     void setDirLightSourcePos(const Point3D& lightSourcePos);
     void initUniformLocations();
+    int getUniformLocation(const char* name) const;
+    
     void setUp();
 
    private:
     DirectionalLight mDirectionalLight;
     PointLights mPointLights;
-    Material mMaterial;
+    BlinnPhongMaterial mBlinnPhongMaterial;
+    GlassMaterial mGlassMaterial;
     int mModel;
     int mLightView;
     int mLightProjection;
@@ -52,5 +61,7 @@ namespace RenderSystem
     int mProjection;
     int mShadowBias;
     int mDepthMap;
+    int mMaterialType;
+    int mSkybox;
   };
 }  // namespace RenderSystem

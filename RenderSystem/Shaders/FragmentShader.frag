@@ -10,6 +10,7 @@ uniform vec3 cameraPos;
 uniform float shadowBias;
 uniform sampler2D depthMap;
 uniform sampler2D diffuseTexture;
+uniform samplerCube skybox;
 
 struct GlassMaterial
 {
@@ -20,15 +21,23 @@ struct GlassMaterial
   vec3 color;
 };
 
-struct Material
+struct BlinnPhongMaterial 
 {
   vec3 ambient;
   vec3 diffuse;
   vec3 specular;
   float shininess;
-  GlassMaterial glassMaterial;
   bool hasDiffuseTexture;
-  bool isGlass;
+};
+
+const int BLINN_PHONG_MATERIAL = 0;
+const int GLASS_MATERIAL = 1;
+
+struct Material
+{
+  BlinnPhongMaterial blinnPhong;
+  GlassMaterial glass;
+  int type;
 };
 
 uniform Material material;
@@ -77,22 +86,44 @@ float getShadowFactor()
   return shadow;
 }
 
-vec3 getDirectionalLight(vec3 lightAmbient, vec3 lightDiffuse, vec3 lightSpecular)
+vec3 computeColorForGlassMaterial()
 {
+  vec3 viewDir = normalize(vertexPos - cameraPos);
+  vec3 normal = normalize(vertexNormal);
+  vec3 reflectionDir = reflect(viewDir, normal);
+  vec3 refractionDir = refract(viewDir, normal, 1.0 / material.glass.refractiveIndex);
+
+  float fresnel = pow(1.0 - dot(-viewDir, normal), 3.0);
+  fresnel = clamp(fresnel, 0.0, 1.0);
+  vec3 reflectedColor = texture(skybox, reflectionDir).rgb;
+  vec3 refractedColor = texture(skybox, refractionDir).rgb;
+
+  vec3 color = mix(refractedColor, reflectedColor, fresnel);
+  color = mix(color, material.glass.color, material.glass.interpolationFactor);
+
+  return color;
+}
+
+vec3 blinnPhongDirectional()
+{
+  vec3 lightAmbient = directionalLightParams.ambient;
+  vec3 lightDiffuse = directionalLightParams.diffuse;
+  vec3 lightSpecular = directionalLightParams.specular;
+
   vec3 reversedLightUnitDir = normalize(dirLightPos - vertexPos);
   float diffuseStrength = max(dot(vertexNormal, reversedLightUnitDir), 0.0);
-  vec3 diffuse = diffuseStrength * lightDiffuse * material.diffuse;
+  vec3 diffuse = diffuseStrength * lightDiffuse * material.blinnPhong.diffuse;
 
   vec3 reversedCameraUnitDir = normalize(cameraPos - vertexPos);
   vec3 reflectDir = reflect(-reversedLightUnitDir, vertexNormal);
   float specValue =
-    pow(max(dot(reversedCameraUnitDir, reflectDir), 0.0), material.shininess);
-  vec3 specular = specValue * lightSpecular * material.specular;
+    pow(max(dot(reversedCameraUnitDir, reflectDir), 0.0), material.blinnPhong.shininess);
+  vec3 specular = specValue * lightSpecular * material.blinnPhong.specular;
 
-  vec3 ambient = lightAmbient * material.ambient;
+  vec3 ambient = lightAmbient * material.blinnPhong.ambient;
   vec3 pixelColor = ambient + diffuse + specular;
 
-  if (material.hasDiffuseTexture)
+  if (material.blinnPhong.hasDiffuseTexture)
   {
     pixelColor *= texture(diffuseTexture, vertexTexture).rgb;
   } 
@@ -120,9 +151,24 @@ vec3 getPointLights(vec3 pixelColorAfterDirLight)
 
 void main()
 {
-  vec3 pixelColor = getDirectionalLight(directionalLightParams.ambient,
-                                        directionalLightParams.diffuse,
-                                        directionalLightParams.specular);
+  vec3 pixelColor;
+  float transparency;
+
+  switch (material.type)
+  {
+    case BLINN_PHONG_MATERIAL:
+      pixelColor = blinnPhongDirectional();
+      transparency = 1.0;
+      break;
+    case GLASS_MATERIAL:
+      pixelColor = computeColorForGlassMaterial();
+      transparency = material.glass.transparency;
+      break;
+    default:
+      pixelColor = vec3(1.0, 0.0, 1.0);
+      break;
+  }
+
   pixelColor += getPointLights(pixelColor);
-  fragColor = vec4(pixelColor * getShadowFactor(), 1.0);
+  fragColor = vec4(pixelColor * getShadowFactor(), transparency);
 }

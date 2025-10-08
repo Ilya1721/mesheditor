@@ -5,11 +5,11 @@
 
 namespace RenderSystem
 {
-  class Material
+  class BlinnPhongMaterial
   {
   public:
     void init(int shaderProgram);
-    void setParams(const Object3DMaterialParams& materialParams);
+    void setParams(const BlinnPhongMaterialParamsExtended& params);
 
   private:
     void setAmbient(const float* ambient) const;

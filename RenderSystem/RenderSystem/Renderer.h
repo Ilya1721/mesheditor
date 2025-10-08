@@ -1,12 +1,8 @@
 #pragma once
 
 #include <functional>
-#include <string>
 #include <unordered_map>
 
-#include "Constants.h"
-#include "GeometryCore/Typedefs.h"
-#include "MeshCore/Vertex.h"
 #include "RenderBuffer.h"
 #include "SceneDecoration.h"
 
@@ -36,6 +32,8 @@ namespace RenderSystem
 
    private:
     void renderOverlayPrimitive(const std::function<void()>& renderFunc);
+    void renderBlinnPhongObject3D(const Object3D& object, int vertexOffset);
+    void renderGlassObject3D(const Object3D& object, int vertexOffset);
 
    private:
     RenderBuffer mModelRenderBuffer;

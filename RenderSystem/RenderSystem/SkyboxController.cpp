@@ -3,6 +3,7 @@
 #ifdef __gl_h_
 #undef __gl_h_
 #endif
+#include "SceneShaderProgram.h"
 #include "glad/glad.h"
 
 namespace RenderSystem
@@ -10,9 +11,12 @@ namespace RenderSystem
   SkyboxController::SkyboxController(
     const path& vertexShader,
     const path& fragmentShader,
-    const std::array<path, 6>& cubemapTextures
+    const std::array<path, 6>& cubemapTextures,
+    SceneShaderProgram* sceneShaderProgram
   )
-    : mShaderProgram(vertexShader, fragmentShader), mCubemapTexture(cubemapTextures)
+    : mShaderProgram(vertexShader, fragmentShader),
+      mCubemapTexture(cubemapTextures),
+      mSceneShaderProgram(sceneShaderProgram)
   {
     init();
   }
@@ -38,5 +42,9 @@ namespace RenderSystem
     );
   }
 
-  void SkyboxController::init() { mShaderProgram.setSkyboxCubemap(mCubemapTexture); }
+  void SkyboxController::init()
+  {
+    mShaderProgram.setSkyboxCubemap(mCubemapTexture);
+    mSceneShaderProgram->setSkyboxCubemap(mCubemapTexture);
+  }
 }  // namespace RenderSystem

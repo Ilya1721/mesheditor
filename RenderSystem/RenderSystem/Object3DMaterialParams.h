@@ -21,16 +21,17 @@ namespace RenderSystem
   struct BlinnPhongMaterialParamsExtended : BlinnPhongMaterialParams
   {
     BlinnPhongMaterialParamsExtended() = default;
+
     BlinnPhongMaterialParamsExtended(const BlinnPhongMaterialParams& params)
       : BlinnPhongMaterialParams(params),
         diffuseTexture(params.diffuseTexturePath.string())
     {
     }
+
     BlinnPhongMaterialParamsExtended& operator=(const BlinnPhongMaterialParams& params)
     {
       BlinnPhongMaterialParams::operator=(params);
       diffuseTexture = std::move(ImageTexture(params.diffuseTexturePath.string()));
-
       return *this;
     }
 
@@ -39,7 +40,13 @@ namespace RenderSystem
 
   struct Object3DMaterialParams
   {
-    Object3DMaterialParams() = default;
+    Object3DMaterialParams()
+      : blinnPhongMaterialParams(),
+        glassMaterialParams(),
+        materialType(MaterialType::BLINN_PHONG)
+    {
+    }
+
     Object3DMaterialParams(const BlinnPhongMaterialParams& params)
       : blinnPhongMaterialParams(params),
         glassMaterialParams(),

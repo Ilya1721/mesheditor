@@ -138,7 +138,7 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <ClCompile Include="RenderSystem\CubemapTexture.cpp" />
     <ClCompile Include="RenderSystem\DebugVisualization.cpp" />
     <ClCompile Include="RenderSystem\GlassMaterial.cpp" />
-    <ClCompile Include="RenderSystem\Material.cpp" />
+    <ClCompile Include="RenderSystem\BlinnPhongMaterial.cpp" />
     <ClCompile Include="RenderSystem\PointLight.cpp" />
     <ClCompile Include="RenderSystem\PointLightObject3D.cpp" />
     <ClCompile Include="RenderSystem\PointLightOperations.cpp" />
@@ -184,7 +184,7 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <ClInclude Include="RenderSystem\CubemapTexture.h" />
     <ClInclude Include="RenderSystem\DebugVisualization.h" />
     <ClInclude Include="RenderSystem\GlassMaterial.h" />
-    <ClInclude Include="RenderSystem\Material.h" />
+    <ClInclude Include="RenderSystem\BlinnPhongMaterial.h" />
     <ClInclude Include="RenderSystem\Object3DMaterialParams.h" />
     <ClInclude Include="RenderSystem\PointLight.h" />
     <ClInclude Include="RenderSystem\PointLightObject3D.h" />

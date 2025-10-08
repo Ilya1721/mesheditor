@@ -2,7 +2,6 @@
 
 #include <array>
 #include <filesystem>
-#include <glm/glm.hpp>
 #include <string>
 
 #include "GeometryCore/Typedefs.h"
@@ -56,6 +55,10 @@ namespace RenderSystem
     1.0f,
     0.009f,
     0.003f
+  };
+
+  static inline constexpr GlassMaterialParams GLASS_MATERIAL_PARAMS {
+    1.52f, 0.2f, 0.5f, 0.1f, RGB(0.8f, 0.9f, 1.0f)
   };
 
   constexpr RGBA BACKGROUND_COLOR = RGBA(0.725f, 0.9f, 1.0f, 1.0f);

@@ -51,9 +51,36 @@ namespace RenderSystem
 
   void Renderer::renderObject3D(const Object3D& object, int vertexOffset)
   {
+    switch (object.getMaterialParams().materialType)
+    {
+      case MaterialType::BLINN_PHONG:
+        renderBlinnPhongObject3D(object, vertexOffset);
+        break;
+      case MaterialType::GLASS: renderGlassObject3D(object, vertexOffset); break;
+      default: std::cerr << "Unsupported material type!" << std::endl; break;
+    }
+  }
+
+  void Renderer::renderBlinnPhongObject3D(const Object3D& object, int vertexOffset)
+  {
     mModelRenderBuffer.invoke(
       [&object, &vertexOffset]()
       { glDrawArrays(GL_TRIANGLES, vertexOffset, object.getVertexCount()); }
+    );
+  }
+
+  void Renderer::renderGlassObject3D(const Object3D& object, int vertexOffset)
+  {
+    mModelRenderBuffer.invoke(
+      [&object, &vertexOffset]()
+      {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glDepthMask(GL_FALSE);
+        glDrawArrays(GL_TRIANGLES, vertexOffset, object.getVertexCount());
+        glDepthMask(GL_TRUE);
+        glDisable(GL_BLEND);
+      }
     );
   }
 

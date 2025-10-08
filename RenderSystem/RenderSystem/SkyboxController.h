@@ -8,13 +8,16 @@
 
 namespace RenderSystem
 {
+  class SceneShaderProgram;
+
   class SkyboxController
   {
    public:
     SkyboxController(
       const path& vertexShader,
       const path& fragmentShader,
-      const std::array<path, 6>& cubemapTextures
+      const std::array<path, 6>& cubemapTextures,
+      SceneShaderProgram* sceneShaderProgram
     );
 
     void setView(const glm::mat4& view);
@@ -27,5 +30,6 @@ namespace RenderSystem
    private:
     SkyboxShaderProgram mShaderProgram;
     CubemapTexture mCubemapTexture;
+    SceneShaderProgram* mSceneShaderProgram;
   };
 }  // namespace RenderSystem
