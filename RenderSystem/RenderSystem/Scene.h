@@ -48,6 +48,7 @@ namespace RenderSystem
 
     void setPickedObject(Object3D* pickedObject);
     void addSceneDecoration(const SceneDecoration& sceneDecoration);
+    void addSceneDecorations(const std::vector<SceneDecoration>& sceneDecorations);
     void toggleWireframe();
     void highlightWholeObject(const Object3D* object);
     void setHighlightedFacesData(const HighlightedFacesData& data);

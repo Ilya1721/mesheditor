@@ -23,6 +23,9 @@ namespace RenderSystem
     unsigned int renderMode {};
 
     static SceneDecoration createDecoration(
+      const Point3D& point, const BlinnPhongMaterialParams& params
+    );
+    static SceneDecoration createDecoration(
       const Ray& ray, float length, const BlinnPhongMaterialParams& materialParams
     );
     static SceneDecoration createDecoration(
@@ -57,6 +60,9 @@ namespace RenderSystem
     );
     static std::vector<SceneDecoration> createBoundingBox(
       const MeshCore::AABBox& bbox, const BlinnPhongMaterialParams& materialParams
+    );
+    static std::vector<SceneDecoration> createPoints(
+      const std::vector<Point3D>& points, const BlinnPhongMaterialParams& materialParams
     );
   };
 }  // namespace RenderSystem

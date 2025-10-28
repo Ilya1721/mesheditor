@@ -34,6 +34,13 @@ namespace
 namespace RenderSystem
 {
   SceneDecoration SceneDecoration::createDecoration(
+    const Point3D& point, const BlinnPhongMaterialParams& params
+  )
+  {
+    return getBaseSceneDecoration(params, GL_POINTS, RenderData::createRenderData(point));
+  }
+
+  SceneDecoration SceneDecoration::createDecoration(
     const GeometryCore::Ray& ray,
     float length,
     const BlinnPhongMaterialParams& materialParams
@@ -202,5 +209,18 @@ namespace RenderSystem
     );
 
     return bboxLines;
+  }
+
+  std::vector<SceneDecoration> SceneDecoration::createPoints(
+    const std::vector<Point3D>& points, const BlinnPhongMaterialParams& materialParams
+  )
+  {
+    std::vector<SceneDecoration> pointDecorations;
+    for (const auto& point : points)
+    {
+      pointDecorations.emplace_back(createDecoration(point, materialParams));
+    }
+
+    return pointDecorations;
   }
 }  // namespace RenderSystem

@@ -34,6 +34,7 @@ namespace MeshCore
     float getWidth() const;
     float getDepth() const;
     std::optional<Point3D> getIntersectionPoint(const Ray& ray) const;
+    const std::vector<Plane> getBBoxPlanes() const;
     bool isPointInsideBBox(const Point3D& point) const;
 
    private:

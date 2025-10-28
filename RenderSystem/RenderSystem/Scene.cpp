@@ -51,9 +51,6 @@ namespace RenderSystem
   {
     auto modelObject =
       std::make_unique<Object3D>(MeshFilesLoader::loadMeshFromFile(meshFilePath));
-    //
-    modelObject->makeItGlass(GLASS_MATERIAL_PARAMS);
-    //
     mRootObject.addChild(std::move(modelObject));
     addSceneDecoration(
       SceneDecoration::createSceneFloor(mRootObject.getBBox().getHeight(), FLOOR_MATERIAL)
@@ -203,6 +200,14 @@ namespace RenderSystem
     mSceneDecorations.push_back(sceneDecoration);
     mSceneDecorationsRenderData.append(sceneDecoration.renderData);
     mRenderer->loadDecorationsRenderData(mSceneDecorationsRenderData);
+  }
+
+  void Scene::addSceneDecorations(const std::vector<SceneDecoration>& sceneDecorations)
+  {
+    for (const auto& sceneDecoration : sceneDecorations)
+    {
+      addSceneDecoration(sceneDecoration);
+    }
   }
 
   void Scene::toggleWireframe() { mRenderWireframe = !mRenderWireframe; }

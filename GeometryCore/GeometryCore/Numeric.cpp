@@ -31,4 +31,14 @@ namespace GeometryCore
     float factor = std::pow(10.0f, digits);
     return glm::round(value * factor) / factor;
   }
+
+  bool isGreater(float first, float second, float tolerance)
+  {
+    return first - second > tolerance;
+  }
+
+  bool isLess(float first, float second, float tolerance)
+  {
+    return second - first > tolerance;
+  }
 }  // namespace GeometryCore

@@ -2,6 +2,8 @@
 
 #include <vector>
 
+#include "GeometryCore/Typedefs.h"
+
 namespace GeometryCore
 {
   struct Ray;
@@ -29,6 +31,7 @@ namespace RenderSystem
     const std::vector<float>& getCompactData() const;
     int getVertexCount() const;
 
+    static RenderData createRenderData(const GeometryCore::Point3D& point);
     static RenderData createRenderData(const GeometryCore::Ray& ray, float length);
     static RenderData createRenderData(
       const GeometryCore::Line& line, bool withArrowHead

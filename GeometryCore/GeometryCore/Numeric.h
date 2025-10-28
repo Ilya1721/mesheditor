@@ -17,4 +17,7 @@ namespace GeometryCore
   {
     return glm::all(glm::epsilonEqual(first, second, 1e-6f));
   }
+
+  bool isGreater(float first, float second, float tolerance = 1e-6f);
+  bool isLess(float first, float second, float tolerance = 1e-6f);
 }  // namespace GeometryCore

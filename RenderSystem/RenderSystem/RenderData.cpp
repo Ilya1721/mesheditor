@@ -5,7 +5,6 @@
 #include "GeometryCore/Numeric.h"
 #include "GeometryCore/Plane.h"
 #include "GeometryCore/Ray.h"
-#include "GeometryCore/Typedefs.h"
 #include "MeshCore/Constants.h"
 #include "MeshCore/MeshFactory.h"
 #include "MeshCore/Vertex.h"
@@ -69,6 +68,13 @@ namespace RenderSystem
   const std::vector<float>& RenderData::getCompactData() const { return mCompactData; }
 
   int RenderData::getVertexCount() const { return mCompactData.size() / 8; }
+
+  RenderData RenderData::createRenderData(const Point3D& point)
+  {
+    RenderData renderData;
+    renderData.append({point, Vector3D(0.0f, 0.0f, 1.0f)});
+    return renderData;
+  }
 
   RenderData RenderData::createRenderData(const Ray& ray, float length)
   {

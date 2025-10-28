@@ -1,7 +1,6 @@
 #include "AABBox.h"
 
-#include <numeric>
-
+#include "GeometryCore/Numeric.h"
 #include "GeometryCore/Plane.h"
 #include "GeometryCore/Ray.h"
 #include "GeometryCore/Transforms.h"
@@ -105,6 +104,8 @@ namespace MeshCore
 
   float AABBox::getDepth() const { return mMax.z - mMin.z; }
 
+  const std::vector<Plane> AABBox::getBBoxPlanes() const { return mBBoxPlanes; }
+
   std::optional<Point3D> AABBox::getIntersectionPoint(const Ray& ray) const
   {
     for (auto& bboxPlane : mBBoxPlanes)
@@ -123,7 +124,8 @@ namespace MeshCore
   {
     for (int coordIdx = 0; coordIdx < 3; ++coordIdx)
     {
-      if (point[coordIdx] < mMin[coordIdx] || point[coordIdx] > mMax[coordIdx])
+      if (isLess(point[coordIdx], mMin[coordIdx]) ||
+          isGreater(point[coordIdx], mMax[coordIdx]))
       {
         return false;
       }
