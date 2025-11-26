@@ -3,8 +3,10 @@
 #ifdef __gl_h_
 #undef __gl_h_
 #endif
+#include "Camera.h"
 #include "SceneShaderProgram.h"
 #include "glad/glad.h"
+#include "Viewport.h"
 
 namespace RenderSystem
 {
@@ -21,11 +23,14 @@ namespace RenderSystem
     init();
   }
 
-  void SkyboxController::setView(const glm::mat4& view) { mShaderProgram.setView(view); }
-
-  void SkyboxController::setProjection(const glm::mat4& projection)
+  void SkyboxController::onCameraPosChanged(Camera* camera)
   {
-    mShaderProgram.setProjection(projection);
+    mShaderProgram.setView(camera->getViewMatrix());
+  }
+
+  void SkyboxController::onViewportChanged(Viewport* viewport)
+  {
+    mShaderProgram.setProjection(viewport->getProjectionMatrix());
   }
 
   void SkyboxController::render(const std::function<void()>& renderFunc)

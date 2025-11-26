@@ -2,14 +2,16 @@
 
 #include <glm/glm.hpp>
 
+#include "CameraListener.h"
 #include "TAADepthMapController.h"
 #include "TAAMotionVectorsController.h"
+#include "ViewportListener.h"
 
 namespace RenderSystem
 {
   class SceneShaderProgram;
 
-  class TAAController
+  class TAAController : public CameraListener, public ViewportListener
   {
    public:
     TAAController(
@@ -20,18 +22,19 @@ namespace RenderSystem
       const path& motionVectorsFragmentShaderPath
     );
 
-    void updateViewportParams(
-      const glm::mat4& projection, int screenWidth, int screenHeight
-    );
+    void onCameraPosChanged(Camera* camera) override;
+    void onViewportChanged(Viewport* viewport) override;
+
     void resetFrameIndex();
     void makeJitteredProjection();
     void setModel(const glm::mat4& model);
-    void setView(const glm::mat4& view);
     void renderSceneToTextures(const std::function<void()>& renderSceneFunc);
-    void setDepthMapSize(int width, int height);
-    void setMotionVectorsTextureSize(int width, int height);
 
    private:
+    void setView(const glm::mat4& view);
+    void updateViewportParams(
+      const glm::mat4& projection, int screenWidth, int screenHeight
+    );
     void setProjection(const glm::mat4& projection);
     void setScreenSize(int screenWidth, int screenHeight);
 

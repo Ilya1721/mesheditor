@@ -2,11 +2,11 @@
 
 #include <glfw/glfw3.h>
 
-#include <glm/glm.hpp>
 #include <memory>
 #include <string>
 
 #include "Camera.h"
+#include "CameraListener.h"
 #include "Constants.h"
 #include "GeometryCore/Typedefs.h"
 #include "HighlightedFacesData.h"
@@ -18,6 +18,7 @@
 #include "SkyboxController.h"
 #include "TAAController.h"
 #include "Viewport.h"
+#include "ViewportListener.h"
 
 namespace RenderSystem
 {
@@ -83,14 +84,15 @@ namespace RenderSystem
     void onKey(int key, int scancode, int action, int mods);
 
    private:
-    void initGLFW();
+    void initLibs();
     void init(const std::string& meshFilePath);
     void resizeViewport(int width, int height);
     void setCallbacks();
     void adjustCamera();
-    void adjustDirLightSourcePos();
     void onCameraPosChanged();
     void onViewportChanged();
+    void addCameraListeners();
+    void addViewportListeners();
 
    private:
     int mWidth;
@@ -107,5 +109,7 @@ namespace RenderSystem
     std::unique_ptr<SceneShaderProgram> mSceneShaderProgram;
     std::unique_ptr<OperationsDispatcher> mOperationsDispatcher;
     std::unique_ptr<TAAController> mTAAController;
+    std::vector<CameraListener*> mCameraListeners;
+    std::vector<ViewportListener*> mViewportListeners;
   };
 }  // namespace RenderSystem

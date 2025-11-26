@@ -3,14 +3,16 @@
 #include <array>
 #include <functional>
 
+#include "CameraListener.h"
 #include "CubemapTexture.h"
 #include "SkyboxShaderProgram.h"
+#include "ViewportListener.h"
 
 namespace RenderSystem
 {
   class SceneShaderProgram;
 
-  class SkyboxController
+  class SkyboxController : public CameraListener, public ViewportListener
   {
    public:
     SkyboxController(
@@ -20,8 +22,9 @@ namespace RenderSystem
       SceneShaderProgram* sceneShaderProgram
     );
 
-    void setView(const glm::mat4& view);
-    void setProjection(const glm::mat4& projection);
+    void onCameraPosChanged(Camera* camera) override;
+    void onViewportChanged(Viewport* viewport) override;
+
     void render(const std::function<void()>& renderFunc);
 
    private:

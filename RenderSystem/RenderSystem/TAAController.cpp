@@ -2,8 +2,10 @@
 
 #include <glm/gtx/transform.hpp>
 
+#include "Camera.h"
 #include "Constants.h"
 #include "SceneShaderProgram.h"
+#include "Viewport.h"
 
 namespace
 {
@@ -56,6 +58,18 @@ namespace RenderSystem
   {
   }
 
+  void TAAController::onCameraPosChanged(Camera* camera)
+  {
+    setView(camera->getViewMatrix());
+  }
+
+  void TAAController::onViewportChanged(Viewport* viewport)
+  {
+    updateViewportParams(
+      viewport->getProjectionMatrix(), viewport->getWidth(), viewport->getHeight()
+    );
+  }
+
   void TAAController::setModel(const glm::mat4& model)
   {
     mDepthMapController.setModel(model);
@@ -74,16 +88,6 @@ namespace RenderSystem
   {
     mDepthMapController.renderSceneToDepthMap(renderSceneFunc);
     mMotionVectorsController.renderSceneToTexture(renderSceneFunc);
-  }
-
-  void TAAController::setDepthMapSize(int width, int height)
-  {
-    mDepthMapController.setDepthMapSize(width, height);
-  }
-
-  void TAAController::setMotionVectorsTextureSize(int width, int height)
-  {
-    mMotionVectorsController.setTextureDimensions(width, height);
   }
 
   void TAAController::setProjection(const glm::mat4& projection)
@@ -105,6 +109,8 @@ namespace RenderSystem
     resetFrameIndex();
     setProjection(stableProjection);
     setScreenSize(screenWidth, screenHeight);
+    mDepthMapController.setDepthMapSize(screenWidth, screenHeight);
+    mMotionVectorsController.setTextureDimensions(screenWidth, screenHeight);
   }
 
   void TAAController::resetFrameIndex() { mFrameIndex = 0; }

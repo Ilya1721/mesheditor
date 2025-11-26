@@ -12,6 +12,7 @@
 #include "Object3D.h"
 #include "Object3DIntersection.h"
 #include "SceneDecoration.h"
+#include "ViewportListener.h"
 
 namespace RenderSystem
 {
@@ -24,7 +25,7 @@ namespace RenderSystem
   class SceneShaderProgram;
   struct Modelable;
 
-  class Scene
+  class Scene : public ViewportListener
   {
    public:
     Scene(
@@ -48,17 +49,18 @@ namespace RenderSystem
     const HighlightedFacesData& getHighlightedFacesData();
     Point3D getDefaultPointLightSourcePos() const;
 
+    void onViewportChanged(Viewport* viewport) override;
+
     void setPickedObject(Object3D* pickedObject);
     void addSceneDecoration(const SceneDecoration& sceneDecoration);
     void addSceneDecorations(const std::vector<SceneDecoration>& sceneDecorations);
     void toggleWireframe();
     void highlightWholeObject(const Object3D* object);
     void setHighlightedFacesData(const HighlightedFacesData& data);
-    void setDirLightSourcePos(const Point3D& pos);
-    void setAspectRatio(float aspectRatio);
     void addPointLight(const PointLightParams& params, const Point3D& lightSourcePos);
     void removePointLight(unsigned int index);
     void render();
+    void adjustDirLightSourcePos();
 
     const Object3D& getRootObject() const;
 

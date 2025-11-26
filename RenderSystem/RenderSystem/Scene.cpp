@@ -13,6 +13,7 @@
 #include "ShadowController.h"
 #include "SkyboxController.h"
 #include "TAAController.h"
+#include "Viewport.h"
 
 using namespace GeometryCore;
 
@@ -231,12 +232,10 @@ namespace RenderSystem
     mHighlightedFacesData = data;
   }
 
-  void Scene::setDirLightSourcePos(const Point3D& pos)
+  void Scene::adjustDirLightSourcePos()
   {
-    mDirLightSource.setPosition(pos);
+    mDirLightSource.setPosition(DIR_LIGHT_POS);
   }
-
-  void Scene::setAspectRatio(float aspectRatio) { mAspectRatio = aspectRatio; }
 
   void Scene::addPointLight(const PointLightParams& params, const Point3D& lightSourcePos)
   {
@@ -312,4 +311,11 @@ namespace RenderSystem
   }
 
   const Object3D& Scene::getRootObject() const { return mRootObject; }
+
+  void Scene::onViewportChanged(Viewport* viewport)
+  {
+    int width = viewport->getWidth();
+    int height = viewport->getHeight();
+    mAspectRatio = static_cast<float>(width) / height;
+  }
 }  // namespace RenderSystem

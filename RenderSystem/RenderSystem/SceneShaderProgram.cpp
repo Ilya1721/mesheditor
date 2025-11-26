@@ -5,6 +5,7 @@
 #ifdef __gl_h_
 #undef __gl_h_
 #endif
+#include "Camera.h"
 #include "Constants.h"
 #include "glad/glad.h"
 
@@ -30,6 +31,17 @@ namespace RenderSystem
     mGlassMaterial.init(mShaderProgram);
     initUniformLocations();
     setUp();
+  }
+
+  void SceneShaderProgram::onCameraPosChanged(Camera* camera)
+  {
+    setCameraPos(camera->getEye());
+    setView(camera->getViewMatrix());
+  }
+
+  void SceneShaderProgram::onViewportChanged(Viewport* viewport)
+  {
+    setProjection(viewport->getProjectionMatrix());
   }
 
   void SceneShaderProgram::setModel(const glm::mat4& model)

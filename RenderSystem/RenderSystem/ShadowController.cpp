@@ -1,5 +1,7 @@
 #include "ShadowController.h"
 
+#include "Viewport.h"
+
 namespace RenderSystem
 {
   ShadowController::ShadowController(
@@ -8,6 +10,11 @@ namespace RenderSystem
     : mShaderProgram(vertexShaderPath, fragmentShaderPath)
   {
     ControllerWithDepthMap::operator=(&mShaderProgram);
+  }
+
+  void ShadowController::onViewportChanged(Viewport* viewport)
+  {
+    setDepthMapSize(viewport->getWidth(), viewport->getHeight());
   }
 
   void ShadowController::setModel(const glm::mat4& model)

@@ -60,11 +60,8 @@ namespace RenderSystem
     : mWidth(width), mHeight(height)
   {
     instance = this;
-    initGLFW();
+    initLibs();
     init(meshFilePath);
-    adjustCamera();
-    adjustDirLightSourcePos();
-    setCallbacks();
   }
 
   Window::~Window()
@@ -73,7 +70,7 @@ namespace RenderSystem
     glfwTerminate();
   }
 
-  void Window::initGLFW()
+  void Window::initLibs()
   {
     glfwInit();
     mWindow = glfwCreateWindow(mWidth, mHeight, WINDOW_TITLE.c_str(), nullptr, nullptr);
@@ -110,18 +107,21 @@ namespace RenderSystem
       TAA_DEPTH_MAP_FRAGMENT_SHADER_PATH, TAA_MOTION_VECTORS_VERTEX_SHADER_PATH,
       TAA_MOTION_VECTORS_FRAGMENT_SHADER_PATH
     );
-    auto aspectRatio = static_cast<float>(mWidth) / mHeight;
     mScene = std::make_unique<Scene>(
       meshFilePath, mRenderer.get(), mShadowController.get(), mSkyboxController.get(),
-      mTAAController.get(), mSceneShaderProgram.get(), aspectRatio
+      mTAAController.get(), mSceneShaderProgram.get(),
+      static_cast<float>(mWidth) / mHeight
     );
     mCamera = std::make_unique<Camera>();
-    mCamera->addOnCameraPosChangedCallback([this]() { onCameraPosChanged(); });
     mViewport =
       std::make_unique<Viewport>(mWidth, mHeight, &mScene->getRootObject().getBBox());
-    mViewport->addOnViewportChangedCallback([this]() { onViewportChanged(); });
     mOperationsDispatcher = std::make_unique<OperationsDispatcher>(this);
+    addCameraListeners();
+    addViewportListeners();
+    setCallbacks();
     resizeViewport(mWidth, mHeight);
+    adjustCamera();
+    mScene->adjustDirLightSourcePos();
   }
 
   void Window::setCallbacks()
@@ -131,6 +131,8 @@ namespace RenderSystem
     glfwSetScrollCallback(mWindow, ::onMouseScroll);
     glfwSetFramebufferSizeCallback(mWindow, ::onFramebufferSizeChanged);
     glfwSetKeyCallback(mWindow, ::onKey);
+    mCamera->addOnCameraPosChangedCallback([this]() { onCameraPosChanged(); });
+    mViewport->addOnViewportChangedCallback([this]() { onViewportChanged(); });
   }
 
   void Window::adjustCamera()
@@ -141,29 +143,40 @@ namespace RenderSystem
     mCamera->adjust(projectionType, sceneBBox, fov);
   }
 
-  void Window::adjustDirLightSourcePos()
-  {
-    const auto dirLightPos =
-      Point3D(LIGHT_SOURCE_POS_X, LIGHT_SOURCE_POS_Y, LIGHT_SOURCE_POS_Z);
-    mScene->setDirLightSourcePos(dirLightPos);
-  }
-
   void Window::onCameraPosChanged()
   {
-    auto& viewMatrix = mCamera->getViewMatrix();
-    mSceneShaderProgram->setCameraPos(mCamera->getEye());
-    mSceneShaderProgram->setView(viewMatrix);
-    mSkyboxController->setView(viewMatrix);
-    mTAAController->setView(viewMatrix);
+    for (auto& listener : mCameraListeners)
+    {
+      listener->onCameraPosChanged(mCamera.get());
+    }
   }
 
   void Window::onViewportChanged()
   {
-    auto& projectionMatrix = mViewport->getProjectionMatrix();
-    mSceneShaderProgram->setProjection(projectionMatrix);
-    mSkyboxController->setProjection(projectionMatrix);
-    mTAAController->updateViewportParams(
-      projectionMatrix, mViewport->getWidth(), mViewport->getHeight()
+    for (auto& listener : mViewportListeners)
+    {
+      listener->onViewportChanged(mViewport.get());
+    }
+  }
+
+  void Window::addCameraListeners()
+  {
+    mCameraListeners.insert(
+      mCameraListeners.end(),
+      std::initializer_list<CameraListener*> {
+        mSceneShaderProgram.get(), mSkyboxController.get(), mTAAController.get()
+      }
+    );
+  }
+
+  void Window::addViewportListeners()
+  {
+    mViewportListeners.insert(
+      mViewportListeners.end(),
+      std::initializer_list<ViewportListener*> {
+        mShadowController.get(), mTAAController.get(), mScene.get(),
+        mSceneShaderProgram.get(), mSkyboxController.get()
+      }
     );
   }
 
@@ -186,16 +199,12 @@ namespace RenderSystem
 
   void Window::resizeViewport(int width, int height)
   {
-    if (width <= 0 || height <= 0) { return; }
-
-    mWidth = width;
-    mHeight = height;
-
-    mViewport->resize(width, height);
-    mShadowController->setDepthMapSize(width, height);
-    mTAAController->setDepthMapSize(width, height);
-    mTAAController->setMotionVectorsTextureSize(width, height);
-    mScene->setAspectRatio(static_cast<float>(width) / height);
+    if (width > 0 && height > 0)
+    {
+      mWidth = width;
+      mHeight = height;
+      mViewport->resize(width, height);
+    }
   }
 
   Point3D Window::unProject(const Point2D& cursorPos, float depth) const

@@ -192,6 +192,7 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <ClCompile Include="RenderSystem\Zoom.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="RenderSystem\CameraListener.h" />
     <ClInclude Include="RenderSystem\ControllerWithDepthMap.h" />
     <ClInclude Include="RenderSystem\CubemapTexture.h" />
     <ClInclude Include="RenderSystem\DebugVisualization.h" />
@@ -247,6 +248,7 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <ClInclude Include="RenderSystem\Texture.h" />
     <ClInclude Include="RenderSystem\Texture2D.h" />
     <ClInclude Include="RenderSystem\Viewport.h" />
+    <ClInclude Include="RenderSystem\ViewportListener.h" />
     <ClInclude Include="RenderSystem\Window.h" />
     <ClInclude Include="RenderSystem\WireframeRenderer.h" />
     <ClInclude Include="RenderSystem\Zoom.h" />
