@@ -21,7 +21,7 @@ namespace RenderSystem
       [&texture, &textureSetupFunc]()
       {
         glFramebufferTexture2D(
-          GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, texture.getId(), 0
+          GL_FRAMEBUFFER, texture.getAttachmentId(), GL_TEXTURE_2D, texture.getId(), 0
         );
         textureSetupFunc();
       }

@@ -31,7 +31,8 @@ namespace RenderSystem
     void setDirectionalLightParams(const DirectionalLightParams& light);
     void setView(const glm::mat4& view);
     void setProjection(const glm::mat4& projection);
-    void setDepthMap(const DepthTexture& texture) const;
+    void setJitteredProjection(const glm::mat4& projection);
+    void setShadowMap(const DepthTexture& texture) const;
     void setLightView(const glm::mat4& lightView);
     void setLightProjection(const glm::mat4& lightProjection);
     void setShadowBias(float shadowBias);
@@ -59,8 +60,9 @@ namespace RenderSystem
     int mLightProjection;
     int mView;
     int mProjection;
+    int mJitteredProjection;
     int mShadowBias;
-    int mDepthMap;
+    int mShadowMap;
     int mMaterialType;
     int mSkybox;
   };

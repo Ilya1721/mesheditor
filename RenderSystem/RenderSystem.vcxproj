@@ -127,18 +127,26 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\DepthMapShader.frag" />
-    <None Include="Shaders\DepthMapShader.vert" />
+    <None Include="Shaders\TAAMotionVectorsShader.frag" />
+    <None Include="Shaders\TAAMotionVectorsShader.vert" />
+    <None Include="Shaders\ShadowMapShader.frag" />
+    <None Include="Shaders\ShadowMapShader.vert" />
     <None Include="Shaders\FragmentShader.frag" />
     <None Include="Shaders\SkyboxShader.frag" />
     <None Include="Shaders\SkyboxShader.vert" />
+    <None Include="Shaders\TAADepthMapShader.frag" />
+    <None Include="Shaders\TAADepthMapShader.vert" />
     <None Include="Shaders\VertexShader.vert" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="RenderSystem\ControllerWithDepthMap.cpp" />
     <ClCompile Include="RenderSystem\CubemapTexture.cpp" />
     <ClCompile Include="RenderSystem\DebugVisualization.cpp" />
     <ClCompile Include="RenderSystem\GlassMaterial.cpp" />
     <ClCompile Include="RenderSystem\BlinnPhongMaterial.cpp" />
+    <ClCompile Include="RenderSystem\TAADepthMapController.cpp" />
+    <ClCompile Include="RenderSystem\TAAMotionVectorsShaderProgram.cpp" />
+    <ClCompile Include="RenderSystem\TAAMotionVectorsTexture.cpp" />
     <ClCompile Include="RenderSystem\PointLight.cpp" />
     <ClCompile Include="RenderSystem\PointLightObject3D.cpp" />
     <ClCompile Include="RenderSystem\PointLightOperations.cpp" />
@@ -173,6 +181,9 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <ClCompile Include="RenderSystem\SkyboxShaderProgram.cpp" />
     <ClCompile Include="RenderSystem\SurfaceExtruder.cpp" />
     <ClCompile Include="RenderSystem\SurfaceHighlighter.cpp" />
+    <ClCompile Include="RenderSystem\TAAController.cpp" />
+    <ClCompile Include="RenderSystem\TAADepthMapShaderProgram.cpp" />
+    <ClCompile Include="RenderSystem\TAAMotionVectorsController.cpp" />
     <ClCompile Include="RenderSystem\Texture.cpp" />
     <ClCompile Include="RenderSystem\Texture2D.cpp" />
     <ClCompile Include="RenderSystem\Viewport.cpp" />
@@ -181,10 +192,14 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <ClCompile Include="RenderSystem\Zoom.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="RenderSystem\ControllerWithDepthMap.h" />
     <ClInclude Include="RenderSystem\CubemapTexture.h" />
     <ClInclude Include="RenderSystem\DebugVisualization.h" />
     <ClInclude Include="RenderSystem\GlassMaterial.h" />
     <ClInclude Include="RenderSystem\BlinnPhongMaterial.h" />
+    <ClInclude Include="RenderSystem\TAADepthMapController.h" />
+    <ClInclude Include="RenderSystem\TAAMotionVectorsShaderProgram.h" />
+    <ClInclude Include="RenderSystem\TAAMotionVectorsTexture.h" />
     <ClInclude Include="RenderSystem\Object3DMaterialParams.h" />
     <ClInclude Include="RenderSystem\PointLight.h" />
     <ClInclude Include="RenderSystem\PointLightObject3D.h" />
@@ -226,6 +241,9 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <ClInclude Include="RenderSystem\SkyboxShaderProgram.h" />
     <ClInclude Include="RenderSystem\SurfaceExtruder.h" />
     <ClInclude Include="RenderSystem\SurfaceHighlighter.h" />
+    <ClInclude Include="RenderSystem\TAAController.h" />
+    <ClInclude Include="RenderSystem\TAADepthMapShaderProgram.h" />
+    <ClInclude Include="RenderSystem\TAAMotionVectorsController.h" />
     <ClInclude Include="RenderSystem\Texture.h" />
     <ClInclude Include="RenderSystem\Texture2D.h" />
     <ClInclude Include="RenderSystem\Viewport.h" />

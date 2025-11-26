@@ -12,6 +12,7 @@
 #include "SceneShaderProgram.h"
 #include "ShadowController.h"
 #include "SkyboxController.h"
+#include "TAAController.h"
 
 using namespace GeometryCore;
 
@@ -29,12 +30,14 @@ namespace RenderSystem
     Renderer* renderer,
     ShadowController* shadowController,
     SkyboxController* skyboxController,
+    TAAController* taaController,
     SceneShaderProgram* sceneShaderProgram,
     float aspectRatio
   )
     : mRenderer(renderer),
       mShadowController(shadowController),
       mSkyboxController(skyboxController),
+      mTAAController(taaController),
       mSceneShaderProgram(sceneShaderProgram),
       mPickedObject(nullptr),
       mRenderWireframe(false),
@@ -110,21 +113,23 @@ namespace RenderSystem
     mSceneShaderProgram->setMaterialType(MaterialType::BLINN_PHONG);
   }
 
-  void Scene::renderDepthMap()
+  void Scene::writeSceneToTextures()
   {
-    mShadowController->renderSceneToDepthMap(
-      [this]()
-      {
-        renderScene(mShadowController->getShaderProgram());
-        renderSceneDecorations();
-      }
-    );
+    const auto& renderSceneFunc = [this]()
+    {
+      renderScene(mShadowController->getShaderProgram());
+      renderSceneDecorations();
+    };
+
+    mShadowController->renderSceneToDepthMap(renderSceneFunc);
+    mTAAController->renderSceneToTextures(renderSceneFunc);
   }
 
   void Scene::renderSceneDecorations()
   {
     mSceneShaderProgram->setModel(glm::mat4(1.0f));
-    mShadowController->getShaderProgram()->setModel(glm::mat4(1.0f));
+    mShadowController->setModel(glm::mat4(1.0f));
+    mTAAController->setModel(glm::mat4(1.0f));
 
     int startIndex = 0;
     for (const auto& sceneDecoration : mSceneDecorations)
@@ -185,13 +190,17 @@ namespace RenderSystem
       -width, width, -orthoSize, orthoSize, NEAR_PLANE_DISTANCE, FAR_PLANE_DISTANCE
     );
     mSceneShaderProgram->setLightProjection(lightProjectionMatrix);
-    mShadowController->getShaderProgram()->setLightProjection(lightProjectionMatrix);
+    mShadowController->setLightProjection(lightProjectionMatrix);
   }
 
   void Scene::loadSkyboxVertices()
   {
     mRenderer->loadSkyboxRenderData(RenderData::getSkyboxRenderData());
   }
+
+  void Scene::prepareTAA() { mTAAController->makeJitteredProjection(); }
+
+  void Scene::postAdjustTAA() {}
 
   void Scene::setPickedObject(Object3D* pickedObject) { mPickedObject = pickedObject; }
 
@@ -247,10 +256,11 @@ namespace RenderSystem
   void Scene::render()
   {
     mRenderer->cleanScreen();
-    renderDepthMap();
+    prepareTAA();
+    writeSceneToTextures();
     renderSkybox();
 
-    mSceneShaderProgram->setDepthMap(mShadowController->getDepthMap());
+    mSceneShaderProgram->setShadowMap(mShadowController->getDepthMap());
     mSceneShaderProgram->invoke(
       [this]()
       {
@@ -259,6 +269,7 @@ namespace RenderSystem
         renderWireframe();
         renderWholeObjectHighlighted();
         renderScene(mSceneShaderProgram);
+        postAdjustTAA();
       }
     );
   }

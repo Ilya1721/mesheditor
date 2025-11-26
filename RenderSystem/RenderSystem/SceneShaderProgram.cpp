@@ -20,8 +20,9 @@ namespace RenderSystem
       mLightProjection(),
       mView(),
       mProjection(),
+      mJitteredProjection(),
       mShadowBias(),
-      mDepthMap()
+      mShadowMap()
   {
     mDirectionalLight.init(mShaderProgram);
     mPointLights.init(mShaderProgram);
@@ -78,10 +79,18 @@ namespace RenderSystem
            { glUniformMatrix4fv(mProjection, 1, false, glm::value_ptr(projection)); });
   }
 
-  void SceneShaderProgram::setDepthMap(const DepthTexture& texture) const
+  void SceneShaderProgram::setJitteredProjection(const glm::mat4& projection)
+  {
+    invoke(
+      [this, &projection]()
+      { glUniformMatrix4fv(mJitteredProjection, 1, false, glm::value_ptr(projection)); }
+    );
+  }
+
+  void SceneShaderProgram::setShadowMap(const DepthTexture& texture) const
   {
     invoke([this, &texture]()
-           { texture.passToFragmentShader(mDepthMap, DEPTH_TEXTURE_SLOT); });
+           { texture.passToFragmentShader(mShadowMap, SHADOW_MAP_TEXTURE_SLOT); });
   }
 
   void SceneShaderProgram::setLightView(const glm::mat4& lightView)
@@ -127,8 +136,9 @@ namespace RenderSystem
     mModel = getUniformLocation("model");
     mView = getUniformLocation("view");
     mProjection = getUniformLocation("projection");
+    mJitteredProjection = getUniformLocation("jitteredProjection");
     mShadowBias = getUniformLocation("shadowBias");
-    mDepthMap = getUniformLocation("depthMap");
+    mShadowMap = getUniformLocation("shadowMap");
     mLightView = getUniformLocation("lightView");
     mLightProjection = getUniformLocation("lightProjection");
     mSkybox = getUniformLocation("skybox");

@@ -52,6 +52,11 @@ namespace RenderSystem
 
   bool ImageTexture::isEmpty() const { return mWidth == 0 || mHeight == 0; }
 
+  int ImageTexture::getAttachmentId() const
+  {
+    return GL_COLOR_ATTACHMENT0;
+  }
+
   ImageTexture::ImageTexture(const std::string& filePath) : Texture2D()
   {
     if (filePath.empty()) { return; }

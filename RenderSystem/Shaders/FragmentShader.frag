@@ -8,7 +8,7 @@ in vec4 fragPosLightSpace;
 uniform vec3 dirLightPos;
 uniform vec3 cameraPos;
 uniform float shadowBias;
-uniform sampler2D depthMap;
+uniform sampler2D shadowMap;
 uniform sampler2D diffuseTexture;
 uniform samplerCube skybox;
 
@@ -79,7 +79,7 @@ float getShadowFactor()
   vec3 fragPosClipSpace = fragPosLightSpace.xyz / fragPosLightSpace.w;
   vec3 fragPosNDC = fragPosClipSpace * 0.5 + 0.5;
 
-  float fragDepthOnTexture = texture(depthMap, fragPosNDC.xy).r;
+  float fragDepthOnTexture = texture(shadowMap, fragPosNDC.xy).r;
   float fragDepthOnScreen = fragPosNDC.z;
   float shadow = (fragDepthOnScreen - shadowBias < fragDepthOnTexture) ? 1.0 : 0.5;
 

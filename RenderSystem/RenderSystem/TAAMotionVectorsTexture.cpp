@@ -1,4 +1,4 @@
-#include "DepthTexture.h"
+#include "TAAMotionVectorsTexture.h"
 
 #ifdef __gl_h_
 #undef __gl_h_
@@ -7,16 +7,19 @@
 
 namespace RenderSystem
 {
-  DepthTexture::DepthTexture(int width, int height) : Texture2D(width, height) { init(); }
+  TAAMotionVectorsTexture::TAAMotionVectorsTexture(int width, int height)
+    : Texture2D(width, height)
+  {
+    init();
+  }
 
-  void DepthTexture::setDimensions(int width, int height)
+  void TAAMotionVectorsTexture::setDimensions(int width, int height)
   {
     invoke(
       [&width, &height, this]()
       {
         glTexImage2D(
-          GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT,
-          GL_FLOAT, 0
+          GL_TEXTURE_2D, 0, GL_RG16F, width, height, 0, GL_RG, GL_FLOAT, nullptr
         );
         mWidth = width;
         mHeight = height;
@@ -24,12 +27,12 @@ namespace RenderSystem
     );
   }
 
-  int DepthTexture::getAttachmentId() const
+  int TAAMotionVectorsTexture::getAttachmentId() const
   {
-    return GL_DEPTH_ATTACHMENT;
+    return GL_COLOR_ATTACHMENT0;
   }
 
-  void DepthTexture::init()
+  void TAAMotionVectorsTexture::init()
   {
     invoke(
       [this]()

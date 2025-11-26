@@ -16,6 +16,7 @@
 #include "SceneShaderProgram.h"
 #include "ShadowController.h"
 #include "SkyboxController.h"
+#include "TAAController.h"
 #include "Viewport.h"
 
 namespace RenderSystem
@@ -105,5 +106,6 @@ namespace RenderSystem
     std::unique_ptr<SkyboxController> mSkyboxController;
     std::unique_ptr<SceneShaderProgram> mSceneShaderProgram;
     std::unique_ptr<OperationsDispatcher> mOperationsDispatcher;
+    std::unique_ptr<TAAController> mTAAController;
   };
 }  // namespace RenderSystem

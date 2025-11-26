@@ -4,16 +4,16 @@
 
 namespace RenderSystem
 {
-  class DepthTexture : public Texture2D
+  class TAAMotionVectorsTexture : public Texture2D
   {
-   public:
-    DepthTexture() = default;
-    DepthTexture(int width, int height);
+  public:
+    TAAMotionVectorsTexture() = default;
+    TAAMotionVectorsTexture(int width, int height);
 
     void setDimensions(int width, int height) override;
     int getAttachmentId() const override;
 
-   private:
+  private:
     void init();
   };
-}  // namespace RenderSystem
+}

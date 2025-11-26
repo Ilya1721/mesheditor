@@ -23,7 +23,7 @@ namespace RenderSystem
 
     const auto& lightViewMatrix =
       glm::lookAt(pos, Point3D(0.0f, 0.0f, 0.0f), Vector3D(0.0f, 1.0f, 0.0f));
-    mShadowController->getShaderProgram()->setLightView(lightViewMatrix);
+    mShadowController->setLightView(lightViewMatrix);
     mSceneShaderProgram->setLightView(lightViewMatrix);
   }
 }  // namespace RenderSystem

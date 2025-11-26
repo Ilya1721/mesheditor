@@ -7,6 +7,7 @@ layout (location = 2) in vec2 textureCoords;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+uniform mat4 jitteredProjection;
 uniform mat4 lightView;
 uniform mat4 lightProjection;
 

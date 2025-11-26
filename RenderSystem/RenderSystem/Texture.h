@@ -14,6 +14,7 @@ namespace RenderSystem
     Texture& operator=(Texture&& other) noexcept;
 
     virtual void passToFragmentShader(int textureLocation, int textureSlot) const = 0;
+    virtual int getAttachmentId() const = 0;
 
     unsigned int getId() const;
 

@@ -1,30 +1,22 @@
 #pragma once
 
-#include <functional>
-
-#include "DepthTexture.h"
-#include "FrameBufferObject.h"
+#include "ControllerWithDepthMap.h"
 #include "ShadowMapShaderProgram.h"
 
 namespace RenderSystem
 {
-  class ShadowController
+  class ShadowController : public ControllerWithDepthMap
   {
    public:
     ShadowController(const path& vertexShaderPath, const path& fragmentShaderPath);
 
-    const DepthTexture& getDepthMap() const;
     ShadowMapShaderProgram* getShaderProgram();
 
-    void setTextureDimensions(int width, int height);
-    void renderSceneToDepthMap(const std::function<void()>& renderSceneFunc);
-
-   private:
-    void init();
+    void setModel(const glm::mat4& model);
+    void setLightView(const glm::mat4& lightView);
+    void setLightProjection(const glm::mat4& lightProjection);
 
    private:
     ShadowMapShaderProgram mShaderProgram;
-    DepthTexture mTexture;
-    FrameBufferObject mFBO;
   };
 }  // namespace RenderSystem

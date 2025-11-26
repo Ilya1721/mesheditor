@@ -99,16 +99,21 @@ namespace RenderSystem
     );
     mRenderer = std::make_unique<Renderer>();
     mShadowController = std::make_unique<ShadowController>(
-      DEPTH_MAP_VERTEX_SHADER_PATH, DEPTH_MAP_FRAGMENT_SHADER_PATH
+      SHADOW_MAP_VERTEX_SHADER_PATH, SHADOW_MAP_FRAGMENT_SHADER_PATH
     );
     mSkyboxController = std::make_unique<SkyboxController>(
       SKYBOX_VERTEX_SHADER_PATH, SKYBOX_FRAGMENT_SHADER_PATH, SKYBOX_CUBEMAP_TEXTURES,
       mSceneShaderProgram.get()
     );
+    mTAAController = std::make_unique<TAAController>(
+      mSceneShaderProgram.get(), TAA_DEPTH_MAP_VERTEX_SHADER_PATH,
+      TAA_DEPTH_MAP_FRAGMENT_SHADER_PATH, TAA_MOTION_VECTORS_VERTEX_SHADER_PATH,
+      TAA_MOTION_VECTORS_FRAGMENT_SHADER_PATH
+    );
     auto aspectRatio = static_cast<float>(mWidth) / mHeight;
     mScene = std::make_unique<Scene>(
       meshFilePath, mRenderer.get(), mShadowController.get(), mSkyboxController.get(),
-      mSceneShaderProgram.get(), aspectRatio
+      mTAAController.get(), mSceneShaderProgram.get(), aspectRatio
     );
     mCamera = std::make_unique<Camera>();
     mCamera->addOnCameraPosChangedCallback([this]() { onCameraPosChanged(); });
@@ -145,15 +150,21 @@ namespace RenderSystem
 
   void Window::onCameraPosChanged()
   {
+    auto& viewMatrix = mCamera->getViewMatrix();
     mSceneShaderProgram->setCameraPos(mCamera->getEye());
-    mSceneShaderProgram->setView(mCamera->getViewMatrix());
-    mSkyboxController->setView(mCamera->getViewMatrix());
+    mSceneShaderProgram->setView(viewMatrix);
+    mSkyboxController->setView(viewMatrix);
+    mTAAController->setView(viewMatrix);
   }
 
   void Window::onViewportChanged()
   {
-    mSceneShaderProgram->setProjection(mViewport->getProjectionMatrix());
-    mSkyboxController->setProjection(mViewport->getProjectionMatrix());
+    auto& projectionMatrix = mViewport->getProjectionMatrix();
+    mSceneShaderProgram->setProjection(projectionMatrix);
+    mSkyboxController->setProjection(projectionMatrix);
+    mTAAController->updateViewportParams(
+      projectionMatrix, mViewport->getWidth(), mViewport->getHeight()
+    );
   }
 
   void Window::render()
@@ -181,7 +192,9 @@ namespace RenderSystem
     mHeight = height;
 
     mViewport->resize(width, height);
-    mShadowController->setTextureDimensions(width, height);
+    mShadowController->setDepthMapSize(width, height);
+    mTAAController->setDepthMapSize(width, height);
+    mTAAController->setMotionVectorsTextureSize(width, height);
     mScene->setAspectRatio(static_cast<float>(width) / height);
   }
 

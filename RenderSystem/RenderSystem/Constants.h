@@ -91,10 +91,18 @@ namespace RenderSystem
 
   constexpr bool DEBUG_RENDER = true;
 
-  const std::string DEPTH_MAP_VERTEX_SHADER_PATH =
-    R"(./RenderSystem/Shaders/DepthMapShader.vert)";
-  const std::string DEPTH_MAP_FRAGMENT_SHADER_PATH =
-    R"(./RenderSystem/Shaders/DepthMapShader.frag)";
+  const std::string SHADOW_MAP_VERTEX_SHADER_PATH =
+    R"(./RenderSystem/Shaders/ShadowMapShader.vert)";
+  const std::string SHADOW_MAP_FRAGMENT_SHADER_PATH =
+    R"(./RenderSystem/Shaders/ShadowMapShader.frag)";
+  const std::string TAA_DEPTH_MAP_VERTEX_SHADER_PATH =
+    R"(./RenderSystem/Shaders/TAADepthMapShader.vert)";
+  const std::string TAA_DEPTH_MAP_FRAGMENT_SHADER_PATH =
+    R"(./RenderSystem/Shaders/TAADepthMapShader.frag)";
+  const std::string TAA_MOTION_VECTORS_VERTEX_SHADER_PATH =
+    R"(./RenderSystem/Shaders/TAAMotionVectorsShader.vert)";
+  const std::string TAA_MOTION_VECTORS_FRAGMENT_SHADER_PATH =
+    R"(./RenderSystem/Shaders/TAAMotionVectorsShader.frag)";
   const std::string SCENE_VERTEX_SHADER_PATH =
     R"(./RenderSystem/Shaders/VertexShader.vert)";
   const std::string SCENE_FRAGMENT_SHADER_PATH =
@@ -112,7 +120,10 @@ namespace RenderSystem
     R"(./ThirdParty/resources/textures/skybox/back.png)",
   };
 
-  constexpr int DEPTH_TEXTURE_SLOT = 0;
+  constexpr int SHADOW_MAP_TEXTURE_SLOT = 0;
+  constexpr int TAA_DEPTH_MAP_TEXTURE_SLOT = 0;
   constexpr int DIFFUSE_TEXTURE_SLOT = 1;
   constexpr int SKYBOX_TEXTURE_SLOT = 0;
+
+  constexpr int SAMPLE_COUNT_TAA = 8;
 }  // namespace RenderSystem

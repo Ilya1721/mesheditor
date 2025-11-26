@@ -71,4 +71,9 @@ namespace RenderSystem
     glBindTexture(GL_TEXTURE_CUBE_MAP, mTexture);
     glUniform1i(textureLocation, textureSlot);
   }
+
+  int CubemapTexture::getAttachmentId() const
+  {
+    return GL_COLOR_ATTACHMENT0;
+  }
 }  // namespace RenderSystem

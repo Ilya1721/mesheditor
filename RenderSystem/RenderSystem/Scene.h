@@ -20,6 +20,7 @@ namespace RenderSystem
   class Renderer;
   class ShadowController;
   class SkyboxController;
+  class TAAController;
   class SceneShaderProgram;
   struct Modelable;
 
@@ -31,6 +32,7 @@ namespace RenderSystem
       Renderer* renderer,
       ShadowController* shadowController,
       SkyboxController* skyboxController,
+      TAAController* taaController,
       SceneShaderProgram* sceneShaderProgram,
       float aspectRatio
     );
@@ -69,7 +71,7 @@ namespace RenderSystem
     );
     void onSceneObjectBBoxUpdated();
     void renderScene(AbstractShaderProgram* shaderProgram);
-    void renderDepthMap();
+    void writeSceneToTextures();
     void renderSceneDecorations();
     void renderHighlightedFaces();
     void renderWireframe();
@@ -77,11 +79,14 @@ namespace RenderSystem
     void renderSkybox();
     void updateDirLightProjection();
     void loadSkyboxVertices();
+    void prepareTAA();
+    void postAdjustTAA();
 
    private:
     Renderer* mRenderer;
     ShadowController* mShadowController;
     SkyboxController* mSkyboxController;
+    TAAController* mTAAController;
     SceneShaderProgram* mSceneShaderProgram;
 
     std::vector<SceneDecoration> mSceneDecorations;
