@@ -54,7 +54,7 @@ namespace RenderSystem
     Object3D* getPickedObject() const;
     Point3D projectToCameraTargetPlane(const Point3D& cursorPosInWorldSpace) const;
     bool isCameraMovementEnabled() const;
-    Object3DIntersection getIntersection(
+    Object3DIntersection getCursorSceneIntersection(
       IntersectionMode intersectionMode = IntersectionMode::SURFACE
     );
     Ray castCursorRay() const;

@@ -38,7 +38,7 @@ namespace MeshCore
 
     const std::vector<Vertex>& getVertices() const;
     const std::vector<std::unique_ptr<Face>>& getFaces() const;
-    MeshIntersection getIntersection(
+    MeshIntersection getRayIntersection(
       const Ray& ray, IntersectionMode intersectionMode, int facesIndexOffset
     ) const;
     const BlinnPhongMaterialParams& getMaterialParams() const;

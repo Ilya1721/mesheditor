@@ -39,7 +39,7 @@ namespace RenderSystem
     );
     Scene(Scene&& scene) = delete;
 
-    Object3DIntersection getIntersection(
+    Object3DIntersection getRayIntersection(
       const Ray& cursorRay, IntersectionMode intersectionMode
     );
     Object3D* getPickedObject() const;

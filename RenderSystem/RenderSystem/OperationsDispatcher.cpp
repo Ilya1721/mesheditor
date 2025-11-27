@@ -1,7 +1,5 @@
 #include "OperationsDispatcher.h"
 
-#include <glfw/glfw3.h>
-
 #include "Cloner.h"
 #include "Mover.h"
 #include "Orbit.h"

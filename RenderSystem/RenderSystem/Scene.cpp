@@ -273,13 +273,13 @@ namespace RenderSystem
     );
   }
 
-  Object3DIntersection Scene::getIntersection(
+  Object3DIntersection Scene::getRayIntersection(
     const Ray& cursorRay, IntersectionMode intersectionMode
   )
   {
-    if (mRootObject.getBBox().getIntersectionPoint(cursorRay))
+    if (mRootObject.getBBox().getRayIntersectionPoint(cursorRay))
     {
-      return mRootObject.getIntersection(cursorRay, intersectionMode);
+      return mRootObject.getRayIntersection(cursorRay, intersectionMode);
     }
 
     return {};

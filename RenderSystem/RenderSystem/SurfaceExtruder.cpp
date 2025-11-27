@@ -43,7 +43,7 @@ namespace RenderSystem
   {
     if (mEnabled && mWindow->isMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT))
     {
-      mIntersectionData = mWindow->getIntersection();
+      mIntersectionData = mWindow->getCursorSceneIntersection();
       toggleSurfaceMovement(!mIntersectionData.raySurfaceIntersection.surfaceIndices.empty());
       highlightIntersectedSurface();
     }

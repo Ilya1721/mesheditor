@@ -46,7 +46,7 @@ namespace RenderSystem
 
   const AABBox& Object3D::getBBox() const { return mBBox; }
 
-  Object3DIntersection Object3D::getIntersection(
+  Object3DIntersection Object3D::getRayIntersection(
     const Ray& ray, IntersectionMode intersectionMode, int facesIndexOffset
   )
   {
@@ -59,7 +59,7 @@ namespace RenderSystem
         const auto& faces = object->mMesh->getFaces();
         const auto currentFacesIndexOffset = faces.size() + facesIndexOffset;
         auto invertedRay = glm::inverse(object->getTransform()) * ray;
-        auto meshIntersection = object->mMesh->getIntersection(
+        auto meshIntersection = object->mMesh->getRayIntersection(
           invertedRay, intersectionMode, currentFacesIndexOffset
         );
         facesIndexOffset += faces.size();

@@ -33,7 +33,7 @@ namespace RenderSystem
     const std::vector<std::unique_ptr<Object3D>>& getChildren() const;
     const glm::mat4& getTransform() const;
     const AABBox& getBBox() const;
-    Object3DIntersection getIntersection(
+    Object3DIntersection getRayIntersection(
       const GeometryCore::Ray& ray,
       IntersectionMode intersectionMode,
       int facesIndexOffset = 0

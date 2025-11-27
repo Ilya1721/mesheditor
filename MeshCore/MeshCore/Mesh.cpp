@@ -199,7 +199,7 @@ namespace MeshCore
     }
   }
 
-  MeshIntersection Mesh::getIntersection(
+  MeshIntersection Mesh::getRayIntersection(
     const Ray& ray, IntersectionMode intersectionMode, int facesIndexOffset
   ) const
   {

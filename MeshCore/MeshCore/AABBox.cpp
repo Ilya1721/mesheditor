@@ -106,7 +106,7 @@ namespace MeshCore
 
   const std::vector<Plane> AABBox::getBBoxPlanes() const { return mBBoxPlanes; }
 
-  std::optional<Point3D> AABBox::getIntersectionPoint(const Ray& ray) const
+  std::optional<Point3D> AABBox::getRayIntersectionPoint(const Ray& ray) const
   {
     for (auto& bboxPlane : mBBoxPlanes)
     {
