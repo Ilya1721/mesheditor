@@ -8,10 +8,14 @@ namespace RenderSystem
 {
   using namespace GeometryCore;
 
+  class Window;
+  class Scene;
+  class Camera;
+
   class SurfaceExtruder : public Operation
   {
    public:
-    SurfaceExtruder(Window* window);
+    SurfaceExtruder(Window* window, Scene* scene, Camera* camera);
 
     void onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos) override;
     void onMouseScroll(double offset) override {};
@@ -25,5 +29,8 @@ namespace RenderSystem
    private:
     Object3DIntersection mIntersectionData;
     bool mSurfaceMovementEnabled;
+    Window* mWindow;
+    Scene* mScene;
+    Camera* mCamera;
   };
 }  // namespace RenderSystem

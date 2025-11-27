@@ -1,42 +1,36 @@
 #pragma once
 
-#include <functional>
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 #include "AbstractShaderProgram.h"
+#include "Camera.h"
+#include "CameraListener.h"
 #include "DirLightSource.h"
 #include "GeometryCore/Typedefs.h"
 #include "HighlightedFacesData.h"
 #include "LightParams.h"
 #include "Object3D.h"
 #include "Object3DIntersection.h"
+#include "Renderer.h"
 #include "SceneDecoration.h"
+#include "SceneShaderProgram.h"
+#include "ShadowController.h"
+#include "SkyboxController.h"
+#include "TAAController.h"
 #include "ViewportListener.h"
 
 namespace RenderSystem
 {
   using namespace GeometryCore;
 
-  class Renderer;
-  class ShadowController;
-  class SkyboxController;
-  class TAAController;
-  class SceneShaderProgram;
   struct Modelable;
 
   class Scene : public ViewportListener
   {
    public:
-    Scene(
-      const std::string& meshFilePath,
-      Renderer* renderer,
-      ShadowController* shadowController,
-      SkyboxController* skyboxController,
-      TAAController* taaController,
-      SceneShaderProgram* sceneShaderProgram,
-      float aspectRatio
-    );
+    Scene(const std::string& meshFilePath, float aspectRatio);
     Scene(Scene&& scene) = delete;
 
     Object3DIntersection getRayIntersection(
@@ -48,6 +42,12 @@ namespace RenderSystem
     const Object3D* getHighlightedObject();
     const HighlightedFacesData& getHighlightedFacesData();
     Point3D getDefaultPointLightSourcePos() const;
+    const Object3D& getRootObject() const;
+    std::vector<ViewportListener*> getViewportListeners();
+    Point3D unProject(
+      const Point3D& posGL3D, const glm::mat4& projection, const glm::vec4& viewportData
+    );
+    Camera* getCamera() const;
 
     void onViewportChanged(Viewport* viewport) override;
 
@@ -60,9 +60,6 @@ namespace RenderSystem
     void addPointLight(const PointLightParams& params, const Point3D& lightSourcePos);
     void removePointLight(unsigned int index);
     void render();
-    void adjustDirLightSourcePos();
-
-    const Object3D& getRootObject() const;
 
    private:
     void addModelObject(const std::string& meshFilePath);
@@ -83,13 +80,19 @@ namespace RenderSystem
     void loadSkyboxVertices();
     void prepareTAA();
     void postAdjustTAA();
+    void init(const std::string& meshFilePath);
+    void onCameraPosChanged();
+    void registerCallbacks();
+    void addCameraListeners();
 
    private:
-    Renderer* mRenderer;
-    ShadowController* mShadowController;
-    SkyboxController* mSkyboxController;
-    TAAController* mTAAController;
-    SceneShaderProgram* mSceneShaderProgram;
+    std::unique_ptr<Renderer> mRenderer;
+    std::unique_ptr<SceneShaderProgram> mSceneShaderProgram;
+    std::unique_ptr<Camera> mCamera;
+    std::unique_ptr<ShadowController> mShadowController;
+    std::unique_ptr<SkyboxController> mSkyboxController;
+    std::unique_ptr<TAAController> mTAAController;
+    std::vector<CameraListener*> mCameraListeners;
 
     std::vector<SceneDecoration> mSceneDecorations;
     RenderData mSceneDecorationsRenderData;

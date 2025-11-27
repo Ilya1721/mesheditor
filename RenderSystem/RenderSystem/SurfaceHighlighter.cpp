@@ -1,11 +1,14 @@
 #include "SurfaceHighlighter.h"
 
-#include "MeshCore/Intersection.h"
+#include "Scene.h"
 #include "Window.h"
 
 namespace RenderSystem
 {
-  SurfaceHighlighter::SurfaceHighlighter(Window* window) : Operation(window) {}
+  SurfaceHighlighter::SurfaceHighlighter(Window* window, Scene* scene)
+    : mScene(scene), mWindow(window)
+  {
+  }
 
   void SurfaceHighlighter::onMouseMove(
     [[maybe_unused]] const Point2D& startCursorPos,
@@ -15,8 +18,9 @@ namespace RenderSystem
     if (mEnabled)
     {
       auto intersectionData = mWindow->getCursorSceneIntersection();
-      mWindow->setHighlightedFacesData(
-        {intersectionData.raySurfaceIntersection.surfaceIndices, intersectionData.intersectedObject}
+      mScene->setHighlightedFacesData(
+        {intersectionData.raySurfaceIntersection.surfaceIndices,
+         intersectionData.intersectedObject}
       );
     }
   }
@@ -27,6 +31,6 @@ namespace RenderSystem
 
     mEnabled = !mEnabled;
 
-    if (!mEnabled) { mWindow->setHighlightedFacesData({}); }
+    if (!mEnabled) { mScene->setHighlightedFacesData({}); }
   }
 }  // namespace RenderSystem

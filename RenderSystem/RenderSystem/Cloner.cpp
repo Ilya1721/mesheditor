@@ -1,17 +1,17 @@
 #include "Cloner.h"
 
+#include <glfw/glfw3.h>
 #include <glm/gtx/transform.hpp>
 
-#include "Object3D.h"
-#include "Window.h"
+#include "Scene.h"
 
 namespace RenderSystem
 {
-  Cloner::Cloner(Window* window) : Operation(window) {}
+  Cloner::Cloner(Scene* scene) : mScene(scene) {}
 
   void Cloner::onKeyPressed(int key)
   {
-    auto pickedObject = mWindow->getPickedObject();
+    auto pickedObject = mScene->getPickedObject();
     if (key == GLFW_KEY_C && pickedObject)
     {
       auto clonedObject = pickedObject->clone();

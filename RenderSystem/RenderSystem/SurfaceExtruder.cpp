@@ -1,18 +1,16 @@
 #include "SurfaceExtruder.h"
 
-#include "Constants.h"
-#include "GeometryCore/Numeric.h"
-#include "GeometryCore/Plane.h"
+#include "Camera.h"
 #include "MeshCore/Face.h"
-#include "MeshCore/Mesh.h"
 #include "MeshCore/Vertex.h"
 #include "Object3D.h"
+#include "Scene.h"
 #include "Window.h"
 
 namespace RenderSystem
 {
-  SurfaceExtruder::SurfaceExtruder(Window* window)
-    : Operation(window), mSurfaceMovementEnabled(false)
+  SurfaceExtruder::SurfaceExtruder(Window* window, Scene* scene, Camera* camera)
+    : mWindow(window), mScene(scene), mCamera(camera), mSurfaceMovementEnabled(false)
   {
   }
 
@@ -44,7 +42,9 @@ namespace RenderSystem
     if (mEnabled && mWindow->isMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT))
     {
       mIntersectionData = mWindow->getCursorSceneIntersection();
-      toggleSurfaceMovement(!mIntersectionData.raySurfaceIntersection.surfaceIndices.empty());
+      toggleSurfaceMovement(
+        !mIntersectionData.raySurfaceIntersection.surfaceIndices.empty()
+      );
       highlightIntersectedSurface();
     }
   }
@@ -55,10 +55,10 @@ namespace RenderSystem
 
     mEnabled = !mEnabled;
 
-    if (mEnabled) { mWindow->enableCameraMovement(false); }
+    if (mEnabled) { mCamera->enableMovement(false); }
     else
     {
-      mWindow->enableCameraMovement(true);
+      mCamera->enableMovement(true);
       toggleSurfaceMovement();
     }
   }
@@ -67,7 +67,7 @@ namespace RenderSystem
   {
     if (mSurfaceMovementEnabled)
     {
-      mWindow->setHighlightedFacesData(
+      mScene->setHighlightedFacesData(
         {mIntersectionData.raySurfaceIntersection.surfaceIndices,
          mIntersectionData.intersectedObject}
       );
@@ -76,7 +76,7 @@ namespace RenderSystem
 
   void SurfaceExtruder::toggleSurfaceMovement(bool isSurfaceIntersected)
   {
-    if (mSurfaceMovementEnabled) { mWindow->setHighlightedFacesData({}); }
+    if (mSurfaceMovementEnabled) { mScene->setHighlightedFacesData({}); }
 
     mSurfaceMovementEnabled = isSurfaceIntersected && !mSurfaceMovementEnabled;
   }

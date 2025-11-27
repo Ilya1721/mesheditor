@@ -162,7 +162,6 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <ClCompile Include="RenderSystem\DirLightSource.cpp" />
     <ClCompile Include="RenderSystem\Mover.cpp" />
     <ClCompile Include="RenderSystem\Object3D.cpp" />
-    <ClCompile Include="RenderSystem\Operation.cpp" />
     <ClCompile Include="RenderSystem\OperationsDispatcher.cpp" />
     <ClCompile Include="RenderSystem\Orbit.cpp" />
     <ClCompile Include="RenderSystem\Pan.cpp" />

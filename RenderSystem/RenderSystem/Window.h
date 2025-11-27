@@ -5,18 +5,10 @@
 #include <memory>
 #include <string>
 
-#include "Camera.h"
-#include "CameraListener.h"
 #include "Constants.h"
 #include "GeometryCore/Typedefs.h"
-#include "HighlightedFacesData.h"
 #include "MeshCore/Intersection.h"
 #include "Object3DIntersection.h"
-#include "Renderer.h"
-#include "SceneShaderProgram.h"
-#include "ShadowController.h"
-#include "SkyboxController.h"
-#include "TAAController.h"
 #include "Viewport.h"
 #include "ViewportListener.h"
 
@@ -49,33 +41,11 @@ namespace RenderSystem
     ) const;
     bool isMouseButtonPressed(int button) const;
     bool isKeyPressed(int key) const;
-    PROJECTION_TYPE getProjectionType() const;
-    float getFov() const;
-    Object3D* getPickedObject() const;
-    Point3D projectToCameraTargetPlane(const Point3D& cursorPosInWorldSpace) const;
-    bool isCameraMovementEnabled() const;
     Object3DIntersection getCursorSceneIntersection(
       IntersectionMode intersectionMode = IntersectionMode::SURFACE
     );
-    Ray castCursorRay() const;
-    Point3D getDefaultPointLightSourcePos() const;
-
-    void setPickedObject(Object3D* pickedObject);
-    void toggleWireframe();
-    void highlightWholeObject(const Object3D* object);
-    void setHighlightedFacesData(const HighlightedFacesData& data);
-    void addPointLight(const PointLightParams& params, const Point3D& lightSourcePos);
-    void removePointLight(unsigned int index);
 
     void render();
-    void zoom(float step);
-    void smoothOrbit(float xOffset, float yOffset);
-    void pan(
-      const Point3D& startPointInWorldSpace,
-      const Point3D& endPointInWorldSpace,
-      PROJECTION_TYPE projectionType
-    );
-    void enableCameraMovement(bool isEnabled);
 
     void onMouseMove(double cursorX, double cursorY);
     void onMouseButton(int button, int action, int mods);
@@ -84,32 +54,20 @@ namespace RenderSystem
     void onKey(int key, int scancode, int action, int mods);
 
    private:
-    void initLibs();
-    void init(const std::string& meshFilePath);
+    void initLibs(int windowWidth, int windowHeight);
+    void init(const std::string& meshFilePath, int windowWidth, int windowHeight);
     void resizeViewport(int width, int height);
     void setCallbacks();
-    void adjustCamera();
-    void onCameraPosChanged();
     void onViewportChanged();
-    void addCameraListeners();
     void addViewportListeners();
+    Ray castCursorRay() const;
 
    private:
-    int mWidth;
-    int mHeight;
-    Point2D mSavedCursorPosition;
-
     GLFWwindow* mWindow;
     std::unique_ptr<Scene> mScene;
     std::unique_ptr<Viewport> mViewport;
-    std::unique_ptr<Camera> mCamera;
-    std::unique_ptr<Renderer> mRenderer;
-    std::unique_ptr<ShadowController> mShadowController;
-    std::unique_ptr<SkyboxController> mSkyboxController;
-    std::unique_ptr<SceneShaderProgram> mSceneShaderProgram;
     std::unique_ptr<OperationsDispatcher> mOperationsDispatcher;
-    std::unique_ptr<TAAController> mTAAController;
-    std::vector<CameraListener*> mCameraListeners;
     std::vector<ViewportListener*> mViewportListeners;
+    Point2D mSavedCursorPosition;
   };
 }  // namespace RenderSystem

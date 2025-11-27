@@ -1,19 +1,14 @@
 #pragma once
 
-#include <glm/glm.hpp>
-
 #include "GeometryCore/Typedefs.h"
 
 namespace RenderSystem
 {
   using namespace GeometryCore;
 
-  class Window;
-
   class Operation
   {
    public:
-    Operation(Window* window);
     virtual ~Operation() = default;
 
     virtual void onMouseMove(
@@ -25,6 +20,5 @@ namespace RenderSystem
 
    protected:
     bool mEnabled = false;
-    Window* mWindow = nullptr;
   };
 }  // namespace RenderSystem

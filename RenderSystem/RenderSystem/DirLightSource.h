@@ -12,6 +12,7 @@ namespace RenderSystem
   class DirLightSource
   {
    public:
+    DirLightSource() = default;
     DirLightSource(
       SceneShaderProgram* sceneShaderProgram, ShadowController* shadowController
     );

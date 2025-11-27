@@ -1,17 +1,21 @@
 #include "Picker.h"
 
-#include "MeshCore/Intersection.h"
+#include "Camera.h"
 #include "Object3D.h"
+#include "Scene.h"
 #include "Window.h"
 
 namespace RenderSystem
 {
-  Picker::Picker(Window* window) : Operation(window) {}
+  Picker::Picker(Window* window, Scene* scene, Camera* camera)
+    : mWindow(window), mScene(scene), mCamera(camera)
+  {
+  }
 
   void Picker::onMouseClick()
   {
     if (!mWindow->isMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT) ||
-        !mWindow->isCameraMovementEnabled())
+        !mCamera->isMovementEnabled())
     {
       return;
     }
@@ -20,13 +24,13 @@ namespace RenderSystem
     if (!intersectionData.raySurfaceIntersection.surfaceIndices.empty())
     {
       auto pickedObject = intersectionData.intersectedObject;
-      mWindow->setPickedObject(pickedObject);
-      mWindow->highlightWholeObject(pickedObject);
+      mScene->setPickedObject(pickedObject);
+      mScene->highlightWholeObject(pickedObject);
     }
     else
     {
-      mWindow->setPickedObject(nullptr);
-      mWindow->highlightWholeObject(nullptr);
+      mScene->setPickedObject(nullptr);
+      mScene->highlightWholeObject(nullptr);
     }
   }
 }  // namespace RenderSystem

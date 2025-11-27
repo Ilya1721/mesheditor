@@ -1,11 +1,13 @@
 #include "PointLightOperations.h"
 
-#include "Window.h"
+#include "Constants.h"
+#include "Scene.h"
+#include <glfw/glfw3.h>
 
 namespace RenderSystem
 {
-  PointLightOperations::PointLightOperations(Window* window)
-    : Operation(window), mSelectedLightIdx()
+  PointLightOperations::PointLightOperations(Scene* scene)
+    : mScene(scene), mSelectedLightIdx()
   {
   }
 
@@ -29,11 +31,11 @@ namespace RenderSystem
 
   void PointLightOperations::addPointLight()
   {
-    mWindow->addPointLight(POINT_LIGHT_PARAMS, mWindow->getDefaultPointLightSourcePos());
+    mScene->addPointLight(POINT_LIGHT_PARAMS, mScene->getDefaultPointLightSourcePos());
   }
 
   void PointLightOperations::removePointLight()
   {
-    mWindow->removePointLight(mSelectedLightIdx);
+    mScene->removePointLight(mSelectedLightIdx);
   }
 }  // namespace RenderSystem

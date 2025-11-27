@@ -5,8 +5,6 @@
 #endif
 #include <glfw/glfw3.h>
 
-#include <glm/ext/matrix_projection.hpp>
-#include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
 #include "Constants.h"
@@ -57,11 +55,10 @@ namespace
 namespace RenderSystem
 {
   Window::Window(int width, int height, const std::string& meshFilePath)
-    : mWidth(width), mHeight(height)
   {
     instance = this;
-    initLibs();
-    init(meshFilePath);
+    initLibs(width, height);
+    init(meshFilePath, width, height);
   }
 
   Window::~Window()
@@ -70,10 +67,11 @@ namespace RenderSystem
     glfwTerminate();
   }
 
-  void Window::initLibs()
+  void Window::initLibs(int windowWidth, int windowHeight)
   {
     glfwInit();
-    mWindow = glfwCreateWindow(mWidth, mHeight, WINDOW_TITLE.c_str(), nullptr, nullptr);
+    mWindow =
+      glfwCreateWindow(windowWidth, windowHeight, WINDOW_TITLE.c_str(), nullptr, nullptr);
     if (!mWindow)
     {
       std::cerr << "glfw create window returned nullptr" << std::endl;
@@ -89,39 +87,20 @@ namespace RenderSystem
     }
   }
 
-  void Window::init(const std::string& meshFilePath)
+  void Window::init(const std::string& meshFilePath, int windowWidth, int windowHeight)
   {
-    mSceneShaderProgram = std::make_unique<SceneShaderProgram>(
-      SCENE_VERTEX_SHADER_PATH, SCENE_FRAGMENT_SHADER_PATH
-    );
-    mRenderer = std::make_unique<Renderer>();
-    mShadowController = std::make_unique<ShadowController>(
-      SHADOW_MAP_VERTEX_SHADER_PATH, SHADOW_MAP_FRAGMENT_SHADER_PATH
-    );
-    mSkyboxController = std::make_unique<SkyboxController>(
-      SKYBOX_VERTEX_SHADER_PATH, SKYBOX_FRAGMENT_SHADER_PATH, SKYBOX_CUBEMAP_TEXTURES,
-      mSceneShaderProgram.get()
-    );
-    mTAAController = std::make_unique<TAAController>(
-      mSceneShaderProgram.get(), TAA_DEPTH_MAP_VERTEX_SHADER_PATH,
-      TAA_DEPTH_MAP_FRAGMENT_SHADER_PATH, TAA_MOTION_VECTORS_VERTEX_SHADER_PATH,
-      TAA_MOTION_VECTORS_FRAGMENT_SHADER_PATH
-    );
     mScene = std::make_unique<Scene>(
-      meshFilePath, mRenderer.get(), mShadowController.get(), mSkyboxController.get(),
-      mTAAController.get(), mSceneShaderProgram.get(),
-      static_cast<float>(mWidth) / mHeight
+      meshFilePath, static_cast<float>(windowWidth) / windowHeight
     );
-    mCamera = std::make_unique<Camera>();
-    mViewport =
-      std::make_unique<Viewport>(mWidth, mHeight, &mScene->getRootObject().getBBox());
-    mOperationsDispatcher = std::make_unique<OperationsDispatcher>(this);
-    addCameraListeners();
+    mViewport = std::make_unique<Viewport>(
+      windowWidth, windowHeight, &mScene->getRootObject().getBBox()
+    );
+    mOperationsDispatcher = std::make_unique<OperationsDispatcher>(
+      this, mViewport.get(), mScene.get(), mScene->getCamera()
+    );
     addViewportListeners();
     setCallbacks();
-    resizeViewport(mWidth, mHeight);
-    adjustCamera();
-    mScene->adjustDirLightSourcePos();
+    resizeViewport(windowWidth, windowHeight);
   }
 
   void Window::setCallbacks()
@@ -131,24 +110,7 @@ namespace RenderSystem
     glfwSetScrollCallback(mWindow, ::onMouseScroll);
     glfwSetFramebufferSizeCallback(mWindow, ::onFramebufferSizeChanged);
     glfwSetKeyCallback(mWindow, ::onKey);
-    mCamera->addOnCameraPosChangedCallback([this]() { onCameraPosChanged(); });
     mViewport->addOnViewportChangedCallback([this]() { onViewportChanged(); });
-  }
-
-  void Window::adjustCamera()
-  {
-    const auto& projectionType = mViewport->getProjectionType();
-    const auto& sceneBBox = mScene->getRootObject().getBBox();
-    const auto& fov = mViewport->getFov();
-    mCamera->adjust(projectionType, sceneBBox, fov);
-  }
-
-  void Window::onCameraPosChanged()
-  {
-    for (auto& listener : mCameraListeners)
-    {
-      listener->onCameraPosChanged(mCamera.get());
-    }
   }
 
   void Window::onViewportChanged()
@@ -159,24 +121,11 @@ namespace RenderSystem
     }
   }
 
-  void Window::addCameraListeners()
-  {
-    mCameraListeners.insert(
-      mCameraListeners.end(),
-      std::initializer_list<CameraListener*> {
-        mSceneShaderProgram.get(), mSkyboxController.get(), mTAAController.get()
-      }
-    );
-  }
-
   void Window::addViewportListeners()
   {
+    auto sceneListeners = mScene->getViewportListeners();
     mViewportListeners.insert(
-      mViewportListeners.end(),
-      std::initializer_list<ViewportListener*> {
-        mShadowController.get(), mTAAController.get(), mScene.get(),
-        mSceneShaderProgram.get(), mSkyboxController.get()
-      }
+      mViewportListeners.end(), sceneListeners.begin(), sceneListeners.end()
     );
   }
 
@@ -199,12 +148,7 @@ namespace RenderSystem
 
   void Window::resizeViewport(int width, int height)
   {
-    if (width > 0 && height > 0)
-    {
-      mWidth = width;
-      mHeight = height;
-      mViewport->resize(width, height);
-    }
+    if (width > 0 && height > 0) { mViewport->resize(width, height); }
   }
 
   Point3D Window::unProject(const Point2D& cursorPos, float depth) const
@@ -214,9 +158,8 @@ namespace RenderSystem
       mViewport->getHeight()
     };
     Point3D cursorPosGL3D(cursorPos.x, mViewport->getHeight() - cursorPos.y, depth);
-    return glm::unProject(
-      cursorPosGL3D, mCamera->getViewMatrix(), mViewport->getProjectionMatrix(),
-      viewportData
+    return mScene->unProject(
+      cursorPosGL3D, mViewport->getProjectionMatrix(), viewportData
     );
   }
 
@@ -241,23 +184,9 @@ namespace RenderSystem
     return glfwGetKey(mWindow, key) == GLFW_PRESS;
   }
 
-  PROJECTION_TYPE Window::getProjectionType() const
-  {
-    return mViewport->getProjectionType();
-  }
-
-  float Window::getFov() const { return mViewport->getFov(); }
-
-  Object3D* Window::getPickedObject() const { return mScene->getPickedObject(); }
-
-  Point3D Window::projectToCameraTargetPlane(const Point3D& cursorPosInWorldSpace) const
-  {
-    return mCamera->projectToTargetPlane(cursorPosInWorldSpace);
-  }
-
-  bool Window::isCameraMovementEnabled() const { return mCamera->isMovementEnabled(); }
-
-  Object3DIntersection Window::getCursorSceneIntersection(IntersectionMode intersectionMode)
+  Object3DIntersection Window::getCursorSceneIntersection(
+    IntersectionMode intersectionMode
+  )
   {
     return mScene->getRayIntersection(castCursorRay(), intersectionMode);
   }
@@ -270,37 +199,6 @@ namespace RenderSystem
       nearCursorPosInWorldSpace, farCursorPosInWorldSpace - nearCursorPosInWorldSpace
     };
   }
-
-  Point3D Window::getDefaultPointLightSourcePos() const
-  {
-    return mScene->getDefaultPointLightSourcePos();
-  }
-
-  void Window::setPickedObject(Object3D* pickedObject)
-  {
-    mScene->setPickedObject(pickedObject);
-  }
-
-  void Window::toggleWireframe() { mScene->toggleWireframe(); }
-
-  void Window::highlightWholeObject(const Object3D* object)
-  {
-    mScene->highlightWholeObject(object);
-  }
-
-  void Window::setHighlightedFacesData(const HighlightedFacesData& data)
-  {
-    mScene->setHighlightedFacesData(data);
-  }
-
-  void Window::addPointLight(
-    const PointLightParams& params, const Point3D& lightSourcePos
-  )
-  {
-    mScene->addPointLight(params, lightSourcePos);
-  }
-
-  void Window::removePointLight(unsigned int index) { mScene->removePointLight(index); }
 
   void Window::onMouseMove(double cursorX, double cursorY)
   {
@@ -333,35 +231,5 @@ namespace RenderSystem
   )
   {
     if (action == GLFW_PRESS) { mOperationsDispatcher->onKeyPressed(key); }
-  }
-
-  void Window::zoom(float step)
-  {
-    if (mViewport->getProjectionType() == PROJECTION_TYPE::PERSPECTIVE)
-    {
-      mCamera->zoom(
-        step * mScene->getRootObject().getBBox().getHeight() * ZOOM_STEP_COEF
-      );
-    }
-    else { mViewport->zoom(-step * ORTHO_ZOOM_STEP); }
-  }
-
-  void Window::smoothOrbit(float xOffset, float yOffset)
-  {
-    mCamera->smoothOrbit(xOffset, yOffset);
-  }
-
-  void Window::pan(
-    const Point3D& startPointInWorldSpace,
-    const Point3D& endPointInWorldSpace,
-    PROJECTION_TYPE projectionType
-  )
-  {
-    mCamera->pan(startPointInWorldSpace, endPointInWorldSpace, projectionType);
-  }
-
-  void Window::enableCameraMovement(bool isEnabled)
-  {
-    mCamera->enableMovement(isEnabled);
   }
 }  // namespace RenderSystem

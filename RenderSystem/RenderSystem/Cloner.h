@@ -6,10 +6,12 @@
 
 namespace RenderSystem
 {
+  class Scene;
+
   class Cloner : public Operation
   {
    public:
-    Cloner(Window* window);
+    Cloner(Scene* scene);
 
     void onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos)
       override {};
@@ -19,5 +21,8 @@ namespace RenderSystem
 
    private:
     glm::mat4 getInitialTransform(const MeshCore::AABBox& bbox) const;
+
+  private:
+    Scene* mScene;
   };
 }  // namespace RenderSystem

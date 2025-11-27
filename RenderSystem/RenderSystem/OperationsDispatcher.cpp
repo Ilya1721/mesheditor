@@ -13,7 +13,10 @@
 
 namespace RenderSystem
 {
-  OperationsDispatcher::OperationsDispatcher(Window* window) : mWindow(window)
+  OperationsDispatcher::OperationsDispatcher(
+    Window* window, Viewport* viewport, Scene* scene, Camera* camera
+  )
+    : mWindow(window), mViewport(viewport), mScene(scene), mCamera(camera)
   {
     initOperations();
   }
@@ -45,15 +48,15 @@ namespace RenderSystem
 
   void OperationsDispatcher::initOperations()
   {
-    addOperation<SurfaceHighlighter>();
-    addOperation<SurfaceExtruder>();
-    addOperation<WireframeRenderer>();
-    addOperation<Orbit>();
-    addOperation<Pan>();
-    addOperation<Zoom>();
-    addOperation<Picker>();
-    addOperation<Mover>();
-    addOperation<Cloner>();
-    addOperation<PointLightOperations>();
+    addOperation<SurfaceHighlighter>(mWindow, mScene);
+    addOperation<SurfaceExtruder>(mWindow, mScene, mCamera);
+    addOperation<WireframeRenderer>(mScene);
+    addOperation<Orbit>(mWindow, mCamera);
+    addOperation<Pan>(mWindow, mCamera, mViewport);
+    addOperation<Zoom>(mScene, mViewport, mCamera);
+    addOperation<Picker>(mWindow, mScene, mCamera);
+    addOperation<Mover>(mWindow, mScene, mCamera, mViewport);
+    addOperation<Cloner>(mScene);
+    addOperation<PointLightOperations>(mScene);
   }
 }  // namespace RenderSystem

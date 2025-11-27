@@ -26,29 +26,65 @@ namespace RenderSystem
 
 namespace RenderSystem
 {
-  Scene::Scene(
-    const std::string& meshFilePath,
-    Renderer* renderer,
-    ShadowController* shadowController,
-    SkyboxController* skyboxController,
-    TAAController* taaController,
-    SceneShaderProgram* sceneShaderProgram,
-    float aspectRatio
-  )
-    : mRenderer(renderer),
-      mShadowController(shadowController),
-      mSkyboxController(skyboxController),
-      mTAAController(taaController),
-      mSceneShaderProgram(sceneShaderProgram),
-      mPickedObject(nullptr),
+  Scene::Scene(const std::string& meshFilePath, float aspectRatio)
+    : mPickedObject(nullptr),
       mRenderWireframe(false),
       mHighlightedObject(nullptr),
-      mDirLightSource(sceneShaderProgram, shadowController),
+      mDirLightSource(),
       mAspectRatio(aspectRatio)
+  {
+    mRenderer = std::make_unique<Renderer>();
+    mSceneShaderProgram = std::make_unique<SceneShaderProgram>(
+      SCENE_VERTEX_SHADER_PATH, SCENE_FRAGMENT_SHADER_PATH
+    );
+    mShadowController = std::make_unique<ShadowController>(
+      SHADOW_MAP_VERTEX_SHADER_PATH, SHADOW_MAP_FRAGMENT_SHADER_PATH
+    );
+    mSkyboxController = std::make_unique<SkyboxController>(
+      SKYBOX_VERTEX_SHADER_PATH, SKYBOX_FRAGMENT_SHADER_PATH, SKYBOX_CUBEMAP_TEXTURES,
+      mSceneShaderProgram.get()
+    );
+    mTAAController = std::make_unique<TAAController>(
+      mSceneShaderProgram.get(), TAA_DEPTH_MAP_VERTEX_SHADER_PATH,
+      TAA_DEPTH_MAP_FRAGMENT_SHADER_PATH, TAA_MOTION_VECTORS_VERTEX_SHADER_PATH,
+      TAA_MOTION_VECTORS_FRAGMENT_SHADER_PATH
+    );
+    mCamera = std::make_unique<Camera>();
+    mDirLightSource = DirLightSource(mSceneShaderProgram.get(), mShadowController.get());
+    init(meshFilePath);
+  }
+
+  void Scene::init(const std::string& meshFilePath)
   {
     registerRootObjectCallbacks();
     addModelObject(meshFilePath);
     loadSkyboxVertices();
+    addCameraListeners();
+    registerCallbacks();
+    mDirLightSource.setPosition(DIR_LIGHT_POS);
+  }
+
+  void Scene::onCameraPosChanged()
+  {
+    for (auto& listener : mCameraListeners)
+    {
+      listener->onCameraPosChanged(mCamera.get());
+    }
+  }
+
+  void Scene::registerCallbacks()
+  {
+    mCamera->addOnCameraPosChangedCallback([this]() { onCameraPosChanged(); });
+  }
+
+  void Scene::addCameraListeners()
+  {
+    mCameraListeners.insert(
+      mCameraListeners.end(),
+      std::initializer_list<CameraListener*> {
+        mSceneShaderProgram.get(), mSkyboxController.get(), mTAAController.get()
+      }
+    );
   }
 
   void Scene::addModelObject(const std::string& meshFilePath)
@@ -232,11 +268,6 @@ namespace RenderSystem
     mHighlightedFacesData = data;
   }
 
-  void Scene::adjustDirLightSourcePos()
-  {
-    mDirLightSource.setPosition(DIR_LIGHT_POS);
-  }
-
   void Scene::addPointLight(const PointLightParams& params, const Point3D& lightSourcePos)
   {
     auto pointLight = mSceneShaderProgram->addPointLight(params, lightSourcePos);
@@ -267,7 +298,7 @@ namespace RenderSystem
         renderHighlightedFaces();
         renderWireframe();
         renderWholeObjectHighlighted();
-        renderScene(mSceneShaderProgram);
+        renderScene(mSceneShaderProgram.get());
         postAdjustTAA();
       }
     );
@@ -312,10 +343,30 @@ namespace RenderSystem
 
   const Object3D& Scene::getRootObject() const { return mRootObject; }
 
+  std::vector<ViewportListener*> Scene::getViewportListeners()
+  {
+    return {
+      this, mShadowController.get(), mTAAController.get(), mSceneShaderProgram.get(),
+        mSkyboxController.get()
+    };
+  }
+
+  Point3D Scene::unProject(
+    const Point3D& posGL3D, const glm::mat4& projection, const glm::vec4& viewportData
+  )
+  {
+    return glm::unProject(posGL3D, mCamera->getViewMatrix(), projection, viewportData);
+  }
+
+  Camera* Scene::getCamera() const { return mCamera.get(); }
+
   void Scene::onViewportChanged(Viewport* viewport)
   {
     int width = viewport->getWidth();
     int height = viewport->getHeight();
     mAspectRatio = static_cast<float>(width) / height;
+    mCamera->adjust(
+      viewport->getProjectionType(), mRootObject.getBBox(), viewport->getFov()
+    );
   }
 }  // namespace RenderSystem
