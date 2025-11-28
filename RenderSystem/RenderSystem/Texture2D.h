@@ -7,7 +7,7 @@ namespace RenderSystem
   class Texture2D : public Texture
   {
    public:
-    Texture2D() = default;
+    Texture2D();
     Texture2D(int width, int height);
     Texture2D(const Texture2D& other) = delete;
     Texture2D(Texture2D&& other) noexcept;

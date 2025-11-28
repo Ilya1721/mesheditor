@@ -9,7 +9,7 @@
 
 namespace RenderSystem
 {
-  CubemapTexture::CubemapTexture(const std::array<path, 6>& cubemapFaces)
+  CubemapTexture::CubemapTexture(const std::array<path, 6>& cubemapFaces) : Texture()
   {
     loadCubemapFaces(cubemapFaces);
     initParameters();
@@ -72,8 +72,5 @@ namespace RenderSystem
     glUniform1i(textureLocation, textureSlot);
   }
 
-  int CubemapTexture::getAttachmentId() const
-  {
-    return GL_COLOR_ATTACHMENT0;
-  }
+  int CubemapTexture::getAttachmentId() const { return GL_COLOR_ATTACHMENT0; }
 }  // namespace RenderSystem

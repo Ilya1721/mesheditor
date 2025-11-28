@@ -37,17 +37,13 @@ namespace RenderSystem
       const Ray& cursorRay, IntersectionMode intersectionMode
     );
     Object3D* getPickedObject() const;
-    const std::vector<SceneDecoration>& getSceneDecorations() const;
-    bool getRenderWireframe() const;
-    const Object3D* getHighlightedObject();
-    const HighlightedFacesData& getHighlightedFacesData();
     Point3D getDefaultPointLightSourcePos() const;
     const Object3D& getRootObject() const;
     std::vector<ViewportListener*> getViewportListeners();
+    Camera* getCamera() const;
     Point3D unProject(
       const Point3D& posGL3D, const glm::mat4& projection, const glm::vec4& viewportData
     );
-    Camera* getCamera() const;
 
     void onViewportChanged(Viewport* viewport) override;
 

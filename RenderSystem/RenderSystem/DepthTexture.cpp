@@ -7,6 +7,8 @@
 
 namespace RenderSystem
 {
+  DepthTexture::DepthTexture() : Texture2D() { init(); }
+
   DepthTexture::DepthTexture(int width, int height) : Texture2D(width, height) { init(); }
 
   void DepthTexture::setDimensions(int width, int height)
@@ -24,10 +26,7 @@ namespace RenderSystem
     );
   }
 
-  int DepthTexture::getAttachmentId() const
-  {
-    return GL_DEPTH_ATTACHMENT;
-  }
+  int DepthTexture::getAttachmentId() const { return GL_DEPTH_ATTACHMENT; }
 
   void DepthTexture::init()
   {

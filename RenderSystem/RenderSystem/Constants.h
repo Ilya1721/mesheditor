@@ -120,10 +120,10 @@ namespace RenderSystem
     R"(./ThirdParty/resources/textures/skybox/back.png)",
   };
 
-  constexpr int SHADOW_MAP_TEXTURE_SLOT = 0;
-  constexpr int TAA_DEPTH_MAP_TEXTURE_SLOT = 0;
-  constexpr int DIFFUSE_TEXTURE_SLOT = 1;
-  constexpr int SKYBOX_TEXTURE_SLOT = 0;
+  constexpr int DIFFUSE_TEXTURE_SLOT = 0;
+  constexpr int SHADOW_MAP_TEXTURE_SLOT = 1;
+  constexpr int SKYBOX_TEXTURE_SLOT = 2;
+  constexpr int TAA_DEPTH_MAP_TEXTURE_SLOT = 3;
   constexpr int SAMPLE_COUNT_TAA = 8;
 
   const auto DIR_LIGHT_POS = Point3D(LIGHT_SOURCE_POS_X, LIGHT_SOURCE_POS_Y, LIGHT_SOURCE_POS_Z);

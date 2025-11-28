@@ -7,7 +7,7 @@ namespace RenderSystem
   class DepthTexture : public Texture2D
   {
    public:
-    DepthTexture() = default;
+    DepthTexture();
     DepthTexture(int width, int height);
 
     void setDimensions(int width, int height) override;

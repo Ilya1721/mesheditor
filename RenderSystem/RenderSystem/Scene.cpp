@@ -318,20 +318,6 @@ namespace RenderSystem
 
   Object3D* Scene::getPickedObject() const { return mPickedObject; }
 
-  const std::vector<SceneDecoration>& Scene::getSceneDecorations() const
-  {
-    return mSceneDecorations;
-  }
-
-  bool Scene::getRenderWireframe() const { return mRenderWireframe; }
-
-  const Object3D* Scene::getHighlightedObject() { return mHighlightedObject; }
-
-  const HighlightedFacesData& Scene::getHighlightedFacesData()
-  {
-    return mHighlightedFacesData;
-  }
-
   Point3D Scene::getDefaultPointLightSourcePos() const
   {
     const auto& bbox = mRootObject.getBBox();
