@@ -31,13 +31,7 @@ namespace RenderSystem
 
   glm::mat4 Camera::createViewMatrix() const { return glm::lookAt(mEye, mTarget, mUp); }
 
-  const Point3D& Camera::getTarget() const { return mTarget; }
-
   const Point3D& Camera::getEye() const { return mEye; }
-
-  const Vector3D& Camera::getUp() const { return mUp; }
-
-  const Vector3D& Camera::getRight() const { return mRight; }
 
   Vector3D Camera::getNormalizedDirection() const
   {
@@ -112,7 +106,7 @@ namespace RenderSystem
     auto validZ =
       std::abs(sqrtf(1 - std::powf(cursorPosInNDC.x, 2) - std::powf(cursorPosInNDC.y, 2))
       );
-    cursorPosInNDCWithZ.z = lengthSquared > 1.0 ? 0.0 : validZ;
+    cursorPosInNDCWithZ.z = lengthSquared > 1.0f ? 0.0f : validZ;
 
     return cursorPosInNDCWithZ;
   }

@@ -348,9 +348,9 @@ namespace RenderSystem
 
   void Scene::onViewportChanged(Viewport* viewport)
   {
-    int width = viewport->getWidth();
-    int height = viewport->getHeight();
-    mAspectRatio = static_cast<float>(width) / height;
+    float width = viewport->getWidth();
+    float height = viewport->getHeight();
+    mAspectRatio = width / height;
     mCamera->adjust(
       viewport->getProjectionType(), mRootObject.getBBox(), viewport->getFov()
     );

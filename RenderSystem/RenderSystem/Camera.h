@@ -31,11 +31,7 @@ namespace RenderSystem
     Camera();
 
     const glm::mat4& getViewMatrix() const;
-    const Point3D& getTarget() const;
     const Point3D& getEye() const;
-    const Vector3D& getUp() const;
-    const Vector3D& getRight() const;
-    Vector3D getNormalizedDirection() const;
     Point3D projectToTargetPlane(const Point3D& cursorPosInWorldSpace) const;
     bool isMovementEnabled() const;
 
@@ -44,11 +40,8 @@ namespace RenderSystem
       const Point3D& endPointInWorldSpace,
       PROJECTION_TYPE projectionType
     );
-    void rawOrbit(const Point3D& startPointInNDC, const Point3D& endPointInNDC);
     void smoothOrbit(float xOffset, float yOffset);
     void zoom(float step);
-    void perspectiveAdjust(const MeshCore::AABBox& bbox, float fov);
-    void orthoAdjust(const MeshCore::AABBox& bbox);
     void enableMovement(bool isEnabled);
     void adjust(
       PROJECTION_TYPE projectionType, const MeshCore::AABBox& sceneBBox, float fov
@@ -63,7 +56,12 @@ namespace RenderSystem
     void translate(const Vector3D& movement);
     void adjust(const MeshCore::AABBox& bbox, float fov = 0.0f);
     void rotateCamera(const glm::mat4& rotationTransform);
+    void rawOrbit(const Point3D& startPointInNDC, const Point3D& endPointInNDC);
+    void perspectiveAdjust(const MeshCore::AABBox& bbox, float fov);
+    void orthoAdjust(const MeshCore::AABBox& bbox);
+    void validateCamera() const;
 
+    Vector3D getNormalizedDirection() const;
     Vector3D calcRight() const;
     glm::mat4 createViewMatrix() const;
     glm::mat4 calculateViewMatrixWithTargetAtOrigin() const;
@@ -74,7 +72,6 @@ namespace RenderSystem
     ) const;
     glm::mat4 getSmoothOrbitTransform(float yaw, float pitch) const;
     glm::mat4 getCorrectionOrbitTransform() const;
-    void validateCamera() const;
     float calculateDistanceToCamera(const MeshCore::AABBox& bbox, float fov = 0.0f) const;
     glm::vec3 getPanTranslationVector(
       const Point3D& startPointInWorldSpace,

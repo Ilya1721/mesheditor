@@ -166,9 +166,9 @@ namespace RenderSystem
   Point3D Window::screenCoordinatesToNDC(const Point2D& cursorPos, float depth) const
   {
     Point3D ndcPos {};
-    ndcPos.x = (2.0 * cursorPos.x) / mViewport->getWidth() - 1.0;
+    ndcPos.x = (2.0f * cursorPos.x) / mViewport->getWidth() - 1.0f;
     ndcPos.y =
-      2.0 * (mViewport->getHeight() - cursorPos.y) / mViewport->getHeight() - 1.0;
+      2.0f * (mViewport->getHeight() - cursorPos.y) / mViewport->getHeight() - 1.0f;
     ndcPos.z = depth;
 
     return ndcPos;
