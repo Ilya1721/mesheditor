@@ -1,5 +1,6 @@
 #include "ShadowController.h"
 
+#include "SceneShaderProgram.h"
 #include "Viewport.h"
 
 namespace RenderSystem

@@ -1,16 +1,11 @@
 #include "Renderer.h"
 
-#include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
 #ifdef __gl_h_
 #undef __gl_h_
 #endif
-#include "GeometryCore/Line.h"
-#include "GeometryCore/Plane.h"
-#include "MeshCore/Mesh.h"
 #include "Object3D.h"
-#include "SceneShaderProgram.h"
 #include "glad/glad.h"
 
 using namespace MeshCore;
@@ -47,6 +42,11 @@ namespace RenderSystem
   void Renderer::renderSkybox()
   {
     mSkyboxRenderBuffer.invoke([]() { glDrawArrays(GL_TRIANGLES, 0, 36); });
+  }
+
+  void Renderer::renderScreenQuad()
+  {
+    mScreenQuadRenderBuffer.invoke([]() { glDrawArrays(GL_TRIANGLES, 0, 6); });
   }
 
   void Renderer::renderObject3D(const Object3D& object, int vertexOffset)
@@ -104,6 +104,13 @@ namespace RenderSystem
   {
     mSkyboxRenderBuffer.invoke([this, &renderData]()
                                { mSkyboxRenderBuffer.loadRenderData(renderData); });
+  }
+
+  void Renderer::loadScreenQuadRenderData()
+  {
+    mScreenQuadRenderBuffer.invoke([this]()
+                                   { mScreenQuadRenderBuffer.loadScreenQuadRenderData(); }
+    );
   }
 
   void Renderer::loadModelRenderData(const RenderData& renderData)

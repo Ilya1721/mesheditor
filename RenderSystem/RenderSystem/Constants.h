@@ -103,6 +103,10 @@ namespace RenderSystem
     R"(./RenderSystem/Shaders/TAAMotionVectorsShader.vert)";
   const std::string TAA_MOTION_VECTORS_FRAGMENT_SHADER_PATH =
     R"(./RenderSystem/Shaders/TAAMotionVectorsShader.frag)";
+  const std::string TAA_RESOLVE_VERTEX_SHADER_PATH =
+    R"(./RenderSystem/Shaders/TAAResolveShader.vert)";
+  const std::string TAA_RESOLVE_FRAGMENT_SHADER_PATH =
+    R"(./RenderSystem/Shaders/TAAResolveShader.frag)";
   const std::string SCENE_VERTEX_SHADER_PATH =
     R"(./RenderSystem/Shaders/VertexShader.vert)";
   const std::string SCENE_FRAGMENT_SHADER_PATH =
@@ -120,11 +124,16 @@ namespace RenderSystem
     R"(./ThirdParty/resources/textures/skybox/back.png)",
   };
 
-  constexpr int DIFFUSE_TEXTURE_SLOT = 0;
-  constexpr int SHADOW_MAP_TEXTURE_SLOT = 1;
-  constexpr int SKYBOX_TEXTURE_SLOT = 2;
-  constexpr int TAA_DEPTH_MAP_TEXTURE_SLOT = 3;
   constexpr int SAMPLE_COUNT_TAA = 8;
 
   const auto DIR_LIGHT_POS = Point3D(LIGHT_SOURCE_POS_X, LIGHT_SOURCE_POS_Y, LIGHT_SOURCE_POS_Z);
+
+  constexpr float SCREEN_QUAD_VERTICES[] = {
+      -1.0f, -1.0f,  0.0f, 0.0f,
+       1.0f, -1.0f,  1.0f, 0.0f,
+      -1.0f,  1.0f,  0.0f, 1.0f,
+      -1.0f,  1.0f,  0.0f, 1.0f,
+       1.0f, -1.0f,  1.0f, 0.0f,
+       1.0f,  1.0f,  1.0f, 1.0f
+  };
 }  // namespace RenderSystem

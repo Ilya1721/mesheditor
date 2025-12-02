@@ -3,7 +3,7 @@
 #ifdef __gl_h_
 #undef __gl_h_
 #endif
-#include "MeshCore/Constants.h"
+#include "Constants.h"
 #include "glad/glad.h"
 
 namespace RenderSystem
@@ -54,6 +54,20 @@ namespace RenderSystem
     glVertexAttribPointer(
       2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
       reinterpret_cast<void*>(6 * sizeof(float))
+    );
+  }
+
+  void RenderBuffer::loadScreenQuadRenderData()
+  {
+    glBufferData(
+      GL_ARRAY_BUFFER, sizeof(SCREEN_QUAD_VERTICES), SCREEN_QUAD_VERTICES, GL_STATIC_DRAW
+    );
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(
+      1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
+      reinterpret_cast<void*>(2 * sizeof(float))
     );
   }
 }  // namespace RenderSystem

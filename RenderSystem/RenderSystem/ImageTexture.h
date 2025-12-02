@@ -9,7 +9,7 @@ namespace RenderSystem
   class ImageTexture : public Texture2D
   {
    public:
-    ImageTexture() = default;
+    ImageTexture();
     ImageTexture(int width, int height);
     ImageTexture(const std::string& filePath);
     ImageTexture(const ImageTexture& other) = delete;
@@ -21,8 +21,11 @@ namespace RenderSystem
 
     void setDimensions(int width, int height) override;
 
+  private:
+    void init();
+
    private:
     unsigned char* mData = nullptr;
-    int mColorChannels = 3;
+    int mColorChannels = 4;
   };
 }  // namespace RenderSystem

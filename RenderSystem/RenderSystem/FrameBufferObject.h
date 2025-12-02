@@ -13,6 +13,7 @@ namespace RenderSystem
     void attachTexture(
       const Texture& texture, const std::function<void()>& textureSetupFunc
     );
+    void attachDepthBuffer(int width, int height);
 
    private:
     void init();
@@ -21,5 +22,6 @@ namespace RenderSystem
 
    private:
     unsigned int mFBO;
+    unsigned int mDepthRBO;
   };
 }  // namespace RenderSystem

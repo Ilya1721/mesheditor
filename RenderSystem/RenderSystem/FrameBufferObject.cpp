@@ -7,7 +7,7 @@
 
 namespace RenderSystem
 {
-  FrameBufferObject::FrameBufferObject() { init(); }
+  FrameBufferObject::FrameBufferObject() : mFBO(), mDepthRBO() { init(); }
 
   void FrameBufferObject::bind() const { glBindFramebuffer(GL_FRAMEBUFFER, mFBO); }
 
@@ -24,6 +24,19 @@ namespace RenderSystem
           GL_FRAMEBUFFER, texture.getAttachmentId(), GL_TEXTURE_2D, texture.getId(), 0
         );
         textureSetupFunc();
+      }
+    );
+  }
+
+  void FrameBufferObject::attachDepthBuffer(int width, int height)
+  {
+    invoke(
+      [this, width, height]()
+      {
+        glGenRenderbuffers(1, &mDepthRBO);
+        glBindRenderbuffer(GL_RENDERBUFFER, mDepthRBO);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, width, height);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mDepthRBO);
       }
     );
   }

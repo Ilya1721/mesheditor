@@ -20,7 +20,6 @@ namespace RenderSystem
       mLightView(),
       mLightProjection(),
       mView(),
-      mProjection(),
       mJitteredProjection(),
       mShadowBias(),
       mShadowMap()
@@ -37,11 +36,6 @@ namespace RenderSystem
   {
     setCameraPos(camera->getEye());
     setView(camera->getViewMatrix());
-  }
-
-  void SceneShaderProgram::onViewportChanged(Viewport* viewport)
-  {
-    setProjection(viewport->getProjectionMatrix());
   }
 
   void SceneShaderProgram::setModel(const glm::mat4& model)
@@ -85,12 +79,6 @@ namespace RenderSystem
     );
   }
 
-  void SceneShaderProgram::setProjection(const glm::mat4& projection)
-  {
-    invoke([this, &projection]()
-           { glUniformMatrix4fv(mProjection, 1, false, glm::value_ptr(projection)); });
-  }
-
   void SceneShaderProgram::setJitteredProjection(const glm::mat4& projection)
   {
     invoke(
@@ -102,7 +90,7 @@ namespace RenderSystem
   void SceneShaderProgram::setShadowMap(const DepthTexture& texture) const
   {
     invoke([this, &texture]()
-           { texture.passToFragmentShader(mShadowMap, SHADOW_MAP_TEXTURE_SLOT); });
+           { texture.passToFragmentShader(mShadowMap, 1); });
   }
 
   void SceneShaderProgram::setLightView(const glm::mat4& lightView)
@@ -128,7 +116,7 @@ namespace RenderSystem
   void SceneShaderProgram::setSkyboxCubemap(const CubemapTexture& texture) const
   {
     invoke([this, &texture]()
-           { texture.passToFragmentShader(mSkybox, SKYBOX_TEXTURE_SLOT); });
+           { texture.passToFragmentShader(mSkybox, 2); });
   }
 
   PointLight* SceneShaderProgram::addPointLight(
@@ -147,7 +135,6 @@ namespace RenderSystem
   {
     mModel = getUniformLocation("model");
     mView = getUniformLocation("view");
-    mProjection = getUniformLocation("projection");
     mJitteredProjection = getUniformLocation("jitteredProjection");
     mShadowBias = getUniformLocation("shadowBias");
     mShadowMap = getUniformLocation("shadowMap");
@@ -155,11 +142,6 @@ namespace RenderSystem
     mLightProjection = getUniformLocation("lightProjection");
     mSkybox = getUniformLocation("skybox");
     mMaterialType = getUniformLocation("material.type");
-  }
-
-  int SceneShaderProgram::getUniformLocation(const char* name) const
-  {
-    return glGetUniformLocation(mShaderProgram, name);
   }
 
   void SceneShaderProgram::setShadowBias(float shadowBias)

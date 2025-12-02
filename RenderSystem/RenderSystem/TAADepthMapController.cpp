@@ -10,6 +10,11 @@ namespace RenderSystem
     ControllerWithDepthMap::operator=(&mShaderProgram);
   }
 
+  TAADepthMapShaderProgram* TAADepthMapController::getShaderProgram()
+  {
+    return &mShaderProgram;
+  }
+
   void TAADepthMapController::setModel(const glm::mat4& model)
   {
     mShaderProgram.setModel(model);

@@ -13,6 +13,7 @@ namespace RenderSystem
     ~RenderBuffer();
 
     void loadRenderData(const RenderData& renderData);
+    void loadScreenQuadRenderData();
 
    private:
     void bind() const override;

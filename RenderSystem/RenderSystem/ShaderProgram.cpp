@@ -69,6 +69,11 @@ namespace RenderSystem
     glDeleteProgram(mShaderProgram);
   }
 
+  int ShaderProgram::getUniformLocation(const char* name) const
+  {
+    return glGetUniformLocation(mShaderProgram, name);
+  }
+
   void ShaderProgram::init()
   {
     mVertexShader = loadShader(mVertexShaderPath.string(), GL_VERTEX_SHADER);

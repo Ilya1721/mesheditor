@@ -65,17 +65,21 @@ namespace RenderSystem
       const Object3D* object, const std::unordered_set<UniqueVertex*>& vertices
     );
     void onSceneObjectBBoxUpdated();
-    void renderScene(AbstractShaderProgram* shaderProgram);
-    void writeSceneToTextures();
-    void renderSceneDecorations();
+    void renderSceneObjects(AbstractShaderProgram* shaderProgram);
+    void renderRawScene(AbstractShaderProgram* shaderProgram);
+    void renderFullScene(AbstractShaderProgram* shaderProgram);
+    void writeSceneToShadowMap();
+    void writeSceneToTAATextures();
+    void resolveTAA();
+    void renderDecorations();
     void renderHighlightedFaces();
     void renderWireframe();
     void renderWholeObjectHighlighted();
     void renderSkybox();
     void updateDirLightProjection();
     void loadSkyboxVertices();
-    void prepareTAA();
-    void postAdjustTAA();
+    void loadScreenQuadVertices();
+    void makeJitteredProjection();
     void init(const std::string& meshFilePath);
     void onCameraPosChanged();
     void registerCallbacks();

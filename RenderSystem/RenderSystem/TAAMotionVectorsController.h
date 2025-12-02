@@ -13,6 +13,7 @@ namespace RenderSystem
       const path& vertexShaderPath, const path& fragmentShaderPath
     );
 
+    TAAMotionVectorsShaderProgram* getShaderProgram();
     const TAAMotionVectorsTexture& getMotionVectorsTexture() const;
 
     void setTextureDimensions(int width, int height);

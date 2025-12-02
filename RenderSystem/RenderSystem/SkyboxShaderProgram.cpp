@@ -33,7 +33,7 @@ namespace RenderSystem
   void SkyboxShaderProgram::setSkyboxCubemap(const CubemapTexture& texture) const
   {
     invoke([this, &texture]()
-           { texture.passToFragmentShader(mSkybox, SKYBOX_TEXTURE_SLOT); });
+           { texture.passToFragmentShader(mSkybox, 0); });
   }
 
   void SkyboxShaderProgram::initUniformLocations()

@@ -14,6 +14,11 @@ namespace RenderSystem
   {
   }
 
+  TAAMotionVectorsShaderProgram* TAAMotionVectorsController::getShaderProgram()
+  {
+    return &mShaderProgram;
+  }
+
   const TAAMotionVectorsTexture& TAAMotionVectorsController::getMotionVectorsTexture() const
   {
     return mTexture;

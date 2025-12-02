@@ -25,9 +25,11 @@ namespace RenderSystem
     void renderWireframe(int objectVertexCount);
     void renderWholeObjectHighlighted(const Object3D& object, int vertexOffset);
     void renderSkybox();
+    void renderScreenQuad();
     void loadModelRenderData(const RenderData& renderData);
     void loadDecorationsRenderData(const RenderData& renderData);
     void loadSkyboxRenderData(const RenderData& renderData);
+    void loadScreenQuadRenderData();
     void cleanScreen();
 
    private:
@@ -39,5 +41,6 @@ namespace RenderSystem
     RenderBuffer mModelRenderBuffer;
     RenderBuffer mDecorationsRenderBuffer;
     RenderBuffer mSkyboxRenderBuffer;
+    RenderBuffer mScreenQuadRenderBuffer;
   };
 }  // namespace RenderSystem

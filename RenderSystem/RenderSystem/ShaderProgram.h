@@ -18,6 +18,8 @@ namespace RenderSystem
    protected:
     virtual ~ShaderProgram();
 
+    int getUniformLocation(const char* name) const;
+
    private:
     void init();
     void initShaderProgram();

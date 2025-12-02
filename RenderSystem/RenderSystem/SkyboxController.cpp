@@ -5,8 +5,8 @@
 #endif
 #include "Camera.h"
 #include "SceneShaderProgram.h"
-#include "glad/glad.h"
 #include "Viewport.h"
+#include "glad/glad.h"
 
 namespace RenderSystem
 {
@@ -20,7 +20,6 @@ namespace RenderSystem
       mCubemapTexture(cubemapTextures),
       mSceneShaderProgram(sceneShaderProgram)
   {
-    init();
   }
 
   void SkyboxController::onCameraPosChanged(Camera* camera)
@@ -35,6 +34,8 @@ namespace RenderSystem
 
   void SkyboxController::render(const std::function<void()>& renderFunc)
   {
+    mShaderProgram.setSkyboxCubemap(mCubemapTexture);
+    mSceneShaderProgram->setSkyboxCubemap(mCubemapTexture);
     mShaderProgram.invoke(
       [&renderFunc, this]()
       {
@@ -45,11 +46,5 @@ namespace RenderSystem
         glDepthFunc(previousDepthFunc);
       }
     );
-  }
-
-  void SkyboxController::init()
-  {
-    mShaderProgram.setSkyboxCubemap(mCubemapTexture);
-    mSceneShaderProgram->setSkyboxCubemap(mCubemapTexture);
   }
 }  // namespace RenderSystem

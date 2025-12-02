@@ -136,6 +136,8 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <None Include="Shaders\SkyboxShader.vert" />
     <None Include="Shaders\TAADepthMapShader.frag" />
     <None Include="Shaders\TAADepthMapShader.vert" />
+    <None Include="Shaders\TAAResolveShader.frag" />
+    <None Include="Shaders\TAAResolveShader.vert" />
     <None Include="Shaders\VertexShader.vert" />
   </ItemGroup>
   <ItemGroup>
@@ -144,6 +146,8 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <ClCompile Include="RenderSystem\DebugVisualization.cpp" />
     <ClCompile Include="RenderSystem\GlassMaterial.cpp" />
     <ClCompile Include="RenderSystem\BlinnPhongMaterial.cpp" />
+    <ClCompile Include="RenderSystem\TAAColorBufferController.cpp" />
+    <ClCompile Include="RenderSystem\TAAColorTexture.cpp" />
     <ClCompile Include="RenderSystem\TAADepthMapController.cpp" />
     <ClCompile Include="RenderSystem\TAAMotionVectorsShaderProgram.cpp" />
     <ClCompile Include="RenderSystem\TAAMotionVectorsTexture.cpp" />
@@ -183,6 +187,8 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <ClCompile Include="RenderSystem\TAAController.cpp" />
     <ClCompile Include="RenderSystem\TAADepthMapShaderProgram.cpp" />
     <ClCompile Include="RenderSystem\TAAMotionVectorsController.cpp" />
+    <ClCompile Include="RenderSystem\TAAResolveController.cpp" />
+    <ClCompile Include="RenderSystem\TAAResolveShaderProgram.cpp" />
     <ClCompile Include="RenderSystem\Texture.cpp" />
     <ClCompile Include="RenderSystem\Texture2D.cpp" />
     <ClCompile Include="RenderSystem\Viewport.cpp" />
@@ -197,6 +203,8 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <ClInclude Include="RenderSystem\DebugVisualization.h" />
     <ClInclude Include="RenderSystem\GlassMaterial.h" />
     <ClInclude Include="RenderSystem\BlinnPhongMaterial.h" />
+    <ClInclude Include="RenderSystem\TAAColorBufferController.h" />
+    <ClInclude Include="RenderSystem\TAAColorTexture.h" />
     <ClInclude Include="RenderSystem\TAADepthMapController.h" />
     <ClInclude Include="RenderSystem\TAAMotionVectorsShaderProgram.h" />
     <ClInclude Include="RenderSystem\TAAMotionVectorsTexture.h" />
@@ -244,6 +252,8 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <ClInclude Include="RenderSystem\TAAController.h" />
     <ClInclude Include="RenderSystem\TAADepthMapShaderProgram.h" />
     <ClInclude Include="RenderSystem\TAAMotionVectorsController.h" />
+    <ClInclude Include="RenderSystem\TAAResolveController.h" />
+    <ClInclude Include="RenderSystem\TAAResolveShaderProgram.h" />
     <ClInclude Include="RenderSystem\Texture.h" />
     <ClInclude Include="RenderSystem\Texture2D.h" />
     <ClInclude Include="RenderSystem\Viewport.h" />

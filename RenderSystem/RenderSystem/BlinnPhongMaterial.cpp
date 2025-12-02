@@ -66,7 +66,7 @@ namespace RenderSystem
     else
     {
       glUniform1i(mHasDiffuseTexture, true);
-      texture.passToFragmentShader(mDiffuseTexture, DIFFUSE_TEXTURE_SLOT);
+      texture.passToFragmentShader(mDiffuseTexture, 0);
     }
   }
 }  // namespace RenderSystem

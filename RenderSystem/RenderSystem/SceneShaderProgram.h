@@ -10,7 +10,6 @@
 #include "GlassMaterial.h"
 #include "PointLights.h"
 #include "ShaderProgram.h"
-#include "ViewportListener.h"
 
 using namespace GeometryCore;
 
@@ -19,8 +18,7 @@ namespace RenderSystem
   class SceneShaderProgram :
     public ShaderProgram,
     public AbstractShaderProgram,
-    public CameraListener,
-    public ViewportListener
+    public CameraListener
   {
     friend class DirLightSource;
 
@@ -31,7 +29,6 @@ namespace RenderSystem
     );
 
     void onCameraPosChanged(Camera* camera) override;
-    void onViewportChanged(Viewport* viewport) override;
 
     void setModel(const glm::mat4& model) override;
     void setBlinnPhongMaterialParams(const BlinnPhongMaterialParamsExtended& params);
@@ -53,9 +50,7 @@ namespace RenderSystem
     void setDirLightSourcePos(const Point3D& lightSourcePos);
     void setCameraPos(const Point3D& cameraPos);
     void setView(const glm::mat4& view);
-    void setProjection(const glm::mat4& projection);
     void initUniformLocations();
-    int getUniformLocation(const char* name) const;
 
     void setUp();
 
@@ -68,7 +63,6 @@ namespace RenderSystem
     int mLightView;
     int mLightProjection;
     int mView;
-    int mProjection;
     int mJitteredProjection;
     int mShadowBias;
     int mShadowMap;

@@ -47,7 +47,8 @@ namespace RenderSystem
     mTAAController = std::make_unique<TAAController>(
       mSceneShaderProgram.get(), TAA_DEPTH_MAP_VERTEX_SHADER_PATH,
       TAA_DEPTH_MAP_FRAGMENT_SHADER_PATH, TAA_MOTION_VECTORS_VERTEX_SHADER_PATH,
-      TAA_MOTION_VECTORS_FRAGMENT_SHADER_PATH
+      TAA_MOTION_VECTORS_FRAGMENT_SHADER_PATH, TAA_RESOLVE_VERTEX_SHADER_PATH,
+      TAA_RESOLVE_FRAGMENT_SHADER_PATH
     );
     mCamera = std::make_unique<Camera>();
     mDirLightSource = DirLightSource(mSceneShaderProgram.get(), mShadowController.get());
@@ -59,6 +60,7 @@ namespace RenderSystem
     registerRootObjectCallbacks();
     addModelObject(meshFilePath);
     loadSkyboxVertices();
+    loadScreenQuadVertices();
     addCameraListeners();
     registerCallbacks();
     mDirLightSource.setPosition(DIR_LIGHT_POS);
@@ -134,7 +136,7 @@ namespace RenderSystem
 
   void Scene::onSceneObjectBBoxUpdated() { updateDirLightProjection(); }
 
-  void Scene::renderScene(AbstractShaderProgram* shaderProgram)
+  void Scene::renderSceneObjects(AbstractShaderProgram* shaderProgram)
   {
     for (auto& [object, vertexOffset] : mSceneObjectVertexOffsetMap)
     {
@@ -145,24 +147,53 @@ namespace RenderSystem
       );
       mSceneShaderProgram->setGlassMaterialParams(materialParams.glassMaterialParams);
       mSceneShaderProgram->setMaterialType(materialParams.materialType);
+      mSceneShaderProgram->setShadowMap(mShadowController->getDepthMap());
       mRenderer->renderObject3D(*object, vertexOffset);
     }
     mSceneShaderProgram->setMaterialType(MaterialType::BLINN_PHONG);
   }
 
-  void Scene::writeSceneToTextures()
+  void Scene::renderRawScene(AbstractShaderProgram* shaderProgram)
   {
-    const auto& renderSceneFunc = [this]()
-    {
-      renderScene(mShadowController->getShaderProgram());
-      renderSceneDecorations();
-    };
-
-    mShadowController->renderSceneToDepthMap(renderSceneFunc);
-    mTAAController->renderSceneToTextures(renderSceneFunc);
+    renderSceneObjects(shaderProgram);
+    renderDecorations();
   }
 
-  void Scene::renderSceneDecorations()
+  void Scene::renderFullScene(AbstractShaderProgram* shaderProgram)
+  {
+    renderSkybox();
+    renderRawScene(shaderProgram);
+    renderHighlightedFaces();
+    renderWireframe();
+    renderWholeObjectHighlighted();
+  }
+
+  void Scene::writeSceneToShadowMap()
+  {
+    mShadowController->renderSceneToDepthMap(
+      [this]() { renderRawScene(mShadowController->getShaderProgram()); }
+    );
+  }
+
+  void Scene::writeSceneToTAATextures()
+  {
+    mTAAController->renderSceneToDepthMap(
+      [this]() { renderRawScene(mTAAController->getDepthMapShaderProgram()); }
+    );
+    mTAAController->renderSceneToMotionVectorsTexture(
+      [this]() { renderRawScene(mTAAController->getMotionVectorsShaderProgram()); }
+    );
+    mTAAController->renderSceneToColorBuffer(
+      [this]() { renderFullScene(mSceneShaderProgram.get()); }
+    );
+  }
+
+  void Scene::resolveTAA()
+  {
+    mTAAController->resolveTAA([this]() { mRenderer->renderScreenQuad(); });
+  }
+
+  void Scene::renderDecorations()
   {
     mSceneShaderProgram->setModel(glm::mat4(1.0f));
     mShadowController->setModel(glm::mat4(1.0f));
@@ -235,9 +266,9 @@ namespace RenderSystem
     mRenderer->loadSkyboxRenderData(RenderData::getSkyboxRenderData());
   }
 
-  void Scene::prepareTAA() { mTAAController->makeJitteredProjection(); }
+  void Scene::loadScreenQuadVertices() { mRenderer->loadScreenQuadRenderData(); }
 
-  void Scene::postAdjustTAA() {}
+  void Scene::makeJitteredProjection() { mTAAController->makeJitteredProjection(); }
 
   void Scene::setPickedObject(Object3D* pickedObject) { mPickedObject = pickedObject; }
 
@@ -286,22 +317,13 @@ namespace RenderSystem
   void Scene::render()
   {
     mRenderer->cleanScreen();
-    prepareTAA();
-    writeSceneToTextures();
-    renderSkybox();
+    makeJitteredProjection();
+    writeSceneToShadowMap();
+    writeSceneToTAATextures();
+    resolveTAA();
 
-    mSceneShaderProgram->setShadowMap(mShadowController->getDepthMap());
-    mSceneShaderProgram->invoke(
-      [this]()
-      {
-        renderSceneDecorations();
-        renderHighlightedFaces();
-        renderWireframe();
-        renderWholeObjectHighlighted();
-        renderScene(mSceneShaderProgram.get());
-        postAdjustTAA();
-      }
-    );
+    //mSceneShaderProgram->invoke([this]() { renderFullScene(mSceneShaderProgram.get());
+    //});
   }
 
   Object3DIntersection Scene::getRayIntersection(
@@ -331,10 +353,7 @@ namespace RenderSystem
 
   std::vector<ViewportListener*> Scene::getViewportListeners()
   {
-    return {
-      this, mShadowController.get(), mTAAController.get(), mSceneShaderProgram.get(),
-        mSkyboxController.get()
-    };
+    return {this, mShadowController.get(), mTAAController.get(), mSkyboxController.get()};
   }
 
   Point3D Scene::unProject(

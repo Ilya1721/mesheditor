@@ -28,9 +28,6 @@ namespace RenderSystem
     void render(const std::function<void()>& renderFunc);
 
    private:
-    void init();
-
-   private:
     SkyboxShaderProgram mShaderProgram;
     CubemapTexture mCubemapTexture;
     SceneShaderProgram* mSceneShaderProgram;

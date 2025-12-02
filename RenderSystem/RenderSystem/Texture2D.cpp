@@ -7,11 +7,8 @@
 
 namespace RenderSystem
 {
-  Texture2D::Texture2D() : Texture(), mWidth(), mHeight() { init(); }
-
   Texture2D::Texture2D(int width, int height) : Texture(), mWidth(width), mHeight(height)
   {
-    init();
   }
 
   Texture2D::Texture2D(Texture2D&& other) noexcept { *this = std::move(other); }
@@ -41,16 +38,11 @@ namespace RenderSystem
     glUniform1i(textureLocation, textureSlot);
   }
 
-  void Texture2D::init()
+  void Texture2D::swap(Texture2D& other) noexcept
   {
-    invoke(
-      []()
-      {
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-        float borderColor[] = {1.0, 1.0, 1.0, 1.0};
-        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-      }
-    );
+    std::swap(mTexture, other.mTexture);
+    std::swap(mResourceToRestore, other.mResourceToRestore);
+    std::swap(mWidth, other.mWidth);
+    std::swap(mHeight, other.mHeight);
   }
 }  // namespace RenderSystem
