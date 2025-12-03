@@ -13,7 +13,6 @@ namespace RenderSystem
   )
     : mSceneShaderProgram(sceneShaderProgram)
   {
-    init();
   }
 
   const TAAColorTexture& TAAColorBufferController::getCurrentColorBuffer() const
@@ -37,6 +36,7 @@ namespace RenderSystem
     const std::function<void()>& renderSceneFunc
   )
   {
+    mFBO.attachTexture(mCurrentColorBuffer, []() { glDrawBuffer(GL_COLOR_ATTACHMENT0); });
     mFBO.invoke(
       [this, &renderSceneFunc]()
       {
@@ -49,10 +49,5 @@ namespace RenderSystem
   void TAAColorBufferController::swapColorBuffers()
   {
     mCurrentColorBuffer.swap(mPreviousColorBuffer);
-  }
-
-  void TAAColorBufferController::init()
-  {
-    mFBO.attachTexture(mCurrentColorBuffer, []() { glDrawBuffer(GL_COLOR_ATTACHMENT0); });
   }
 }  // namespace RenderSystem

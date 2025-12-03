@@ -54,11 +54,6 @@ namespace RenderSystem
     mCurrentJitteredProjection = projection;
   }
 
-  void TAAResolveController::setIsFirstFrame(bool isFirstFrame)
-  {
-    mShaderProgram.setIsFirstFrame(isFirstFrame);
-  }
-
   void TAAResolveController::render(const std::function<void()>& renderFunc) const
   {
     mShaderProgram.invoke(renderFunc);

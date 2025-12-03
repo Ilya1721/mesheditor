@@ -12,6 +12,7 @@ namespace RenderSystem
   )
     : mShaderProgram(vertexShaderPath, fragmentShaderPath)
   {
+    init();
   }
 
   TAAMotionVectorsShaderProgram* TAAMotionVectorsController::getShaderProgram()
@@ -24,9 +25,10 @@ namespace RenderSystem
     return mTexture;
   }
 
-  void TAAMotionVectorsController::setTextureDimensions(int width, int height)
+  void TAAMotionVectorsController::setScreenSize(int width, int height)
   {
     mTexture.setDimensions(width, height);
+    mFBO.attachDepthBuffer(width, height);
   }
 
   void TAAMotionVectorsController::setModel(const glm::mat4& model)
@@ -59,7 +61,6 @@ namespace RenderSystem
     mFBO.invoke(
       [this, &renderSceneFunc]()
       {
-        glViewport(0, 0, mTexture.getWidth(), mTexture.getHeight());
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         mShaderProgram.invoke(renderSceneFunc);
       }

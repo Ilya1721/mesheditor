@@ -23,7 +23,6 @@ namespace RenderSystem
     void setMotionVectorsTexture(const TAAMotionVectorsTexture& texture) const;
     void setPrevViewProj(const glm::mat4& prevViewProj);
     void setInvCurrViewProj(const glm::mat4& invCurrViewProj);
-    void setIsFirstFrame(bool isFirstFrame);
 
    private:
     void initUniformLocations();
@@ -35,6 +34,5 @@ namespace RenderSystem
     int mMotionVectorsTexture;
     int mPrevViewProj;
     int mInvCurrViewProj;
-    int mIsFirstFrame;
   };
 }  // namespace RenderSystem

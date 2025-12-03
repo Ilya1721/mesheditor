@@ -93,6 +93,11 @@ namespace RenderSystem
 
   void TAAController::setView(const glm::mat4& view)
   {
+    if (mFrameIndex == 0)
+    {
+      mView = view;
+    }
+
     mDepthMapController.setView(view);
     mMotionVectorsController.setPrevView(mView);
     mMotionVectorsController.setCurrentView(view);
@@ -133,9 +138,8 @@ namespace RenderSystem
       mMotionVectorsController.getMotionVectorsTexture()
     );
     mResolveController.calcViewProjMatrices();
-    mResolveController.setIsFirstFrame(mFrameIndex == 1);
     mResolveController.render(renderFunc);
-    //mColorBufferController.swapColorBuffers();
+    mColorBufferController.swapColorBuffers();
   }
 
   void TAAController::setProjection(const glm::mat4& projection)
@@ -158,7 +162,7 @@ namespace RenderSystem
     setProjection(stableProjection);
     setScreenSize(screenWidth, screenHeight);
     mDepthMapController.setDepthMapSize(screenWidth, screenHeight);
-    mMotionVectorsController.setTextureDimensions(screenWidth, screenHeight);
+    mMotionVectorsController.setScreenSize(screenWidth, screenHeight);
     mColorBufferController.setScreenSize(screenWidth, screenHeight);
   }
 
@@ -170,12 +174,17 @@ namespace RenderSystem
     auto jitterNDC = convertJitterToNDC(jitter, mScreenWidth, mScreenHeight);
     glm::vec3 jitterTranslationVec {jitterNDC.x, jitterNDC.y, 0.0f};
     auto jitterTranslation = glm::translate(glm::mat4(1.0f), jitterTranslationVec);
+    auto jitteredProjection = jitterTranslation * mProjection;
+    if (mFrameIndex == 0)
+    {
+      mJitteredProjection = jitteredProjection;
+    }
     mResolveController.setPrevJitteredProjection(mJitteredProjection);
-    mJitteredProjection = jitterTranslation * mProjection;
-    mDepthMapController.setJitteredProjection(mJitteredProjection);
-    mSceneShaderProgram->setJitteredProjection(mJitteredProjection);
-    mMotionVectorsController.setJitteredProjection(mJitteredProjection);
-    mResolveController.setCurrentJitteredProjection(mJitteredProjection);
+    mDepthMapController.setJitteredProjection(jitteredProjection);
+    mSceneShaderProgram->setJitteredProjection(jitteredProjection);
+    mMotionVectorsController.setJitteredProjection(jitteredProjection);
+    mResolveController.setCurrentJitteredProjection(jitteredProjection);
+    mJitteredProjection = jitteredProjection;
     mFrameIndex = (mFrameIndex + 1) % SAMPLE_COUNT_TAA;
   }
 }  // namespace RenderSystem

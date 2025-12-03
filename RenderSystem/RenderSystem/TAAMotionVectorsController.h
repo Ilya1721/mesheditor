@@ -16,7 +16,7 @@ namespace RenderSystem
     TAAMotionVectorsShaderProgram* getShaderProgram();
     const TAAMotionVectorsTexture& getMotionVectorsTexture() const;
 
-    void setTextureDimensions(int width, int height);
+    void setScreenSize(int width, int height);
     void setModel(const glm::mat4& model);
     void setPrevView(const glm::mat4& view);
     void setCurrentView(const glm::mat4& view);

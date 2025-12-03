@@ -1,7 +1,7 @@
 #pragma once
 
-#include "TAAResolveShaderProgram.h"
 #include "TAAColorTexture.h"
+#include "TAAResolveShaderProgram.h"
 
 namespace RenderSystem
 {
@@ -21,7 +21,6 @@ namespace RenderSystem
     void setCurrentView(const glm::mat4& view);
     void setPrevJitteredProjection(const glm::mat4& projection);
     void setCurrentJitteredProjection(const glm::mat4& projection);
-    void setIsFirstFrame(bool isFirstFrame);
 
     void render(const std::function<void()>& renderFunc) const;
     void calcViewProjMatrices();

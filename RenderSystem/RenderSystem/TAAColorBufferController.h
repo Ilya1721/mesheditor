@@ -20,9 +20,6 @@ namespace RenderSystem
     void swapColorBuffers();
 
   private:
-    void init();
-
-  private:
     FrameBufferObject mFBO;
     TAAColorTexture mCurrentColorBuffer;
     TAAColorTexture mPreviousColorBuffer;

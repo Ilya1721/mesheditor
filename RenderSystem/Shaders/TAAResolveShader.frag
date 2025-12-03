@@ -13,7 +13,6 @@ uniform mat4 prevViewProj;
 uniform mat4 invCurrViewProj;
 
 uniform float blendFactor = 0.9;
-uniform bool isFirstFrame;
 
 vec3 reconstructWorldPosition(vec2 uv, float depth)
 {
@@ -30,24 +29,23 @@ vec2 reprojectUV(vec2 uv, float depth)
     return prevClip.xy * 0.5 + 0.5;
 }
 
+bool nearlyEqual(float a, float b)
+{
+    return abs(a - b) < 1e-5;
+}
+
 void main()
 {
-    /*vec4 currentColor = texture(currColorTexture, screenTexture);
-
-    if (isFirstFrame) {
-        fragColor = currentColor;
-        return;
-    }
-
     float currentDepth = texture(depthMap, screenTexture).r;
     vec2 prevUV = reprojectUV(screenTexture, currentDepth);
     prevUV += texture(motionVectorsTexture, screenTexture).xy;
+    vec2 prevColorTextureCoords = nearlyEqual(currentDepth, 1.0) ? screenTexture : prevUV;
 
-    vec4 historyColor = texture(prevColorTexture, prevUV);
+    vec4 historyColor = texture(prevColorTexture, prevColorTextureCoords);
     float prevDepth = texture(depthMap, prevUV).r;
     float depthDiff = abs(prevDepth - currentDepth);
     float historyWeight = (depthDiff < 0.001) ? blendFactor : 0.0;
 
-    fragColor = mix(currentColor, historyColor, historyWeight);*/
-    fragColor = texture(currColorTexture, screenTexture);
+    vec4 currentColor = texture(currColorTexture, screenTexture);
+    fragColor = mix(currentColor, historyColor, historyWeight);
 }
