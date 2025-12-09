@@ -32,6 +32,4 @@ namespace RenderSystem
   {
     mShaderProgram.setLightProjection(lightProjection);
   }
-
-  ShadowMapShaderProgram* ShadowController::getShaderProgram() { return &mShaderProgram; }
 }  // namespace RenderSystem

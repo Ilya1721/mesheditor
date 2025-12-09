@@ -67,11 +67,11 @@ namespace RenderSystem
     );
     void onSceneObjectBBoxUpdated();
     void renderSceneObjects(const std::function<void(const Object3D*)>& prerenderSetup);
-    void renderRawScene(AbstractShaderProgram* shaderProgram);
-    void renderRawScene(TAAController* taaController);
-    void renderFullScene(AbstractShaderProgram* shaderProgram);
+    void renderRawScene(const std::function<void(const Object3D*)>& prerenderSetup);
+    void renderFullScene(const std::function<void(const Object3D*)>& prerenderSetup);
     void writeSceneToShadowMap();
     void writeSceneToTAATextures();
+    void scenePrerenderSetup(const Object3D* obj);
     const TAAColorTexture& resolveTAA();
     void renderDecorations();
     void renderHighlightedFaces();
@@ -79,9 +79,6 @@ namespace RenderSystem
     void renderWholeObjectHighlighted();
     void renderSkybox();
     void updateDirLightProjection();
-    void loadSkyboxVertices();
-    void loadScreenQuadVertices();
-    void makeJitteredProjection();
     void init(const std::string& meshFilePath);
     void onCameraPosChanged();
     void registerCallbacks();

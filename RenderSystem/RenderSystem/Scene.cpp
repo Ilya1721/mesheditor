@@ -62,8 +62,8 @@ namespace RenderSystem
   {
     registerRootObjectCallbacks();
     addModelObject(meshFilePath);
-    loadSkyboxVertices();
-    loadScreenQuadVertices();
+    mRenderer->loadSkyboxRenderData(RenderData::getSkyboxRenderData());
+    mRenderer->loadScreenQuadRenderData();
     addCameraListeners();
     registerCallbacks();
     mDirLightSource.setPosition(DIR_LIGHT_POS);
@@ -152,35 +152,20 @@ namespace RenderSystem
     for (auto& [object, vertexOffset] : mSceneObjectVertexOffsetMap)
     {
       prerenderSetup(object);
-      const auto& materialParams = object->getMaterialParams();
-      mSceneShaderProgram->setBlinnPhongMaterialParams(
-        materialParams.blinnPhongMaterialParams
-      );
-      mSceneShaderProgram->setGlassMaterialParams(materialParams.glassMaterialParams);
-      mSceneShaderProgram->setMaterialType(materialParams.materialType);
-      mSceneShaderProgram->setShadowMap(mShadowController->getDepthMap());
       mRenderer->renderObject3D(*object, vertexOffset);
     }
-    mSceneShaderProgram->setMaterialType(MaterialType::BLINN_PHONG);
   }
 
-  void Scene::renderRawScene(AbstractShaderProgram* shaderProgram)
+  void Scene::renderRawScene(const std::function<void(const Object3D*)>& prerenderSetup)
   {
-    renderSceneObjects([shaderProgram](const Object3D* obj)
-                       { shaderProgram->setModel(obj->getTransform()); });
+    renderSceneObjects(prerenderSetup);
     renderDecorations();
   }
 
-  void Scene::renderRawScene(TAAController* taaController) {
-    renderSceneObjects([taaController](const Object3D* obj)
-      { taaController->setModel(obj->getTransform()); });
-    renderDecorations();
-  }
-
-  void Scene::renderFullScene(AbstractShaderProgram* shaderProgram)
+  void Scene::renderFullScene(const std::function<void(const Object3D*)>& prerenderSetup)
   {
     renderSkybox();
-    renderRawScene(shaderProgram);
+    renderRawScene(prerenderSetup);
     renderHighlightedFaces();
     renderWireframe();
     renderWholeObjectHighlighted();
@@ -188,22 +173,39 @@ namespace RenderSystem
 
   void Scene::writeSceneToShadowMap()
   {
-    mShadowController->renderSceneToDepthMap(
-      [this]() { renderRawScene(mShadowController->getShaderProgram()); }
+    auto shadowMapPrerenderSetup = [this](const Object3D* obj)
+    { mShadowController->setModel(obj->getTransform()); };
+    mShadowController->renderSceneToDepthMap([this, &shadowMapPrerenderSetup]()
+                                             { renderRawScene(shadowMapPrerenderSetup); }
     );
   }
 
   void Scene::writeSceneToTAATextures()
   {
-    mTAAController->renderSceneToDepthMap(
-      [this]() { renderRawScene(mTAAController->getDepthMapShaderProgram()); }
-    );
+    auto taaPrerenderSetup = [this](const Object3D* obj)
+    { mTAAController->setModel(obj->getTransform()); };
+    mTAAController->renderSceneToDepthMap([this, &taaPrerenderSetup]()
+                                          { renderRawScene(taaPrerenderSetup); });
     mTAAController->renderSceneToMotionVectorsTexture(
-      [this]() { renderRawScene(mTAAController.get()); }
+      [this, &taaPrerenderSetup]() { renderRawScene(taaPrerenderSetup); }
     );
-    mTAAController->renderSceneToColorBuffer(
-      [this]() { renderFullScene(mSceneShaderProgram.get()); }
+    auto scenePrerenderSetupFunc = [this](const Object3D* obj)
+    { scenePrerenderSetup(obj); };
+    mTAAController->renderSceneToColorBuffer([this, &scenePrerenderSetupFunc]()
+                                             { renderFullScene(scenePrerenderSetupFunc); }
     );
+  }
+
+  void Scene::scenePrerenderSetup(const Object3D* obj)
+  {
+    const auto& materialParams = obj->getMaterialParams();
+    mSceneShaderProgram->setModel(obj->getTransform());
+    mSceneShaderProgram->setBlinnPhongMaterialParams(
+      materialParams.blinnPhongMaterialParams
+    );
+    mSceneShaderProgram->setGlassMaterialParams(materialParams.glassMaterialParams);
+    mSceneShaderProgram->setMaterialType(materialParams.materialType);
+    mSceneShaderProgram->setShadowMap(mShadowController->getDepthMap());
   }
 
   const TAAColorTexture& Scene::resolveTAA()
@@ -215,7 +217,6 @@ namespace RenderSystem
   {
     mSceneShaderProgram->setModel(glm::mat4(1.0f));
     mShadowController->setModel(glm::mat4(1.0f));
-    mTAAController->setModel(glm::mat4(1.0f));
 
     int startIndex = 0;
     for (const auto& sceneDecoration : mSceneDecorations)
@@ -279,15 +280,6 @@ namespace RenderSystem
     mShadowController->setLightProjection(lightProjectionMatrix);
   }
 
-  void Scene::loadSkyboxVertices()
-  {
-    mRenderer->loadSkyboxRenderData(RenderData::getSkyboxRenderData());
-  }
-
-  void Scene::loadScreenQuadVertices() { mRenderer->loadScreenQuadRenderData(); }
-
-  void Scene::makeJitteredProjection() { mTAAController->makeJitteredProjection(); }
-
   void Scene::setPickedObject(Object3D* pickedObject) { mPickedObject = pickedObject; }
 
   void Scene::addSceneDecoration(const SceneDecoration& sceneDecoration)
@@ -335,7 +327,7 @@ namespace RenderSystem
   void Scene::render()
   {
     mRenderer->cleanScreen();
-    makeJitteredProjection();
+    mTAAController->makeJitteredProjection();
     writeSceneToShadowMap();
     writeSceneToTAATextures();
     const auto& screenTexture = resolveTAA();

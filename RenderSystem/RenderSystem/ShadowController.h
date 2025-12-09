@@ -11,8 +11,6 @@ namespace RenderSystem
    public:
     ShadowController(const path& vertexShaderPath, const path& fragmentShaderPath);
 
-    ShadowMapShaderProgram* getShaderProgram();
-
     void onViewportChanged(Viewport* viewport) override;
 
     void setModel(const glm::mat4& model);
