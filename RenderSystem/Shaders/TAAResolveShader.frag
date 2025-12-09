@@ -1,6 +1,6 @@
 #version 330 core
 
-in vec2 screenTexture;
+in vec2 screenTextureCoords;
 
 out vec4 fragColor;
 
@@ -11,8 +11,11 @@ uniform sampler2D motionVectorsTexture;
 
 uniform mat4 prevViewProj;
 uniform mat4 invCurrViewProj;
+uniform bool isFirstFrame;
+uniform vec2 screenSize;
 
-uniform float blendFactor = 0.9;
+float maxWeight = 0.9;
+float minWeight = 0.1;
 
 vec3 reconstructWorldPosition(vec2 uv, float depth)
 {
@@ -36,16 +39,22 @@ bool nearlyEqual(float a, float b)
 
 void main()
 {
-    float currentDepth = texture(depthMap, screenTexture).r;
-    vec2 prevUV = reprojectUV(screenTexture, currentDepth);
-    prevUV += texture(motionVectorsTexture, screenTexture).xy;
-    vec2 prevColorTextureCoords = nearlyEqual(currentDepth, 1.0) ? screenTexture : prevUV;
+    float currentDepth = texture(depthMap, screenTextureCoords).r;
+    vec2 prevUV = reprojectUV(screenTextureCoords, currentDepth);
+    vec2 motionVector = texture(motionVectorsTexture, screenTextureCoords).xy;
+    prevUV += motionVector;
+    vec2 prevColorTextureCoords = nearlyEqual(currentDepth, 1.0) ? screenTextureCoords : prevUV;
 
     vec4 historyColor = texture(prevColorTexture, prevColorTextureCoords);
-    float prevDepth = texture(depthMap, prevUV).r;
+    float prevDepth = texture(depthMap, prevColorTextureCoords).r;
     float depthDiff = abs(prevDepth - currentDepth);
+    float speed = length(motionVector);
+    float maxSpeed = screenSize.x * 0.1;
+    float motionFactor = clamp(1.0 - speed / maxSpeed, 0.0, 1.0);
+    float blendFactor = mix(minWeight, maxWeight, motionFactor);
     float historyWeight = (depthDiff < 0.001) ? blendFactor : 0.0;
 
-    vec4 currentColor = texture(currColorTexture, screenTexture);
-    fragColor = mix(currentColor, historyColor, historyWeight);
+    vec4 currentColor = texture(currColorTexture, screenTextureCoords);
+    vec4 mixedColor = mix(currentColor, historyColor, historyWeight);
+    fragColor = isFirstFrame ? currentColor : mixedColor;
 }

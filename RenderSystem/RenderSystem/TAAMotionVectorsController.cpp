@@ -31,9 +31,14 @@ namespace RenderSystem
     mFBO.attachDepthBuffer(width, height);
   }
 
-  void TAAMotionVectorsController::setModel(const glm::mat4& model)
+  void TAAMotionVectorsController::setPrevModel(const glm::mat4& model)
   {
-    mShaderProgram.setModel(model);
+    mShaderProgram.setPrevModel(model);
+  }
+
+  void TAAMotionVectorsController::setCurrentModel(const glm::mat4& model)
+  {
+    mShaderProgram.setCurrentModel(model);
   }
 
   void TAAMotionVectorsController::setPrevView(const glm::mat4& view)
@@ -46,14 +51,14 @@ namespace RenderSystem
     mShaderProgram.setCurrentView(view);
   }
 
-  void TAAMotionVectorsController::setProjection(const glm::mat4& projection)
+  void TAAMotionVectorsController::setPrevJitteredProjection(const glm::mat4& projection)
   {
-    mShaderProgram.setProjection(projection);
+    mShaderProgram.setPrevJitteredProjection(projection);
   }
 
-  void TAAMotionVectorsController::setJitteredProjection(const glm::mat4& projection)
+  void TAAMotionVectorsController::setCurrentJitteredProjection(const glm::mat4& projection)
   {
-    mShaderProgram.setJitteredProjection(projection);
+    mShaderProgram.setCurrentJitteredProjection(projection);
   }
 
   void TAAMotionVectorsController::renderSceneToTexture(const std::function<void()>& renderSceneFunc)

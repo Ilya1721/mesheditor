@@ -17,7 +17,10 @@ namespace RenderSystem
 
     void setScreenSize(int width, int height);
     void renderSceneToColorBuffers(const std::function<void()>& renderSceneFunc);
-    void swapColorBuffers();
+    void swapPrevWithResolvedTexture(TAAColorTexture& texture);
+
+  private:
+    void init();
 
   private:
     FrameBufferObject mFBO;

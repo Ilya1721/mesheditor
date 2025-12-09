@@ -13,19 +13,26 @@ namespace RenderSystem
     const path& vertexShaderPath, const path& fragmentShaderPath
   )
     : ShaderProgram(vertexShaderPath, fragmentShaderPath),
-      mModel(),
+      mPrevModel(),
+      mCurrentModel(),
       mPrevView(),
       mCurrentView(),
-      mProjection(),
-      mJitteredProjection()
+      mPrevJitteredProjection(),
+      mCurrentJitteredProjection()
   {
     initUniformLocations();
   }
 
-  void TAAMotionVectorsShaderProgram::setModel(const glm::mat4& model)
+  void TAAMotionVectorsShaderProgram::setPrevModel(const glm::mat4& model)
   {
     invoke([this, &model]()
-           { glUniformMatrix4fv(mModel, 1, false, glm::value_ptr(model)); });
+           { glUniformMatrix4fv(mPrevModel, 1, false, glm::value_ptr(model)); });
+  }
+
+  void TAAMotionVectorsShaderProgram::setCurrentModel(const glm::mat4& model)
+  {
+    invoke([this, &model]()
+           { glUniformMatrix4fv(mCurrentModel, 1, false, glm::value_ptr(model)); });
   }
 
   void TAAMotionVectorsShaderProgram::setPrevView(const glm::mat4& view)
@@ -40,26 +47,39 @@ namespace RenderSystem
            { glUniformMatrix4fv(mCurrentView, 1, false, glm::value_ptr(view)); });
   }
 
-  void TAAMotionVectorsShaderProgram::setProjection(const glm::mat4& projection)
-  {
-    invoke([this, &projection]()
-           { glUniformMatrix4fv(mProjection, 1, false, glm::value_ptr(projection)); });
-  }
-
-  void TAAMotionVectorsShaderProgram::setJitteredProjection(const glm::mat4& projection)
+  void TAAMotionVectorsShaderProgram::setPrevJitteredProjection(
+    const glm::mat4& projection
+  )
   {
     invoke(
       [this, &projection]()
-      { glUniformMatrix4fv(mJitteredProjection, 1, false, glm::value_ptr(projection)); }
+      {
+        glUniformMatrix4fv(mPrevJitteredProjection, 1, false, glm::value_ptr(projection));
+      }
+    );
+  }
+
+  void TAAMotionVectorsShaderProgram::setCurrentJitteredProjection(
+    const glm::mat4& projection
+  )
+  {
+    invoke(
+      [this, &projection]()
+      {
+        glUniformMatrix4fv(
+          mCurrentJitteredProjection, 1, false, glm::value_ptr(projection)
+        );
+      }
     );
   }
 
   void TAAMotionVectorsShaderProgram::initUniformLocations()
   {
-    mModel = glGetUniformLocation(mShaderProgram, "model");
-    mPrevView = glGetUniformLocation(mShaderProgram, "prevView");
-    mCurrentView = glGetUniformLocation(mShaderProgram, "currentView");
-    mProjection = glGetUniformLocation(mShaderProgram, "projection");
-    mJitteredProjection = glGetUniformLocation(mShaderProgram, "jitteredProjection");
+    mPrevModel = getUniformLocation("prevModel");
+    mCurrentModel = getUniformLocation("currentModel");
+    mPrevView = getUniformLocation("prevView");
+    mCurrentView = getUniformLocation("currentView");
+    mPrevJitteredProjection = getUniformLocation("prevJitteredProjection");
+    mCurrentJitteredProjection = getUniformLocation("currentJitteredProjection");
   }
 }  // namespace RenderSystem

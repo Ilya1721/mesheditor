@@ -38,7 +38,7 @@ namespace RenderSystem
     void renderSceneToDepthMap(const std::function<void()>& renderSceneFunc);
     void renderSceneToMotionVectorsTexture(const std::function<void()>& renderSceneFunc);
     void renderSceneToColorBuffer(const std::function<void()>& renderSceneFunc);
-    void resolveTAA(const std::function<void()>& renderFunc);
+    const TAAColorTexture& resolveTAA(const std::function<void()>& renderFunc);
 
    private:
     void setView(const glm::mat4& view);
@@ -52,9 +52,11 @@ namespace RenderSystem
     glm::mat4 mProjection;
     glm::mat4 mJitteredProjection;
     glm::mat4 mView;
+    glm::mat4 mModel;
     int mScreenWidth;
     int mScreenHeight;
     int mFrameIndex;
+    bool mIsFirstFrame;
     SceneShaderProgram* mSceneShaderProgram;
     TAADepthMapController mDepthMapController;
     TAAMotionVectorsController mMotionVectorsController;

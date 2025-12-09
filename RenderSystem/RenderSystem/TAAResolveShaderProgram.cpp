@@ -59,6 +59,17 @@ namespace RenderSystem
     );
   }
 
+  void TAAResolveShaderProgram::setIsFirstFrame(bool isFirstFrame)
+  {
+    invoke([this, isFirstFrame]() { glUniform1i(mIsFirstFrame, isFirstFrame); });
+  }
+
+  void TAAResolveShaderProgram::setScreenSize(const glm::vec2& size)
+  {
+    
+    invoke([this, &size]() { glUniform2fv(mScreenSize, 1, glm::value_ptr(size)); });
+  }
+
   void TAAResolveShaderProgram::initUniformLocations()
   {
     mCurrentColorTexture = getUniformLocation("currColorTexture");
@@ -67,5 +78,7 @@ namespace RenderSystem
     mMotionVectorsTexture = getUniformLocation("motionVectorsTexture");
     mPrevViewProj = getUniformLocation("prevViewProj");
     mInvCurrViewProj = getUniformLocation("invCurrViewProj");
+    mIsFirstFrame = getUniformLocation("isFirstFrame");
+    mScreenSize = getUniformLocation("screenSize");
   }
 }  // namespace RenderSystem

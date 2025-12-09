@@ -50,9 +50,11 @@ namespace RenderSystem
     : mProjection(1.0f),
       mJitteredProjection(1.0f),
       mView(1.0f),
+      mModel(1.0f),
       mScreenWidth(0),
       mScreenHeight(0),
       mFrameIndex(0),
+      mIsFirstFrame(true),
       mSceneShaderProgram(sceneShaderProgram),
       mDepthMapController(depthMapVertexShaderPath, depthMapFragmentShaderPath),
       mMotionVectorsController(
@@ -87,16 +89,16 @@ namespace RenderSystem
 
   void TAAController::setModel(const glm::mat4& model)
   {
+    if (mIsFirstFrame) { mModel = model; }
     mDepthMapController.setModel(model);
-    mMotionVectorsController.setModel(model);
+    mMotionVectorsController.setPrevModel(mModel);
+    mMotionVectorsController.setCurrentModel(model);
+    mModel = model;
   }
 
   void TAAController::setView(const glm::mat4& view)
   {
-    if (mFrameIndex == 0)
-    {
-      mView = view;
-    }
+    if (mIsFirstFrame) { mView = view; }
 
     mDepthMapController.setView(view);
     mMotionVectorsController.setPrevView(mView);
@@ -125,7 +127,8 @@ namespace RenderSystem
     mColorBufferController.renderSceneToColorBuffers(renderSceneFunc);
   }
 
-  void TAAController::resolveTAA(const std::function<void()>& renderFunc)
+  const TAAColorTexture& TAAController::resolveTAA(const std::function<void()>& renderFunc
+  )
   {
     mResolveController.setCurrentColorTexture(
       mColorBufferController.getCurrentColorBuffer()
@@ -138,14 +141,17 @@ namespace RenderSystem
       mMotionVectorsController.getMotionVectorsTexture()
     );
     mResolveController.calcViewProjMatrices();
-    mResolveController.render(renderFunc);
-    mColorBufferController.swapColorBuffers();
+    mResolveController.setIsFirstFrame(mIsFirstFrame);
+    auto& resolvedTexture = mResolveController.render(renderFunc);
+    mColorBufferController.swapPrevWithResolvedTexture(resolvedTexture);
+    mIsFirstFrame = false;
+
+    return mColorBufferController.getPreviousColorBuffer();
   }
 
   void TAAController::setProjection(const glm::mat4& projection)
   {
     mProjection = projection;
-    mMotionVectorsController.setProjection(projection);
   }
 
   void TAAController::setScreenSize(int screenWidth, int screenHeight)
@@ -164,25 +170,24 @@ namespace RenderSystem
     mDepthMapController.setDepthMapSize(screenWidth, screenHeight);
     mMotionVectorsController.setScreenSize(screenWidth, screenHeight);
     mColorBufferController.setScreenSize(screenWidth, screenHeight);
+    mResolveController.setScreenSize(screenWidth, screenHeight);
   }
 
   void TAAController::resetFrameIndex() { mFrameIndex = 0; }
 
   void TAAController::makeJitteredProjection()
   {
-    auto jitter = getJitter(mFrameIndex);
+    auto jitter = getJitter(mFrameIndex + 1);
     auto jitterNDC = convertJitterToNDC(jitter, mScreenWidth, mScreenHeight);
     glm::vec3 jitterTranslationVec {jitterNDC.x, jitterNDC.y, 0.0f};
     auto jitterTranslation = glm::translate(glm::mat4(1.0f), jitterTranslationVec);
     auto jitteredProjection = jitterTranslation * mProjection;
-    if (mFrameIndex == 0)
-    {
-      mJitteredProjection = jitteredProjection;
-    }
-    mResolveController.setPrevJitteredProjection(mJitteredProjection);
+    if (mIsFirstFrame) { mJitteredProjection = jitteredProjection; }
     mDepthMapController.setJitteredProjection(jitteredProjection);
     mSceneShaderProgram->setJitteredProjection(jitteredProjection);
-    mMotionVectorsController.setJitteredProjection(jitteredProjection);
+    mMotionVectorsController.setPrevJitteredProjection(mJitteredProjection);
+    mMotionVectorsController.setCurrentJitteredProjection(jitteredProjection);
+    mResolveController.setPrevJitteredProjection(mJitteredProjection);
     mResolveController.setCurrentJitteredProjection(jitteredProjection);
     mJitteredProjection = jitteredProjection;
     mFrameIndex = (mFrameIndex + 1) % SAMPLE_COUNT_TAA;

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "FrameBufferObject.h"
 #include "TAAColorTexture.h"
 #include "TAAResolveShaderProgram.h"
 
@@ -21,16 +22,19 @@ namespace RenderSystem
     void setCurrentView(const glm::mat4& view);
     void setPrevJitteredProjection(const glm::mat4& projection);
     void setCurrentJitteredProjection(const glm::mat4& projection);
+    void setScreenSize(int width, int height);
+    void setIsFirstFrame(bool isFirstFrame);
 
-    void render(const std::function<void()>& renderFunc) const;
+    TAAColorTexture& render(const std::function<void()>& renderFunc);
     void calcViewProjMatrices();
 
    private:
     TAAResolveShaderProgram mShaderProgram;
+    FrameBufferObject mFBO;
+    TAAColorTexture mResolvedColorTexture;
     glm::mat4 mPrevView;
     glm::mat4 mCurrentView;
     glm::mat4 mPrevJitteredProjection;
     glm::mat4 mCurrentJitteredProjection;
-    bool isFirstFrame;
   };
 }  // namespace RenderSystem

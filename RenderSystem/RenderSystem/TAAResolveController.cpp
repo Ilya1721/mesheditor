@@ -1,5 +1,10 @@
 #include "TAAResolveController.h"
 
+#ifdef __gl_h_
+#undef __gl_h_
+#endif
+#include "glad/glad.h"
+
 namespace RenderSystem
 {
   TAAResolveController::TAAResolveController(
@@ -10,8 +15,7 @@ namespace RenderSystem
       mPrevView(1.0f),
       mCurrentView(1.0f),
       mPrevJitteredProjection(1.0f),
-      mCurrentJitteredProjection(1.0f),
-      isFirstFrame(true)
+      mCurrentJitteredProjection(1.0f)
   {
   }
 
@@ -54,9 +58,33 @@ namespace RenderSystem
     mCurrentJitteredProjection = projection;
   }
 
-  void TAAResolveController::render(const std::function<void()>& renderFunc) const
+  void TAAResolveController::setScreenSize(int width, int height)
   {
-    mShaderProgram.invoke(renderFunc);
+    mResolvedColorTexture.setDimensions(width, height);
+    mFBO.attachDepthBuffer(width, height);
+    mShaderProgram.setScreenSize(glm::vec2(width, height));
+  }
+
+  void TAAResolveController::setIsFirstFrame(bool isFirstFrame)
+  {
+    mShaderProgram.setIsFirstFrame(isFirstFrame);
+  }
+
+  TAAColorTexture& TAAResolveController::render(const std::function<void()>& renderFunc)
+  {
+    mFBO.attachTexture(
+      mResolvedColorTexture,
+      [this]() { glDrawBuffer(mResolvedColorTexture.getAttachmentId()); }
+    );
+    mFBO.invoke(
+      [this, &renderFunc]()
+      {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        mShaderProgram.invoke(renderFunc);
+      }
+    );
+
+    return mResolvedColorTexture;
   }
 
   void TAAResolveController::calcViewProjMatrices()

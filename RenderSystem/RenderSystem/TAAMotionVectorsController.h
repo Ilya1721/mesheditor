@@ -17,11 +17,12 @@ namespace RenderSystem
     const TAAMotionVectorsTexture& getMotionVectorsTexture() const;
 
     void setScreenSize(int width, int height);
-    void setModel(const glm::mat4& model);
+    void setPrevModel(const glm::mat4& model);
+    void setCurrentModel(const glm::mat4& model);
     void setPrevView(const glm::mat4& view);
     void setCurrentView(const glm::mat4& view);
-    void setProjection(const glm::mat4& projection);
-    void setJitteredProjection(const glm::mat4& projection);
+    void setPrevJitteredProjection(const glm::mat4& projection);
+    void setCurrentJitteredProjection(const glm::mat4& projection);
     void renderSceneToTexture(const std::function<void()>& renderSceneFunc);
 
    private:

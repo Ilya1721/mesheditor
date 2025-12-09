@@ -2,34 +2,36 @@
 
 #include <glm/glm.hpp>
 
-#include "AbstractShaderProgram.h"
 #include "ShaderProgram.h"
 
 using namespace std::filesystem;
 
 namespace RenderSystem
 {
-  class TAAMotionVectorsShaderProgram : public ShaderProgram, public AbstractShaderProgram
+  class TAAMotionVectorsShaderProgram : public ShaderProgram
   {
-  public:
-    TAAMotionVectorsShaderProgram(const path& vertexShaderPath, const path& fragmentShaderPath);
+   public:
+    TAAMotionVectorsShaderProgram(
+      const path& vertexShaderPath, const path& fragmentShaderPath
+    );
     virtual ~TAAMotionVectorsShaderProgram() = default;
 
-    void setModel(const glm::mat4& model) override;
+    void setPrevModel(const glm::mat4& model);
+    void setCurrentModel(const glm::mat4& model);
     void setPrevView(const glm::mat4& view);
     void setCurrentView(const glm::mat4& view);
-    void setProjection(const glm::mat4& projection);
-    void setJitteredProjection(const glm::mat4& projection);
+    void setPrevJitteredProjection(const glm::mat4& projection);
+    void setCurrentJitteredProjection(const glm::mat4& projection);
 
-  private:
+   private:
     void initUniformLocations();
 
-  protected:
-    int mModel;
+   protected:
+    int mPrevModel;
+    int mCurrentModel;
     int mPrevView;
     int mCurrentView;
-    int mProjection;
-    int mJitteredProjection;
+    int mPrevJitteredProjection;
+    int mCurrentJitteredProjection;
   };
-}
-
+}  // namespace RenderSystem

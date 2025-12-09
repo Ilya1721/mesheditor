@@ -111,6 +111,10 @@ namespace RenderSystem
     R"(./RenderSystem/Shaders/VertexShader.vert)";
   const std::string SCENE_FRAGMENT_SHADER_PATH =
     R"(./RenderSystem/Shaders/FragmentShader.frag)";
+  const std::string SCREEN_VERTEX_SHADER_PATH =
+    R"(./RenderSystem/Shaders/ScreenShader.vert)";
+  const std::string SCREEN_FRAGMENT_SHADER_PATH =
+    R"(./RenderSystem/Shaders/ScreenShader.frag)";
   const std::filesystem::path SKYBOX_VERTEX_SHADER_PATH =
     R"(./RenderSystem/Shaders/SkyboxShader.vert)";
   const std::filesystem::path SKYBOX_FRAGMENT_SHADER_PATH =

@@ -127,6 +127,8 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Shaders\ScreenShader.frag" />
+    <None Include="Shaders\ScreenShader.vert" />
     <None Include="Shaders\TAAMotionVectorsShader.frag" />
     <None Include="Shaders\TAAMotionVectorsShader.vert" />
     <None Include="Shaders\ShadowMapShader.frag" />
@@ -146,6 +148,7 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <ClCompile Include="RenderSystem\DebugVisualization.cpp" />
     <ClCompile Include="RenderSystem\GlassMaterial.cpp" />
     <ClCompile Include="RenderSystem\BlinnPhongMaterial.cpp" />
+    <ClCompile Include="RenderSystem\ScreenShaderProgram.cpp" />
     <ClCompile Include="RenderSystem\TAAColorBufferController.cpp" />
     <ClCompile Include="RenderSystem\TAAColorTexture.cpp" />
     <ClCompile Include="RenderSystem\TAADepthMapController.cpp" />
@@ -203,6 +206,7 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <ClInclude Include="RenderSystem\DebugVisualization.h" />
     <ClInclude Include="RenderSystem\GlassMaterial.h" />
     <ClInclude Include="RenderSystem\BlinnPhongMaterial.h" />
+    <ClInclude Include="RenderSystem\ScreenShaderProgram.h" />
     <ClInclude Include="RenderSystem\TAAColorBufferController.h" />
     <ClInclude Include="RenderSystem\TAAColorTexture.h" />
     <ClInclude Include="RenderSystem\TAADepthMapController.h" />

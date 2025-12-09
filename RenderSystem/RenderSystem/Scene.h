@@ -16,6 +16,7 @@
 #include "Renderer.h"
 #include "SceneDecoration.h"
 #include "SceneShaderProgram.h"
+#include "ScreenShaderProgram.h"
 #include "ShadowController.h"
 #include "SkyboxController.h"
 #include "TAAController.h"
@@ -65,12 +66,13 @@ namespace RenderSystem
       const Object3D* object, const std::unordered_set<UniqueVertex*>& vertices
     );
     void onSceneObjectBBoxUpdated();
-    void renderSceneObjects(AbstractShaderProgram* shaderProgram);
+    void renderSceneObjects(const std::function<void(const Object3D*)>& prerenderSetup);
     void renderRawScene(AbstractShaderProgram* shaderProgram);
+    void renderRawScene(TAAController* taaController);
     void renderFullScene(AbstractShaderProgram* shaderProgram);
     void writeSceneToShadowMap();
     void writeSceneToTAATextures();
-    void resolveTAA();
+    const TAAColorTexture& resolveTAA();
     void renderDecorations();
     void renderHighlightedFaces();
     void renderWireframe();
@@ -84,10 +86,12 @@ namespace RenderSystem
     void onCameraPosChanged();
     void registerCallbacks();
     void addCameraListeners();
+    void renderFinalScreenTexture(const Texture2D& texture);
 
    private:
     std::unique_ptr<Renderer> mRenderer;
     std::unique_ptr<SceneShaderProgram> mSceneShaderProgram;
+    std::unique_ptr<ScreenShaderProgram> mScreenShaderProgram;
     std::unique_ptr<Camera> mCamera;
     std::unique_ptr<ShadowController> mShadowController;
     std::unique_ptr<SkyboxController> mSkyboxController;

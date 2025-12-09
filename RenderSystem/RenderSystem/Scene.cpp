@@ -37,6 +37,9 @@ namespace RenderSystem
     mSceneShaderProgram = std::make_unique<SceneShaderProgram>(
       SCENE_VERTEX_SHADER_PATH, SCENE_FRAGMENT_SHADER_PATH
     );
+    mScreenShaderProgram = std::make_unique<ScreenShaderProgram>(
+      SCREEN_VERTEX_SHADER_PATH, SCREEN_FRAGMENT_SHADER_PATH
+    );
     mShadowController = std::make_unique<ShadowController>(
       SHADOW_MAP_VERTEX_SHADER_PATH, SHADOW_MAP_FRAGMENT_SHADER_PATH
     );
@@ -89,6 +92,12 @@ namespace RenderSystem
     );
   }
 
+  void Scene::renderFinalScreenTexture(const Texture2D& texture)
+  {
+    mScreenShaderProgram->setTexture(texture);
+    mScreenShaderProgram->invoke([this]() { mRenderer->renderScreenQuad(); });
+  }
+
   void Scene::addModelObject(const std::string& meshFilePath)
   {
     auto modelObject =
@@ -136,12 +145,14 @@ namespace RenderSystem
 
   void Scene::onSceneObjectBBoxUpdated() { updateDirLightProjection(); }
 
-  void Scene::renderSceneObjects(AbstractShaderProgram* shaderProgram)
+  void Scene::renderSceneObjects(
+    const std::function<void(const Object3D*)>& prerenderSetup
+  )
   {
     for (auto& [object, vertexOffset] : mSceneObjectVertexOffsetMap)
     {
+      prerenderSetup(object);
       const auto& materialParams = object->getMaterialParams();
-      shaderProgram->setModel(object->getTransform());
       mSceneShaderProgram->setBlinnPhongMaterialParams(
         materialParams.blinnPhongMaterialParams
       );
@@ -155,7 +166,14 @@ namespace RenderSystem
 
   void Scene::renderRawScene(AbstractShaderProgram* shaderProgram)
   {
-    renderSceneObjects(shaderProgram);
+    renderSceneObjects([shaderProgram](const Object3D* obj)
+                       { shaderProgram->setModel(obj->getTransform()); });
+    renderDecorations();
+  }
+
+  void Scene::renderRawScene(TAAController* taaController) {
+    renderSceneObjects([taaController](const Object3D* obj)
+      { taaController->setModel(obj->getTransform()); });
     renderDecorations();
   }
 
@@ -181,16 +199,16 @@ namespace RenderSystem
       [this]() { renderRawScene(mTAAController->getDepthMapShaderProgram()); }
     );
     mTAAController->renderSceneToMotionVectorsTexture(
-      [this]() { renderRawScene(mTAAController->getMotionVectorsShaderProgram()); }
+      [this]() { renderRawScene(mTAAController.get()); }
     );
     mTAAController->renderSceneToColorBuffer(
       [this]() { renderFullScene(mSceneShaderProgram.get()); }
     );
   }
 
-  void Scene::resolveTAA()
+  const TAAColorTexture& Scene::resolveTAA()
   {
-    mTAAController->resolveTAA([this]() { mRenderer->renderScreenQuad(); });
+    return mTAAController->resolveTAA([this]() { mRenderer->renderScreenQuad(); });
   }
 
   void Scene::renderDecorations()
@@ -320,10 +338,8 @@ namespace RenderSystem
     makeJitteredProjection();
     writeSceneToShadowMap();
     writeSceneToTAATextures();
-    resolveTAA();
-
-    //mSceneShaderProgram->invoke([this]() { renderFullScene(mSceneShaderProgram.get());
-    //});
+    const auto& screenTexture = resolveTAA();
+    renderFinalScreenTexture(screenTexture);
   }
 
   Object3DIntersection Scene::getRayIntersection(
