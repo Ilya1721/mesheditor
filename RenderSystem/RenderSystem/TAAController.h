@@ -26,9 +26,6 @@ namespace RenderSystem
       const path& resolveFragmentShaderPath
     );
 
-    TAADepthMapShaderProgram* getDepthMapShaderProgram();
-    TAAMotionVectorsShaderProgram* getMotionVectorsShaderProgram();
-
     void onCameraPosChanged(Camera* camera) override;
     void onViewportChanged(Viewport* viewport) override;
 
@@ -50,7 +47,6 @@ namespace RenderSystem
 
    private:
     glm::mat4 mProjection;
-    glm::mat4 mJitteredProjection;
     glm::mat4 mView;
     glm::mat4 mModel;
     int mScreenWidth;

@@ -31,31 +31,21 @@ namespace RenderSystem
     );
   }
 
-  void TAAResolveShaderProgram::setDepthMap(const DepthTexture& texture) const
+  void TAAResolveShaderProgram::setPrevDepthMap(const DepthTexture& texture) const
   {
-    invoke([this, &texture]() { texture.passToFragmentShader(mDepthMap, 2); });
+    invoke([this, &texture]() { texture.passToFragmentShader(mPrevDepthMap, 2); });
+  }
+
+  void TAAResolveShaderProgram::setCurrDepthMap(const DepthTexture& texture) const
+  {
+    invoke([this, &texture]() { texture.passToFragmentShader(mCurrDepthMap, 3); });
   }
 
   void TAAResolveShaderProgram::setMotionVectorsTexture(
     const TAAMotionVectorsTexture& texture
   ) const
   {
-    invoke([this, &texture]() { texture.passToFragmentShader(mMotionVectorsTexture, 3); }
-    );
-  }
-
-  void TAAResolveShaderProgram::setPrevViewProj(const glm::mat4& prevViewProj)
-  {
-    invoke([this, &prevViewProj]()
-           { glUniformMatrix4fv(mPrevViewProj, 1, false, glm::value_ptr(prevViewProj)); }
-    );
-  }
-
-  void TAAResolveShaderProgram::setInvCurrViewProj(const glm::mat4& invCurrViewProj)
-  {
-    invoke(
-      [this, &invCurrViewProj]()
-      { glUniformMatrix4fv(mInvCurrViewProj, 1, false, glm::value_ptr(invCurrViewProj)); }
+    invoke([this, &texture]() { texture.passToFragmentShader(mMotionVectorsTexture, 4); }
     );
   }
 
@@ -66,7 +56,6 @@ namespace RenderSystem
 
   void TAAResolveShaderProgram::setScreenSize(const glm::vec2& size)
   {
-    
     invoke([this, &size]() { glUniform2fv(mScreenSize, 1, glm::value_ptr(size)); });
   }
 
@@ -74,10 +63,9 @@ namespace RenderSystem
   {
     mCurrentColorTexture = getUniformLocation("currColorTexture");
     mPreviousColorTexture = getUniformLocation("prevColorTexture");
-    mDepthMap = getUniformLocation("depthMap");
+    mPrevDepthMap = getUniformLocation("prevDepthMap");
+    mCurrDepthMap = getUniformLocation("currDepthMap");
     mMotionVectorsTexture = getUniformLocation("motionVectorsTexture");
-    mPrevViewProj = getUniformLocation("prevViewProj");
-    mInvCurrViewProj = getUniformLocation("invCurrViewProj");
     mIsFirstFrame = getUniformLocation("isFirstFrame");
     mScreenSize = getUniformLocation("screenSize");
   }

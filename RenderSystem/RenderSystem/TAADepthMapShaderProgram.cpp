@@ -15,7 +15,7 @@ namespace RenderSystem
     : ShaderProgram(vertexShaderPath, fragmentShaderPath),
       mModel(),
       mView(),
-      mJitteredProjection()
+      mProjection()
   {
     initUniformLocations();
   }
@@ -32,11 +32,11 @@ namespace RenderSystem
     );
   }
 
-  void TAADepthMapShaderProgram::setJitteredProjection(const glm::mat4& projection)
+  void TAADepthMapShaderProgram::setProjection(const glm::mat4& projection)
   {
     invoke(
       [this, &projection]()
-      { glUniformMatrix4fv(mJitteredProjection, 1, false, glm::value_ptr(projection)); }
+      { glUniformMatrix4fv(mProjection, 1, false, glm::value_ptr(projection)); }
     );
   }
 
@@ -44,6 +44,6 @@ namespace RenderSystem
   {
     mModel = glGetUniformLocation(mShaderProgram, "model");
     mView = glGetUniformLocation(mShaderProgram, "view");
-    mJitteredProjection = glGetUniformLocation(mShaderProgram, "jitteredProjection");
+    mProjection = glGetUniformLocation(mShaderProgram, "projection");
   }
 }  // namespace RenderSystem

@@ -33,7 +33,7 @@ namespace RenderSystem
     mFBO.attachDepthBuffer(width, height);
   }
 
-  void TAAColorBufferController::renderSceneToColorBuffers(
+  void TAAColorBufferController::renderSceneToColorBuffer(
     const std::function<void()>& renderSceneFunc
   )
   {

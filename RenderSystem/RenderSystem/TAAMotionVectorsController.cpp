@@ -51,14 +51,9 @@ namespace RenderSystem
     mShaderProgram.setCurrentView(view);
   }
 
-  void TAAMotionVectorsController::setPrevJitteredProjection(const glm::mat4& projection)
+  void TAAMotionVectorsController::setProjection(const glm::mat4& projection)
   {
-    mShaderProgram.setPrevJitteredProjection(projection);
-  }
-
-  void TAAMotionVectorsController::setCurrentJitteredProjection(const glm::mat4& projection)
-  {
-    mShaderProgram.setCurrentJitteredProjection(projection);
+    mShaderProgram.setProjection(projection);
   }
 
   void TAAMotionVectorsController::renderSceneToTexture(const std::function<void()>& renderSceneFunc)
@@ -66,10 +61,19 @@ namespace RenderSystem
     mFBO.invoke(
       [this, &renderSceneFunc]()
       {
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         mShaderProgram.invoke(renderSceneFunc);
       }
     );
+  }
+
+  void TAAMotionVectorsController::resetViewModel(const glm::mat4& view, const glm::mat4& model)
+  {
+    setPrevView(view);
+    setCurrentView(view);
+    setPrevModel(model);
+    setCurrentModel(model);
   }
 
   void TAAMotionVectorsController::init()

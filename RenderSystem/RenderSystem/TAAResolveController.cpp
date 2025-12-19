@@ -11,11 +11,7 @@ namespace RenderSystem
     const std::filesystem::path& vertexShaderPath,
     const std::filesystem::path& fragmentShaderPath
   )
-    : mShaderProgram(vertexShaderPath, fragmentShaderPath),
-      mPrevView(1.0f),
-      mCurrentView(1.0f),
-      mPrevJitteredProjection(1.0f),
-      mCurrentJitteredProjection(1.0f)
+    : mShaderProgram(vertexShaderPath, fragmentShaderPath)
   {
   }
 
@@ -29,9 +25,14 @@ namespace RenderSystem
     mShaderProgram.setPreviousColorTexture(texture);
   }
 
-  void TAAResolveController::setDepthMap(const DepthTexture& texture) const
+  void TAAResolveController::setPrevDepthMap(const DepthTexture& texture) const
   {
-    mShaderProgram.setDepthMap(texture);
+    mShaderProgram.setPrevDepthMap(texture);
+  }
+
+  void TAAResolveController::setCurrDepthMap(const DepthTexture& texture) const
+  {
+    mShaderProgram.setCurrDepthMap(texture);
   }
 
   void TAAResolveController::setMotionVectorsTexture(
@@ -41,28 +42,11 @@ namespace RenderSystem
     mShaderProgram.setMotionVectorsTexture(texture);
   }
 
-  void TAAResolveController::setPrevView(const glm::mat4& view) { mPrevView = view; }
-
-  void TAAResolveController::setCurrentView(const glm::mat4& view)
-  {
-    mCurrentView = view;
-  }
-
-  void TAAResolveController::setPrevJitteredProjection(const glm::mat4& projection)
-  {
-    mPrevJitteredProjection = projection;
-  }
-
-  void TAAResolveController::setCurrentJitteredProjection(const glm::mat4& projection)
-  {
-    mCurrentJitteredProjection = projection;
-  }
-
   void TAAResolveController::setScreenSize(int width, int height)
   {
     mResolvedColorTexture.setDimensions(width, height);
-    mFBO.attachDepthBuffer(width, height);
     mShaderProgram.setScreenSize(glm::vec2(width, height));
+    mFBO.attachDepthBuffer(width, height);
   }
 
   void TAAResolveController::setIsFirstFrame(bool isFirstFrame)
@@ -85,13 +69,5 @@ namespace RenderSystem
     );
 
     return mResolvedColorTexture;
-  }
-
-  void TAAResolveController::calcViewProjMatrices()
-  {
-    auto preViewProj = mPrevJitteredProjection * mPrevView;
-    auto invCurrViewProj = glm::inverse(mCurrentJitteredProjection * mCurrentView);
-    mShaderProgram.setPrevViewProj(preViewProj);
-    mShaderProgram.setInvCurrViewProj(invCurrViewProj);
   }
 }  // namespace RenderSystem

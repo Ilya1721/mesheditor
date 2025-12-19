@@ -16,7 +16,7 @@ namespace RenderSystem
     const TAAColorTexture& getPreviousColorBuffer() const;
 
     void setScreenSize(int width, int height);
-    void renderSceneToColorBuffers(const std::function<void()>& renderSceneFunc);
+    void renderSceneToColorBuffer(const std::function<void()>& renderSceneFunc);
     void swapPrevWithResolvedTexture(TAAColorTexture& texture);
 
   private:

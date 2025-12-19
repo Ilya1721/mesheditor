@@ -15,7 +15,7 @@ namespace RenderSystem
 
     void setModel(const glm::mat4& model) override;
     void setView(const glm::mat4& view);
-    void setJitteredProjection(const glm::mat4& projection);
+    void setProjection(const glm::mat4& projection);
 
   private:
     void initUniformLocations();
@@ -23,6 +23,6 @@ namespace RenderSystem
   private:
     int mModel;
     int mView;
-    int mJitteredProjection;
+    int mProjection;
   };
 }  // namespace RenderSystem

@@ -20,8 +20,7 @@ namespace RenderSystem
     void setCurrentModel(const glm::mat4& model);
     void setPrevView(const glm::mat4& view);
     void setCurrentView(const glm::mat4& view);
-    void setPrevJitteredProjection(const glm::mat4& projection);
-    void setCurrentJitteredProjection(const glm::mat4& projection);
+    void setProjection(const glm::mat4& projection);
 
    private:
     void initUniformLocations();
@@ -31,7 +30,6 @@ namespace RenderSystem
     int mCurrentModel;
     int mPrevView;
     int mCurrentView;
-    int mPrevJitteredProjection;
-    int mCurrentJitteredProjection;
+    int mProjection;
   };
 }  // namespace RenderSystem

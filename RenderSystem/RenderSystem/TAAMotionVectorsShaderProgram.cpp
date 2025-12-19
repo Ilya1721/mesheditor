@@ -17,8 +17,7 @@ namespace RenderSystem
       mCurrentModel(),
       mPrevView(),
       mCurrentView(),
-      mPrevJitteredProjection(),
-      mCurrentJitteredProjection()
+      mProjection()
   {
     initUniformLocations();
   }
@@ -47,28 +46,14 @@ namespace RenderSystem
            { glUniformMatrix4fv(mCurrentView, 1, false, glm::value_ptr(view)); });
   }
 
-  void TAAMotionVectorsShaderProgram::setPrevJitteredProjection(
+  void TAAMotionVectorsShaderProgram::setProjection(
     const glm::mat4& projection
   )
   {
     invoke(
       [this, &projection]()
       {
-        glUniformMatrix4fv(mPrevJitteredProjection, 1, false, glm::value_ptr(projection));
-      }
-    );
-  }
-
-  void TAAMotionVectorsShaderProgram::setCurrentJitteredProjection(
-    const glm::mat4& projection
-  )
-  {
-    invoke(
-      [this, &projection]()
-      {
-        glUniformMatrix4fv(
-          mCurrentJitteredProjection, 1, false, glm::value_ptr(projection)
-        );
+        glUniformMatrix4fv(mProjection, 1, false, glm::value_ptr(projection));
       }
     );
   }
@@ -79,7 +64,6 @@ namespace RenderSystem
     mCurrentModel = getUniformLocation("currentModel");
     mPrevView = getUniformLocation("prevView");
     mCurrentView = getUniformLocation("currentView");
-    mPrevJitteredProjection = getUniformLocation("prevJitteredProjection");
-    mCurrentJitteredProjection = getUniformLocation("currentJitteredProjection");
+    mProjection = getUniformLocation("projection");
   }
 }  // namespace RenderSystem

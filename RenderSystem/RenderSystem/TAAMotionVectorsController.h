@@ -21,9 +21,9 @@ namespace RenderSystem
     void setCurrentModel(const glm::mat4& model);
     void setPrevView(const glm::mat4& view);
     void setCurrentView(const glm::mat4& view);
-    void setPrevJitteredProjection(const glm::mat4& projection);
-    void setCurrentJitteredProjection(const glm::mat4& projection);
+    void setProjection(const glm::mat4& projection);
     void renderSceneToTexture(const std::function<void()>& renderSceneFunc);
+    void resetViewModel(const glm::mat4& view, const glm::mat4& model);
 
    private:
     void init();
