@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <unordered_map>
 
 #include "TAAColorBufferController.h"
 #include "TAADepthMapController.h"
@@ -8,9 +9,16 @@
 #include "TAAResolveController.h"
 #include "ViewportListener.h"
 
+struct ObjectModel
+{
+  glm::mat4 prevModel;
+  glm::mat4 currentModel;
+};
+
 namespace RenderSystem
 {
   class SceneShaderProgram;
+  class Object3D;
 
   class TAAController : public ViewportListener
   {
@@ -29,7 +37,7 @@ namespace RenderSystem
 
     void resetFrameIndex();
     void makeJitteredProjection();
-    void setModel(const glm::mat4& model);
+    void setModel(const Object3D* object, const glm::mat4& model);
     void setView(const glm::mat4& view);
     void renderSceneToDepthMap(const std::function<void()>& renderSceneFunc);
     void renderSceneToMotionVectorsTexture(const std::function<void()>& renderSceneFunc);
@@ -46,7 +54,6 @@ namespace RenderSystem
    private:
     glm::mat4 mProjection;
     glm::mat4 mView;
-    glm::mat4 mModel;
     int mScreenWidth;
     int mScreenHeight;
     int mFrameIndex;
@@ -56,5 +63,6 @@ namespace RenderSystem
     TAAMotionVectorsController mMotionVectorsController;
     TAAColorBufferController mColorBufferController;
     TAAResolveController mResolveController;
+    std::unordered_map<const Object3D*, ObjectModel> mObjectModelMap;
   };
 }  // namespace RenderSystem

@@ -11,6 +11,8 @@
 
 namespace
 {
+  using namespace MeshFilesLoader;
+
   using parseTokenFunc =
     void(char*& currentToken, char*& context, const char* delimeters);
 
@@ -21,7 +23,7 @@ namespace
     if (fileContent.empty()) { throw std::exception("File content is empty"); }
 
     const char* buffer = fileContent.c_str();
-    buffer += MeshFilesLoader::STL_HEADER_SIZE;
+    buffer += STL_HEADER_SIZE;
 
     auto numberOfTriangles = *reinterpret_cast<const uint32_t*>(buffer);
     auto correctBinaryFileSize = numberOfTriangles * 50 + 84;
@@ -59,7 +61,7 @@ namespace
   )
   {
     char* context = nullptr;
-    auto delimiters = MeshFilesLoader::DELIMITERS.c_str();
+    auto delimiters = DELIMITERS.c_str();
     char* currentToken = strtok_s(fileContent.data(), delimiters, &context);
 
     while (currentToken != nullptr)
@@ -98,7 +100,7 @@ namespace
   std::unique_ptr<MeshCore::Mesh> parseBinarySTL(const std::string& fileContent)
   {
     const char* buffer = fileContent.c_str();
-    buffer += MeshFilesLoader::STL_HEADER_SIZE;
+    buffer += STL_HEADER_SIZE;
 
     auto facesCount = *reinterpret_cast<const uint32_t*>(buffer);
     buffer += sizeof(uint32_t);
@@ -163,21 +165,36 @@ namespace
     }
   }
 
-  std::string parseTextureRelativePath(
+  std::string getExtension(const std::string& path)
+  {
+    auto dotPos = path.find_last_of('.');
+    if (dotPos == std::string::npos) { return ""; }
+    return path.substr(dotPos);
+  }
+
+  std::string parseTexturePath(
     char*& currentToken, char*& context, const char* delimiters
   )
   {
     std::vector<std::string> pathParts;
-    while (!std::string(currentToken).ends_with(".png"))
+    while (SUPPORTED_TEXTURE_EXTENSIONS.find(getExtension(currentToken)) ==
+           SUPPORTED_TEXTURE_EXTENSIONS.end())
     {
       currentToken = strtok_s(nullptr, delimiters, &context);
       pathParts.push_back(currentToken);
     }
 
+    auto beginIt = pathParts[0] == "." ? pathParts.begin() + 1 : pathParts.begin();
+
     return std::accumulate(
-      std::next(pathParts.begin() + 1), pathParts.end(), pathParts[1],
+      std::next(beginIt), pathParts.end(), *beginIt,
       [](const std::string& a, const std::string& b) { return a + "\\" + b; }
     );
+  }
+
+  bool isPathAbsolute(const std::string& path)
+  {
+    return path.size() > 2 && path[1] == ':';
   }
 
   std::string parseMaterialFileName(
@@ -212,7 +229,8 @@ namespace
   }
 
   void parseTextMTL(
-    const std::filesystem::path& filePath, MeshCore::BlinnPhongMaterialParams& materialParams
+    const std::filesystem::path& filePath,
+    MeshCore::BlinnPhongMaterialParams& materialParams
   )
   {
     auto fileContent = Utility::readFile(filePath);
@@ -242,10 +260,16 @@ namespace
         }
         else if (Utility::isEqual(currentToken, "map_Kd"))
         {
-          auto textureRelativePath =
-            parseTextureRelativePath(currentToken, context, delimiters);
-          materialParams.diffuseTexturePath =
-            filePath.parent_path() / std::filesystem::path(textureRelativePath);
+          auto texturePath = parseTexturePath(currentToken, context, delimiters);
+          if (isPathAbsolute(texturePath))
+          {
+            materialParams.diffuseTexturePath = texturePath;
+          }
+          else
+          {
+            materialParams.diffuseTexturePath =
+              filePath.parent_path() / std::filesystem::path(texturePath);
+          }
         }
       }
     );

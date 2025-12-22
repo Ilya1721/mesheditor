@@ -60,6 +60,7 @@ namespace RenderSystem
 
    private:
     void addModelObject(const std::string& meshFilePath);
+    void addFloorAsObject();
     void registerRootObjectCallbacks();
     void onObjectAddedToScene(const Object3D* object);
     void onSceneObjectUpdated(
@@ -84,6 +85,7 @@ namespace RenderSystem
     void registerCallbacks();
     void addCameraListeners();
     void renderFinalScreenTexture(const Texture2D& texture);
+    void adjustFloor(Object3D* floor);
 
    private:
     std::unique_ptr<Renderer> mRenderer;

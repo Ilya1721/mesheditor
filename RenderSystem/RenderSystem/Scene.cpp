@@ -62,6 +62,7 @@ namespace RenderSystem
   {
     registerRootObjectCallbacks();
     addModelObject(meshFilePath);
+    addFloorAsObject();
     mRenderer->loadSkyboxRenderData(RenderData::getSkyboxRenderData());
     mRenderer->loadScreenQuadRenderData();
     addCameraListeners();
@@ -98,14 +99,26 @@ namespace RenderSystem
     mScreenShaderProgram->invoke([this]() { mRenderer->renderScreenQuad(); });
   }
 
+  void Scene::adjustFloor(Object3D* floor)
+  { 
+    auto yOffset = mRootObject.getBBox().getHeight();
+    floor->updateTransform(glm::translate(Vector3D(0.0f, -yOffset, 0.0f)));
+    floor->updateTransform(glm::scale(Vector3D(100.0f, 1.0f, 100.0f)));
+  }
+
   void Scene::addModelObject(const std::string& meshFilePath)
   {
     auto modelObject =
       std::make_unique<Object3D>(MeshFilesLoader::loadMeshFromFile(meshFilePath));
     mRootObject.addChild(std::move(modelObject));
-    addSceneDecoration(
-      SceneDecoration::createSceneFloor(mRootObject.getBBox().getHeight(), FLOOR_MATERIAL)
-    );
+  }
+
+  void Scene::addFloorAsObject()
+  {
+    auto floorObject =
+      std::make_unique<Object3D>(MeshFilesLoader::loadMeshFromFile(FLOOR_MESH_PATH));
+    adjustFloor(floorObject.get());
+    mRootObject.addChild(std::move(floorObject));
   }
 
   void Scene::registerRootObjectCallbacks()
@@ -183,7 +196,7 @@ namespace RenderSystem
   void Scene::writeSceneToTAATextures()
   {
     auto taaPrerenderSetup = [this](const Object3D* obj)
-    { mTAAController->setModel(obj->getTransform()); };
+    { mTAAController->setModel(obj, obj->getTransform()); };
     mTAAController->renderSceneToDepthMap([this, &taaPrerenderSetup]()
                                           { renderRawScene(taaPrerenderSetup); });
     mTAAController->renderSceneToMotionVectorsTexture(

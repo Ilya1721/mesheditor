@@ -127,6 +127,7 @@ namespace RenderSystem
     R"(./ThirdParty/resources/textures/skybox/front.png)",
     R"(./ThirdParty/resources/textures/skybox/back.png)",
   };
+  const std::string FLOOR_MESH_PATH = R"(C:/MyPersonalSpace/Dev/3DModels/Blender/Floor/Floor.obj)";
 
   constexpr int SAMPLE_COUNT_TAA = 8;
 

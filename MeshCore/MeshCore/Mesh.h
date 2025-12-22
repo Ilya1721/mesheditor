@@ -33,15 +33,16 @@ namespace MeshCore
     ~Mesh();
     bool operator==(const Mesh& other) const = default;
 
-    std::unique_ptr<Mesh> clone() const;
-    void setMaterialParams(const BlinnPhongMaterialParams& materialParams);
-
     const std::vector<Vertex>& getVertices() const;
     const std::vector<std::unique_ptr<Face>>& getFaces() const;
     MeshIntersection getRayIntersection(
       const Ray& ray, IntersectionMode intersectionMode, int facesIndexOffset
     ) const;
     const BlinnPhongMaterialParams& getMaterialParams() const;
+    bool isManifold() const;
+
+    std::unique_ptr<Mesh> clone() const;
+    void setMaterialParams(const BlinnPhongMaterialParams& materialParams);
 
    private:
     void init();
@@ -65,5 +66,6 @@ namespace MeshCore
     std::unordered_map<Vertex, UniqueVertex> mUniqueVerticesMap;
     std::unordered_map<Face*, int> mFaceIndexMap;
     BlinnPhongMaterialParams mMaterialParams;
+    bool mIsManifold;
   };
 }  // namespace MeshCore

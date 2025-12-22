@@ -2,8 +2,8 @@
 
 #include <glm/gtx/transform.hpp>
 
-#include "Camera.h"
 #include "Constants.h"
+#include "Object3D.h"
 #include "SceneShaderProgram.h"
 #include "Viewport.h"
 
@@ -49,7 +49,7 @@ namespace RenderSystem
   )
     : mProjection(1.0f),
       mView(1.0f),
-      mModel(1.0f),
+      mObjectModelMap(),
       mScreenWidth(0),
       mScreenHeight(0),
       mFrameIndex(0),
@@ -71,13 +71,26 @@ namespace RenderSystem
     );
   }
 
-  void TAAController::setModel(const glm::mat4& model)
+  void TAAController::setModel(const Object3D* object, const glm::mat4& model)
   {
-    if (mIsFirstFrame) { mModel = model; }
-    mDepthMapController.setModel(model);
-    mMotionVectorsController.setPrevModel(mModel);
-    mMotionVectorsController.setCurrentModel(model);
-    mModel = model;
+    auto objectModelIt = mObjectModelMap.find(object);
+    ObjectModel* objectModel = nullptr;
+    if (objectModelIt == mObjectModelMap.end())
+    {
+      const auto& [newObjectModelIt, _] =
+        mObjectModelMap.insert({object, {model, model}});
+      objectModel = &newObjectModelIt->second;
+    }
+    else
+    {
+      objectModel = &objectModelIt->second;
+      objectModel->prevModel = objectModel->currentModel;
+      objectModel->currentModel = model;
+    }
+
+    mDepthMapController.setModel(objectModel->currentModel);
+    mMotionVectorsController.setPrevModel(objectModel->prevModel);
+    mMotionVectorsController.setCurrentModel(objectModel->currentModel);
   }
 
   void TAAController::setView(const glm::mat4& view)
