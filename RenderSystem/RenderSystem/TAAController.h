@@ -2,7 +2,6 @@
 
 #include <glm/glm.hpp>
 
-#include "CameraListener.h"
 #include "TAAColorBufferController.h"
 #include "TAADepthMapController.h"
 #include "TAAMotionVectorsController.h"
@@ -13,7 +12,7 @@ namespace RenderSystem
 {
   class SceneShaderProgram;
 
-  class TAAController : public CameraListener, public ViewportListener
+  class TAAController : public ViewportListener
   {
    public:
     TAAController(
@@ -26,19 +25,18 @@ namespace RenderSystem
       const path& resolveFragmentShaderPath
     );
 
-    void onCameraPosChanged(Camera* camera) override;
     void onViewportChanged(Viewport* viewport) override;
 
     void resetFrameIndex();
     void makeJitteredProjection();
     void setModel(const glm::mat4& model);
+    void setView(const glm::mat4& view);
     void renderSceneToDepthMap(const std::function<void()>& renderSceneFunc);
     void renderSceneToMotionVectorsTexture(const std::function<void()>& renderSceneFunc);
     void renderSceneToColorBuffer(const std::function<void()>& renderSceneFunc);
     const TAAColorTexture& resolveTAA(const std::function<void()>& renderFunc);
 
    private:
-    void setView(const glm::mat4& view);
     void updateViewportParams(
       const glm::mat4& projection, int screenWidth, int screenHeight
     );

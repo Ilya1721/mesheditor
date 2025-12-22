@@ -68,14 +68,6 @@ namespace RenderSystem
     );
   }
 
-  void TAAMotionVectorsController::resetViewModel(const glm::mat4& view, const glm::mat4& model)
-  {
-    setPrevView(view);
-    setCurrentView(view);
-    setPrevModel(model);
-    setCurrentModel(model);
-  }
-
   void TAAMotionVectorsController::init()
   {
     mFBO.attachTexture(

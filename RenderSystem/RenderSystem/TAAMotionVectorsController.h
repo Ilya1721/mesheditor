@@ -23,7 +23,6 @@ namespace RenderSystem
     void setCurrentView(const glm::mat4& view);
     void setProjection(const glm::mat4& projection);
     void renderSceneToTexture(const std::function<void()>& renderSceneFunc);
-    void resetViewModel(const glm::mat4& view, const glm::mat4& model);
 
    private:
     void init();

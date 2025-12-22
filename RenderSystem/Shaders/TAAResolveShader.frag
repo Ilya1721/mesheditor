@@ -15,6 +15,7 @@ uniform vec2 screenSize;
 
 float maxWeight = 0.95;
 float minWeight = 0.05;
+float maxSpeedPixels = 64.0;
 
 vec3 getTexelColor(vec2 uv) {
     return texture(currColorTexture, uv).rgb;
@@ -42,16 +43,15 @@ vec3 clampRGB(vec2 uv, vec3 color) {
 
 void main()
 {
-    vec2 motion = texture(motionVectorsTexture, currentUV).xy;
-    float speed = length(motion);
-    float maxSpeed = 1 / screenSize.x;
-    float motionFactor = clamp(1.0 - speed / maxSpeed, 0.0, 1.0);
+    vec2 motionUV = texture(motionVectorsTexture, currentUV).xy;
+    float speedPixels = length(motionUV * screenSize);
+    float motionFactor = clamp(1.0 - speedPixels / maxSpeedPixels, 0.0, 1.0);
     float blendFactor = mix(minWeight, maxWeight, motionFactor);
 
-    vec2 prevUV = currentUV - motion;
+    vec2 prevUV = currentUV - motionUV;
     float currentDepth = texture(currDepthMap, currentUV).r;
     float prevDepth = texture(prevDepthMap, prevUV).r;
-    bool depthNotChanged = abs(prevDepth - currentDepth) < 1e-5;
+    bool depthNotChanged = abs(prevDepth - currentDepth) < currentDepth * 0.02;
     bool acceptHistory = depthNotChanged && !isFirstFrame;
     float historyWeight = acceptHistory ? blendFactor : 0.0;
 

@@ -64,11 +64,6 @@ namespace RenderSystem
   {
   }
 
-  void TAAController::onCameraPosChanged(Camera* camera)
-  {
-    setView(camera->getViewMatrix());
-  }
-
   void TAAController::onViewportChanged(Viewport* viewport)
   {
     updateViewportParams(
@@ -131,7 +126,6 @@ namespace RenderSystem
     auto& resolvedTexture = mResolveController.render(renderFunc);
     mColorBufferController.swapPrevWithResolvedTexture(resolvedTexture);
     mDepthMapController.swapDepthMaps();
-    mMotionVectorsController.resetViewModel(mView, mModel);
     mIsFirstFrame = false;
 
     return mColorBufferController.getPreviousColorBuffer();

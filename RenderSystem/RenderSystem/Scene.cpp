@@ -87,7 +87,7 @@ namespace RenderSystem
     mCameraListeners.insert(
       mCameraListeners.end(),
       std::initializer_list<CameraListener*> {
-        mSceneShaderProgram.get(), mSkyboxController.get(), mTAAController.get()
+        mSceneShaderProgram.get(), mSkyboxController.get()
       }
     );
   }
@@ -327,6 +327,7 @@ namespace RenderSystem
   void Scene::render()
   {
     mRenderer->cleanScreen();
+    mTAAController->setView(mCamera->getViewMatrix());
     mTAAController->makeJitteredProjection();
     writeSceneToShadowMap();
     writeSceneToTAATextures();
