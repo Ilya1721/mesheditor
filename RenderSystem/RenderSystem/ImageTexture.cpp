@@ -5,13 +5,11 @@
 #endif
 #include "glad/glad.h"
 #include "stb_image/stb_image.h"
+#include "Constants.h"
 
 namespace RenderSystem
 {
-  ImageTexture::ImageTexture() : Texture2D()
-  {
-    init();
-  }
+  ImageTexture::ImageTexture() : Texture2D() { init(); }
 
   ImageTexture::ImageTexture(int width, int height) : Texture2D(width, height)
   {
@@ -62,16 +60,18 @@ namespace RenderSystem
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glGenerateMipmap(GL_TEXTURE_2D);
+
+        float maxAnisotropyLevel = 0.0f;
+        glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAnisotropyLevel);
+        float anisotropyLevel = std::min(ANISOTROPIC_FILTERING_LEVEL, maxAnisotropyLevel);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropyLevel);
       }
     );
   }
 
   bool ImageTexture::isEmpty() const { return mWidth == 0 || mHeight == 0; }
 
-  int ImageTexture::getAttachmentId() const
-  {
-    return GL_COLOR_ATTACHMENT0;
-  }
+  int ImageTexture::getAttachmentId() const { return GL_COLOR_ATTACHMENT0; }
 
   ImageTexture::ImageTexture(const std::string& filePath) : Texture2D()
   {

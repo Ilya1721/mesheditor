@@ -87,6 +87,7 @@ namespace RenderSystem
   constexpr float SHADOW_BIAS = 0.00025f;
   constexpr float POINT_LIGHT_BBOX_Y_COEF = 0.2f;
   constexpr float POINT_LIGHT_RADIUS = 1.0f;
+  constexpr float ANISOTROPIC_FILTERING_LEVEL = 8.0f;
   inline const std::string WINDOW_TITLE = "Mesh Editor";
 
   constexpr bool DEBUG_RENDER = true;

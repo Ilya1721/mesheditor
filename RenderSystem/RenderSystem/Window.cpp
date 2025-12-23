@@ -79,7 +79,7 @@ namespace RenderSystem
     }
 
     glfwMakeContextCurrent(mWindow);
-    if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
+    if (!gladLoadGL(glfwGetProcAddress))
     {
       std::cerr << "Failed to init glad" << std::endl;
       mWindow = nullptr;

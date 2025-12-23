@@ -74,6 +74,8 @@
     <Lib>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
     </Lib>
     <PostBuildEvent>
       <Command>xcopy /E /I /Y "$(ProjectDir)Shaders" "$(OutDir)$(ProjectName)\Shaders"
@@ -109,6 +111,8 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <Lib>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
     </Lib>
     <PostBuildEvent>
       <Command>xcopy /E /I /Y "$(ProjectDir)Shaders" "$(OutDir)$(ProjectName)\Shaders"
