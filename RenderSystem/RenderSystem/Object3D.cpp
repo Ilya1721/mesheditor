@@ -11,10 +11,10 @@ using namespace GeometryCore;
 
 namespace RenderSystem
 {
-  Object3D::Object3D() : mParent(nullptr), mTransform(1.0f) {}
+  Object3D::Object3D() : mParent(nullptr), mTransform(1.0f), mUVScale(1.0f, 1.0f) {}
 
   Object3D::Object3D(std::unique_ptr<Mesh> mesh)
-    : mParent(nullptr), mMesh(std::move(mesh)), mTransform(1.0f)
+    : mParent(nullptr), mMesh(std::move(mesh)), mTransform(1.0f), mUVScale(1.0f, 1.0f)
   {
     init();
   }
@@ -105,6 +105,11 @@ namespace RenderSystem
     return mMaterialParams;
   }
 
+  const glm::vec2& Object3D::getUVScale() const
+  {
+    return mUVScale;
+  }
+
   void Object3D::addChild(std::unique_ptr<Object3D>&& child)
   {
     child->mParent = this;
@@ -155,6 +160,8 @@ namespace RenderSystem
     mMaterialParams.blinnPhongMaterialParams = params;
     mMaterialParams.materialType = MaterialType::BLINN_PHONG;
   }
+
+  void Object3D::setUVScale(const glm::vec2& uvScale) { mUVScale = uvScale; }
 
   void Object3D::invokeTransformAction(
     const std::function<void()>& action, const glm::mat4& transform

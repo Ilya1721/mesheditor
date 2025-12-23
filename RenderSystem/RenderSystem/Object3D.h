@@ -42,6 +42,7 @@ namespace RenderSystem
     int getVertexCount() const;
     const std::vector<Vertex>& getVertices() const;
     const Object3DMaterialParams& getMaterialParams() const;
+    const glm::vec2& getUVScale() const;
 
     void addChild(std::unique_ptr<Object3D>&& child);
     void addOnChildAddedCallback(const std::function<childAddedCallback>& callback);
@@ -51,6 +52,7 @@ namespace RenderSystem
     void moveToOrigin();
     void makeItGlass(const GlassMaterialParams& params);
     void makeItBlinnPhong(const BlinnPhongMaterialParams& params);
+    void setUVScale(const glm::vec2& uvScale);
 
     virtual void updateTransform(const glm::mat4& transform);
 
@@ -66,6 +68,7 @@ namespace RenderSystem
     std::vector<std::unique_ptr<Object3D>> mChildren;
     std::unique_ptr<Mesh> mMesh;
     glm::mat4 mTransform;
+    glm::vec2 mUVScale;
     AABBox mBBox;
     CallbackMechanism<childAddedCallback> mChildAddedCM;
     CallbackMechanism<objectUpdatedCallback> mObjectUpdatedCM;

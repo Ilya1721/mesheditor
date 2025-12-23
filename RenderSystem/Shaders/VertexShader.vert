@@ -9,6 +9,7 @@ uniform mat4 view;
 uniform mat4 jitteredProjection;
 uniform mat4 lightView;
 uniform mat4 lightProjection;
+uniform vec2 uvScale;
 
 out vec3 vertexPos;
 out vec3 vertexNormal;
@@ -17,7 +18,7 @@ out vec4 fragPosLightSpace;
 
 void main()
 {
-	vertexTexture = textureCoords;
+	vertexTexture = uvScale * textureCoords;
 	vertexNormal = vec3(model * vec4(normal, 0.0));
 	vertexPos = vec3(model * vec4(pos, 1.0));
 	fragPosLightSpace = lightProjection * lightView * vec4(vertexPos, 1.0);

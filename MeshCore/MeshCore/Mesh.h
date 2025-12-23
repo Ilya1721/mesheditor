@@ -39,7 +39,6 @@ namespace MeshCore
       const Ray& ray, IntersectionMode intersectionMode, int facesIndexOffset
     ) const;
     const BlinnPhongMaterialParams& getMaterialParams() const;
-    bool isManifold() const;
 
     std::unique_ptr<Mesh> clone() const;
     void setMaterialParams(const BlinnPhongMaterialParams& materialParams);
@@ -66,6 +65,5 @@ namespace MeshCore
     std::unordered_map<Vertex, UniqueVertex> mUniqueVerticesMap;
     std::unordered_map<Face*, int> mFaceIndexMap;
     BlinnPhongMaterialParams mMaterialParams;
-    bool mIsManifold;
   };
 }  // namespace MeshCore

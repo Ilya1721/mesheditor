@@ -42,12 +42,12 @@ namespace
 
 namespace MeshCore
 {
-  Mesh::Mesh() : mMaterialParams(GOLD_MATERIAL), mIsManifold(true) {}
+  Mesh::Mesh() : mMaterialParams(GOLD_MATERIAL) {}
 
   Mesh::Mesh(
     const std::vector<Vertex>& vertices, const BlinnPhongMaterialParams& materialParams
   )
-    : mVertices(vertices), mMaterialParams(materialParams), mIsManifold(true)
+    : mVertices(vertices), mMaterialParams(materialParams)
   {
     init();
   }
@@ -180,8 +180,7 @@ namespace MeshCore
       );
       if (twinIt == halfEdgeVerticesMap.end())
       {
-        mIsManifold = false;
-        return;
+        throw std::exception("Mesh is non-manifold: missing twin half-edge.");
       }
 
       auto twinHalfEdge = twinIt->second;
@@ -269,10 +268,5 @@ namespace MeshCore
   const BlinnPhongMaterialParams& Mesh::getMaterialParams() const
   {
     return mMaterialParams;
-  }
-
-  bool Mesh::isManifold() const
-  {
-    return mIsManifold;
   }
 }  // namespace MeshCore

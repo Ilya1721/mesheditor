@@ -45,6 +45,7 @@ namespace RenderSystem
       const PointLightParams& params, const Point3D& lightSourcePos
     );
     void removePointLight(unsigned int index);
+    void setUVScale(const glm::vec2& scale);
 
    private:
     void setDirLightSourcePos(const Point3D& lightSourcePos);
@@ -68,5 +69,6 @@ namespace RenderSystem
     int mShadowMap;
     int mMaterialType;
     int mSkybox;
+    int mUVScale;
   };
 }  // namespace RenderSystem

@@ -89,8 +89,7 @@ namespace RenderSystem
 
   void SceneShaderProgram::setShadowMap(const DepthTexture& texture) const
   {
-    invoke([this, &texture]()
-           { texture.passToFragmentShader(mShadowMap, 1); });
+    invoke([this, &texture]() { texture.passToFragmentShader(mShadowMap, 1); });
   }
 
   void SceneShaderProgram::setLightView(const glm::mat4& lightView)
@@ -115,8 +114,7 @@ namespace RenderSystem
 
   void SceneShaderProgram::setSkyboxCubemap(const CubemapTexture& texture) const
   {
-    invoke([this, &texture]()
-           { texture.passToFragmentShader(mSkybox, 2); });
+    invoke([this, &texture]() { texture.passToFragmentShader(mSkybox, 2); });
   }
 
   PointLight* SceneShaderProgram::addPointLight(
@@ -131,6 +129,11 @@ namespace RenderSystem
     mPointLights.removeLight(index);
   }
 
+  void SceneShaderProgram::setUVScale(const glm::vec2& scale)
+  {
+    invoke([this, &scale]() { glUniform2fv(mUVScale, 1, glm::value_ptr(scale)); });
+  }
+
   void SceneShaderProgram::initUniformLocations()
   {
     mModel = getUniformLocation("model");
@@ -142,6 +145,7 @@ namespace RenderSystem
     mLightProjection = getUniformLocation("lightProjection");
     mSkybox = getUniformLocation("skybox");
     mMaterialType = getUniformLocation("material.type");
+    mUVScale = getUniformLocation("uvScale");
   }
 
   void SceneShaderProgram::setShadowBias(float shadowBias)

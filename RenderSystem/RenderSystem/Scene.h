@@ -108,6 +108,7 @@ namespace RenderSystem
     RenderData mSceneRenderData;
     std::unordered_map<const Object3D*, int> mSceneObjectVertexOffsetMap;
     Object3D mRootObject;
+    Object3D* mModelObject;
     DirLightSource mDirLightSource;
   };
 }  // namespace RenderSystem

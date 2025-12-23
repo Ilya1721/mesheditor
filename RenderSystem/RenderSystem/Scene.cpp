@@ -30,6 +30,7 @@ namespace RenderSystem
     : mPickedObject(nullptr),
       mRenderWireframe(false),
       mHighlightedObject(nullptr),
+      mModelObject(nullptr),
       mDirLightSource(),
       mAspectRatio(aspectRatio)
   {
@@ -100,16 +101,18 @@ namespace RenderSystem
   }
 
   void Scene::adjustFloor(Object3D* floor)
-  { 
+  {
     auto yOffset = mRootObject.getBBox().getHeight();
     floor->updateTransform(glm::translate(Vector3D(0.0f, -yOffset, 0.0f)));
     floor->updateTransform(glm::scale(Vector3D(100.0f, 1.0f, 100.0f)));
+    floor->setUVScale(Vector2D(10.0f, 10.0f));
   }
 
   void Scene::addModelObject(const std::string& meshFilePath)
   {
     auto modelObject =
       std::make_unique<Object3D>(MeshFilesLoader::loadMeshFromFile(meshFilePath));
+    mModelObject = modelObject.get();
     mRootObject.addChild(std::move(modelObject));
   }
 
@@ -165,6 +168,7 @@ namespace RenderSystem
     for (auto& [object, vertexOffset] : mSceneObjectVertexOffsetMap)
     {
       prerenderSetup(object);
+      mSceneShaderProgram->setUVScale(object->getUVScale());
       mRenderer->renderObject3D(*object, vertexOffset);
     }
   }
@@ -282,7 +286,7 @@ namespace RenderSystem
 
   void Scene::updateDirLightProjection()
   {
-    const auto& bbox = mRootObject.getBBox();
+    const auto& bbox = mModelObject->getBBox();
     const auto orthoSize = std::max(bbox.getWidth(), bbox.getHeight());
     const auto width = orthoSize * mAspectRatio;
 
@@ -325,7 +329,7 @@ namespace RenderSystem
   void Scene::addPointLight(const PointLightParams& params, const Point3D& lightSourcePos)
   {
     auto pointLight = mSceneShaderProgram->addPointLight(params, lightSourcePos);
-    auto pointLightRadius = mRootObject.getBBox().getHeight() * 0.05f;
+    auto pointLightRadius = mModelObject->getBBox().getHeight() * 0.05f;
     auto pointLightObject3D =
       std::make_unique<PointLightObject3D>(pointLight, pointLightRadius);
     pointLightObject3D->updateTransform(glm::translate(lightSourcePos));
@@ -364,7 +368,7 @@ namespace RenderSystem
 
   Point3D Scene::getDefaultPointLightSourcePos() const
   {
-    const auto& bbox = mRootObject.getBBox();
+    const auto& bbox = mModelObject->getBBox();
     const auto& bboxCenter = bbox.getCenter();
     const auto& bboxMax = bbox.getMax();
     auto yOffset = bboxMax.y * 0.2f;
@@ -393,7 +397,7 @@ namespace RenderSystem
     float height = viewport->getHeight();
     mAspectRatio = width / height;
     mCamera->adjust(
-      viewport->getProjectionType(), mRootObject.getBBox(), viewport->getFov()
+      viewport->getProjectionType(), mModelObject->getBBox(), viewport->getFov()
     );
   }
 }  // namespace RenderSystem
