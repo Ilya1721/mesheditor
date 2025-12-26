@@ -6,7 +6,7 @@
 #include "DebugVisualization.h"
 #include "GeometryCore/Ray.h"
 #include "MeshCore/Intersection.h"
-#include "MeshFilesLoader/MeshFilesLoader.h"
+#include "ModelLoader.h"
 #include "PointLightObject3D.h"
 #include "Renderer.h"
 #include "SceneShaderProgram.h"
@@ -110,16 +110,14 @@ namespace RenderSystem
 
   void Scene::addModelObject(const std::string& meshFilePath)
   {
-    auto modelObject =
-      std::make_unique<Object3D>(MeshFilesLoader::loadMeshFromFile(meshFilePath));
+    auto modelObject = loadModelFromFile(meshFilePath);
     mModelObject = modelObject.get();
     mRootObject.addChild(std::move(modelObject));
   }
 
   void Scene::addFloorAsObject()
   {
-    auto floorObject =
-      std::make_unique<Object3D>(MeshFilesLoader::loadMeshFromFile(FLOOR_MESH_PATH));
+    auto floorObject = loadModelFromFile(FLOOR_MESH_PATH);
     adjustFloor(floorObject.get());
     mRootObject.addChild(std::move(floorObject));
   }

@@ -57,7 +57,7 @@
       <ConformanceMode>Default</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\;$(SolutionDir)GeometryCore\;$(SolutionDir)MeshCore\;$(SolutionDir)MeshFilesLoader\;$(SolutionDir)Utility\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\;$(SolutionDir)GeometryCore\;$(SolutionDir)MeshCore\;$(SolutionDir)Utility\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <EnableModules>false</EnableModules>
       <TranslateIncludes>false</TranslateIncludes>
@@ -92,7 +92,7 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
       <ConformanceMode>Default</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\;$(SolutionDir)GeometryCore\;$(SolutionDir)MeshCore\;$(SolutionDir)MeshFilesLoader\;$(SolutionDir)Utility\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\;$(SolutionDir)GeometryCore\;$(SolutionDir)MeshCore\;$(SolutionDir)Utility\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <EnableModules>false</EnableModules>
       <TranslateIncludes>false</TranslateIncludes>
@@ -123,9 +123,6 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <ProjectReference Include="..\MeshCore\MeshCore.vcxproj">
       <Project>{27a4bba3-8da4-4e41-a872-ed4732a7f7bc}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\MeshFilesLoader\MeshFilesLoader.vcxproj">
-      <Project>{4b6a0654-5334-4368-b142-f947161b301f}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\Utility\Utility.vcxproj">
       <Project>{65b2b36f-a237-4404-9a85-08b0c69d8504}</Project>
     </ProjectReference>
@@ -152,7 +149,11 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <ClCompile Include="RenderSystem\DebugVisualization.cpp" />
     <ClCompile Include="RenderSystem\GlassMaterial.cpp" />
     <ClCompile Include="RenderSystem\BlinnPhongMaterial.cpp" />
+    <ClCompile Include="RenderSystem\GLTFModelLoader.cpp" />
+    <ClCompile Include="RenderSystem\ModelLoader.cpp" />
+    <ClCompile Include="RenderSystem\ObjModelLoader.cpp" />
     <ClCompile Include="RenderSystem\ScreenShaderProgram.cpp" />
+    <ClCompile Include="RenderSystem\STLModelLoader.cpp" />
     <ClCompile Include="RenderSystem\TAAColorBufferController.cpp" />
     <ClCompile Include="RenderSystem\TAAColorTexture.cpp" />
     <ClCompile Include="RenderSystem\TAADepthMapController.cpp" />
@@ -210,7 +211,11 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <ClInclude Include="RenderSystem\DebugVisualization.h" />
     <ClInclude Include="RenderSystem\GlassMaterial.h" />
     <ClInclude Include="RenderSystem\BlinnPhongMaterial.h" />
+    <ClInclude Include="RenderSystem\GLTFModelLoader.h" />
+    <ClInclude Include="RenderSystem\ModelLoader.h" />
+    <ClInclude Include="RenderSystem\ObjModelLoader.h" />
     <ClInclude Include="RenderSystem\ScreenShaderProgram.h" />
+    <ClInclude Include="RenderSystem\STLModelLoader.h" />
     <ClInclude Include="RenderSystem\TAAColorBufferController.h" />
     <ClInclude Include="RenderSystem\TAAColorTexture.h" />
     <ClInclude Include="RenderSystem\TAADepthMapController.h" />

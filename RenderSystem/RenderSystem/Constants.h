@@ -3,6 +3,7 @@
 #include <array>
 #include <filesystem>
 #include <string>
+#include <unordered_set>
 
 #include "GeometryCore/Typedefs.h"
 #include "LightParams.h"
@@ -141,5 +142,11 @@ namespace RenderSystem
       -1.0f,  1.0f,  0.0f, 1.0f,
        1.0f, -1.0f,  1.0f, 0.0f,
        1.0f,  1.0f,  1.0f, 1.0f
+  };
+
+  constexpr int STL_HEADER_SIZE = 80;
+  const inline std::string DELIMITERS = " ,\t\n/";
+  const std::unordered_set<std::string> SUPPORTED_TEXTURE_EXTENSIONS = {
+    ".png", ".jpg", ".jpeg", ".bmp", ".tga"
   };
 }  // namespace RenderSystem
