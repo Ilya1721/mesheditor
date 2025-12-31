@@ -15,6 +15,7 @@
 namespace RenderSystem
 {
   using namespace GeometryCore;
+  using namespace MeshCore;
 
   class Scene;
   class OperationsDispatcher;

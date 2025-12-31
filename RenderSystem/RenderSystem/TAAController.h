@@ -17,14 +17,13 @@ struct ObjectModel
 
 namespace RenderSystem
 {
-  class SceneShaderProgram;
+  class ShaderProgram;
   class Object3D;
 
   class TAAController : public ViewportListener
   {
    public:
     TAAController(
-      SceneShaderProgram* sceneShaderProgram,
       const path& depthMapVertexShaderPath,
       const path& depthMapFragmentShaderPath,
       const path& motionVectorsVertexShaderPath,
@@ -35,8 +34,9 @@ namespace RenderSystem
 
     void onViewportChanged(Viewport* viewport) override;
 
+    glm::mat4 makeJitteredProjection();
+
     void resetFrameIndex();
-    void makeJitteredProjection();
     void setModel(const Object3D* object, const glm::mat4& model);
     void setView(const glm::mat4& view);
     void renderSceneToDepthMap(const std::function<void()>& renderSceneFunc);
@@ -58,7 +58,6 @@ namespace RenderSystem
     int mScreenHeight;
     int mFrameIndex;
     bool mIsFirstFrame;
-    SceneShaderProgram* mSceneShaderProgram;
     TAADepthMapController mDepthMapController;
     TAAMotionVectorsController mMotionVectorsController;
     TAAColorBufferController mColorBufferController;

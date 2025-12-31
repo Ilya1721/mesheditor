@@ -3,19 +3,10 @@
 #ifdef __gl_h_
 #undef __gl_h_
 #endif
-#include "SceneShaderProgram.h"
 #include "glad/glad.h"
 
 namespace RenderSystem
 {
-  TAAColorBufferController::TAAColorBufferController(
-    SceneShaderProgram* sceneShaderProgram
-  )
-    : mSceneShaderProgram(sceneShaderProgram)
-  {
-    init();
-  }
-
   const TAAColorTexture& TAAColorBufferController::getCurrentColorBuffer() const
   {
     return mCurrentColorBuffer;
@@ -28,9 +19,13 @@ namespace RenderSystem
 
   void TAAColorBufferController::setScreenSize(int width, int height)
   {
-    mCurrentColorBuffer.setDimensions(width, height);
-    mPreviousColorBuffer.setDimensions(width, height);
+    mCurrentColorBuffer.create(width, height);
+    mPreviousColorBuffer.create(width, height);
     mFBO.attachDepthBuffer(width, height);
+    mFBO.attachTexture(
+      mCurrentColorBuffer,
+      [this]() { glDrawBuffer(mCurrentColorBuffer.getAttachmentId()); }
+    );
   }
 
   void TAAColorBufferController::renderSceneToColorBuffer(
@@ -41,16 +36,8 @@ namespace RenderSystem
       [this, &renderSceneFunc]()
       {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        mSceneShaderProgram->invoke(renderSceneFunc);
+        renderSceneFunc();
       }
-    );
-  }
-
-  void TAAColorBufferController::init()
-  {
-    mFBO.attachTexture(
-      mCurrentColorBuffer,
-      [this]() { glDrawBuffer(mCurrentColorBuffer.getAttachmentId()); }
     );
   }
 

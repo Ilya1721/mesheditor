@@ -10,17 +10,16 @@
 
 namespace RenderSystem
 {
-  class SceneShaderProgram;
-
   class SkyboxController : public CameraListener, public ViewportListener
   {
    public:
     SkyboxController(
       const path& vertexShader,
       const path& fragmentShader,
-      const std::array<path, 6>& cubemapTextures,
-      SceneShaderProgram* sceneShaderProgram
+      const std::array<path, 6>& cubemapTextures
     );
+
+    const CubemapTexture& getCubemapTexture();
 
     void onCameraPosChanged(Camera* camera) override;
     void onViewportChanged(Viewport* viewport) override;
@@ -30,6 +29,5 @@ namespace RenderSystem
    private:
     SkyboxShaderProgram mShaderProgram;
     CubemapTexture mCubemapTexture;
-    SceneShaderProgram* mSceneShaderProgram;
   };
 }  // namespace RenderSystem

@@ -36,7 +36,7 @@ namespace RenderSystem
   void Renderer::renderWholeObjectHighlighted(const Object3D& object, int vertexOffset)
   {
     renderOverlayPrimitive([this, &object, vertexOffset]()
-                           { renderObject3D(object, vertexOffset); });
+                           { renderBlinnPhongObject3D(object, vertexOffset); });
   }
 
   void Renderer::renderSkybox()
@@ -47,18 +47,6 @@ namespace RenderSystem
   void Renderer::renderScreenQuad()
   {
     mScreenQuadRenderBuffer.invoke([]() { glDrawArrays(GL_TRIANGLES, 0, 6); });
-  }
-
-  void Renderer::renderObject3D(const Object3D& object, int vertexOffset)
-  {
-    switch (object.getMaterialParams().materialType)
-    {
-      case MaterialType::BLINN_PHONG:
-        renderBlinnPhongObject3D(object, vertexOffset);
-        break;
-      case MaterialType::GLASS: renderGlassObject3D(object, vertexOffset); break;
-      default: std::cerr << "Unsupported material type!" << std::endl; break;
-    }
   }
 
   void Renderer::renderBlinnPhongObject3D(const Object3D& object, int vertexOffset)

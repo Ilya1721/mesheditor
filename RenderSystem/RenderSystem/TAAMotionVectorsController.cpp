@@ -27,7 +27,7 @@ namespace RenderSystem
 
   void TAAMotionVectorsController::setScreenSize(int width, int height)
   {
-    mTexture.setDimensions(width, height);
+    mTexture.create(width, height);
     mFBO.attachDepthBuffer(width, height);
   }
 

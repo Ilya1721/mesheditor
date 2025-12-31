@@ -4,9 +4,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "Constants.h"
 #include "Intersection.h"
-#include "MaterialParams.h"
 #include "VerticesHash.h"
 
 namespace GeometryCore
@@ -25,10 +23,7 @@ namespace MeshCore
   {
    public:
     Mesh();
-    Mesh(
-      const std::vector<Vertex>& vertices,
-      const BlinnPhongMaterialParams& materialParams = GOLD_MATERIAL
-    );
+    Mesh(const std::vector<Vertex>& vertices);
     Mesh(Mesh&& other) = delete;
     ~Mesh();
     bool operator==(const Mesh& other) const = default;
@@ -38,10 +33,8 @@ namespace MeshCore
     MeshIntersection getRayIntersection(
       const Ray& ray, IntersectionMode intersectionMode, int facesIndexOffset
     ) const;
-    const BlinnPhongMaterialParams& getMaterialParams() const;
 
     std::unique_ptr<Mesh> clone() const;
-    void setMaterialParams(const BlinnPhongMaterialParams& materialParams);
 
    private:
     void init();
@@ -64,6 +57,5 @@ namespace MeshCore
     std::vector<std::unique_ptr<Face>> mFaces;
     std::unordered_map<Vertex, UniqueVertex> mUniqueVerticesMap;
     std::unordered_map<Face*, int> mFaceIndexMap;
-    BlinnPhongMaterialParams mMaterialParams;
   };
 }  // namespace MeshCore

@@ -6,21 +6,17 @@ layout (location = 2) in vec2 textureCoords;
 
 uniform mat4 model;
 uniform mat4 view;
-uniform mat4 jitteredProjection;
-uniform mat4 lightView;
-uniform mat4 lightProjection;
+uniform mat4 projection;
 uniform vec2 uvScale;
 
 out vec3 vertexPos;
 out vec3 vertexNormal;
 out vec2 vertexTexture;
-out vec4 fragPosLightSpace;
 
 void main()
 {
 	vertexTexture = uvScale * textureCoords;
 	vertexNormal = vec3(model * vec4(normal, 0.0));
 	vertexPos = vec3(model * vec4(pos, 1.0));
-	fragPosLightSpace = lightProjection * lightView * vec4(vertexPos, 1.0);
-	gl_Position = jitteredProjection * view * vec4(vertexPos, 1.0);
+	gl_Position = projection * view * vec4(vertexPos, 1.0);
 }

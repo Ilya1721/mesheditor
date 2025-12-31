@@ -7,13 +7,11 @@ namespace RenderSystem
   class TAAMotionVectorsTexture : public Texture2D
   {
   public:
-    TAAMotionVectorsTexture();
+    TAAMotionVectorsTexture() = default;
     TAAMotionVectorsTexture(int width, int height);
 
-    void setDimensions(int width, int height) override;
     int getAttachmentId() const override;
 
-  private:
-    void init();
+    void create(int width, int height) override;
   };
 }

@@ -26,8 +26,8 @@ namespace RenderSystem
 
   void TAADepthMapController::setScreenSize(int width, int height)
   {
-    mPrevDepthMap.setDimensions(width, height);
-    mCurrDepthMap.setDimensions(width, height);
+    mPrevDepthMap.create(width, height);
+    mCurrDepthMap.create(width, height);
   }
 
   void TAADepthMapController::renderSceneToDepthMap(

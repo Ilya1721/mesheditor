@@ -24,7 +24,7 @@ namespace RenderSystem
       BACKGROUND_COLOR.r, BACKGROUND_COLOR.g, BACKGROUND_COLOR.b, BACKGROUND_COLOR.a
     );
     glEnable(GL_DEPTH_TEST);
-    setParams(DIRECTIONAL_LIGHT_PARAMS);
+    setParams(DIR_LIGHT_PARAMS);
   }
 
   int DirectionalLight::getUniformLocation(const char* name) const

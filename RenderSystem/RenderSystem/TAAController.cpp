@@ -4,7 +4,6 @@
 
 #include "Constants.h"
 #include "Object3D.h"
-#include "SceneShaderProgram.h"
 #include "Viewport.h"
 
 namespace
@@ -39,7 +38,6 @@ namespace
 namespace RenderSystem
 {
   TAAController::TAAController(
-    SceneShaderProgram* sceneShaderProgram,
     const path& depthMapVertexShaderPath,
     const path& depthMapFragmentShaderPath,
     const path& motionVectorsVertexShaderPath,
@@ -54,12 +52,11 @@ namespace RenderSystem
       mScreenHeight(0),
       mFrameIndex(0),
       mIsFirstFrame(true),
-      mSceneShaderProgram(sceneShaderProgram),
       mDepthMapController(depthMapVertexShaderPath, depthMapFragmentShaderPath),
       mMotionVectorsController(
         motionVectorsVertexShaderPath, motionVectorsFragmentShaderPath
       ),
-      mColorBufferController(sceneShaderProgram),
+      mColorBufferController(),
       mResolveController(resolveVertexShaderPath, resolveFragmentShaderPath)
   {
   }
@@ -172,13 +169,14 @@ namespace RenderSystem
 
   void TAAController::resetFrameIndex() { mFrameIndex = 0; }
 
-  void TAAController::makeJitteredProjection()
+  glm::mat4 TAAController::makeJitteredProjection()
   {
     auto jitter = getJitter(mFrameIndex + 1);
     auto jitterNDC = convertJitterToNDC(jitter, mScreenWidth, mScreenHeight);
     glm::vec3 jitterTranslationVec {jitterNDC.x, jitterNDC.y, 0.0f};
     auto jitterTranslation = glm::translate(glm::mat4(1.0f), jitterTranslationVec);
-    mSceneShaderProgram->setJitteredProjection(jitterTranslation * mProjection);
     mFrameIndex = (mFrameIndex + 1) % SAMPLE_COUNT_TAA;
+
+    return jitterTranslation * mProjection;
   }
 }  // namespace RenderSystem

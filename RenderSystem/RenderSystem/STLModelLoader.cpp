@@ -10,6 +10,8 @@ namespace
 {
   using namespace RenderSystem;
 
+  const BlinnPhongMaterial& DEFAULT_MATERIAL = EMERALD_MATERIAL;
+
   using parseTokenFunc =
     void(char*& currentToken, char*& context, const char* delimeters);
 
@@ -48,7 +50,7 @@ namespace
 
     auto mesh = std::make_unique<MeshCore::Mesh>(vertices);
 
-    return std::make_unique<Object3D>(std::move(mesh));
+    return std::make_unique<Object3D>(std::move(mesh), DEFAULT_MATERIAL);
   }
 
   bool isBinarySTL(const std::string& fileContent)
@@ -98,12 +100,12 @@ namespace
   std::unique_ptr<Object3D> loadTextSTL(std::string& fileContent)
   {
     std::vector<MeshCore::Vertex> vertices;
-    Vector3D faceNormal {};
+    Vector3D faceNormal{};
 
     parseText(
       fileContent,
       [&vertices,
-       &faceNormal](char*& currentToken, char*& context, const char* delimiters)
+      &faceNormal](char*& currentToken, char*& context, const char* delimiters)
       {
         if (isEqual(currentToken, "normal"))
         {
@@ -111,16 +113,16 @@ namespace
         }
         else if (isEqual(currentToken, "vertex"))
         {
-          Point3D pos {};
+          Point3D pos{};
           readTokenAsVector(currentToken, delimiters, context, pos);
-          vertices.push_back({pos, faceNormal});
+          vertices.push_back({ pos, faceNormal });
         }
       }
     );
 
     auto mesh = std::make_unique<MeshCore::Mesh>(vertices);
 
-    return std::make_unique<Object3D>(std::move(mesh));
+    return std::make_unique<Object3D>(std::move(mesh), DEFAULT_MATERIAL);
   }
 }  // namespace
 

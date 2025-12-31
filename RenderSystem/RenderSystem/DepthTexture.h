@@ -7,13 +7,11 @@ namespace RenderSystem
   class DepthTexture : public Texture2D
   {
    public:
-    DepthTexture();
+    DepthTexture() = default;
     DepthTexture(int width, int height);
 
-    void setDimensions(int width, int height) override;
     int getAttachmentId() const override;
 
-   private:
-    void init();
+    void create(int width, int height) override;
   };
 }  // namespace RenderSystem

@@ -9,12 +9,9 @@
 
 namespace RenderSystem
 {
-  ImageTexture::ImageTexture() : Texture2D() { init(); }
-
   ImageTexture::ImageTexture(int width, int height) : Texture2D(width, height)
   {
-    init();
-    setDimensions(mWidth, mHeight);
+    create(width, height);
   }
 
   ImageTexture::ImageTexture(ImageTexture&& other) noexcept { *this = std::move(other); }
@@ -28,33 +25,24 @@ namespace RenderSystem
       mColorChannels = other.mColorChannels;
       other.mData = nullptr;
       other.mColorChannels = 0;
-      init();
     }
 
     return *this;
   }
 
-  void ImageTexture::setDimensions(int width, int height)
+  void ImageTexture::create(int width, int height)
   {
     invoke(
       [&width, &height, this]()
       {
         const auto colorFormat = getColorFormat(mColorChannels);
+        mWidth = width;
+        mHeight = height;
+
         glTexImage2D(
           GL_TEXTURE_2D, 0, colorFormat, width, height, 0, colorFormat, GL_UNSIGNED_BYTE,
           mData
         );
-        mWidth = width;
-        mHeight = height;
-      }
-    );
-  }
-
-  void ImageTexture::init()
-  {
-    invoke(
-      []()
-      {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
@@ -69,16 +57,13 @@ namespace RenderSystem
     );
   }
 
-  bool ImageTexture::isEmpty() const { return mWidth == 0 || mHeight == 0; }
-
   int ImageTexture::getAttachmentId() const { return GL_COLOR_ATTACHMENT0; }
 
   ImageTexture::ImageTexture(const std::string& filePath) : Texture2D()
   {
     if (filePath.empty()) { return; }
-    init();
     mData = stbi_load(filePath.c_str(), &mWidth, &mHeight, &mColorChannels, 0);
-    setDimensions(mWidth, mHeight);
+    create(mWidth, mHeight);
     stbi_image_free(mData);
   }
 }  // namespace RenderSystem

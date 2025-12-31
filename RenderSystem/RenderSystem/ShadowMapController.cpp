@@ -1,11 +1,10 @@
-#include "ShadowController.h"
+#include "ShadowMapController.h"
 
-#include "SceneShaderProgram.h"
 #include "Viewport.h"
 
 namespace RenderSystem
 {
-  ShadowController::ShadowController(
+  ShadowMapController::ShadowMapController(
     const path& vertexShaderPath, const path& fragmentShaderPath
   )
     : mShaderProgram(vertexShaderPath, fragmentShaderPath)
@@ -13,22 +12,22 @@ namespace RenderSystem
     ControllerWithDepthMap::operator=(&mShaderProgram);
   }
 
-  void ShadowController::onViewportChanged(Viewport* viewport)
+  void ShadowMapController::onViewportChanged(Viewport* viewport)
   {
     setDepthMapSize(viewport->getWidth(), viewport->getHeight());
   }
 
-  void ShadowController::setModel(const glm::mat4& model)
+  void ShadowMapController::setModel(const glm::mat4& model)
   {
     mShaderProgram.setModel(model);
   }
 
-  void ShadowController::setLightView(const glm::mat4& lightView)
+  void ShadowMapController::setLightView(const glm::mat4& lightView)
   {
     mShaderProgram.setLightView(lightView);
   }
 
-  void ShadowController::setLightProjection(const glm::mat4& lightProjection)
+  void ShadowMapController::setLightProjection(const glm::mat4& lightProjection)
   {
     mShaderProgram.setLightProjection(lightProjection);
   }

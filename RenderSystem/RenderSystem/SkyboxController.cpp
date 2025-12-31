@@ -4,7 +4,6 @@
 #undef __gl_h_
 #endif
 #include "Camera.h"
-#include "SceneShaderProgram.h"
 #include "Viewport.h"
 #include "glad/glad.h"
 
@@ -13,13 +12,15 @@ namespace RenderSystem
   SkyboxController::SkyboxController(
     const path& vertexShader,
     const path& fragmentShader,
-    const std::array<path, 6>& cubemapTextures,
-    SceneShaderProgram* sceneShaderProgram
+    const std::array<path, 6>& cubemapTextures
   )
-    : mShaderProgram(vertexShader, fragmentShader),
-      mCubemapTexture(cubemapTextures),
-      mSceneShaderProgram(sceneShaderProgram)
+    : mShaderProgram(vertexShader, fragmentShader), mCubemapTexture(cubemapTextures)
   {
+  }
+
+  const CubemapTexture& SkyboxController::getCubemapTexture()
+  {
+    return mCubemapTexture;
   }
 
   void SkyboxController::onCameraPosChanged(Camera* camera)
@@ -35,7 +36,6 @@ namespace RenderSystem
   void SkyboxController::render(const std::function<void()>& renderFunc)
   {
     mShaderProgram.setSkyboxCubemap(mCubemapTexture);
-    mSceneShaderProgram->setSkyboxCubemap(mCubemapTexture);
     mShaderProgram.invoke(
       [&renderFunc, this]()
       {

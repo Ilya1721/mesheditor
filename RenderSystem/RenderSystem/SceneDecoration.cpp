@@ -17,13 +17,13 @@ namespace
   using namespace RenderSystem;
 
   SceneDecoration getBaseSceneDecoration(
-    const BlinnPhongMaterialParams& materialParams,
+    const BlinnPhongMaterial& material,
     int renderMode,
     const RenderData& renderData
   )
   {
     SceneDecoration primitive;
-    primitive.materialParams = materialParams;
+    primitive.material = material;
     primitive.renderMode = renderMode;
     primitive.renderData = renderData;
 
@@ -34,7 +34,7 @@ namespace
 namespace RenderSystem
 {
   SceneDecoration SceneDecoration::createDecoration(
-    const Point3D& point, const BlinnPhongMaterialParams& params
+    const Point3D& point, const BlinnPhongMaterial& params
   )
   {
     return getBaseSceneDecoration(params, GL_POINTS, RenderData::createRenderData(point));
@@ -43,22 +43,22 @@ namespace RenderSystem
   SceneDecoration SceneDecoration::createDecoration(
     const GeometryCore::Ray& ray,
     float length,
-    const BlinnPhongMaterialParams& materialParams
+    const BlinnPhongMaterial& material
   )
   {
     return getBaseSceneDecoration(
-      materialParams, GL_LINES, RenderData::createRenderData(ray, length)
+      material, GL_LINES, RenderData::createRenderData(ray, length)
     );
   }
 
   SceneDecoration SceneDecoration::createDecoration(
     const GeometryCore::Line& line,
     bool withArrowHead,
-    const BlinnPhongMaterialParams& materialParams
+    const BlinnPhongMaterial& material
   )
   {
     return getBaseSceneDecoration(
-      materialParams, GL_LINES, RenderData::createRenderData(line, withArrowHead)
+      material, GL_LINES, RenderData::createRenderData(line, withArrowHead)
     );
   }
 
@@ -66,16 +66,16 @@ namespace RenderSystem
     const GeometryCore::Plane& plane,
     float width,
     float length,
-    const BlinnPhongMaterialParams& materialParams
+    const BlinnPhongMaterial& material
   )
   {
     return getBaseSceneDecoration(
-      materialParams, GL_TRIANGLES, RenderData::createRenderData(plane, width, length)
+      material, GL_TRIANGLES, RenderData::createRenderData(plane, width, length)
     );
   }
 
   SceneDecoration SceneDecoration::createSceneFloor(
-    float sceneBBoxHeight, const BlinnPhongMaterialParams& floorMaterialParams
+    float sceneBBoxHeight, const BlinnPhongMaterial& floorMaterial
   )
   {
     auto originY = -sceneBBoxHeight * FLOOR_BBOX_HEIGHT_COEF;
@@ -84,7 +84,7 @@ namespace RenderSystem
 
     return createPlane(
       planeOrigin, planeNormal, FAR_PLANE_DISTANCE * 0.5, FAR_PLANE_DISTANCE * 0.5,
-      floorMaterialParams
+      floorMaterial
     );
   }
 
@@ -93,11 +93,11 @@ namespace RenderSystem
     const Vector3D& normal,
     float width,
     float height,
-    const BlinnPhongMaterialParams& materialParams
+    const BlinnPhongMaterial& material
   )
   {
     return SceneDecoration::createDecoration(
-      {origin, normal}, width, height, materialParams
+      {origin, normal}, width, height, material
     );
   }
 
@@ -105,7 +105,7 @@ namespace RenderSystem
     const Point3D& start,
     const Point3D& end,
     bool withArrowHead,
-    const BlinnPhongMaterialParams& material
+    const BlinnPhongMaterial& material
   )
   {
     return SceneDecoration::createDecoration({start, end}, withArrowHead, material);
@@ -144,7 +144,7 @@ namespace RenderSystem
   }
 
   std::vector<SceneDecoration> SceneDecoration::createBoundingBox(
-    const MeshCore::AABBox& bbox, const BlinnPhongMaterialParams& materialParams
+    const MeshCore::AABBox& bbox, const BlinnPhongMaterial& material
   )
   {
     Point3D leftMinLowerCorner = bbox.getMin();
@@ -172,53 +172,53 @@ namespace RenderSystem
 
     std::vector<SceneDecoration> bboxLines;
     bboxLines.push_back(
-      createLine(leftMinLowerCorner, rightMinLowerCorner, false, materialParams)
+      createLine(leftMinLowerCorner, rightMinLowerCorner, false, material)
     );
     bboxLines.push_back(
-      createLine(rightMinLowerCorner, rightMaxLowerCorner, false, materialParams)
+      createLine(rightMinLowerCorner, rightMaxLowerCorner, false, material)
     );
     bboxLines.push_back(
-      createLine(rightMaxLowerCorner, leftMaxLowerCorner, false, materialParams)
+      createLine(rightMaxLowerCorner, leftMaxLowerCorner, false, material)
     );
     bboxLines.push_back(
-      createLine(leftMaxLowerCorner, leftMinLowerCorner, false, materialParams)
+      createLine(leftMaxLowerCorner, leftMinLowerCorner, false, material)
     );
     bboxLines.push_back(
-      createLine(leftMinUpperCorner, rightMinUpperCorner, false, materialParams)
+      createLine(leftMinUpperCorner, rightMinUpperCorner, false, material)
     );
     bboxLines.push_back(
-      createLine(rightMinUpperCorner, rightMaxUpperCorner, false, materialParams)
+      createLine(rightMinUpperCorner, rightMaxUpperCorner, false, material)
     );
     bboxLines.push_back(
-      createLine(rightMaxUpperCorner, leftMaxUpperCorner, false, materialParams)
+      createLine(rightMaxUpperCorner, leftMaxUpperCorner, false, material)
     );
     bboxLines.push_back(
-      createLine(leftMaxUpperCorner, leftMinUpperCorner, false, materialParams)
+      createLine(leftMaxUpperCorner, leftMinUpperCorner, false, material)
     );
     bboxLines.push_back(
-      createLine(leftMinLowerCorner, leftMinUpperCorner, false, materialParams)
+      createLine(leftMinLowerCorner, leftMinUpperCorner, false, material)
     );
     bboxLines.push_back(
-      createLine(rightMinLowerCorner, rightMinUpperCorner, false, materialParams)
+      createLine(rightMinLowerCorner, rightMinUpperCorner, false, material)
     );
     bboxLines.push_back(
-      createLine(rightMaxLowerCorner, rightMaxUpperCorner, false, materialParams)
+      createLine(rightMaxLowerCorner, rightMaxUpperCorner, false, material)
     );
     bboxLines.push_back(
-      createLine(leftMaxLowerCorner, leftMaxUpperCorner, false, materialParams)
+      createLine(leftMaxLowerCorner, leftMaxUpperCorner, false, material)
     );
 
     return bboxLines;
   }
 
   std::vector<SceneDecoration> SceneDecoration::createPoints(
-    const std::vector<Point3D>& points, const BlinnPhongMaterialParams& materialParams
+    const std::vector<Point3D>& points, const BlinnPhongMaterial& material
   )
   {
     std::vector<SceneDecoration> pointDecorations;
     for (const auto& point : points)
     {
-      pointDecorations.emplace_back(createDecoration(point, materialParams));
+      pointDecorations.emplace_back(createDecoration(point, material));
     }
 
     return pointDecorations;

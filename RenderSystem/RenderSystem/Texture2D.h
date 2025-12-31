@@ -12,11 +12,13 @@ namespace RenderSystem
     Texture2D(const Texture2D& other) = delete;
     Texture2D(Texture2D&& other) noexcept;
     Texture2D& operator=(Texture2D&& other) noexcept;
+    virtual ~Texture2D() = default;
 
     int getWidth() const;
     int getHeight() const;
 
-    virtual void setDimensions(int width, int height) = 0;
+    virtual void create(int width, int height) = 0;
+
     void passToFragmentShader(int textureLocation, int textureSlot) const override;
     void swap(Texture2D& other) noexcept;
 

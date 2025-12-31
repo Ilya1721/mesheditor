@@ -42,15 +42,9 @@ namespace
 
 namespace MeshCore
 {
-  Mesh::Mesh() : mMaterialParams(GOLD_MATERIAL) {}
+  Mesh::Mesh() {}
 
-  Mesh::Mesh(
-    const std::vector<Vertex>& vertices, const BlinnPhongMaterialParams& materialParams
-  )
-    : mVertices(vertices), mMaterialParams(materialParams)
-  {
-    init();
-  }
+  Mesh::Mesh(const std::vector<Vertex>& vertices) : mVertices(vertices) { init(); }
 
   Mesh::~Mesh() = default;
 
@@ -69,11 +63,6 @@ namespace MeshCore
   }
 
   std::unique_ptr<Mesh> Mesh::clone() const { return std::make_unique<Mesh>(mVertices); }
-
-  void Mesh::setMaterialParams(const BlinnPhongMaterialParams& materialParams)
-  {
-    mMaterialParams = materialParams;
-  }
 
   const std::vector<Vertex>& Mesh::getVertices() const { return mVertices; }
 
@@ -263,10 +252,5 @@ namespace MeshCore
     }
 
     return finalTempData;
-  }
-
-  const BlinnPhongMaterialParams& Mesh::getMaterialParams() const
-  {
-    return mMaterialParams;
   }
 }  // namespace MeshCore

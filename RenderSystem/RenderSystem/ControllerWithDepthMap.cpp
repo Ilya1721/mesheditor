@@ -19,7 +19,7 @@ namespace RenderSystem
 
   void ControllerWithDepthMap::setDepthMapSize(int width, int height)
   {
-    mTexture.setDimensions(width, height);
+    mTexture.create(width, height);
   }
 
   void ControllerWithDepthMap::renderSceneToDepthMap(

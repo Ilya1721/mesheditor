@@ -13,8 +13,8 @@ namespace RenderSystem
 {
   Object3D::Object3D() : mParent(nullptr), mTransform(1.0f), mUVScale(1.0f, 1.0f) {}
 
-  Object3D::Object3D(std::unique_ptr<Mesh> mesh)
-    : mParent(nullptr), mMesh(std::move(mesh)), mTransform(1.0f), mUVScale(1.0f, 1.0f)
+  Object3D::Object3D(std::unique_ptr<Mesh> mesh, const Material& material)
+    : mParent(nullptr), mMesh(std::move(mesh)), mMaterial(material), mTransform(1.0f), mUVScale(1.0f, 1.0f)
   {
     init();
   }
@@ -23,7 +23,6 @@ namespace RenderSystem
 
   void Object3D::init()
   {
-    mMaterialParams.blinnPhongMaterialParams = mMesh->getMaterialParams();
     mBBox.applyMesh(*mMesh);
     moveToOrigin();
   }
@@ -100,14 +99,14 @@ namespace RenderSystem
     return mMesh->getVertices();
   }
 
-  const Object3DMaterialParams& Object3D::getMaterialParams() const
-  {
-    return mMaterialParams;
-  }
-
   const glm::vec2& Object3D::getUVScale() const
   {
     return mUVScale;
+  }
+
+  const Material& Object3D::getMaterial() const
+  {
+    return mMaterial;
   }
 
   void Object3D::addChild(std::unique_ptr<Object3D>&& child)
@@ -149,19 +148,34 @@ namespace RenderSystem
 
   void Object3D::moveToOrigin() { updateTransform(glm::translate(-mBBox.getCenter())); }
 
-  void Object3D::makeItGlass(const GlassMaterialParams& params)
-  {
-    mMaterialParams.glassMaterialParams = params;
-    mMaterialParams.materialType = MaterialType::GLASS;
-  }
-
-  void Object3D::makeItBlinnPhong(const BlinnPhongMaterialParams& params)
-  {
-    mMaterialParams.blinnPhongMaterialParams = params;
-    mMaterialParams.materialType = MaterialType::BLINN_PHONG;
-  }
-
   void Object3D::setUVScale(const glm::vec2& uvScale) { mUVScale = uvScale; }
+
+  void Object3D::materialVisitor(
+    const std::function<void(const BlinnPhongMaterial&)>& blinnPhongAction,
+    const std::function<void(const GlassMaterial&)>& glassAction,
+    const std::function<void(const PBRMaterial&)>& pbrAction
+  ) const
+  {
+    std::visit(
+      [&](auto&& material)
+      {
+        using U = std::decay_t<decltype(material)>;
+        if constexpr (std::is_same_v<U, BlinnPhongMaterial>)
+        {
+          blinnPhongAction(material);
+        }
+        else if constexpr (std::is_same_v<U, GlassMaterial>)
+        {
+          glassAction(material);
+        }
+        else if constexpr (std::is_same_v<U, PBRMaterial>)
+        {
+          pbrAction(material);
+        }
+      },
+      mMaterial
+    );
+  }
 
   void Object3D::invokeTransformAction(
     const std::function<void()>& action, const glm::mat4& transform

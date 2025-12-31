@@ -5,13 +5,11 @@
 
 namespace RenderSystem
 {
-  class SceneShaderProgram;
+  class ShaderProgram;
 
   class TAAColorBufferController
   {
    public:
-    TAAColorBufferController(SceneShaderProgram* sceneShaderProgram);
-
     const TAAColorTexture& getCurrentColorBuffer() const;
     const TAAColorTexture& getPreviousColorBuffer() const;
 
@@ -19,13 +17,9 @@ namespace RenderSystem
     void renderSceneToColorBuffer(const std::function<void()>& renderSceneFunc);
     void swapPrevWithResolvedTexture(TAAColorTexture& texture);
 
-  private:
-    void init();
-
-  private:
+   private:
     FrameBufferObject mFBO;
     TAAColorTexture mCurrentColorBuffer;
     TAAColorTexture mPreviousColorBuffer;
-    SceneShaderProgram* mSceneShaderProgram;
   };
 }  // namespace RenderSystem

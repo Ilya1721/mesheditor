@@ -9,8 +9,6 @@
 #include "ModelLoader.h"
 #include "PointLightObject3D.h"
 #include "Renderer.h"
-#include "SceneShaderProgram.h"
-#include "ShadowController.h"
 #include "SkyboxController.h"
 #include "TAAController.h"
 #include "Viewport.h"
@@ -19,9 +17,9 @@ using namespace GeometryCore;
 
 namespace RenderSystem
 {
-  const BlinnPhongMaterialParams FLOOR_MATERIAL = PEARL_MATERIAL;
-  const BlinnPhongMaterialParams HIGHLIGHT_MATERIAL = RUBY_MATERIAL;
-  const BlinnPhongMaterialParams WIREFRAME_MATERIAL = BLACK_MATERIAL;
+  const BlinnPhongMaterial& FLOOR_MATERIAL = PEARL_MATERIAL;
+  const BlinnPhongMaterial& HIGHLIGHT_MATERIAL = RUBY_MATERIAL;
+  const BlinnPhongMaterial& WIREFRAME_MATERIAL = BLACK_MATERIAL;
 }  // namespace RenderSystem
 
 namespace RenderSystem
@@ -31,31 +29,33 @@ namespace RenderSystem
       mRenderWireframe(false),
       mHighlightedObject(nullptr),
       mModelObject(nullptr),
-      mDirLightSource(),
       mAspectRatio(aspectRatio)
   {
     mRenderer = std::make_unique<Renderer>();
-    mSceneShaderProgram = std::make_unique<SceneShaderProgram>(
-      SCENE_VERTEX_SHADER_PATH, SCENE_FRAGMENT_SHADER_PATH
+    mBlinnPhongShaderProgram = std::make_unique<BlinnPhongShaderProgram>(
+      BLINN_PHONG_VERTEX_SHADER_PATH, BLINN_PHONG_FRAGMENT_SHADER_PATH
+    );
+    mGlassShaderProgram = std::make_unique<GlassShaderProgram>(
+      GLASS_VERTEX_SHADER_PATH, GLASS_FRAGMENT_SHADER_PATH
+    );
+    mShadowShaderProgram = std::make_unique<ShadowShaderProgram>(
+      SHADOW_VERTEX_SHADER_PATH, SHADOW_FRAGMENT_SHADER_PATH
     );
     mScreenShaderProgram = std::make_unique<ScreenShaderProgram>(
       SCREEN_VERTEX_SHADER_PATH, SCREEN_FRAGMENT_SHADER_PATH
     );
-    mShadowController = std::make_unique<ShadowController>(
+    mShadowMapController = std::make_unique<ShadowMapController>(
       SHADOW_MAP_VERTEX_SHADER_PATH, SHADOW_MAP_FRAGMENT_SHADER_PATH
     );
     mSkyboxController = std::make_unique<SkyboxController>(
-      SKYBOX_VERTEX_SHADER_PATH, SKYBOX_FRAGMENT_SHADER_PATH, SKYBOX_CUBEMAP_TEXTURES,
-      mSceneShaderProgram.get()
+      SKYBOX_VERTEX_SHADER_PATH, SKYBOX_FRAGMENT_SHADER_PATH, SKYBOX_CUBEMAP_TEXTURES
     );
     mTAAController = std::make_unique<TAAController>(
-      mSceneShaderProgram.get(), TAA_DEPTH_MAP_VERTEX_SHADER_PATH,
-      TAA_DEPTH_MAP_FRAGMENT_SHADER_PATH, TAA_MOTION_VECTORS_VERTEX_SHADER_PATH,
-      TAA_MOTION_VECTORS_FRAGMENT_SHADER_PATH, TAA_RESOLVE_VERTEX_SHADER_PATH,
-      TAA_RESOLVE_FRAGMENT_SHADER_PATH
+      TAA_DEPTH_MAP_VERTEX_SHADER_PATH, TAA_DEPTH_MAP_FRAGMENT_SHADER_PATH,
+      TAA_MOTION_VECTORS_VERTEX_SHADER_PATH, TAA_MOTION_VECTORS_FRAGMENT_SHADER_PATH,
+      TAA_RESOLVE_VERTEX_SHADER_PATH, TAA_RESOLVE_FRAGMENT_SHADER_PATH
     );
     mCamera = std::make_unique<Camera>();
-    mDirLightSource = DirLightSource(mSceneShaderProgram.get(), mShadowController.get());
     init(meshFilePath);
   }
 
@@ -68,7 +68,8 @@ namespace RenderSystem
     mRenderer->loadScreenQuadRenderData();
     addCameraListeners();
     registerCallbacks();
-    mDirLightSource.setPosition(DIR_LIGHT_POS);
+    calcDirLightSourcePos();
+    mBlinnPhongShaderProgram->setDirLightParams(DIR_LIGHT_PARAMS);
   }
 
   void Scene::onCameraPosChanged()
@@ -89,7 +90,8 @@ namespace RenderSystem
     mCameraListeners.insert(
       mCameraListeners.end(),
       std::initializer_list<CameraListener*> {
-        mSceneShaderProgram.get(), mSkyboxController.get()
+        mBlinnPhongShaderProgram.get(), mSkyboxController.get(),
+        mGlassShaderProgram.get(), mShadowShaderProgram.get()
       }
     );
   }
@@ -107,6 +109,36 @@ namespace RenderSystem
     floor->updateTransform(glm::scale(Vector3D(100.0f, 1.0f, 100.0f)));
     floor->setUVScale(Vector2D(10.0f, 10.0f));
   }
+
+  void Scene::calcDirLightSourcePos()
+  {
+    mBlinnPhongShaderProgram->setDirLightSourcePos(DIR_LIGHT_POS);
+    const auto& lightViewMatrix =
+      glm::lookAt(DIR_LIGHT_POS, Point3D(0.0f, 0.0f, 0.0f), Vector3D(0.0f, 1.0f, 0.0f));
+    mShadowMapController->setLightView(lightViewMatrix);
+    mShadowShaderProgram->setLightView(lightViewMatrix);
+  }
+
+  void Scene::setBlinnPhongMaterial(const BlinnPhongMaterial& material)
+  {
+    mBlinnPhongShaderProgram->setAmbient(material.ambient);
+    mBlinnPhongShaderProgram->setDiffuse(material.diffuse.rgb);
+    mBlinnPhongShaderProgram->setDiffuseTexture(material.diffuse.texture.get());
+    mBlinnPhongShaderProgram->setSpecular(material.specular);
+    mBlinnPhongShaderProgram->setShininess(material.shininess);
+  }
+
+  void Scene::setGlassMaterial(const GlassMaterial& material)
+  {
+    mGlassShaderProgram->setColor(material.color);
+    mGlassShaderProgram->setInterpolationFactor(material.interpolationFactor);
+    mGlassShaderProgram->setReflectionStrength(material.reflectionStrength);
+    mGlassShaderProgram->setRefractiveIndex(material.refractiveIndex);
+    mGlassShaderProgram->setTransparency(material.transparency);
+    mGlassShaderProgram->setSkyboxCubemap(mSkyboxController->getCubemapTexture());
+  }
+
+  void Scene::setPBRMaterial(const PBRMaterial& material) {}
 
   void Scene::addModelObject(const std::string& meshFilePath)
   {
@@ -160,38 +192,87 @@ namespace RenderSystem
   void Scene::onSceneObjectBBoxUpdated() { updateDirLightProjection(); }
 
   void Scene::renderSceneObjects(
-    const std::function<void(const Object3D*)>& prerenderSetup
+    const std::function<void(const Object3D*)>& prerenderSetup, bool invokeModelShaders
   )
   {
+    auto renderBlinnPhong = std::function<void(const Object3D&, int)> {};
+    auto renderGlass = std::function<void(const Object3D&, int)> {};
+    auto renderPBR = std::function<void(const Object3D&, int)> {};
+
+    if (invokeModelShaders)
+    {
+      renderBlinnPhong = [this](const Object3D& object, int vertexOffset)
+      {
+        mBlinnPhongShaderProgram->invoke(
+          [this, &object, vertexOffset]()
+          { mRenderer->renderBlinnPhongObject3D(object, vertexOffset); }
+        );
+      };
+
+      renderGlass = [this](const Object3D& object, int vertexOffset)
+      {
+        mGlassShaderProgram->invoke(
+          [this, &object, vertexOffset]()
+          { mRenderer->renderGlassObject3D(object, vertexOffset); }
+        );
+      };
+
+      renderPBR = [this](const Object3D& object, int vertexOffset) {};
+    }
+    else
+    {
+      renderBlinnPhong = [this](const Object3D& object, int vertexOffset)
+      { mRenderer->renderBlinnPhongObject3D(object, vertexOffset); };
+      renderGlass = [this](const Object3D& object, int vertexOffset)
+      { mRenderer->renderGlassObject3D(object, vertexOffset); };
+      renderPBR = [this](const Object3D& object, int vertexOffset) {};
+    }
+
     for (auto& [object, vertexOffset] : mSceneObjectVertexOffsetMap)
     {
       prerenderSetup(object);
-      mSceneShaderProgram->setUVScale(object->getUVScale());
-      mRenderer->renderObject3D(*object, vertexOffset);
+      object->materialVisitor(
+        [this, &object, vertexOffset, &renderBlinnPhong](const BlinnPhongMaterial&)
+        { renderBlinnPhong(*object, vertexOffset); },
+        [this, &object, vertexOffset, &renderGlass](const GlassMaterial&)
+        { renderGlass(*object, vertexOffset); },
+        [this, &object, vertexOffset, &renderPBR](const PBRMaterial&)
+        { renderPBR(*object, vertexOffset); }
+      );
     }
   }
 
-  void Scene::renderRawScene(const std::function<void(const Object3D*)>& prerenderSetup)
+  void Scene::renderRawScene(
+    const std::function<void(const Object3D*)>& prerenderSetup, bool invokeModelShaders
+  )
   {
-    renderSceneObjects(prerenderSetup);
-    renderDecorations();
+    renderSceneObjects(prerenderSetup, invokeModelShaders);
+    mBlinnPhongShaderProgram->invoke([this]() { renderDecorations(); });
   }
 
-  void Scene::renderFullScene(const std::function<void(const Object3D*)>& prerenderSetup)
+  void Scene::renderFullScene(
+    const std::function<void(const Object3D*)>& prerenderSetup, bool invokeModelShaders
+  )
   {
     renderSkybox();
-    renderRawScene(prerenderSetup);
-    renderHighlightedFaces();
-    renderWireframe();
-    renderWholeObjectHighlighted();
+    renderRawScene(prerenderSetup, invokeModelShaders);
+    mBlinnPhongShaderProgram->invoke(
+      [this]()
+      {
+        renderHighlightedFaces();
+        renderWireframe();
+        renderWholeObjectHighlighted();
+      }
+    );
   }
 
   void Scene::writeSceneToShadowMap()
   {
     auto shadowMapPrerenderSetup = [this](const Object3D* obj)
-    { mShadowController->setModel(obj->getTransform()); };
-    mShadowController->renderSceneToDepthMap([this, &shadowMapPrerenderSetup]()
-                                             { renderRawScene(shadowMapPrerenderSetup); }
+    { mShadowMapController->setModel(obj->getTransform()); };
+    mShadowMapController->renderSceneToDepthMap(
+      [this, &shadowMapPrerenderSetup]()
+      { renderRawScene(shadowMapPrerenderSetup, false); }
     );
   }
 
@@ -200,27 +281,36 @@ namespace RenderSystem
     auto taaPrerenderSetup = [this](const Object3D* obj)
     { mTAAController->setModel(obj, obj->getTransform()); };
     mTAAController->renderSceneToDepthMap([this, &taaPrerenderSetup]()
-                                          { renderRawScene(taaPrerenderSetup); });
+                                          { renderRawScene(taaPrerenderSetup, false); });
     mTAAController->renderSceneToMotionVectorsTexture(
-      [this, &taaPrerenderSetup]() { renderRawScene(taaPrerenderSetup); }
+      [this, &taaPrerenderSetup]() { renderRawScene(taaPrerenderSetup, false); }
     );
     auto scenePrerenderSetupFunc = [this](const Object3D* obj)
     { scenePrerenderSetup(obj); };
-    mTAAController->renderSceneToColorBuffer([this, &scenePrerenderSetupFunc]()
-                                             { renderFullScene(scenePrerenderSetupFunc); }
+    mTAAController->renderSceneToColorBuffer(
+      [this, &scenePrerenderSetupFunc]()
+      { renderFullScene(scenePrerenderSetupFunc, true); }
     );
   }
 
-  void Scene::scenePrerenderSetup(const Object3D* obj)
+  void Scene::scenePrerenderSetup(const Object3D* object)
   {
-    const auto& materialParams = obj->getMaterialParams();
-    mSceneShaderProgram->setModel(obj->getTransform());
-    mSceneShaderProgram->setBlinnPhongMaterialParams(
-      materialParams.blinnPhongMaterialParams
+    const auto& objectModel = object->getTransform();
+
+    object->materialVisitor(
+      [this, &object, objectModel](const BlinnPhongMaterial& material)
+      {
+        mBlinnPhongShaderProgram->setModel(objectModel);
+        mBlinnPhongShaderProgram->setUVScale(object->getUVScale());
+        setBlinnPhongMaterial(material);
+      },
+      [this, &object, &objectModel](const GlassMaterial& material)
+      {
+        mGlassShaderProgram->setModel(objectModel);
+        setGlassMaterial(material);
+      },
+      [this, &object](const PBRMaterial& material) { setPBRMaterial(material); }
     );
-    mSceneShaderProgram->setGlassMaterialParams(materialParams.glassMaterialParams);
-    mSceneShaderProgram->setMaterialType(materialParams.materialType);
-    mSceneShaderProgram->setShadowMap(mShadowController->getDepthMap());
   }
 
   const TAAColorTexture& Scene::resolveTAA()
@@ -230,23 +320,24 @@ namespace RenderSystem
 
   void Scene::renderDecorations()
   {
-    mSceneShaderProgram->setModel(glm::mat4(1.0f));
-    mShadowController->setModel(glm::mat4(1.0f));
+    mBlinnPhongShaderProgram->setModel(glm::mat4(1.0f));
+    mShadowMapController->setModel(glm::mat4(1.0f));
 
     int startIndex = 0;
     for (const auto& sceneDecoration : mSceneDecorations)
     {
-      mSceneShaderProgram->setBlinnPhongMaterialParams(sceneDecoration.materialParams);
+      setBlinnPhongMaterial(sceneDecoration.material);
       mRenderer->renderSceneDecoration(sceneDecoration, startIndex);
     }
   }
 
   void Scene::renderHighlightedFaces()
   {
-    mSceneShaderProgram->setBlinnPhongMaterialParams(HIGHLIGHT_MATERIAL);
+    setBlinnPhongMaterial(HIGHLIGHT_MATERIAL);
     for (const auto& faceIdx : mHighlightedFacesData.facesIndices)
     {
-      mSceneShaderProgram->setModel(mHighlightedFacesData.parentObject->getTransform());
+      mBlinnPhongShaderProgram->setModel(mHighlightedFacesData.parentObject->getTransform(
+      ));
       mRenderer->renderHighlightedFace(
         faceIdx, mSceneObjectVertexOffsetMap.at(mHighlightedFacesData.parentObject)
       );
@@ -257,10 +348,10 @@ namespace RenderSystem
   {
     if (!mRenderWireframe) { return; }
 
-    mSceneShaderProgram->setBlinnPhongMaterialParams(WIREFRAME_MATERIAL);
+    setBlinnPhongMaterial(WIREFRAME_MATERIAL);
     for (const auto& [object, vertexOffset] : mSceneObjectVertexOffsetMap)
     {
-      mSceneShaderProgram->setModel(object->getTransform());
+      mBlinnPhongShaderProgram->setModel(object->getTransform());
       mRenderer->renderWireframe(object->getVertexCount());
     }
   }
@@ -271,9 +362,9 @@ namespace RenderSystem
       mSceneObjectVertexOffsetMap.find(mHighlightedObject);
     if (highlightedObjectIt == mSceneObjectVertexOffsetMap.end()) { return; }
 
-    mSceneShaderProgram->setBlinnPhongMaterialParams(HIGHLIGHT_MATERIAL);
+    setBlinnPhongMaterial(HIGHLIGHT_MATERIAL);
     const auto& [object, vertexCount] = *highlightedObjectIt;
-    mSceneShaderProgram->setModel(object->getTransform());
+    mBlinnPhongShaderProgram->setModel(object->getTransform());
     mRenderer->renderWholeObjectHighlighted(*object, vertexCount);
   }
 
@@ -291,8 +382,8 @@ namespace RenderSystem
     glm::mat4 lightProjectionMatrix = glm::ortho(
       -width, width, -orthoSize, orthoSize, NEAR_PLANE_DISTANCE, FAR_PLANE_DISTANCE
     );
-    mSceneShaderProgram->setLightProjection(lightProjectionMatrix);
-    mShadowController->setLightProjection(lightProjectionMatrix);
+    mShadowShaderProgram->setLightProjection(lightProjectionMatrix);
+    mShadowMapController->setLightProjection(lightProjectionMatrix);
   }
 
   void Scene::setPickedObject(Object3D* pickedObject) { mPickedObject = pickedObject; }
@@ -326,7 +417,7 @@ namespace RenderSystem
 
   void Scene::addPointLight(const PointLightParams& params, const Point3D& lightSourcePos)
   {
-    auto pointLight = mSceneShaderProgram->addPointLight(params, lightSourcePos);
+    auto pointLight = mBlinnPhongShaderProgram->addPointLight(params, lightSourcePos);
     auto pointLightRadius = mModelObject->getBBox().getHeight() * 0.05f;
     auto pointLightObject3D =
       std::make_unique<PointLightObject3D>(pointLight, pointLightRadius);
@@ -336,14 +427,15 @@ namespace RenderSystem
 
   void Scene::removePointLight(unsigned int index)
   {
-    mSceneShaderProgram->removePointLight(index);
+    mBlinnPhongShaderProgram->removePointLight(index);
   }
 
   void Scene::render()
   {
     mRenderer->cleanScreen();
     mTAAController->setView(mCamera->getViewMatrix());
-    mTAAController->makeJitteredProjection();
+    auto projection = mTAAController->makeJitteredProjection();
+    mBlinnPhongShaderProgram->setProjection(projection);
     writeSceneToShadowMap();
     writeSceneToTAATextures();
     const auto& screenTexture = resolveTAA();
@@ -377,7 +469,9 @@ namespace RenderSystem
 
   std::vector<ViewportListener*> Scene::getViewportListeners()
   {
-    return {this, mShadowController.get(), mTAAController.get(), mSkyboxController.get()};
+    return {
+      this, mShadowMapController.get(), mTAAController.get(), mSkyboxController.get()
+    };
   }
 
   Point3D Scene::unProject(

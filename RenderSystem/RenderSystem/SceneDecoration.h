@@ -1,8 +1,8 @@
 #pragma once
 
 #include "GeometryCore/Typedefs.h"
+#include "Material.h"
 #include "MeshCore/AABBox.h"
-#include "MeshCore/MaterialParams.h"
 #include "RenderData.h"
 
 namespace GeometryCore
@@ -19,50 +19,50 @@ namespace RenderSystem
   struct SceneDecoration
   {
     RenderData renderData;
-    BlinnPhongMaterialParams materialParams {};
-    unsigned int renderMode {};
+    BlinnPhongMaterial material;
+    unsigned int renderMode;
 
     static SceneDecoration createDecoration(
-      const Point3D& point, const BlinnPhongMaterialParams& params
+      const Point3D& point, const BlinnPhongMaterial& material
     );
     static SceneDecoration createDecoration(
-      const Ray& ray, float length, const BlinnPhongMaterialParams& materialParams
+      const Ray& ray, float length, const BlinnPhongMaterial& material
     );
     static SceneDecoration createDecoration(
-      const Line& line, bool withArrowHead, const BlinnPhongMaterialParams& materialParams
+      const Line& line, bool withArrowHead, const BlinnPhongMaterial& material
     );
     static SceneDecoration createDecoration(
       const Plane& plane,
       float width,
       float length,
-      const BlinnPhongMaterialParams& materialParams
+      const BlinnPhongMaterial& material
     );
 
     static SceneDecoration createSceneFloor(
-      float sceneBBoxHeight, const BlinnPhongMaterialParams& floorBlinnPhongMaterialParams
+      float sceneBBoxHeight, const BlinnPhongMaterial& floorBlinnPhongMaterial
     );
     static SceneDecoration createPlane(
       const Point3D& origin,
       const Vector3D& normal,
       float width,
       float height,
-      const BlinnPhongMaterialParams& materialParams
+      const BlinnPhongMaterial& material
     );
     static SceneDecoration createLine(
       const Point3D& start,
       const Point3D& end,
       bool withArrowHead,
-      const BlinnPhongMaterialParams& materialParams
+      const BlinnPhongMaterial& material
     );
     static std::vector<SceneDecoration> createGlobalAxes(float length = 10.0f);
     static std::vector<SceneDecoration> createVerticesNormals(
       const std::vector<MeshCore::Vertex>& vertices
     );
     static std::vector<SceneDecoration> createBoundingBox(
-      const MeshCore::AABBox& bbox, const BlinnPhongMaterialParams& materialParams
+      const MeshCore::AABBox& bbox, const BlinnPhongMaterial& material
     );
     static std::vector<SceneDecoration> createPoints(
-      const std::vector<Point3D>& points, const BlinnPhongMaterialParams& materialParams
+      const std::vector<Point3D>& points, const BlinnPhongMaterial& material
     );
   };
 }  // namespace RenderSystem

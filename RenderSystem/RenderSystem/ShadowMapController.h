@@ -6,10 +6,10 @@
 
 namespace RenderSystem
 {
-  class ShadowController : public ControllerWithDepthMap, public ViewportListener
+  class ShadowMapController : public ControllerWithDepthMap, public ViewportListener
   {
    public:
-    ShadowController(const path& vertexShaderPath, const path& fragmentShaderPath);
+    ShadowMapController(const path& vertexShaderPath, const path& fragmentShaderPath);
 
     void onViewportChanged(Viewport* viewport) override;
 

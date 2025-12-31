@@ -9,7 +9,6 @@
 namespace RenderSystem
 {
   class Object3D;
-  class SceneShaderProgram;
 
   using ObjectVertexMap = std::unordered_map<const Object3D*, int>;
 
@@ -19,7 +18,8 @@ namespace RenderSystem
     Renderer();
     Renderer(Renderer&&) = delete;
 
-    void renderObject3D(const Object3D& object, int vertexOffset = 0);
+    void renderBlinnPhongObject3D(const Object3D& object, int vertexOffset);
+    void renderGlassObject3D(const Object3D& object, int vertexOffset);
     void renderSceneDecoration(const SceneDecoration& sceneDecoration, int& startIndex);
     void renderHighlightedFace(int faceIdx, int vertexOffset);
     void renderWireframe(int objectVertexCount);
@@ -34,8 +34,6 @@ namespace RenderSystem
 
    private:
     void renderOverlayPrimitive(const std::function<void()>& renderFunc);
-    void renderBlinnPhongObject3D(const Object3D& object, int vertexOffset);
-    void renderGlassObject3D(const Object3D& object, int vertexOffset);
 
    private:
     RenderBuffer mModelRenderBuffer;

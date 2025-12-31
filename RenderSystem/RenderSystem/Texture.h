@@ -13,10 +13,10 @@ namespace RenderSystem
     virtual ~Texture();
     Texture& operator=(Texture&& other) noexcept;
 
+    unsigned int getId() const;
+
     virtual void passToFragmentShader(int textureLocation, int textureSlot) const = 0;
     virtual int getAttachmentId() const = 0;
-
-    unsigned int getId() const;
 
    private:
     void bind() const override;

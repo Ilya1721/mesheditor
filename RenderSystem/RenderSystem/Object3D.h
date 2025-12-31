@@ -4,11 +4,11 @@
 #include <memory>
 #include <vector>
 
+#include "Material.h"
 #include "MeshCore/AABBox.h"
 #include "MeshCore/Mesh.h"
 #include "MeshCore/Vertex.h"
 #include "Object3DIntersection.h"
-#include "Object3DMaterialParams.h"
 #include "Utility/CallbackMechanism.h"
 
 using namespace MeshCore;
@@ -25,7 +25,7 @@ namespace RenderSystem
   {
    public:
     Object3D();
-    Object3D(std::unique_ptr<Mesh> mesh);
+    Object3D(std::unique_ptr<Mesh> mesh, const Material& material);
     Object3D(Object3D&& other) = delete;
     ~Object3D();
 
@@ -41,8 +41,8 @@ namespace RenderSystem
     std::unique_ptr<Object3D> clone();
     int getVertexCount() const;
     const std::vector<Vertex>& getVertices() const;
-    const Object3DMaterialParams& getMaterialParams() const;
     const glm::vec2& getUVScale() const;
+    const Material& getMaterial() const;
 
     void addChild(std::unique_ptr<Object3D>&& child);
     void addOnChildAddedCallback(const std::function<childAddedCallback>& callback);
@@ -50,9 +50,16 @@ namespace RenderSystem
     void addOnBBoxUpdatedCallback(const std::function<bboxUpdatedCallback>& callback);
     void onMeshUpdated(const std::unordered_set<UniqueVertex*>& vertices);
     void moveToOrigin();
-    void makeItGlass(const GlassMaterialParams& params);
-    void makeItBlinnPhong(const BlinnPhongMaterialParams& params);
     void setUVScale(const glm::vec2& uvScale);
+    template <MaterialType T> void setMaterial(T material)
+    {
+      mMaterial = std::move(material);
+    }
+    void materialVisitor(
+      const std::function<void(const BlinnPhongMaterial&)>& blinnPhongAction,
+      const std::function<void(const GlassMaterial&)>& glassAction,
+      const std::function<void(const PBRMaterial&)>& pbrAction
+    ) const;
 
     virtual void updateTransform(const glm::mat4& transform);
 
@@ -70,9 +77,9 @@ namespace RenderSystem
     glm::mat4 mTransform;
     glm::vec2 mUVScale;
     AABBox mBBox;
+    Material mMaterial;
     CallbackMechanism<childAddedCallback> mChildAddedCM;
     CallbackMechanism<objectUpdatedCallback> mObjectUpdatedCM;
     CallbackMechanism<bboxUpdatedCallback> mBBoxUpdatedCM;
-    Object3DMaterialParams mMaterialParams;
   };
 }  // namespace RenderSystem

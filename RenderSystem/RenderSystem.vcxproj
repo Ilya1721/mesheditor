@@ -128,31 +128,38 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Shaders\GlassShader.frag" />
+    <None Include="Shaders\GlassShader.vert" />
+    <None Include="Shaders\PBRShader.frag" />
+    <None Include="Shaders\PBRShader.vert" />
     <None Include="Shaders\ScreenShader.frag" />
     <None Include="Shaders\ScreenShader.vert" />
+    <None Include="Shaders\ShadowShader.frag" />
+    <None Include="Shaders\ShadowShader.vert" />
     <None Include="Shaders\TAAMotionVectorsShader.frag" />
     <None Include="Shaders\TAAMotionVectorsShader.vert" />
     <None Include="Shaders\ShadowMapShader.frag" />
     <None Include="Shaders\ShadowMapShader.vert" />
-    <None Include="Shaders\FragmentShader.frag" />
+    <None Include="Shaders\BlinnPhongShader.frag" />
     <None Include="Shaders\SkyboxShader.frag" />
     <None Include="Shaders\SkyboxShader.vert" />
     <None Include="Shaders\TAADepthMapShader.frag" />
     <None Include="Shaders\TAADepthMapShader.vert" />
     <None Include="Shaders\TAAResolveShader.frag" />
     <None Include="Shaders\TAAResolveShader.vert" />
-    <None Include="Shaders\VertexShader.vert" />
+    <None Include="Shaders\BlinnPhongShader.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="RenderSystem\ControllerWithDepthMap.cpp" />
     <ClCompile Include="RenderSystem\CubemapTexture.cpp" />
     <ClCompile Include="RenderSystem\DebugVisualization.cpp" />
-    <ClCompile Include="RenderSystem\GlassMaterial.cpp" />
-    <ClCompile Include="RenderSystem\BlinnPhongMaterial.cpp" />
+    <ClCompile Include="RenderSystem\GlassShaderProgram.cpp" />
     <ClCompile Include="RenderSystem\GLTFModelLoader.cpp" />
     <ClCompile Include="RenderSystem\ModelLoader.cpp" />
     <ClCompile Include="RenderSystem\ObjModelLoader.cpp" />
+    <ClCompile Include="RenderSystem\PBRShaderProgram.cpp" />
     <ClCompile Include="RenderSystem\ScreenShaderProgram.cpp" />
+    <ClCompile Include="RenderSystem\ShadowShaderProgram.cpp" />
     <ClCompile Include="RenderSystem\STLModelLoader.cpp" />
     <ClCompile Include="RenderSystem\TAAColorBufferController.cpp" />
     <ClCompile Include="RenderSystem\TAAColorTexture.cpp" />
@@ -171,7 +178,6 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <ClCompile Include="RenderSystem\ImageTexture.cpp" />
     <ClCompile Include="RenderSystem\Intersection.cpp" />
     <ClCompile Include="RenderSystem\DirectionalLight.cpp" />
-    <ClCompile Include="RenderSystem\DirLightSource.cpp" />
     <ClCompile Include="RenderSystem\Mover.cpp" />
     <ClCompile Include="RenderSystem\Object3D.cpp" />
     <ClCompile Include="RenderSystem\OperationsDispatcher.cpp" />
@@ -184,10 +190,10 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <ClCompile Include="RenderSystem\RenderLogger.cpp" />
     <ClCompile Include="RenderSystem\SceneDecoration.cpp" />
     <ClCompile Include="RenderSystem\Scene.cpp" />
-    <ClCompile Include="RenderSystem\SceneShaderProgram.cpp" />
+    <ClCompile Include="RenderSystem\BlinnPhongShaderProgram.cpp" />
     <ClCompile Include="RenderSystem\ShadowMapShaderProgram.cpp" />
     <ClCompile Include="RenderSystem\ShaderProgram.cpp" />
-    <ClCompile Include="RenderSystem\ShadowController.cpp" />
+    <ClCompile Include="RenderSystem\ShadowMapController.cpp" />
     <ClCompile Include="RenderSystem\SkyboxController.cpp" />
     <ClCompile Include="RenderSystem\SkyboxShaderProgram.cpp" />
     <ClCompile Include="RenderSystem\SurfaceExtruder.cpp" />
@@ -209,19 +215,20 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <ClInclude Include="RenderSystem\ControllerWithDepthMap.h" />
     <ClInclude Include="RenderSystem\CubemapTexture.h" />
     <ClInclude Include="RenderSystem\DebugVisualization.h" />
-    <ClInclude Include="RenderSystem\GlassMaterial.h" />
-    <ClInclude Include="RenderSystem\BlinnPhongMaterial.h" />
+    <ClInclude Include="RenderSystem\GlassShaderProgram.h" />
     <ClInclude Include="RenderSystem\GLTFModelLoader.h" />
     <ClInclude Include="RenderSystem\ModelLoader.h" />
     <ClInclude Include="RenderSystem\ObjModelLoader.h" />
+    <ClInclude Include="RenderSystem\PBRShaderProgram.h" />
     <ClInclude Include="RenderSystem\ScreenShaderProgram.h" />
+    <ClInclude Include="RenderSystem\ShadowShaderProgram.h" />
     <ClInclude Include="RenderSystem\STLModelLoader.h" />
     <ClInclude Include="RenderSystem\TAAColorBufferController.h" />
     <ClInclude Include="RenderSystem\TAAColorTexture.h" />
     <ClInclude Include="RenderSystem\TAADepthMapController.h" />
     <ClInclude Include="RenderSystem\TAAMotionVectorsShaderProgram.h" />
     <ClInclude Include="RenderSystem\TAAMotionVectorsTexture.h" />
-    <ClInclude Include="RenderSystem\Object3DMaterialParams.h" />
+    <ClInclude Include="RenderSystem\Material.h" />
     <ClInclude Include="RenderSystem\PointLight.h" />
     <ClInclude Include="RenderSystem\PointLightObject3D.h" />
     <ClInclude Include="RenderSystem\PointLightOperations.h" />
@@ -238,7 +245,6 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <ClInclude Include="RenderSystem\Intersection.h" />
     <ClInclude Include="RenderSystem\LightParams.h" />
     <ClInclude Include="RenderSystem\DirectionalLight.h" />
-    <ClInclude Include="RenderSystem\DirLightSource.h" />
     <ClInclude Include="RenderSystem\Mover.h" />
     <ClInclude Include="RenderSystem\Object3D.h" />
     <ClInclude Include="RenderSystem\Object3DIntersection.h" />
@@ -254,10 +260,10 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <ClInclude Include="RenderSystem\SceneDecoration.h" />
     <ClInclude Include="RenderSystem\Scene.h" />
     <ClInclude Include="RenderSystem\AbstractShaderProgram.h" />
-    <ClInclude Include="RenderSystem\SceneShaderProgram.h" />
+    <ClInclude Include="RenderSystem\BlinnPhongShaderProgram.h" />
     <ClInclude Include="RenderSystem\ShadowMapShaderProgram.h" />
     <ClInclude Include="RenderSystem\ShaderProgram.h" />
-    <ClInclude Include="RenderSystem\ShadowController.h" />
+    <ClInclude Include="RenderSystem\ShadowMapController.h" />
     <ClInclude Include="RenderSystem\SkyboxController.h" />
     <ClInclude Include="RenderSystem\SkyboxShaderProgram.h" />
     <ClInclude Include="RenderSystem\SurfaceExtruder.h" />
@@ -269,6 +275,7 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <ClInclude Include="RenderSystem\TAAResolveShaderProgram.h" />
     <ClInclude Include="RenderSystem\Texture.h" />
     <ClInclude Include="RenderSystem\Texture2D.h" />
+    <ClInclude Include="RenderSystem\Typedefs.h" />
     <ClInclude Include="RenderSystem\Viewport.h" />
     <ClInclude Include="RenderSystem\ViewportListener.h" />
     <ClInclude Include="RenderSystem\Window.h" />

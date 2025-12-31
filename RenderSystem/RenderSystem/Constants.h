@@ -7,45 +7,60 @@
 
 #include "GeometryCore/Typedefs.h"
 #include "LightParams.h"
-#include "MeshCore/MaterialParams.h"
-#include "MeshCore/Typedefs.h"
+#include "Material.h"
 
 using namespace GeometryCore;
 
 namespace RenderSystem
 {
-  const BlinnPhongMaterialParams RUBY_MATERIAL {
-    RGB(0.1745f, 0.01175f, 0.01175f), RGB(0.61424f, 0.04136f, 0.04136f),
+  const BlinnPhongMaterial RUBY_MATERIAL {
+    RGB(0.1745f, 0.01175f, 0.01175f),
+    RGBOrTexture {RGB(0.61424f, 0.04136f, 0.04136f), nullptr},
     RGB(0.727811f, 0.626959f, 0.626959f), 2.0f
   };
 
-  const BlinnPhongMaterialParams EMERALD_MATERIAL {
-    RGB(0.0215f, 0.1745f, 0.0215f), RGB(0.07568f, 0.61424f, 0.07568f),
+  const BlinnPhongMaterial EMERALD_MATERIAL {
+    RGB(0.0215f, 0.1745f, 0.0215f),
+    RGBOrTexture {RGB(0.07568f, 0.61424f, 0.07568f), nullptr},
     RGB(0.633f, 0.727811f, 0.633f), 0.6f
   };
 
-  const BlinnPhongMaterialParams RED_MATERIAL {
-    RGB(1.0f, 0.0f, 0.0f), RGB(0.0f, 0.0f, 0.0f), RGB(0.0f, 0.0f, 0.0f), 0.6f
+  const BlinnPhongMaterial RED_MATERIAL {
+    RGB(1.0f, 0.0f, 0.0f), RGBOrTexture {RGB(0.0f, 0.0f, 0.0f), nullptr},
+    RGB(0.0f, 0.0f, 0.0f), 0.6f
   };
 
-  const BlinnPhongMaterialParams GREEN_MATERIAL {
-    RGB(0.0f, 1.0f, 0.0f), RGB(0.0f, 0.0f, 0.0f), RGB(0.0f, 0.0f, 0.0f), 0.6f
+  const BlinnPhongMaterial GREEN_MATERIAL {
+    RGB(0.0f, 1.0f, 0.0f), RGBOrTexture {RGB(0.0f, 0.0f, 0.0f), nullptr},
+    RGB(0.0f, 0.0f, 0.0f), 0.6f
   };
 
-  const BlinnPhongMaterialParams BLUE_MATERIAL {
-    RGB(0.0f, 0.0f, 1.0f), RGB(0.0f, 0.0f, 0.0f), RGB(0.0f, 0.0f, 0.0f), 0.6f
+  const BlinnPhongMaterial BLUE_MATERIAL {
+    RGB(0.0f, 0.0f, 1.0f), RGBOrTexture {RGB(0.0f, 0.0f, 0.0f), nullptr},
+    RGB(0.0f, 0.0f, 0.0f), 0.6f
   };
 
-  const BlinnPhongMaterialParams BLACK_MATERIAL {
-    RGB(0.0f, 0.0f, 0.0f), RGB(0.0f, 0.0f, 0.0f), RGB(0.0f, 0.0f, 0.0f), 0.6f
+  const BlinnPhongMaterial BLACK_MATERIAL {
+    RGB(0.0f, 0.0f, 0.0f), RGBOrTexture {RGB(0.0f, 0.0f, 0.0f), nullptr},
+    RGB(0.0f, 0.0f, 0.0f), 0.6f
   };
 
-  const BlinnPhongMaterialParams PEARL_MATERIAL {
-    RGB(0.25f, 0.20725f, 0.20725f), RGB(1.0f, 0.829f, 0.829f),
+  const BlinnPhongMaterial PEARL_MATERIAL {
+    RGB(0.25f, 0.20725f, 0.20725f), RGBOrTexture {RGB(1.0f, 0.829f, 0.829f), nullptr},
     RGB(0.296648f, 0.296648f, 0.296648f), 11.264f
   };
 
-  static inline constexpr DirectionalLightParams DIRECTIONAL_LIGHT_PARAMS {
+  const BlinnPhongMaterial GOLD_MATERIAL {
+    RGB(0.24725f, 0.1995f, 0.0745f),
+    RGBOrTexture {RGB(0.75164f, 0.60648f, 0.22648f), nullptr},
+    RGB(0.628281f, 0.555802f, 0.366065f), 2.0f
+  };
+
+  static inline constexpr GlassMaterial GLASS_MATERIAL {
+    1.52f, 0.2f, 0.5f, 0.1f, RGB(0.8f, 0.9f, 1.0f)
+  };
+
+  static inline constexpr DirectionalLightParams DIR_LIGHT_PARAMS {
     RGB(1.0f, 1.0f, 1.0f), RGB(1.0f, 1.0f, 1.0f), RGB(0.1f, 0.1f, 0.1f)
   };
 
@@ -56,10 +71,6 @@ namespace RenderSystem
     1.0f,
     0.009f,
     0.003f
-  };
-
-  static inline constexpr GlassMaterialParams GLASS_MATERIAL_PARAMS {
-    1.52f, 0.2f, 0.5f, 0.1f, RGB(0.8f, 0.9f, 1.0f)
   };
 
   constexpr RGBA BACKGROUND_COLOR = RGBA(0.725f, 0.9f, 1.0f, 1.0f);
@@ -109,10 +120,18 @@ namespace RenderSystem
     R"(./RenderSystem/Shaders/TAAResolveShader.vert)";
   const std::string TAA_RESOLVE_FRAGMENT_SHADER_PATH =
     R"(./RenderSystem/Shaders/TAAResolveShader.frag)";
-  const std::string SCENE_VERTEX_SHADER_PATH =
-    R"(./RenderSystem/Shaders/VertexShader.vert)";
-  const std::string SCENE_FRAGMENT_SHADER_PATH =
-    R"(./RenderSystem/Shaders/FragmentShader.frag)";
+  const std::string BLINN_PHONG_VERTEX_SHADER_PATH =
+    R"(./RenderSystem/Shaders/BlinnPhongShader.vert)";
+  const std::string BLINN_PHONG_FRAGMENT_SHADER_PATH =
+    R"(./RenderSystem/Shaders/BlinnPhongShader.frag)";
+  const std::string GLASS_VERTEX_SHADER_PATH =
+    R"(./RenderSystem/Shaders/GlassShader.vert)";
+  const std::string GLASS_FRAGMENT_SHADER_PATH =
+    R"(./RenderSystem/Shaders/GlassShader.frag)";
+  const std::string SHADOW_VERTEX_SHADER_PATH =
+    R"(./RenderSystem/Shaders/ShadowShader.vert)";
+  const std::string SHADOW_FRAGMENT_SHADER_PATH =
+    R"(./RenderSystem/Shaders/ShadowShader.frag)";
   const std::string SCREEN_VERTEX_SHADER_PATH =
     R"(./RenderSystem/Shaders/ScreenShader.vert)";
   const std::string SCREEN_FRAGMENT_SHADER_PATH =
@@ -129,20 +148,18 @@ namespace RenderSystem
     R"(./ThirdParty/resources/textures/skybox/front.png)",
     R"(./ThirdParty/resources/textures/skybox/back.png)",
   };
-  const std::string FLOOR_MESH_PATH = R"(C:/MyPersonalSpace/Dev/3DModels/Blender/Floor/Floor.obj)";
+  const std::string FLOOR_MESH_PATH =
+    R"(C:/MyPersonalSpace/Dev/3DModels/Blender/Floor/Floor.obj)";
 
   constexpr int SAMPLE_COUNT_TAA = 8;
 
-  const auto DIR_LIGHT_POS = Point3D(LIGHT_SOURCE_POS_X, LIGHT_SOURCE_POS_Y, LIGHT_SOURCE_POS_Z);
+  const auto DIR_LIGHT_POS =
+    Point3D(LIGHT_SOURCE_POS_X, LIGHT_SOURCE_POS_Y, LIGHT_SOURCE_POS_Z);
 
-  constexpr float SCREEN_QUAD_VERTICES[] = {
-      -1.0f, -1.0f,  0.0f, 0.0f,
-       1.0f, -1.0f,  1.0f, 0.0f,
-      -1.0f,  1.0f,  0.0f, 1.0f,
-      -1.0f,  1.0f,  0.0f, 1.0f,
-       1.0f, -1.0f,  1.0f, 0.0f,
-       1.0f,  1.0f,  1.0f, 1.0f
-  };
+  constexpr float SCREEN_QUAD_VERTICES[] = {-1.0f, -1.0f, 0.0f,  0.0f, 1.0f, -1.0f,
+                                            1.0f,  0.0f,  -1.0f, 1.0f, 0.0f, 1.0f,
+                                            -1.0f, 1.0f,  0.0f,  1.0f, 1.0f, -1.0f,
+                                            1.0f,  0.0f,  1.0f,  1.0f, 1.0f, 1.0f};
 
   constexpr int STL_HEADER_SIZE = 80;
   const inline std::string DELIMITERS = " ,\t\n/";

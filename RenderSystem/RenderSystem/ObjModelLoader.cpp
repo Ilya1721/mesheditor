@@ -150,48 +150,52 @@ namespace
     }
   }
 
-  void parseTextMTL(
+  std::shared_ptr<ImageTexture> parseTexture(
     const std::filesystem::path& filePath,
-    MeshCore::BlinnPhongMaterialParams& materialParams
+    char*& currentToken,
+    char*& context,
+    const char* delimiters
   )
+  {
+    auto texturePath = parseTexturePath(currentToken, context, delimiters);
+    std::filesystem::path fullTexturePath;
+    if (isPathAbsolute(texturePath)) { fullTexturePath = texturePath; }
+    else
+    {
+      fullTexturePath = filePath.parent_path() / std::filesystem::path(texturePath);
+    }
+
+    return std::make_shared<ImageTexture>(fullTexturePath.string());
+  }
+
+  void parseTextMTL(const std::filesystem::path& filePath, BlinnPhongMaterial& material)
   {
     auto fileContent = Utility::readFile(filePath);
     parseText(
       fileContent,
-      [&materialParams,
-       &filePath](char*& currentToken, char*& context, const char* delimiters)
+      [&material, &filePath](char*& currentToken, char*& context, const char* delimiters)
       {
         if (Utility::isEqual(currentToken, "Ns"))
         {
           currentToken = strtok_s(nullptr, delimiters, &context);
-          materialParams.shininess = std::stof(currentToken);
+          material.shininess = std::stof(currentToken);
         }
         else if (Utility::isEqual(currentToken, "Ka"))
         {
-          readTokenAsVector(currentToken, delimiters, context, materialParams.ambient, 3);
+          readTokenAsVector(currentToken, delimiters, context, material.ambient, 3);
         }
         else if (Utility::isEqual(currentToken, "Kd"))
         {
-          readTokenAsVector(currentToken, delimiters, context, materialParams.diffuse, 3);
+          readTokenAsVector(currentToken, delimiters, context, material.diffuse.rgb, 3);
         }
         else if (Utility::isEqual(currentToken, "Ks"))
         {
-          readTokenAsVector(
-            currentToken, delimiters, context, materialParams.specular, 3
-          );
+          readTokenAsVector(currentToken, delimiters, context, material.specular, 3);
         }
         else if (Utility::isEqual(currentToken, "map_Kd"))
         {
-          auto texturePath = parseTexturePath(currentToken, context, delimiters);
-          if (isPathAbsolute(texturePath))
-          {
-            materialParams.diffuseTexturePath = texturePath;
-          }
-          else
-          {
-            materialParams.diffuseTexturePath =
-              filePath.parent_path() / std::filesystem::path(texturePath);
-          }
+          material.diffuse.texture =
+            parseTexture(filePath, currentToken, context, delimiters);
         }
       }
     );
@@ -204,12 +208,12 @@ namespace
     std::vector<Point2D> textures;
     std::vector<Vector3D> normals;
     std::vector<MeshCore::Vertex> vertices;
-    MeshCore::BlinnPhongMaterialParams materialParams = MeshCore::GOLD_MATERIAL;
+    BlinnPhongMaterial material;
 
     parseText(
       fileContent,
       [&positions, &normals, &textures, &vertices, &filePath,
-       &materialParams](char*& currentToken, char*& context, const char* delimiters)
+       &material](char*& currentToken, char*& context, const char* delimiters)
       {
         if (isEqual(currentToken, "v"))
         {
@@ -233,14 +237,14 @@ namespace
         {
           auto mtlFileName = parseMaterialFileName(currentToken, context, delimiters);
           auto mtlFilePath = filePath.parent_path() / mtlFileName;
-          parseTextMTL(mtlFilePath, materialParams);
+          parseTextMTL(mtlFilePath, material);
         }
       }
     );
 
-    auto mesh = std::make_unique<MeshCore::Mesh>(vertices, materialParams);
+    auto mesh = std::make_unique<MeshCore::Mesh>(vertices);
 
-    return std::make_unique<Object3D>(std::move(mesh));
+    return std::make_unique<Object3D>(std::move(mesh), material);
   }
 }  // namespace
 
