@@ -44,8 +44,8 @@ namespace RenderSystem
 
   void TAAResolveController::setScreenSize(int width, int height)
   {
-    mResolvedColorTexture.create(width, height);
     mShaderProgram.setScreenSize(glm::vec2(width, height));
+    mResolvedColorTexture.create(width, height);
     mFBO.attachDepthBuffer(width, height);
   }
 

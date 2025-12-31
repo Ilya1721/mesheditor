@@ -12,7 +12,6 @@ namespace RenderSystem
   )
     : mShaderProgram(vertexShaderPath, fragmentShaderPath)
   {
-    init();
   }
 
   TAAMotionVectorsShaderProgram* TAAMotionVectorsController::getShaderProgram()
@@ -20,7 +19,8 @@ namespace RenderSystem
     return &mShaderProgram;
   }
 
-  const TAAMotionVectorsTexture& TAAMotionVectorsController::getMotionVectorsTexture() const
+  const TAAMotionVectorsTexture& TAAMotionVectorsController::getMotionVectorsTexture(
+  ) const
   {
     return mTexture;
   }
@@ -28,6 +28,14 @@ namespace RenderSystem
   void TAAMotionVectorsController::setScreenSize(int width, int height)
   {
     mTexture.create(width, height);
+    mFBO.attachTexture(
+      mTexture,
+      [this]()
+      {
+        GLenum attachments[] = {mTexture.getAttachmentId()};
+        glDrawBuffers(1, attachments);
+      }
+    );
     mFBO.attachDepthBuffer(width, height);
   }
 
@@ -56,7 +64,9 @@ namespace RenderSystem
     mShaderProgram.setProjection(projection);
   }
 
-  void TAAMotionVectorsController::renderSceneToTexture(const std::function<void()>& renderSceneFunc)
+  void TAAMotionVectorsController::renderSceneToTexture(
+    const std::function<void()>& renderSceneFunc
+  )
   {
     mFBO.invoke(
       [this, &renderSceneFunc]()
@@ -64,18 +74,6 @@ namespace RenderSystem
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         mShaderProgram.invoke(renderSceneFunc);
-      }
-    );
-  }
-
-  void TAAMotionVectorsController::init()
-  {
-    mFBO.attachTexture(
-      mTexture,
-      [this]()
-      {
-        GLenum attachments[] = {mTexture.getAttachmentId()};
-        glDrawBuffers(1, attachments);
       }
     );
   }

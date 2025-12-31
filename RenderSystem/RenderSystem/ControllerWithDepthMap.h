@@ -22,9 +22,6 @@ namespace RenderSystem
     void setDepthMapSize(int width, int height);
     void renderSceneToDepthMap(const std::function<void()>& renderSceneFunc);
 
-  private:
-    void init();
-
   protected:
     DepthTexture mTexture;
     FrameBufferObject mFBO;

@@ -25,9 +25,6 @@ namespace RenderSystem
     void renderSceneToTexture(const std::function<void()>& renderSceneFunc);
 
    private:
-    void init();
-
-   private:
     TAAMotionVectorsTexture mTexture;
     FrameBufferObject mFBO;
     TAAMotionVectorsShaderProgram mShaderProgram;

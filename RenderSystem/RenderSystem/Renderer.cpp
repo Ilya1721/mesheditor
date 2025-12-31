@@ -72,6 +72,21 @@ namespace RenderSystem
     );
   }
 
+  void Renderer::renderObject3DShadow(const Object3D& object, int vertexOffset)
+  {
+    mModelRenderBuffer.invoke(
+      [&object, &vertexOffset]()
+      {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_ZERO, GL_SRC_COLOR);
+        glDepthFunc(GL_LEQUAL);
+        glDrawArrays(GL_TRIANGLES, vertexOffset, object.getVertexCount());
+        glDepthFunc(GL_LESS);
+        glDisable(GL_BLEND);
+      }
+    );
+  }
+
   void Renderer::renderOverlayPrimitive(const std::function<void()>& renderFunc)
   {
     glDepthFunc(GL_LEQUAL);

@@ -20,6 +20,7 @@ namespace RenderSystem
 
     void renderBlinnPhongObject3D(const Object3D& object, int vertexOffset);
     void renderGlassObject3D(const Object3D& object, int vertexOffset);
+    void renderObject3DShadow(const Object3D& object, int vertexOffset);
     void renderSceneDecoration(const SceneDecoration& sceneDecoration, int& startIndex);
     void renderHighlightedFace(int faceIdx, int vertexOffset);
     void renderWireframe(int objectVertexCount);

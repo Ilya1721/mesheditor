@@ -21,11 +21,11 @@ namespace RenderSystem
   {
     mCurrentColorBuffer.create(width, height);
     mPreviousColorBuffer.create(width, height);
-    mFBO.attachDepthBuffer(width, height);
     mFBO.attachTexture(
       mCurrentColorBuffer,
       [this]() { glDrawBuffer(mCurrentColorBuffer.getAttachmentId()); }
     );
+    mFBO.attachDepthBuffer(width, height);
   }
 
   void TAAColorBufferController::renderSceneToColorBuffer(

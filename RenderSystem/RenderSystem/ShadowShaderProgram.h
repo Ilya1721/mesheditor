@@ -25,10 +25,10 @@ namespace RenderSystem
     void setLightView(const glm::mat4& lightView);
     void setLightProjection(const glm::mat4& lightProjection);
     void setShadowBias(float shadowBias);
+    void setProjection(const glm::mat4& projection);
 
    private:
     void initUniformLocations();
-    void init();
 
    private:
     int mModel;

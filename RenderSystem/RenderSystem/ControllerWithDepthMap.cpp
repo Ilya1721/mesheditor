@@ -11,7 +11,6 @@ namespace RenderSystem
   ControllerWithDepthMap& ControllerWithDepthMap::operator=(ShaderProgram* shaderProgram)
   {
     mShaderProgram = shaderProgram;
-    init();
     return *this;
   }
 
@@ -20,6 +19,14 @@ namespace RenderSystem
   void ControllerWithDepthMap::setDepthMapSize(int width, int height)
   {
     mTexture.create(width, height);
+    mFBO.attachTexture(
+      mTexture,
+      []()
+      {
+        glDrawBuffer(GL_NONE);
+        glReadBuffer(GL_NONE);
+      }
+    );
   }
 
   void ControllerWithDepthMap::renderSceneToDepthMap(
@@ -32,18 +39,6 @@ namespace RenderSystem
         glViewport(0, 0, mTexture.getWidth(), mTexture.getHeight());
         glClear(GL_DEPTH_BUFFER_BIT);
         mShaderProgram->invoke(renderSceneFunc);
-      }
-    );
-  }
-
-  void ControllerWithDepthMap::init()
-  {
-    mFBO.attachTexture(
-      mTexture,
-      []()
-      {
-        glDrawBuffer(GL_NONE);
-        glReadBuffer(GL_NONE);
       }
     );
   }

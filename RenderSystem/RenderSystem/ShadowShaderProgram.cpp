@@ -5,7 +5,6 @@
 #undef __gl_h_
 #endif
 #include "Camera.h"
-#include "Constants.h"
 #include "glad/glad.h"
 
 namespace RenderSystem
@@ -57,6 +56,12 @@ namespace RenderSystem
     invoke([this, &shadowBias]() { glUniform1f(mShadowBias, shadowBias); });
   }
 
+  void ShadowShaderProgram::setProjection(const glm::mat4& projection)
+  {
+    invoke([this, &projection]()
+           { glUniformMatrix4fv(mProjection, 1, false, glm::value_ptr(projection)); });
+  }
+
   void ShadowShaderProgram::initUniformLocations()
   {
     mModel = getUniformLocation("model");
@@ -67,6 +72,4 @@ namespace RenderSystem
     mShadowBias = getUniformLocation("shadowBias");
     mShadowMap = getUniformLocation("shadowMap");
   }
-
-  void ShadowShaderProgram::init() { setShadowBias(SHADOW_BIAS); }
 }  // namespace RenderSystem

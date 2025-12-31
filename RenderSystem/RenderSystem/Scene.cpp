@@ -70,6 +70,7 @@ namespace RenderSystem
     registerCallbacks();
     calcDirLightSourcePos();
     mBlinnPhongShaderProgram->setDirLightParams(DIR_LIGHT_PARAMS);
+    mShadowShaderProgram->setShadowBias(SHADOW_BIAS);
   }
 
   void Scene::onCameraPosChanged()
@@ -139,6 +140,13 @@ namespace RenderSystem
   }
 
   void Scene::setPBRMaterial(const PBRMaterial& material) {}
+
+  void Scene::setProjectionToShaders(const glm::mat4& projection)
+  {
+    mBlinnPhongShaderProgram->setProjection(projection);
+    mGlassShaderProgram->setProjection(projection);
+    mShadowShaderProgram->setProjection(projection);
+  }
 
   void Scene::addModelObject(const std::string& meshFilePath)
   {
@@ -242,6 +250,19 @@ namespace RenderSystem
     }
   }
 
+  void Scene::renderShadows()
+  {
+    mShadowShaderProgram->setShadowMap(mShadowMapController->getDepthMap());
+    for (auto& [object, vertexOffset] : mSceneObjectVertexOffsetMap)
+    {
+      mShadowShaderProgram->setModel(object->getTransform());
+      mShadowShaderProgram->invoke(
+        [this, &object, vertexOffset]()
+        { mRenderer->renderObject3DShadow(*object, vertexOffset); }
+      );
+    }
+  }
+
   void Scene::renderRawScene(
     const std::function<void(const Object3D*)>& prerenderSetup, bool invokeModelShaders
   )
@@ -256,6 +277,7 @@ namespace RenderSystem
   {
     renderSkybox();
     renderRawScene(prerenderSetup, invokeModelShaders);
+    renderShadows();
     mBlinnPhongShaderProgram->invoke(
       [this]()
       {
@@ -296,7 +318,6 @@ namespace RenderSystem
   void Scene::scenePrerenderSetup(const Object3D* object)
   {
     const auto& objectModel = object->getTransform();
-
     object->materialVisitor(
       [this, &object, objectModel](const BlinnPhongMaterial& material)
       {
@@ -435,11 +456,11 @@ namespace RenderSystem
     mRenderer->cleanScreen();
     mTAAController->setView(mCamera->getViewMatrix());
     auto projection = mTAAController->makeJitteredProjection();
-    mBlinnPhongShaderProgram->setProjection(projection);
+    setProjectionToShaders(projection);
     writeSceneToShadowMap();
     writeSceneToTAATextures();
-    const auto& screenTexture = resolveTAA();
-    renderFinalScreenTexture(screenTexture);
+    const auto& taaOutputTexture = resolveTAA();
+    renderFinalScreenTexture(taaOutputTexture);
   }
 
   Object3DIntersection Scene::getRayIntersection(

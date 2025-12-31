@@ -96,6 +96,8 @@ namespace RenderSystem
     void setBlinnPhongMaterial(const BlinnPhongMaterial& material);
     void setGlassMaterial(const GlassMaterial& material);
     void setPBRMaterial(const PBRMaterial& material);
+    void setProjectionToShaders(const glm::mat4& projection);
+    void renderShadows();
 
    private:
     std::unique_ptr<Renderer> mRenderer;
