@@ -16,10 +16,7 @@ namespace RenderSystem
 
     int getWidth() const;
     int getHeight() const;
-
-    virtual void create(int width, int height) = 0;
-
-    void passToFragmentShader(int textureLocation, int textureSlot) const override;
+       
     void swap(Texture2D& other) noexcept;
 
    protected:

@@ -31,9 +31,4 @@ namespace RenderSystem
       }
     );
   }
-
-  int TAAMotionVectorsTexture::getAttachmentId() const
-  {
-    return GL_COLOR_ATTACHMENT0;
-  }
 }  // namespace RenderSystem

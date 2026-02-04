@@ -3,45 +3,37 @@
 #ifdef __gl_h_
 #undef __gl_h_
 #endif
+#include "Constants.h"
 #include "glad/glad.h"
 #include "stb_image/stb_image.h"
-#include "Constants.h"
 
 namespace RenderSystem
 {
   ImageTexture::ImageTexture(int width, int height) : Texture2D(width, height)
   {
-    create(width, height);
+    create(width, height, nullptr, 4);
   }
 
   ImageTexture::ImageTexture(ImageTexture&& other) noexcept { *this = std::move(other); }
 
   ImageTexture& ImageTexture::operator=(ImageTexture&& other) noexcept
   {
-    if (this != &other)
-    {
-      Texture2D::operator=(std::move(other));
-      mData = other.mData;
-      mColorChannels = other.mColorChannels;
-      other.mData = nullptr;
-      other.mColorChannels = 0;
-    }
-
+    if (this != &other) { Texture2D::operator=(std::move(other)); }
     return *this;
   }
 
-  void ImageTexture::create(int width, int height)
+  void ImageTexture::create(int width, int height, unsigned char* data, int colorChannels)
   {
     invoke(
-      [&width, &height, this]()
+      [&width, &height, &data, &colorChannels, this]()
       {
-        const auto colorFormat = getColorFormat(mColorChannels);
+        const auto colorFormat = getColorFormat(colorChannels);
         mWidth = width;
         mHeight = height;
 
         glTexImage2D(
           GL_TEXTURE_2D, 0, colorFormat, width, height, 0, colorFormat, GL_UNSIGNED_BYTE,
-          mData
+          data
         );
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -57,13 +49,12 @@ namespace RenderSystem
     );
   }
 
-  int ImageTexture::getAttachmentId() const { return GL_COLOR_ATTACHMENT0; }
-
   ImageTexture::ImageTexture(const std::string& filePath) : Texture2D()
   {
     if (filePath.empty()) { return; }
-    mData = stbi_load(filePath.c_str(), &mWidth, &mHeight, &mColorChannels, 0);
-    create(mWidth, mHeight);
-    stbi_image_free(mData);
+    int colorChannels = 0;
+    auto data = stbi_load(filePath.c_str(), &mWidth, &mHeight, &colorChannels, 0);
+    create(mWidth, mHeight, data, colorChannels);
+    stbi_image_free(data);
   }
 }  // namespace RenderSystem

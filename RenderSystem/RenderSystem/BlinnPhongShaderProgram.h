@@ -24,9 +24,7 @@ namespace RenderSystem
       const std::filesystem::path& vertexShaderPath,
       const std::filesystem::path& fragmentShaderPath
     );
-
     void onCameraPosChanged(Camera* camera) override;
-
     void setModel(const glm::mat4& model) override;
     void setDirLightParams(const DirectionalLightParams& light);
     void setDirLightSourcePos(const Point3D& pos);

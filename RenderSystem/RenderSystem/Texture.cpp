@@ -32,6 +32,15 @@ namespace RenderSystem
 
   unsigned int Texture::getId() const { return mTexture; }
 
+  int Texture::getAttachmentId() const { return GL_COLOR_ATTACHMENT0; }
+
+  void Texture::passToFragmentShader(int textureLocation, int textureSlot) const
+  {
+    glActiveTexture(GL_TEXTURE0 + textureSlot);
+    glBindTexture(GL_TEXTURE_2D, mTexture);
+    glUniform1i(textureLocation, textureSlot);
+  }
+
   void Texture::bind() const
   {
     glGetIntegerv(GL_TEXTURE_BINDING_2D, &mResourceToRestore);

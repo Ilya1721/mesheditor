@@ -12,6 +12,6 @@ namespace RenderSystem
 
     int getAttachmentId() const override;
 
-    void create(int width, int height) override;
+    void create(int width, int height);
   };
 }  // namespace RenderSystem

@@ -15,12 +15,7 @@ namespace RenderSystem
     ImageTexture(ImageTexture&& other) noexcept;
     ImageTexture& operator=(ImageTexture&& other) noexcept;
 
-    int getAttachmentId() const override;
-
-    void create(int width, int height) override;
-
    private:
-    unsigned char* mData = nullptr;
-    int mColorChannels = 4;
+    void create(int width, int height, unsigned char* data, int colorChannels);
   };
 }  // namespace RenderSystem

@@ -10,8 +10,6 @@ namespace RenderSystem
     TAAMotionVectorsTexture() = default;
     TAAMotionVectorsTexture(int width, int height);
 
-    int getAttachmentId() const override;
-
-    void create(int width, int height) override;
+    void create(int width, int height);
   };
 }

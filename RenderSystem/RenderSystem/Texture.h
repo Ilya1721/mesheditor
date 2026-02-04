@@ -15,8 +15,8 @@ namespace RenderSystem
 
     unsigned int getId() const;
 
-    virtual void passToFragmentShader(int textureLocation, int textureSlot) const = 0;
-    virtual int getAttachmentId() const = 0;
+    virtual int getAttachmentId() const;
+    virtual void passToFragmentShader(int textureLocation, int textureSlot) const;
 
    private:
     void bind() const override;

@@ -15,7 +15,6 @@ namespace RenderSystem
     CubemapTexture(const std::array<path, 6>& cubemapFaces);
 
     void passToFragmentShader(int textureLocation, int textureSlot) const override;
-    int getAttachmentId() const override;
 
    private:
     void initParameters();

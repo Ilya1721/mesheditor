@@ -7,8 +7,6 @@
 
 namespace RenderSystem
 {
-  int TAAColorTexture::getAttachmentId() const { return GL_COLOR_ATTACHMENT0; }
-
   void TAAColorTexture::create(int width, int height)
   {
     invoke(
