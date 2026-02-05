@@ -44,16 +44,21 @@ namespace RenderSystem
       GL_DYNAMIC_DRAW
     );
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(float), 0);
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(
-      1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
+      1, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(float),
       reinterpret_cast<void*>(3 * sizeof(float))
     );
     glEnableVertexAttribArray(2);
     glVertexAttribPointer(
-      2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
+      2, 2, GL_FLOAT, GL_FALSE, 12 * sizeof(float),
       reinterpret_cast<void*>(6 * sizeof(float))
+    );
+    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(
+      3, 4, GL_FLOAT, GL_FALSE, 12 * sizeof(float),
+      reinterpret_cast<void*>(8 * sizeof(float))
     );
   }
 

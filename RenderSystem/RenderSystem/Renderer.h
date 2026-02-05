@@ -19,6 +19,7 @@ namespace RenderSystem
     Renderer(Renderer&&) = delete;
 
     void renderBlinnPhongObject3D(const Object3D& object, int vertexOffset);
+    void renderPBRObject3D(const Object3D& object, int vertexOffset);
     void renderGlassObject3D(const Object3D& object, int vertexOffset);
     void renderObject3DShadow(const Object3D& object, int vertexOffset);
     void renderSceneDecoration(const SceneDecoration& sceneDecoration, int& startIndex);

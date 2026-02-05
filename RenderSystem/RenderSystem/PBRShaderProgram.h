@@ -2,6 +2,7 @@
 
 #include "AbstractShaderProgram.h"
 #include "CameraListener.h"
+#include "ImageTexture.h"
 #include "ShaderProgram.h"
 
 namespace RenderSystem
@@ -22,6 +23,9 @@ namespace RenderSystem
     void setUVScale(const glm::vec2& scale);
     void setLightPos(const glm::vec3& lightPos);
     void setLightColor(const glm::vec3& lightColor);
+    void setBaseColorTexture(const ImageTexture& texture);
+    void setNormalTexture(const ImageTexture& texture);
+    void setMetallicRoughnessTexture(const ImageTexture& texture);
 
   private:
     void setView(const glm::mat4& view);
@@ -36,5 +40,8 @@ namespace RenderSystem
     int mCameraPos;
     int mLightPos;
     int mLightColor;
+    int mBaseColorTexture;
+    int mNormalTexture;
+    int mMetallicRoughnessTexture;
   };
 }  // namespace RenderSystem

@@ -35,10 +35,9 @@ namespace RenderSystem
 
   struct PBRMaterial
   {
-    float metallic;
-    RGBOrTexture roughness;
-    RGBOrTexture baseColor;
-    RGBOrTexture normal;
+    std::shared_ptr<ImageTexture> baseColor;
+    std::shared_ptr<ImageTexture> normalMap;
+    std::shared_ptr<ImageTexture> metallicRougness;
   };
 
   template <typename T>

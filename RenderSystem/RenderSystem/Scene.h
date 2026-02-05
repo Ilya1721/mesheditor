@@ -13,6 +13,7 @@
 #include "LightParams.h"
 #include "Object3D.h"
 #include "Object3DIntersection.h"
+#include "PBRShaderProgram.h"
 #include "Renderer.h"
 #include "SceneDecoration.h"
 #include "ScreenShaderProgram.h"
@@ -102,6 +103,7 @@ namespace RenderSystem
    private:
     std::unique_ptr<Renderer> mRenderer;
     std::unique_ptr<BlinnPhongShaderProgram> mBlinnPhongShaderProgram;
+    std::unique_ptr<PBRShaderProgram> mPBRShaderProgram;
     std::unique_ptr<GlassShaderProgram> mGlassShaderProgram;
     std::unique_ptr<ShadowShaderProgram> mShadowShaderProgram;
     std::unique_ptr<ScreenShaderProgram> mScreenShaderProgram;

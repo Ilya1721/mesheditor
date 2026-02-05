@@ -50,13 +50,17 @@ namespace RenderSystem
     {
       mCompactData.emplace_back(vertex.texture[coordIdx]);
     }
+    for (int coordIdx = 0; coordIdx < 4; ++coordIdx)
+    {
+      mCompactData.emplace_back(vertex.tangent[coordIdx]);
+    }
   }
 
   void RenderData::updateVertex(
     const OriginalVertexData& vertexData, int startVertexOffset
   )
   {
-    for (unsigned int compactDataIdx = 8 * (startVertexOffset + vertexData.index),
+    for (unsigned int compactDataIdx = 12 * (startVertexOffset + vertexData.index),
                       coordIdx = 0;
          coordIdx < 3; ++compactDataIdx, ++coordIdx)
     {
@@ -67,7 +71,7 @@ namespace RenderSystem
 
   const std::vector<float>& RenderData::getCompactData() const { return mCompactData; }
 
-  int RenderData::getVertexCount() const { return mCompactData.size() / 8; }
+  int RenderData::getVertexCount() const { return mCompactData.size() / 12; }
 
   RenderData RenderData::createRenderData(const Point3D& point)
   {

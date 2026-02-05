@@ -64,6 +64,8 @@ namespace RenderSystem
     RGB(1.0f, 1.0f, 1.0f), RGB(1.0f, 1.0f, 1.0f), RGB(0.1f, 0.1f, 0.1f)
   };
 
+  static inline constexpr RGB PBR_LIGHT_COLOR(1.0f, 1.0f, 1.0f);
+
   static inline constexpr PointLightParams POINT_LIGHT_PARAMS {
     RGB(1.0f, 1.0f, 1.0f),
     RGB(1.0f, 1.0f, 1.0f),
@@ -124,6 +126,10 @@ namespace RenderSystem
     R"(./RenderSystem/Shaders/BlinnPhongShader.vert)";
   const std::string BLINN_PHONG_FRAGMENT_SHADER_PATH =
     R"(./RenderSystem/Shaders/BlinnPhongShader.frag)";
+  const std::string PBR_VERTEX_SHADER_PATH =
+    R"(./RenderSystem/Shaders/PBRShader.vert)";
+  const std::string PBR_FRAGMENT_SHADER_PATH =
+    R"(./RenderSystem/Shaders/PBRShader.frag)";
   const std::string GLASS_VERTEX_SHADER_PATH =
     R"(./RenderSystem/Shaders/GlassShader.vert)";
   const std::string GLASS_FRAGMENT_SHADER_PATH =

@@ -16,12 +16,15 @@ namespace MeshCore
   {
     Vertex() = default;
     Vertex(
-      const Point3D& otherPos, const Vector3D& otherNormal, const Point2D& otherTexture = {}
+      const Point3D& otherPos,
+      const Vector3D& otherNormal,
+      const Point2D& otherTexture = {}
     );
 
     Point3D pos {};
     Vector3D normal {};
     Point2D texture {};
+    Vector4D tangent {1.0f, 0.0f, 0.0f, 1.0f};
     HalfEdge* halfEdge = nullptr;
 
     bool operator==(const Vertex& other) const;

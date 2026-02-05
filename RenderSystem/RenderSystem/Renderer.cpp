@@ -57,6 +57,14 @@ namespace RenderSystem
     );
   }
 
+  void Renderer::renderPBRObject3D(const Object3D& object, int vertexOffset)
+  {
+    mModelRenderBuffer.invoke(
+      [&object, &vertexOffset]()
+      { glDrawArrays(GL_TRIANGLES, vertexOffset, object.getVertexCount()); }
+    );
+  }
+
   void Renderer::renderGlassObject3D(const Object3D& object, int vertexOffset)
   {
     mModelRenderBuffer.invoke(

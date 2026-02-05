@@ -65,6 +65,22 @@ namespace RenderSystem
            { glUniform3fv(mLightColor, 1, glm::value_ptr(lightColor)); });
   }
 
+  void PBRShaderProgram::setBaseColorTexture(const ImageTexture& texture)
+  {
+    invoke([this, &texture]() { texture.passToFragmentShader(mBaseColorTexture, 0); });
+  }
+
+  void PBRShaderProgram::setNormalTexture(const ImageTexture& texture)
+  {
+    invoke([this, &texture]() { texture.passToFragmentShader(mNormalTexture, 1); });
+  }
+
+  void PBRShaderProgram::setMetallicRoughnessTexture(const ImageTexture& texture)
+  {
+    invoke([this, &texture]()
+           { texture.passToFragmentShader(mMetallicRoughnessTexture, 2); });
+  }
+
   void PBRShaderProgram::initUniformLocations()
   {
     mModel = getUniformLocation("model");

@@ -35,6 +35,9 @@ namespace RenderSystem
     mBlinnPhongShaderProgram = std::make_unique<BlinnPhongShaderProgram>(
       BLINN_PHONG_VERTEX_SHADER_PATH, BLINN_PHONG_FRAGMENT_SHADER_PATH
     );
+    mPBRShaderProgram = std::make_unique<PBRShaderProgram>(
+      PBR_VERTEX_SHADER_PATH, PBR_FRAGMENT_SHADER_PATH
+    );
     mGlassShaderProgram = std::make_unique<GlassShaderProgram>(
       GLASS_VERTEX_SHADER_PATH, GLASS_FRAGMENT_SHADER_PATH
     );
@@ -70,6 +73,7 @@ namespace RenderSystem
     registerCallbacks();
     calcDirLightSourcePos();
     mBlinnPhongShaderProgram->setDirLightParams(DIR_LIGHT_PARAMS);
+    mPBRShaderProgram->setLightColor(PBR_LIGHT_COLOR);
     mShadowShaderProgram->setShadowBias(SHADOW_BIAS);
   }
 
@@ -91,7 +95,7 @@ namespace RenderSystem
     mCameraListeners.insert(
       mCameraListeners.end(),
       std::initializer_list<CameraListener*> {
-        mBlinnPhongShaderProgram.get(), mSkyboxController.get(),
+        mBlinnPhongShaderProgram.get(), mPBRShaderProgram.get(), mSkyboxController.get(),
         mGlassShaderProgram.get(), mShadowShaderProgram.get()
       }
     );
@@ -114,6 +118,7 @@ namespace RenderSystem
   void Scene::calcDirLightSourcePos()
   {
     mBlinnPhongShaderProgram->setDirLightSourcePos(DIR_LIGHT_POS);
+    mPBRShaderProgram->setLightPos(DIR_LIGHT_POS);
     const auto& lightViewMatrix =
       glm::lookAt(DIR_LIGHT_POS, Point3D(0.0f, 0.0f, 0.0f), Vector3D(0.0f, 1.0f, 0.0f));
     mShadowMapController->setLightView(lightViewMatrix);
@@ -139,11 +144,17 @@ namespace RenderSystem
     mGlassShaderProgram->setSkyboxCubemap(mSkyboxController->getCubemapTexture());
   }
 
-  void Scene::setPBRMaterial(const PBRMaterial& material) {}
+  void Scene::setPBRMaterial(const PBRMaterial& material)
+  {
+    mPBRShaderProgram->setBaseColorTexture(*material.baseColor);
+    mPBRShaderProgram->setNormalTexture(*material.normalMap);
+    mPBRShaderProgram->setMetallicRoughnessTexture(*material.metallicRougness);
+  }
 
   void Scene::setProjectionToShaders(const glm::mat4& projection)
   {
     mBlinnPhongShaderProgram->setProjection(projection);
+    mPBRShaderProgram->setProjection(projection);
     mGlassShaderProgram->setProjection(projection);
     mShadowShaderProgram->setProjection(projection);
   }
@@ -225,7 +236,12 @@ namespace RenderSystem
         );
       };
 
-      renderPBR = [this](const Object3D& object, int vertexOffset) {};
+      renderPBR = [this](const Object3D& object, int vertexOffset)
+      {
+        mPBRShaderProgram->invoke([this, &object, vertexOffset]()
+                                  { mRenderer->renderPBRObject3D(object, vertexOffset); }
+        );
+      };
     }
     else
     {
@@ -233,7 +249,8 @@ namespace RenderSystem
       { mRenderer->renderBlinnPhongObject3D(object, vertexOffset); };
       renderGlass = [this](const Object3D& object, int vertexOffset)
       { mRenderer->renderGlassObject3D(object, vertexOffset); };
-      renderPBR = [this](const Object3D& object, int vertexOffset) {};
+      renderPBR = [this](const Object3D& object, int vertexOffset)
+      { mRenderer->renderPBRObject3D(object, vertexOffset); };
     }
 
     for (auto& [object, vertexOffset] : mSceneObjectVertexOffsetMap)
@@ -319,7 +336,7 @@ namespace RenderSystem
   {
     const auto& objectModel = object->getTransform();
     object->materialVisitor(
-      [this, &object, objectModel](const BlinnPhongMaterial& material)
+      [this, &object, &objectModel](const BlinnPhongMaterial& material)
       {
         mBlinnPhongShaderProgram->setModel(objectModel);
         mBlinnPhongShaderProgram->setUVScale(object->getUVScale());
@@ -330,7 +347,12 @@ namespace RenderSystem
         mGlassShaderProgram->setModel(objectModel);
         setGlassMaterial(material);
       },
-      [this, &object](const PBRMaterial& material) { setPBRMaterial(material); }
+      [this, &object, &objectModel](const PBRMaterial& material)
+      {
+        mPBRShaderProgram->setModel(objectModel);
+        mPBRShaderProgram->setUVScale(object->getUVScale());
+        setPBRMaterial(material);
+      }
     );
   }
 
