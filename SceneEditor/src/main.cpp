@@ -6,7 +6,7 @@ int main()
 {
   Window mainWindow(
     1200, 628,
-    R"(C:\MyPersonalSpace\Dev\Projects\MeshEditor\Misc\TestFiles\Moon\Moon 2K.obj)"
+    R"(C:\MyPersonalSpace\Dev\3DModels\Blender\Sphere\Sphere.glb)"
   );
   mainWindow.render();
 

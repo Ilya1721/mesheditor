@@ -1,5 +1,7 @@
 #include "Scene.h"
 
+#include <MeshCore/TreeWalker.h>
+
 #include <glm/gtx/transform.hpp>
 
 #include "Constants.h"
@@ -186,8 +188,15 @@ namespace RenderSystem
 
   void Scene::onObjectAddedToScene(const Object3D* object)
   {
-    mSceneObjectVertexOffsetMap.insert({object, mSceneRenderData.getVertexCount()});
-    for (const auto& vertex : object->getVertices()) { mSceneRenderData.append(vertex); }
+    TreeWalker walker(object, true);
+    walker.forEach([this](const Object3D* obj) {
+      const auto& vertices = obj->getVertices();
+      if (!vertices.empty())
+      {
+        mSceneObjectVertexOffsetMap.insert({ obj, mSceneRenderData.getVertexCount() });
+        for (const auto& vertex : vertices) { mSceneRenderData.append(vertex); }
+      }
+    });
     mRenderer->loadModelRenderData(mSceneRenderData);
   }
 

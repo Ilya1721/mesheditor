@@ -90,5 +90,8 @@ namespace RenderSystem
     mCameraPos = getUniformLocation("cameraPos");
     mLightPos = getUniformLocation("lightPos");
     mLightColor = getUniformLocation("lightColor");
+    mBaseColorTexture = getUniformLocation("baseColorTexture");
+    mNormalTexture = getUniformLocation("normalTexture");
+    mMetallicRoughnessTexture = getUniformLocation("metallicRoughnessTexture");
   }
 }  // namespace RenderSystem

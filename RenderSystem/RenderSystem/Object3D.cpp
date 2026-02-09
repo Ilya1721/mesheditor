@@ -14,7 +14,11 @@ namespace RenderSystem
   Object3D::Object3D() : mParent(nullptr), mTransform(1.0f), mUVScale(1.0f, 1.0f) {}
 
   Object3D::Object3D(std::unique_ptr<Mesh> mesh, const Material& material)
-    : mParent(nullptr), mMesh(std::move(mesh)), mMaterial(material), mTransform(1.0f), mUVScale(1.0f, 1.0f)
+    : mParent(nullptr),
+      mMesh(std::move(mesh)),
+      mMaterial(material),
+      mTransform(1.0f),
+      mUVScale(1.0f, 1.0f)
   {
     init();
   }
@@ -99,15 +103,9 @@ namespace RenderSystem
     return mMesh->getVertices();
   }
 
-  const glm::vec2& Object3D::getUVScale() const
-  {
-    return mUVScale;
-  }
+  const glm::vec2& Object3D::getUVScale() const { return mUVScale; }
 
-  const Material& Object3D::getMaterial() const
-  {
-    return mMaterial;
-  }
+  const Material& Object3D::getMaterial() const { return mMaterial; }
 
   void Object3D::addChild(std::unique_ptr<Object3D>&& child)
   {
@@ -159,16 +157,16 @@ namespace RenderSystem
     std::visit(
       [&](auto&& material)
       {
-        using U = std::decay_t<decltype(material)>;
-        if constexpr (std::is_same_v<U, BlinnPhongMaterial>)
+        using MaterialType = std::decay_t<decltype(material)>;
+        if constexpr (std::is_same_v<MaterialType, BlinnPhongMaterial>)
         {
           blinnPhongAction(material);
         }
-        else if constexpr (std::is_same_v<U, GlassMaterial>)
+        else if constexpr (std::is_same_v<MaterialType, GlassMaterial>)
         {
           glassAction(material);
         }
-        else if constexpr (std::is_same_v<U, PBRMaterial>)
+        else if constexpr (std::is_same_v<MaterialType, PBRMaterial>)
         {
           pbrAction(material);
         }

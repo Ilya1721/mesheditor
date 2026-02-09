@@ -57,4 +57,14 @@ namespace RenderSystem
     create(mWidth, mHeight, data, colorChannels);
     stbi_image_free(data);
   }
+
+  ImageTexture::ImageTexture(const unsigned char* data, int dataLength)
+  {
+    if (data == nullptr || dataLength <= 0) { return; }
+    int width {}, height {}, colorChannels {};
+    auto decoded =
+      stbi_load_from_memory(data, dataLength, &width, &height, &colorChannels, 0);
+    create(width, height, decoded, colorChannels);
+    stbi_image_free(decoded);
+  }
 }  // namespace RenderSystem
