@@ -57,7 +57,7 @@ vec3 fresnelSchlick(float normalHalfViewLightCos, vec3 baseReflectivity)
 
 void main()
 {
-    vec3 albedo = pow(texture(baseColorTexture, vsOut.textureCoords).rgb, vec3(2.2));
+    vec3 albedo = texture(baseColorTexture, vsOut.textureCoords).rgb;
     vec2 mr = texture(metallicRoughnessTexture, vsOut.textureCoords).bg;
     float metallic = mr.x;
     float roughness = mr.y;
@@ -66,10 +66,6 @@ void main()
     vec3 V = normalize(cameraPos - vsOut.fragPos);
     vec3 L = normalize(lightPos - vsOut.fragPos);
     vec3 H = normalize(V + L);
-
-    float distToLightPos = length(lightPos - vsOut.fragPos);
-    float lightScale = 1.0 / (distToLightPos * distToLightPos);
-    vec3 radiance = lightColor * lightScale;
 
     vec3 baseReflectivity = mix(vec3(0.04), albedo, metallic);
     float D = distributionGGX(N, H, roughness);
@@ -82,12 +78,8 @@ void main()
 
     vec3 diffuse = (vec3(1.0) - F) * (1.0 - metallic);
     float NdotL = max(dot(N, L), 0.0);
-    vec3 reflectedRadiance = (diffuse * albedo / PI + specular) * radiance * NdotL;
-
-    vec3 ambient = vec3(0.03) * albedo;
-    vec3 color = ambient + reflectedRadiance;
-    color = color / (color + vec3(1.0));
-    color = pow(color, vec3(1.0 / 2.2));
+    vec3 reflectedRadiance = (diffuse * albedo / PI + specular) * lightColor * NdotL;
+    vec3 color = albedo + reflectedRadiance;
 
     fragColor = vec4(color, 1.0);
 }
