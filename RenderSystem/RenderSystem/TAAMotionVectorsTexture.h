@@ -6,7 +6,7 @@ namespace RenderSystem
 {
   class TAAMotionVectorsTexture : public Texture2D
   {
-  public:
+   public:
     TAAMotionVectorsTexture() = default;
     TAAMotionVectorsTexture(int width, int height);
 

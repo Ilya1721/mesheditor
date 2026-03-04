@@ -144,7 +144,10 @@ namespace RenderSystem
     const auto& primitive = mesh.primitives[0];
 
     MaterialData materialData;
-    if (!primitive.materialIndex.has_value()) { return materialData; }
+    if (!primitive.materialIndex.has_value())
+    {
+      return materialData;
+    }
 
     const auto& materialGltf = asset.materials[primitive.materialIndex.value()];
     MaterialImages materialImages;
@@ -219,12 +222,18 @@ namespace RenderSystem
   {
     std::runtime_error runTimeErr("Failed to load glTF file: " + filePath.string());
     auto data = fastgltf::GltfDataBuffer::FromPath(filePath);
-    if (data.error() != fastgltf::Error::None) { throw runTimeErr; }
+    if (data.error() != fastgltf::Error::None)
+    {
+      throw runTimeErr;
+    }
 
     fastgltf::Parser parser;
     auto asset =
       parser.loadGltf(data.get(), filePath.parent_path(), fastgltf::Options::None);
-    if (asset.error() != fastgltf::Error::None) { throw runTimeErr; }
+    if (asset.error() != fastgltf::Error::None)
+    {
+      throw runTimeErr;
+    }
 
     auto root = std::make_unique<Object3D>(std::make_unique<Mesh>(), PBRMaterial {});
     parseAsset(asset.get(), *root);

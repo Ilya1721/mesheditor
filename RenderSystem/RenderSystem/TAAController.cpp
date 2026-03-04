@@ -92,7 +92,10 @@ namespace RenderSystem
 
   void TAAController::setView(const glm::mat4& view)
   {
-    if (mIsFirstFrame) { mView = view; }
+    if (mIsFirstFrame)
+    {
+      mView = view;
+    }
     mDepthMapController.setView(view);
     mMotionVectorsController.setPrevView(mView);
     mMotionVectorsController.setCurrentView(view);
@@ -167,7 +170,10 @@ namespace RenderSystem
     mResolveController.setScreenSize(screenWidth, screenHeight);
   }
 
-  void TAAController::resetFrameIndex() { mFrameIndex = 0; }
+  void TAAController::resetFrameIndex()
+  {
+    mFrameIndex = 0;
+  }
 
   glm::mat4 TAAController::makeJitteredProjection()
   {

@@ -6,7 +6,7 @@ using namespace MeshCore;
 
 namespace RenderSystem
 {
-  void RaySurfaceIntersection::assign(const MeshIntersection& meshIntersection) 
+  void RaySurfaceIntersection::assign(const MeshIntersection& meshIntersection)
   {
     surface = meshIntersection.intersectedSurface;
     surfaceIndices = meshIntersection.intersectedFacesIndices;

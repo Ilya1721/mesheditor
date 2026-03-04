@@ -5,9 +5,8 @@
 #ifdef __gl_h_
 #undef __gl_h_
 #endif
-#include "glad/glad.h"
-
 #include "Constants.h"
+#include "glad/glad.h"
 
 namespace RenderSystem
 {
@@ -80,19 +79,43 @@ namespace RenderSystem
     mViewportChangedCallbacks.addCallback(callback);
   }
 
-  const glm::mat4& Viewport::getProjectionMatrix() const { return mProjectionMatrix; }
+  const glm::mat4& Viewport::getProjectionMatrix() const
+  {
+    return mProjectionMatrix;
+  }
 
-  const PROJECTION_TYPE Viewport::getProjectionType() const { return mProjectionType; }
+  const PROJECTION_TYPE Viewport::getProjectionType() const
+  {
+    return mProjectionType;
+  }
 
-  float Viewport::getFov() const { return mFov; }
+  float Viewport::getFov() const
+  {
+    return mFov;
+  }
 
-  float Viewport::getNearPlaneDistance() const { return mNearPlaneDistance; }
+  float Viewport::getNearPlaneDistance() const
+  {
+    return mNearPlaneDistance;
+  }
 
-  float Viewport::getFarPlaneDistance() const { return mFarPlaneDistance; }
+  float Viewport::getFarPlaneDistance() const
+  {
+    return mFarPlaneDistance;
+  }
 
-  float Viewport::getWidth() const { return mWidth; }
+  float Viewport::getWidth() const
+  {
+    return mWidth;
+  }
 
-  float Viewport::getHeight() const { return mHeight; }
+  float Viewport::getHeight() const
+  {
+    return mHeight;
+  }
 
-  const glm::ivec2& Viewport::getPos() const { return mPos; }
+  const glm::ivec2& Viewport::getPos() const
+  {
+    return mPos;
+  }
 }  // namespace RenderSystem

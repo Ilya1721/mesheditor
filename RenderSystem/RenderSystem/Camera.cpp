@@ -27,11 +27,20 @@ namespace RenderSystem
     invokeEditOperation([]() {});
   }
 
-  const glm::mat4& Camera::getViewMatrix() const { return mViewMatrix; }
+  const glm::mat4& Camera::getViewMatrix() const
+  {
+    return mViewMatrix;
+  }
 
-  glm::mat4 Camera::createViewMatrix() const { return glm::lookAt(mEye, mTarget, mUp); }
+  glm::mat4 Camera::createViewMatrix() const
+  {
+    return glm::lookAt(mEye, mTarget, mUp);
+  }
 
-  const Point3D& Camera::getEye() const { return mEye; }
+  const Point3D& Camera::getEye() const
+  {
+    return mEye;
+  }
 
   Vector3D Camera::getNormalizedDirection() const
   {
@@ -44,7 +53,10 @@ namespace RenderSystem
     return getTargetPlane().getIntersectionPoint(cursorRay).value();
   }
 
-  bool Camera::isMovementEnabled() const { return mIsMovementEnabled; }
+  bool Camera::isMovementEnabled() const
+  {
+    return mIsMovementEnabled;
+  }
 
   void Camera::invokeEditOperation(const std::function<void()>& action)
   {
@@ -97,7 +109,10 @@ namespace RenderSystem
     return glm::lookAt(mEye - mTarget, Point3D(0.0, 0.0, 0.0), mUp);
   }
 
-  Plane Camera::getTargetPlane() const { return {mTarget, mEye - mTarget}; }
+  Plane Camera::getTargetPlane() const
+  {
+    return {mTarget, mEye - mTarget};
+  }
 
   Point3D Camera::getCursorPosInNDCWithZ(const Point3D& cursorPosInNDC) const
   {
@@ -117,7 +132,10 @@ namespace RenderSystem
   {
     auto rotationAngle =
       glm::angle(glm::normalize(startPosInNDCWithZ), glm::normalize(endPosInNDCWithZ));
-    if (glm::epsilonEqual(rotationAngle, 0.0f, 1e-5f)) { return glm::mat4(1.0f); }
+    if (glm::epsilonEqual(rotationAngle, 0.0f, 1e-5f))
+    {
+      return glm::mat4(1.0f);
+    }
 
     auto rotationAxisInNDC = glm::cross(startPosInNDCWithZ, endPosInNDCWithZ);
     auto rotationAxisInCameraSpace = transformVector(
@@ -243,9 +261,15 @@ namespace RenderSystem
     adjust(bbox, fov);
   }
 
-  void Camera::orthoAdjust(const MeshCore::AABBox& bbox) { adjust(bbox); }
+  void Camera::orthoAdjust(const MeshCore::AABBox& bbox)
+  {
+    adjust(bbox);
+  }
 
-  void Camera::enableMovement(bool isEnabled) { mIsMovementEnabled = isEnabled; }
+  void Camera::enableMovement(bool isEnabled)
+  {
+    mIsMovementEnabled = isEnabled;
+  }
 
   void Camera::adjust(
     PROJECTION_TYPE projectionType, const MeshCore::AABBox& sceneBBox, float fov
@@ -255,7 +279,10 @@ namespace RenderSystem
     {
       perspectiveAdjust(sceneBBox, fov);
     }
-    else { orthoAdjust(sceneBBox); }
+    else
+    {
+      orthoAdjust(sceneBBox);
+    }
   }
 
   void Camera::addOnCameraPosChangedCallback(

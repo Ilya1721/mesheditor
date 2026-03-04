@@ -27,7 +27,10 @@ namespace RenderSystem
 
   void Mover::onKeyPressed(int key)
   {
-    if (key == GLFW_KEY_M) { mEnabled = !mEnabled; }
+    if (key == GLFW_KEY_M)
+    {
+      mEnabled = !mEnabled;
+    }
   }
 
   glm::mat4 Mover::getTranslationTransform(
@@ -44,6 +47,9 @@ namespace RenderSystem
         mCamera->projectToTargetPlane(startPosInWorldSpace)
       );
     }
-    else { return glm::translate(endPosInWorldSpace - startPosInWorldSpace); }
+    else
+    {
+      return glm::translate(endPosInWorldSpace - startPosInWorldSpace);
+    }
   }
 }  // namespace RenderSystem

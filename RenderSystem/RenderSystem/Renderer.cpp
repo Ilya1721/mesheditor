@@ -12,7 +12,9 @@ using namespace MeshCore;
 
 namespace RenderSystem
 {
-  Renderer::Renderer() : mModelRenderBuffer(), mDecorationsRenderBuffer() {}
+  Renderer::Renderer() : mModelRenderBuffer(), mDecorationsRenderBuffer()
+  {
+  }
 
   void Renderer::renderHighlightedFace(int faceIdx, int vertexOffset)
   {
@@ -102,7 +104,10 @@ namespace RenderSystem
     glDepthFunc(GL_LESS);
   }
 
-  void Renderer::cleanScreen() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }
+  void Renderer::cleanScreen()
+  {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  }
 
   void Renderer::loadDecorationsRenderData(const RenderData& renderData)
   {

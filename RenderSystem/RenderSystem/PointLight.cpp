@@ -77,9 +77,15 @@ namespace RenderSystem
     glUniform3fv(mSpecular, 1, specular);
   }
 
-  void PointLight::setConstant(float constant) const { glUniform1f(mConstant, constant); }
+  void PointLight::setConstant(float constant) const
+  {
+    glUniform1f(mConstant, constant);
+  }
 
-  void PointLight::setLinear(float linear) const { glUniform1f(mLinear, linear); }
+  void PointLight::setLinear(float linear) const
+  {
+    glUniform1f(mLinear, linear);
+  }
 
   void PointLight::setQuadratic(float quadratic) const
   {

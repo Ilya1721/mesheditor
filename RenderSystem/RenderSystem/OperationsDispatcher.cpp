@@ -33,17 +33,26 @@ namespace RenderSystem
 
   void OperationsDispatcher::onMouseScroll(double offset)
   {
-    for (auto& operation : mOperations) { operation->onMouseScroll(offset); }
+    for (auto& operation : mOperations)
+    {
+      operation->onMouseScroll(offset);
+    }
   }
 
   void OperationsDispatcher::onMouseClick()
   {
-    for (auto& operation : mOperations) { operation->onMouseClick(); }
+    for (auto& operation : mOperations)
+    {
+      operation->onMouseClick();
+    }
   }
 
   void OperationsDispatcher::onKeyPressed(int key)
   {
-    for (auto& operation : mOperations) { operation->onKeyPressed(key); }
+    for (auto& operation : mOperations)
+    {
+      operation->onKeyPressed(key);
+    }
   }
 
   void OperationsDispatcher::initOperations()

@@ -30,9 +30,15 @@ namespace MeshCore
    private:
     void depthFirstTraversal(T* node, const TreeNodeFunction<T>& function)
     {
-      if (!node) { return; }
+      if (!node)
+      {
+        return;
+      }
 
-      if (mInvokeFunctionForRoot || node != mRoot) { function(node); }
+      if (mInvokeFunctionForRoot || node != mRoot)
+      {
+        function(node);
+      }
 
       for (auto& child : node->getChildren())
       {

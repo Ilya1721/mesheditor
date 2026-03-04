@@ -25,7 +25,7 @@ namespace RenderSystem
       const Point2D& startCursorPos, const Point2D& endCursorPos
     ) const;
 
-  private:
+   private:
     Window* mWindow;
     Scene* mScene;
     Camera* mCamera;

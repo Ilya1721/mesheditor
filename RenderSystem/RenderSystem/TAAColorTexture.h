@@ -6,8 +6,7 @@ namespace RenderSystem
 {
   class TAAColorTexture : public Texture2D
   {
-  public:
+   public:
     void create(int width, int height);
   };
 }
-

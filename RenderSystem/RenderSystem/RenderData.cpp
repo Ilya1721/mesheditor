@@ -18,7 +18,10 @@ namespace
   )
   {
     RenderData renderData;
-    for (const auto& vertex : vertices) { renderData.append(transform * vertex); }
+    for (const auto& vertex : vertices)
+    {
+      renderData.append(transform * vertex);
+    }
 
     return renderData;
   }
@@ -69,9 +72,15 @@ namespace RenderSystem
     }
   }
 
-  const std::vector<float>& RenderData::getCompactData() const { return mCompactData; }
+  const std::vector<float>& RenderData::getCompactData() const
+  {
+    return mCompactData;
+  }
 
-  int RenderData::getVertexCount() const { return mCompactData.size() / 12; }
+  int RenderData::getVertexCount() const
+  {
+    return mCompactData.size() / 12;
+  }
 
   RenderData RenderData::createRenderData(const Point3D& point)
   {

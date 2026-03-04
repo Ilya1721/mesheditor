@@ -7,11 +7,20 @@
 
 namespace RenderSystem
 {
-  FrameBufferObject::FrameBufferObject() : mFBO(), mDepthRBO() { init(); }
+  FrameBufferObject::FrameBufferObject() : mFBO(), mDepthRBO()
+  {
+    init();
+  }
 
-  void FrameBufferObject::bind() const { glBindFramebuffer(GL_FRAMEBUFFER, mFBO); }
+  void FrameBufferObject::bind() const
+  {
+    glBindFramebuffer(GL_FRAMEBUFFER, mFBO);
+  }
 
-  void FrameBufferObject::unbind() const { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
+  void FrameBufferObject::unbind() const
+  {
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  }
 
   void FrameBufferObject::attachTexture(
     const Texture& texture, const std::function<void()>& textureSetupFunc
@@ -36,10 +45,15 @@ namespace RenderSystem
         glGenRenderbuffers(1, &mDepthRBO);
         glBindRenderbuffer(GL_RENDERBUFFER, mDepthRBO);
         glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, width, height);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mDepthRBO);
+        glFramebufferRenderbuffer(
+          GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mDepthRBO
+        );
       }
     );
   }
 
-  void FrameBufferObject::init() { glGenFramebuffers(1, &mFBO); }
+  void FrameBufferObject::init()
+  {
+    glGenFramebuffers(1, &mFBO);
+  }
 }  // namespace RenderSystem

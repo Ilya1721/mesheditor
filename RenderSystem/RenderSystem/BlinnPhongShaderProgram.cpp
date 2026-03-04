@@ -48,9 +48,7 @@ namespace RenderSystem
            { mDirectionalLight.setCameraPos(glm::value_ptr(cameraPos)); });
   }
 
-  void BlinnPhongShaderProgram::setDirLightParams(
-    const DirectionalLightParams& params
-  )
+  void BlinnPhongShaderProgram::setDirLightParams(const DirectionalLightParams& params)
   {
     invoke([this, &params]() { mDirectionalLight.setParams(params); });
   }
@@ -92,7 +90,10 @@ namespace RenderSystem
     invoke(
       [this, texturePtr]()
       {
-        if (!texturePtr) { glUniform1i(mHasDiffuseTexture, false); }
+        if (!texturePtr)
+        {
+          glUniform1i(mHasDiffuseTexture, false);
+        }
         else
         {
           glUniform1i(mHasDiffuseTexture, true);

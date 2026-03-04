@@ -11,7 +11,9 @@ using namespace GeometryCore;
 
 namespace RenderSystem
 {
-  Object3D::Object3D() : mParent(nullptr), mTransform(1.0f), mUVScale(1.0f, 1.0f) {}
+  Object3D::Object3D() : mParent(nullptr), mTransform(1.0f), mUVScale(1.0f, 1.0f)
+  {
+  }
 
   Object3D::Object3D(std::unique_ptr<Mesh> mesh, const Material& material)
     : mParent(nullptr),
@@ -31,14 +33,20 @@ namespace RenderSystem
     moveToOrigin();
   }
 
-  Object3D* Object3D::getParent() const { return mParent; }
+  Object3D* Object3D::getParent() const
+  {
+    return mParent;
+  }
 
   const std::vector<std::unique_ptr<Object3D>>& Object3D::getChildren() const
   {
     return mChildren;
   }
 
-  const glm::mat4& Object3D::getTransform() const { return mTransform; }
+  const glm::mat4& Object3D::getTransform() const
+  {
+    return mTransform;
+  }
 
   void Object3D::updateTransform(const glm::mat4& transform)
   {
@@ -47,7 +55,10 @@ namespace RenderSystem
     );
   }
 
-  const AABBox& Object3D::getBBox() const { return mBBox; }
+  const AABBox& Object3D::getBBox() const
+  {
+    return mBBox;
+  }
 
   Object3DIntersection Object3D::getRayIntersection(
     const Ray& ray, IntersectionMode intersectionMode, int facesIndexOffset
@@ -67,7 +78,10 @@ namespace RenderSystem
         );
         facesIndexOffset += faces.size();
 
-        if (meshIntersection.intersectedFacesIndices.empty()) { return; }
+        if (meshIntersection.intersectedFacesIndices.empty())
+        {
+          return;
+        }
 
         if (isCloser(
               meshIntersection.intersectionPoint,
@@ -91,21 +105,33 @@ namespace RenderSystem
     newObject->mTransform = mTransform;
     newObject->mParent = mParent;
 
-    for (const auto& child : mChildren) { newObject->addChild(child->clone()); }
+    for (const auto& child : mChildren)
+    {
+      newObject->addChild(child->clone());
+    }
 
     return newObject;
   }
 
-  int Object3D::getVertexCount() const { return mMesh->getVertices().size(); }
+  int Object3D::getVertexCount() const
+  {
+    return mMesh->getVertices().size();
+  }
 
   const std::vector<Vertex>& Object3D::getVertices() const
   {
     return mMesh->getVertices();
   }
 
-  const glm::vec2& Object3D::getUVScale() const { return mUVScale; }
+  const glm::vec2& Object3D::getUVScale() const
+  {
+    return mUVScale;
+  }
 
-  const Material& Object3D::getMaterial() const { return mMaterial; }
+  const Material& Object3D::getMaterial() const
+  {
+    return mMaterial;
+  }
 
   void Object3D::addChild(std::unique_ptr<Object3D>&& child)
   {
@@ -144,9 +170,15 @@ namespace RenderSystem
     mObjectUpdatedCM.invokeCallbacks(this, vertices);
   }
 
-  void Object3D::moveToOrigin() { updateTransform(glm::translate(-mBBox.getCenter())); }
+  void Object3D::moveToOrigin()
+  {
+    updateTransform(glm::translate(-mBBox.getCenter()));
+  }
 
-  void Object3D::setUVScale(const glm::vec2& uvScale) { mUVScale = uvScale; }
+  void Object3D::setUVScale(const glm::vec2& uvScale)
+  {
+    mUVScale = uvScale;
+  }
 
   void Object3D::materialVisitor(
     const std::function<void(const BlinnPhongMaterial&)>& blinnPhongAction,

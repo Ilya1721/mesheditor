@@ -16,7 +16,7 @@ namespace RenderSystem
 
     int getWidth() const;
     int getHeight() const;
-       
+
     void swap(Texture2D& other) noexcept;
 
    protected:

@@ -19,7 +19,9 @@ namespace RenderSystem
   class OperationsDispatcher
   {
    public:
-    OperationsDispatcher(Window* window, Viewport* viewport, Scene* scene, Camera* camera);
+    OperationsDispatcher(
+      Window* window, Viewport* viewport, Scene* scene, Camera* camera
+    );
 
     void onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos);
     void onMouseScroll(double offset);

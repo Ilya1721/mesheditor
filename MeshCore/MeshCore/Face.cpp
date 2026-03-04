@@ -132,7 +132,10 @@ namespace MeshCore
       {
         adjacentFaceIt = uniqueAdjacentFaces.erase(adjacentFaceIt);
       }
-      else { ++adjacentFaceIt; }
+      else
+      {
+        ++adjacentFaceIt;
+      }
     }
 
     return uniqueAdjacentFaces;

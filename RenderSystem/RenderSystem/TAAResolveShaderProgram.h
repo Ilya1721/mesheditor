@@ -28,7 +28,7 @@ namespace RenderSystem
    private:
     void initUniformLocations();
 
-  private:
+   private:
     int mCurrentColorTexture;
     int mPreviousColorTexture;
     int mPrevDepthMap;

@@ -196,7 +196,10 @@ namespace RenderSystem
         if (!vertices.empty())
         {
           mSceneObjectVertexOffsetMap.insert({obj, mSceneRenderData.getVertexCount()});
-          for (const auto& vertex : vertices) { mSceneRenderData.append(vertex); }
+          for (const auto& vertex : vertices)
+          {
+            mSceneRenderData.append(vertex);
+          }
         }
       }
     );
@@ -220,7 +223,10 @@ namespace RenderSystem
     mRenderer->loadModelRenderData(mSceneRenderData);
   }
 
-  void Scene::onSceneObjectBBoxUpdated() { updateDirLightProjection(); }
+  void Scene::onSceneObjectBBoxUpdated()
+  {
+    updateDirLightProjection();
+  }
 
   void Scene::renderSceneObjects(
     const std::function<void(const Object3D*)>& prerenderSetup, bool invokeModelShaders
@@ -401,7 +407,10 @@ namespace RenderSystem
 
   void Scene::renderWireframe()
   {
-    if (!mRenderWireframe) { return; }
+    if (!mRenderWireframe)
+    {
+      return;
+    }
 
     setBlinnPhongMaterial(WIREFRAME_MATERIAL);
     for (const auto& [object, vertexOffset] : mSceneObjectVertexOffsetMap)
@@ -415,7 +424,10 @@ namespace RenderSystem
   {
     const auto& highlightedObjectIt =
       mSceneObjectVertexOffsetMap.find(mHighlightedObject);
-    if (highlightedObjectIt == mSceneObjectVertexOffsetMap.end()) { return; }
+    if (highlightedObjectIt == mSceneObjectVertexOffsetMap.end())
+    {
+      return;
+    }
 
     setBlinnPhongMaterial(HIGHLIGHT_MATERIAL);
     const auto& [object, vertexCount] = *highlightedObjectIt;
@@ -441,7 +453,10 @@ namespace RenderSystem
     mShadowMapController->setLightProjection(lightProjectionMatrix);
   }
 
-  void Scene::setPickedObject(Object3D* pickedObject) { mPickedObject = pickedObject; }
+  void Scene::setPickedObject(Object3D* pickedObject)
+  {
+    mPickedObject = pickedObject;
+  }
 
   void Scene::addSceneDecoration(const SceneDecoration& sceneDecoration)
   {
@@ -458,7 +473,10 @@ namespace RenderSystem
     }
   }
 
-  void Scene::toggleWireframe() { mRenderWireframe = !mRenderWireframe; }
+  void Scene::toggleWireframe()
+  {
+    mRenderWireframe = !mRenderWireframe;
+  }
 
   void Scene::highlightWholeObject(const Object3D* object)
   {
@@ -509,7 +527,10 @@ namespace RenderSystem
     return {};
   }
 
-  Object3D* Scene::getPickedObject() const { return mPickedObject; }
+  Object3D* Scene::getPickedObject() const
+  {
+    return mPickedObject;
+  }
 
   Point3D Scene::getDefaultPointLightSourcePos() const
   {
@@ -520,7 +541,10 @@ namespace RenderSystem
     return {bboxCenter.x, bboxMax.y + yOffset, bboxCenter.z};
   }
 
-  const Object3D& Scene::getRootObject() const { return mRootObject; }
+  const Object3D& Scene::getRootObject() const
+  {
+    return mRootObject;
+  }
 
   std::vector<ViewportListener*> Scene::getViewportListeners()
   {
@@ -536,7 +560,10 @@ namespace RenderSystem
     return glm::unProject(posGL3D, mCamera->getViewMatrix(), projection, viewportData);
   }
 
-  Camera* Scene::getCamera() const { return mCamera.get(); }
+  Camera* Scene::getCamera() const
+  {
+    return mCamera.get();
+  }
 
   void Scene::onViewportChanged(Viewport* viewport)
   {

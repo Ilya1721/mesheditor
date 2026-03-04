@@ -16,11 +16,11 @@ namespace RenderSystem
     void onKeyPressed(int key) override;
 
    private:
-     void addPointLight();
-     void removePointLight();
+    void addPointLight();
+    void removePointLight();
 
    private:
-     unsigned int mSelectedLightIdx;
-     Scene* mScene;
+    unsigned int mSelectedLightIdx;
+    Scene* mScene;
   };
 }  // namespace RenderSystem

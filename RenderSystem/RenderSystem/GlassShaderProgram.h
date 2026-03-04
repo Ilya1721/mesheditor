@@ -29,10 +29,10 @@ namespace RenderSystem
     void setColor(const RGB& color);
     void setSkyboxCubemap(const CubemapTexture& texture);
 
-  private:
+   private:
     void initUniformLocations();
 
-  private:
+   private:
     int mModel;
     int mView;
     int mProjection;

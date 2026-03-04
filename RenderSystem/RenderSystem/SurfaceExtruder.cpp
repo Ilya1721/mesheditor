@@ -32,7 +32,10 @@ namespace RenderSystem
     auto surfaceMovement = surfaceNormal * glm::dot(surfaceNormal, cursorMovement);
     std::unordered_set<MeshCore::UniqueVertex*> changedVertices;
 
-    for (auto& face : surface.faces) { face->move(surfaceMovement, changedVertices); }
+    for (auto& face : surface.faces)
+    {
+      face->move(surfaceMovement, changedVertices);
+    }
 
     mIntersectionData.intersectedObject->onMeshUpdated(changedVertices);
   }
@@ -51,11 +54,17 @@ namespace RenderSystem
 
   void SurfaceExtruder::onKeyPressed(int key)
   {
-    if (key != GLFW_KEY_E) { return; }
+    if (key != GLFW_KEY_E)
+    {
+      return;
+    }
 
     mEnabled = !mEnabled;
 
-    if (mEnabled) { mCamera->enableMovement(false); }
+    if (mEnabled)
+    {
+      mCamera->enableMovement(false);
+    }
     else
     {
       mCamera->enableMovement(true);
@@ -76,7 +85,10 @@ namespace RenderSystem
 
   void SurfaceExtruder::toggleSurfaceMovement(bool isSurfaceIntersected)
   {
-    if (mSurfaceMovementEnabled) { mScene->setHighlightedFacesData({}); }
+    if (mSurfaceMovementEnabled)
+    {
+      mScene->setHighlightedFacesData({});
+    }
 
     mSurfaceMovementEnabled = isSurfaceIntersected && !mSurfaceMovementEnabled;
   }

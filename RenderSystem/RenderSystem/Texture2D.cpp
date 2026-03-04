@@ -11,7 +11,10 @@ namespace RenderSystem
   {
   }
 
-  Texture2D::Texture2D(Texture2D&& other) noexcept { *this = std::move(other); }
+  Texture2D::Texture2D(Texture2D&& other) noexcept
+  {
+    *this = std::move(other);
+  }
 
   Texture2D& Texture2D::operator=(Texture2D&& other) noexcept
   {
@@ -27,9 +30,15 @@ namespace RenderSystem
     return *this;
   }
 
-  int Texture2D::getWidth() const { return mWidth; }
+  int Texture2D::getWidth() const
+  {
+    return mWidth;
+  }
 
-  int Texture2D::getHeight() const { return mHeight; }
+  int Texture2D::getHeight() const
+  {
+    return mHeight;
+  }
 
   void Texture2D::swap(Texture2D& other) noexcept
   {

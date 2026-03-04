@@ -35,7 +35,10 @@ namespace
 
 namespace MeshCore
 {
-  AABBox::AABBox() { init(); }
+  AABBox::AABBox()
+  {
+    init();
+  }
 
   void AABBox::init()
   {
@@ -92,19 +95,40 @@ namespace MeshCore
     );
   }
 
-  Point3D AABBox::getCenter() const { return (mMin + mMax) * 0.5f; }
+  Point3D AABBox::getCenter() const
+  {
+    return (mMin + mMax) * 0.5f;
+  }
 
-  const Point3D& AABBox::getMin() const { return mMin; }
+  const Point3D& AABBox::getMin() const
+  {
+    return mMin;
+  }
 
-  const Point3D& AABBox::getMax() const { return mMax; }
+  const Point3D& AABBox::getMax() const
+  {
+    return mMax;
+  }
 
-  float AABBox::getHeight() const { return mMax.y - mMin.y; }
+  float AABBox::getHeight() const
+  {
+    return mMax.y - mMin.y;
+  }
 
-  float AABBox::getWidth() const { return mMax.x - mMin.x; }
+  float AABBox::getWidth() const
+  {
+    return mMax.x - mMin.x;
+  }
 
-  float AABBox::getDepth() const { return mMax.z - mMin.z; }
+  float AABBox::getDepth() const
+  {
+    return mMax.z - mMin.z;
+  }
 
-  const std::vector<Plane> AABBox::getBBoxPlanes() const { return mBBoxPlanes; }
+  const std::vector<Plane> AABBox::getBBoxPlanes() const
+  {
+    return mBBoxPlanes;
+  }
 
   std::optional<Point3D> AABBox::getRayIntersectionPoint(const Ray& ray) const
   {

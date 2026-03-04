@@ -20,6 +20,9 @@ namespace RenderSystem
         offset * mScene->getRootObject().getBBox().getHeight() * ZOOM_STEP_COEF
       );
     }
-    else { mViewport->zoom(-offset * ORTHO_ZOOM_STEP); }
+    else
+    {
+      mViewport->zoom(-offset * ORTHO_ZOOM_STEP);
+    }
   }
 }  // namespace RenderSystem

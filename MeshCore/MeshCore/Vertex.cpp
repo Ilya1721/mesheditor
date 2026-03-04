@@ -12,7 +12,10 @@ namespace MeshCore
   {
   }
 
-  bool Vertex::operator==(const Vertex& other) const { return isEqual(pos, other.pos); }
+  bool Vertex::operator==(const Vertex& other) const
+  {
+    return isEqual(pos, other.pos);
+  }
 
   Vertex operator*(const glm::mat4& transform, const Vertex& vertex)
   {
@@ -39,5 +42,8 @@ namespace MeshCore
     }
   }
 
-  void UniqueVertex::updateNormal(const Vector3D& otherNormal) { normal = otherNormal; }
+  void UniqueVertex::updateNormal(const Vector3D& otherNormal)
+  {
+    normal = otherNormal;
+  }
 }  // namespace MeshCore

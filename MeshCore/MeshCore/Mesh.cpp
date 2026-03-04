@@ -16,7 +16,10 @@ namespace
   Vector3D calcAverage(const std::unordered_set<Vector3D>& vecSet)
   {
     Vector3D result {};
-    for (const auto& vec : vecSet) { result += vec; }
+    for (const auto& vec : vecSet)
+    {
+      result += vec;
+    }
 
     return result / static_cast<float>(vecSet.size());
   }
@@ -42,13 +45,21 @@ namespace
 
 namespace MeshCore
 {
-  Mesh::Mesh() {}
+  Mesh::Mesh()
+  {
+  }
 
-  Mesh::Mesh(const std::vector<Vertex>& vertices) : mVertices(vertices) { init(); }
+  Mesh::Mesh(const std::vector<Vertex>& vertices) : mVertices(vertices)
+  {
+    init();
+  }
 
   Mesh::~Mesh() = default;
 
-  void Mesh::init() { prepareHalfEdgeDataStructure(); }
+  void Mesh::init()
+  {
+    prepareHalfEdgeDataStructure();
+  }
 
   void Mesh::prepareHalfEdgeDataStructure()
   {
@@ -59,14 +70,26 @@ namespace MeshCore
 
     setupTwinsForHalfEdges();
 
-    if (SMOOTHING_ENABLED) { averageFaceNormals(); }
+    if (SMOOTHING_ENABLED)
+    {
+      averageFaceNormals();
+    }
   }
 
-  std::unique_ptr<Mesh> Mesh::clone() const { return std::make_unique<Mesh>(mVertices); }
+  std::unique_ptr<Mesh> Mesh::clone() const
+  {
+    return std::make_unique<Mesh>(mVertices);
+  }
 
-  const std::vector<Vertex>& Mesh::getVertices() const { return mVertices; }
+  const std::vector<Vertex>& Mesh::getVertices() const
+  {
+    return mVertices;
+  }
 
-  const std::vector<std::unique_ptr<Face>>& Mesh::getFaces() const { return mFaces; }
+  const std::vector<std::unique_ptr<Face>>& Mesh::getFaces() const
+  {
+    return mFaces;
+  }
 
   void Mesh::createHalfEdgesForFace(size_t lastVertexIdx)
   {
@@ -194,7 +217,10 @@ namespace MeshCore
   {
     const auto& intersectionTempData = getIntersectionTempData(ray);
 
-    if (!intersectionTempData.intersectionPoint) { return {}; }
+    if (!intersectionTempData.intersectionPoint)
+    {
+      return {};
+    }
 
     auto faceIdx = intersectionTempData.intersectedFaceIdx;
     MeshIntersection meshIntersection;
@@ -239,7 +265,10 @@ namespace MeshCore
     for (int faceIdx = 0; faceIdx < mFaces.size(); ++faceIdx)
     {
       auto intersectionPoint = mFaces[faceIdx]->getIntersectionPoint(ray);
-      if (!intersectionPoint) { continue; }
+      if (!intersectionPoint)
+      {
+        continue;
+      }
 
       if (!finalTempData.intersectionPoint ||
           isCloser(

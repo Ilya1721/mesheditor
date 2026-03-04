@@ -4,6 +4,7 @@
 #undef __gl_h_
 #endif
 #include <glm/gtc/type_ptr.hpp>
+
 #include "glad/glad.h"
 
 namespace RenderSystem
@@ -33,7 +34,8 @@ namespace RenderSystem
   void PointLights::removeLight(unsigned int index)
   {
     auto pointLightIt = mLights.find(index);
-    if (pointLightIt == mLights.end()) return;
+    if (pointLightIt == mLights.end())
+      return;
     pointLightIt->second.setParams(PointLightParams {});
   }
 

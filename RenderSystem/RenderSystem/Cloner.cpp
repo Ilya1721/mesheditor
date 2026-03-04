@@ -1,13 +1,16 @@
 #include "Cloner.h"
 
 #include <glfw/glfw3.h>
+
 #include <glm/gtx/transform.hpp>
 
 #include "Scene.h"
 
 namespace RenderSystem
 {
-  Cloner::Cloner(Scene* scene) : mScene(scene) {}
+  Cloner::Cloner(Scene* scene) : mScene(scene)
+  {
+  }
 
   void Cloner::onKeyPressed(int key)
   {

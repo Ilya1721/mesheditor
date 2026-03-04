@@ -14,7 +14,10 @@ namespace RenderSystem
     return *this;
   }
 
-  const DepthTexture& ControllerWithDepthMap::getDepthMap() const { return mTexture; }
+  const DepthTexture& ControllerWithDepthMap::getDepthMap() const
+  {
+    return mTexture;
+  }
 
   void ControllerWithDepthMap::setDepthMapSize(int width, int height)
   {

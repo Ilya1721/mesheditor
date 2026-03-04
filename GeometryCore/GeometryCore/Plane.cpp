@@ -15,7 +15,10 @@ namespace GeometryCore
   Point3D Plane::projectPoint(const Point3D& point) const
   {
     auto dotProduct = glm::dot(origin - point, normal);
-    if (glm::epsilonEqual(dotProduct, 0.0f, 1e-5f)) { return point; }
+    if (glm::epsilonEqual(dotProduct, 0.0f, 1e-5f))
+    {
+      return point;
+    }
     auto rayDirection = dotProduct > 0.0f ? normal : -normal;
 
     return getIntersectionPoint({point, rayDirection}).value();
@@ -34,7 +37,10 @@ namespace GeometryCore
 
   std::optional<Point3D> Plane::getIntersectionPoint(const Ray& ray) const
   {
-    if (glm::epsilonEqual(glm::dot(normal, ray.direction), 0.0f, 1e-6f)) { return {}; }
+    if (glm::epsilonEqual(glm::dot(normal, ray.direction), 0.0f, 1e-6f))
+    {
+      return {};
+    }
 
     auto distanceToPlane = (glm::dot(normal, origin) - glm::dot(normal, ray.origin)) /
                            glm::dot(normal, ray.direction);

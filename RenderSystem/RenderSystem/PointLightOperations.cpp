@@ -1,8 +1,9 @@
 #include "PointLightOperations.h"
 
+#include <glfw/glfw3.h>
+
 #include "Constants.h"
 #include "Scene.h"
-#include <glfw/glfw3.h>
 
 namespace RenderSystem
 {
@@ -17,15 +18,22 @@ namespace RenderSystem
   {
   }
 
-  void PointLightOperations::onMouseClick() {}
+  void PointLightOperations::onMouseClick()
+  {
+  }
 
   void PointLightOperations::onKeyPressed(int key)
   {
     switch (key)
     {
-      case GLFW_KEY_P: addPointLight(); break;
-      case GLFW_KEY_D: removePointLight(); break;
-      default: break;
+      case GLFW_KEY_P:
+        addPointLight();
+        break;
+      case GLFW_KEY_D:
+        removePointLight();
+        break;
+      default:
+        break;
     }
   }
 

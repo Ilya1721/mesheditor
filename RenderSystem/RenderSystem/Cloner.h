@@ -22,7 +22,7 @@ namespace RenderSystem
    private:
     glm::mat4 getInitialTransform(const MeshCore::AABBox& bbox) const;
 
-  private:
+   private:
     Scene* mScene;
   };
 }  // namespace RenderSystem

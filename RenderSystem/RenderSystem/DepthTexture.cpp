@@ -34,5 +34,8 @@ namespace RenderSystem
     );
   }
 
-  int DepthTexture::getAttachmentId() const { return GL_DEPTH_ATTACHMENT; }
+  int DepthTexture::getAttachmentId() const
+  {
+    return GL_DEPTH_ATTACHMENT;
+  }
 }  // namespace RenderSystem

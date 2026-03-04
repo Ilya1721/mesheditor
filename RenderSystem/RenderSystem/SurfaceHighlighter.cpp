@@ -27,10 +27,16 @@ namespace RenderSystem
 
   void SurfaceHighlighter::onKeyPressed(int key)
   {
-    if (key != GLFW_KEY_H) { return; }
+    if (key != GLFW_KEY_H)
+    {
+      return;
+    }
 
     mEnabled = !mEnabled;
 
-    if (!mEnabled) { mScene->setHighlightedFacesData({}); }
+    if (!mEnabled)
+    {
+      mScene->setHighlightedFacesData({});
+    }
   }
 }  // namespace RenderSystem

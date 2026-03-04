@@ -55,7 +55,10 @@ namespace
 
   bool isBinarySTL(const std::string& fileContent)
   {
-    if (fileContent.empty()) { throw std::exception("File content is empty"); }
+    if (fileContent.empty())
+    {
+      throw std::exception("File content is empty");
+    }
 
     const char* buffer = fileContent.c_str();
     buffer += STL_HEADER_SIZE;
@@ -100,12 +103,12 @@ namespace
   std::unique_ptr<Object3D> loadTextSTL(std::string& fileContent)
   {
     std::vector<MeshCore::Vertex> vertices;
-    Vector3D faceNormal{};
+    Vector3D faceNormal {};
 
     parseText(
       fileContent,
       [&vertices,
-      &faceNormal](char*& currentToken, char*& context, const char* delimiters)
+       &faceNormal](char*& currentToken, char*& context, const char* delimiters)
       {
         if (isEqual(currentToken, "normal"))
         {
@@ -113,9 +116,9 @@ namespace
         }
         else if (isEqual(currentToken, "vertex"))
         {
-          Point3D pos{};
+          Point3D pos {};
           readTokenAsVector(currentToken, delimiters, context, pos);
-          vertices.push_back({ pos, faceNormal });
+          vertices.push_back({pos, faceNormal});
         }
       }
     );

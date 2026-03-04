@@ -5,7 +5,9 @@
 
 namespace RenderSystem
 {
-  Orbit::Orbit(Window* window, Camera* camera) : mWindow(window), mCamera(camera) {}
+  Orbit::Orbit(Window* window, Camera* camera) : mWindow(window), mCamera(camera)
+  {
+  }
 
   void Orbit::onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos)
   {
@@ -13,8 +15,7 @@ namespace RenderSystem
       mWindow->isMouseButtonPressed(GLFW_MOUSE_BUTTON_MIDDLE);
     auto shiftKeyPressed = mWindow->isKeyPressed(GLFW_KEY_LEFT_SHIFT);
 
-    if (mCamera->isMovementEnabled() && middleMouseButtonPressed &&
-        !shiftKeyPressed)
+    if (mCamera->isMovementEnabled() && middleMouseButtonPressed && !shiftKeyPressed)
     {
       const auto offsetX = endCursorPos.x - startCursorPos.x;
       const auto offsetY = startCursorPos.y - endCursorPos.y;

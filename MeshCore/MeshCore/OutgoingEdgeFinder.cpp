@@ -12,7 +12,10 @@ namespace MeshCore
   {
   }
 
-  void OutgoingEdgeFinder::collectAll() { collectNextOutgoing(mStartOutgoingEdge); }
+  void OutgoingEdgeFinder::collectAll()
+  {
+    collectNextOutgoing(mStartOutgoingEdge);
+  }
 
   void OutgoingEdgeFinder::collectNextOutgoing(HalfEdge* currentOutgoing)
   {

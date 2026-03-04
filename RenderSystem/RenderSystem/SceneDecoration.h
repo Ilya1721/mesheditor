@@ -32,10 +32,7 @@ namespace RenderSystem
       const Line& line, bool withArrowHead, const BlinnPhongMaterial& material
     );
     static SceneDecoration createDecoration(
-      const Plane& plane,
-      float width,
-      float length,
-      const BlinnPhongMaterial& material
+      const Plane& plane, float width, float length, const BlinnPhongMaterial& material
     );
 
     static SceneDecoration createSceneFloor(

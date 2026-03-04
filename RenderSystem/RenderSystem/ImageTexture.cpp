@@ -14,11 +14,17 @@ namespace RenderSystem
     create(width, height, nullptr, 4);
   }
 
-  ImageTexture::ImageTexture(ImageTexture&& other) noexcept { *this = std::move(other); }
+  ImageTexture::ImageTexture(ImageTexture&& other) noexcept
+  {
+    *this = std::move(other);
+  }
 
   ImageTexture& ImageTexture::operator=(ImageTexture&& other) noexcept
   {
-    if (this != &other) { Texture2D::operator=(std::move(other)); }
+    if (this != &other)
+    {
+      Texture2D::operator=(std::move(other));
+    }
     return *this;
   }
 
@@ -51,7 +57,10 @@ namespace RenderSystem
 
   ImageTexture::ImageTexture(const std::string& filePath) : Texture2D()
   {
-    if (filePath.empty()) { return; }
+    if (filePath.empty())
+    {
+      return;
+    }
     int colorChannels = 0;
     auto data = stbi_load(filePath.c_str(), &mWidth, &mHeight, &colorChannels, 0);
     create(mWidth, mHeight, data, colorChannels);
@@ -60,7 +69,10 @@ namespace RenderSystem
 
   ImageTexture::ImageTexture(const unsigned char* data, int dataLength)
   {
-    if (data == nullptr || dataLength <= 0) { return; }
+    if (data == nullptr || dataLength <= 0)
+    {
+      return;
+    }
     int width {}, height {}, colorChannels {};
     auto decoded =
       stbi_load_from_memory(data, dataLength, &width, &height, &colorChannels, 0);

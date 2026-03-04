@@ -6,7 +6,10 @@
 
 namespace RenderSystem
 {
-  Pan::Pan(Window* window, Camera* camera, Viewport* viewport) : mWindow(window), mCamera(camera), mViewport(viewport) {}
+  Pan::Pan(Window* window, Camera* camera, Viewport* viewport)
+    : mWindow(window), mCamera(camera), mViewport(viewport)
+  {
+  }
 
   void Pan::onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos)
   {

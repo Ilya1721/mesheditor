@@ -148,7 +148,10 @@ namespace RenderSystem
 
   void Window::resizeViewport(int width, int height)
   {
-    if (width > 0 && height > 0) { mViewport->resize(width, height); }
+    if (width > 0 && height > 0)
+    {
+      mViewport->resize(width, height);
+    }
   }
 
   Point3D Window::unProject(const Point2D& cursorPos, float depth) const
@@ -230,6 +233,9 @@ namespace RenderSystem
     int key, [[maybe_unused]] int scancode, int action, [[maybe_unused]] int mods
   )
   {
-    if (action == GLFW_PRESS) { mOperationsDispatcher->onKeyPressed(key); }
+    if (action == GLFW_PRESS)
+    {
+      mOperationsDispatcher->onKeyPressed(key);
+    }
   }
 }  // namespace RenderSystem

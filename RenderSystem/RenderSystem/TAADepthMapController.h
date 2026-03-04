@@ -8,7 +8,7 @@ namespace RenderSystem
 {
   class TAADepthMapController
   {
-  public:
+   public:
     TAADepthMapController(const path& vertexShaderPath, const path& fragmentShaderPath);
 
     const DepthTexture& getPrevDepthMap() const;
@@ -21,11 +21,10 @@ namespace RenderSystem
     void renderSceneToDepthMap(const std::function<void()>& renderSceneFunc);
     void swapDepthMaps();
 
-  private:
+   private:
     TAADepthMapShaderProgram mShaderProgram;
     DepthTexture mPrevDepthMap;
     DepthTexture mCurrDepthMap;
     FrameBufferObject mFBO;
   };
 }
-

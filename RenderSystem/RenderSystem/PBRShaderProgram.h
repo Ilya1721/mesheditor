@@ -27,7 +27,7 @@ namespace RenderSystem
     void setNormalTexture(const ImageTexture& texture);
     void setMetallicRoughnessTexture(const ImageTexture& texture);
 
-  private:
+   private:
     void setView(const glm::mat4& view);
     void setCameraPos(const glm::vec3& cameraPos);
     void initUniformLocations();

@@ -22,7 +22,7 @@ namespace RenderSystem
     void onMouseClick() override;
     void onKeyPressed(int key) override {};
 
-  private:
+   private:
     Window* mWindow;
     Scene* mScene;
     Camera* mCamera;

@@ -15,7 +15,7 @@ namespace RenderSystem
     virtual void bind() const = 0;
     virtual void unbind() const = 0;
 
-  protected:
+   protected:
     mutable int mResourceToRestore = 0;
   };
 }  // namespace RenderSystem

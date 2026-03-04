@@ -34,10 +34,8 @@ namespace RenderSystem
 
   void TAADepthMapShaderProgram::setProjection(const glm::mat4& projection)
   {
-    invoke(
-      [this, &projection]()
-      { glUniformMatrix4fv(mProjection, 1, false, glm::value_ptr(projection)); }
-    );
+    invoke([this, &projection]()
+           { glUniformMatrix4fv(mProjection, 1, false, glm::value_ptr(projection)); });
   }
 
   void TAADepthMapShaderProgram::initUniformLocations()

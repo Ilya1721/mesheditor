@@ -126,10 +126,8 @@ namespace RenderSystem
     R"(./RenderSystem/Shaders/BlinnPhongShader.vert)";
   const std::string BLINN_PHONG_FRAGMENT_SHADER_PATH =
     R"(./RenderSystem/Shaders/BlinnPhongShader.frag)";
-  const std::string PBR_VERTEX_SHADER_PATH =
-    R"(./RenderSystem/Shaders/PBRShader.vert)";
-  const std::string PBR_FRAGMENT_SHADER_PATH =
-    R"(./RenderSystem/Shaders/PBRShader.frag)";
+  const std::string PBR_VERTEX_SHADER_PATH = R"(./RenderSystem/Shaders/PBRShader.vert)";
+  const std::string PBR_FRAGMENT_SHADER_PATH = R"(./RenderSystem/Shaders/PBRShader.frag)";
   const std::string GLASS_VERTEX_SHADER_PATH =
     R"(./RenderSystem/Shaders/GlassShader.vert)";
   const std::string GLASS_FRAGMENT_SHADER_PATH =

@@ -17,9 +17,7 @@ namespace
   using namespace RenderSystem;
 
   SceneDecoration getBaseSceneDecoration(
-    const BlinnPhongMaterial& material,
-    int renderMode,
-    const RenderData& renderData
+    const BlinnPhongMaterial& material, int renderMode, const RenderData& renderData
   )
   {
     SceneDecoration primitive;
@@ -41,9 +39,7 @@ namespace RenderSystem
   }
 
   SceneDecoration SceneDecoration::createDecoration(
-    const GeometryCore::Ray& ray,
-    float length,
-    const BlinnPhongMaterial& material
+    const GeometryCore::Ray& ray, float length, const BlinnPhongMaterial& material
   )
   {
     return getBaseSceneDecoration(
@@ -52,9 +48,7 @@ namespace RenderSystem
   }
 
   SceneDecoration SceneDecoration::createDecoration(
-    const GeometryCore::Line& line,
-    bool withArrowHead,
-    const BlinnPhongMaterial& material
+    const GeometryCore::Line& line, bool withArrowHead, const BlinnPhongMaterial& material
   )
   {
     return getBaseSceneDecoration(
@@ -96,9 +90,7 @@ namespace RenderSystem
     const BlinnPhongMaterial& material
   )
   {
-    return SceneDecoration::createDecoration(
-      {origin, normal}, width, height, material
-    );
+    return SceneDecoration::createDecoration({origin, normal}, width, height, material);
   }
 
   SceneDecoration SceneDecoration::createLine(

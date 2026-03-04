@@ -22,7 +22,10 @@ namespace Utility
 
     template <typename... CallbackArgs> void invokeCallbacks(CallbackArgs... callbackArgs)
     {
-      for (auto& callback : mCallbacks) { callback(callbackArgs...); }
+      for (auto& callback : mCallbacks)
+      {
+        callback(callbackArgs...);
+      }
     }
 
    private:

@@ -7,15 +7,24 @@
 
 namespace RenderSystem
 {
-  Texture::Texture() { glGenTextures(1, &mTexture); }
+  Texture::Texture()
+  {
+    glGenTextures(1, &mTexture);
+  }
 
-  Texture::Texture(Texture&& other) noexcept { *this = std::move(other); }
+  Texture::Texture(Texture&& other) noexcept
+  {
+    *this = std::move(other);
+  }
 
   Texture& Texture::operator=(Texture&& other) noexcept
   {
     if (this != &other)
     {
-      if (mTexture != 0) { glDeleteTextures(1, &mTexture); }
+      if (mTexture != 0)
+      {
+        glDeleteTextures(1, &mTexture);
+      }
       mTexture = other.mTexture;
       mResourceToRestore = other.mResourceToRestore;
       other.mTexture = 0;
@@ -27,12 +36,21 @@ namespace RenderSystem
 
   Texture::~Texture()
   {
-    if (mTexture != 0) { glDeleteTextures(1, &mTexture); }
+    if (mTexture != 0)
+    {
+      glDeleteTextures(1, &mTexture);
+    }
   }
 
-  unsigned int Texture::getId() const { return mTexture; }
+  unsigned int Texture::getId() const
+  {
+    return mTexture;
+  }
 
-  int Texture::getAttachmentId() const { return GL_COLOR_ATTACHMENT0; }
+  int Texture::getAttachmentId() const
+  {
+    return GL_COLOR_ATTACHMENT0;
+  }
 
   void Texture::passToFragmentShader(int textureLocation, int textureSlot) const
   {
@@ -47,16 +65,23 @@ namespace RenderSystem
     glBindTexture(GL_TEXTURE_2D, mTexture);
   }
 
-  void Texture::unbind() const { glBindTexture(GL_TEXTURE_2D, mResourceToRestore); }
+  void Texture::unbind() const
+  {
+    glBindTexture(GL_TEXTURE_2D, mResourceToRestore);
+  }
 
   int getColorFormat(int colorChannels)
   {
     switch (colorChannels)
     {
-      case 1: return GL_RED;
-      case 3: return GL_RGB;
-      case 4: return GL_RGBA;
-      default: return GL_RGB;
+      case 1:
+        return GL_RED;
+      case 3:
+        return GL_RGB;
+      case 4:
+        return GL_RGBA;
+      default:
+        return GL_RGB;
     }
   }
 }  // namespace RenderSystem

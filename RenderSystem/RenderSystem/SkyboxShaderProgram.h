@@ -12,17 +12,17 @@ namespace RenderSystem
 {
   class SkyboxShaderProgram : public ShaderProgram
   {
-  public:
+   public:
     SkyboxShaderProgram(const path& vertexShader, const path& fragmentShader);
 
     void setView(const glm::mat4& view);
     void setProjection(const glm::mat4& projection);
     void setSkyboxCubemap(const CubemapTexture& texture) const;
 
-  private:
+   private:
     void initUniformLocations();
 
-  private:
+   private:
     int mView;
     int mProjection;
     int mSkybox;

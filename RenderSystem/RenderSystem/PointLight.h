@@ -8,12 +8,12 @@ namespace RenderSystem
 
   class PointLight
   {
-  public:
+   public:
     void init(int shaderProgram, unsigned int index);
     void setParams(const PointLightParams& light);
     void setLightSourcePos(const float* lightSourcePos) const;
 
-  private:
+   private:
     void setAmbient(const float* ambient) const;
     void setDiffuse(const float* diffuse) const;
     void setSpecular(const float* specular) const;
@@ -26,7 +26,7 @@ namespace RenderSystem
     int getUniformLocation(const char* name) const;
     std::string getParamsUniformName(const std::string& paramName) const;
 
-  private:
+   private:
     unsigned int mIndex;
     int mShaderProgram;
     int mLightSourcePos;

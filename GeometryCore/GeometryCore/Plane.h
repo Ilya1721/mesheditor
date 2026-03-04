@@ -1,9 +1,10 @@
 #pragma once
 
-#include "Ray.h"
-#include "Typedefs.h"
 #include <glm/glm.hpp>
 #include <optional>
+
+#include "Ray.h"
+#include "Typedefs.h"
 
 namespace GeometryCore
 {

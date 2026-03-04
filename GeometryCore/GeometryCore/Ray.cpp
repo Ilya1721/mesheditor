@@ -1,4 +1,5 @@
 #include "Ray.h"
+
 #include "Transforms.h"
 
 namespace GeometryCore

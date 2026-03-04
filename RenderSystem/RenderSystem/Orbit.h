@@ -6,7 +6,7 @@
 namespace RenderSystem
 {
   using namespace GeometryCore;
-  
+
   class Window;
   class Camera;
 
@@ -20,7 +20,7 @@ namespace RenderSystem
     void onMouseClick() override {};
     void onKeyPressed(int key) override {};
 
-  private:
+   private:
     Window* mWindow;
     Camera* mCamera;
   };

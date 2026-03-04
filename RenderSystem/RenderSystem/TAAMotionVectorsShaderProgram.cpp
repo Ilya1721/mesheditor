@@ -46,16 +46,10 @@ namespace RenderSystem
            { glUniformMatrix4fv(mCurrentView, 1, false, glm::value_ptr(view)); });
   }
 
-  void TAAMotionVectorsShaderProgram::setProjection(
-    const glm::mat4& projection
-  )
+  void TAAMotionVectorsShaderProgram::setProjection(const glm::mat4& projection)
   {
-    invoke(
-      [this, &projection]()
-      {
-        glUniformMatrix4fv(mProjection, 1, false, glm::value_ptr(projection));
-      }
-    );
+    invoke([this, &projection]()
+           { glUniformMatrix4fv(mProjection, 1, false, glm::value_ptr(projection)); });
   }
 
   void TAAMotionVectorsShaderProgram::initUniformLocations()

@@ -8,7 +8,10 @@
 
 namespace RenderSystem
 {
-  RenderBuffer::RenderBuffer() { init(); }
+  RenderBuffer::RenderBuffer()
+  {
+    init();
+  }
 
   RenderBuffer::~RenderBuffer()
   {

@@ -59,7 +59,10 @@ namespace
   std::string getExtension(const std::string& path)
   {
     auto dotPos = path.find_last_of('.');
-    if (dotPos == std::string::npos) { return ""; }
+    if (dotPos == std::string::npos)
+    {
+      return "";
+    }
     return path.substr(dotPos);
   }
 
@@ -159,7 +162,10 @@ namespace
   {
     auto texturePath = parseTexturePath(currentToken, context, delimiters);
     std::filesystem::path fullTexturePath;
-    if (isPathAbsolute(texturePath)) { fullTexturePath = texturePath; }
+    if (isPathAbsolute(texturePath))
+    {
+      fullTexturePath = texturePath;
+    }
     else
     {
       fullTexturePath = filePath.parent_path() / std::filesystem::path(texturePath);

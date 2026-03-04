@@ -48,7 +48,10 @@ namespace RenderSystem
             );
             stbi_image_free(data);
           }
-          else { stbi_image_free(data); }
+          else
+          {
+            stbi_image_free(data);
+          }
         }
       }
     );

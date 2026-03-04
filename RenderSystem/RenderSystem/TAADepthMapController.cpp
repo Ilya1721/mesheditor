@@ -52,7 +52,10 @@ namespace RenderSystem
     );
   }
 
-  void TAADepthMapController::swapDepthMaps() { mCurrDepthMap.swap(mPrevDepthMap); }
+  void TAADepthMapController::swapDepthMaps()
+  {
+    mCurrDepthMap.swap(mPrevDepthMap);
+  }
 
   void TAADepthMapController::setModel(const glm::mat4& model)
   {
