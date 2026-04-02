@@ -6,6 +6,30 @@
 
 namespace RenderSystem
 {
+  class AccessorGetter
+  {
+   public:
+    AccessorGetter(const fastgltf::Asset* asset, const fastgltf::Attribute* attributeEnd)
+      : mAsset(asset), mAttributeEnd(attributeEnd)
+    {
+    }
+
+   public:
+    const fastgltf::Accessor* get(const fastgltf::Attribute* attribute)
+    {
+      if (attribute == mAttributeEnd)
+      {
+        return nullptr;
+      }
+
+      return &mAsset->accessors[attribute->accessorIndex];
+    }
+
+   private:
+    const fastgltf::Asset* mAsset;
+    const fastgltf::Attribute* mAttributeEnd;
+  };
+
   std::vector<Vertex> parseVertices(
     const fastgltf::Asset& asset, const fastgltf::Mesh& mesh
   )
@@ -14,14 +38,13 @@ namespace RenderSystem
 
     for (const auto& primitive : mesh.primitives)
     {
-      auto posIt = primitive.findAttribute("POSITION");
-      auto normalIt = primitive.findAttribute("NORMAL");
-      auto textureIt = primitive.findAttribute("TEXCOORD_0");
-      auto tangentIt = primitive.findAttribute("TANGENT");
-      const auto& attributesEnd = primitive.attributes.end();
+      auto posAttribute = primitive.findAttribute("POSITION");
+      auto normalAttribute = primitive.findAttribute("NORMAL");
+      auto textureAttribute = primitive.findAttribute("TEXCOORD_0");
+      auto tangentAttribute = primitive.findAttribute("TANGENT");
+      auto attributesEnd = primitive.attributes.end();
 
-      if (posIt == attributesEnd || normalIt == attributesEnd ||
-          textureIt == attributesEnd || tangentIt == attributesEnd)
+      if (posAttribute == attributesEnd || normalAttribute == attributesEnd)
       {
         throw std::runtime_error("Mesh primitive missing required attributes");
       }
@@ -31,32 +54,41 @@ namespace RenderSystem
         throw std::runtime_error("Non-indexed primitives not supported");
       }
 
-      const fastgltf::Accessor& posAcc = asset.accessors[posIt->accessorIndex];
-      const fastgltf::Accessor& normalAcc = asset.accessors[normalIt->accessorIndex];
-      const fastgltf::Accessor& textureAcc = asset.accessors[textureIt->accessorIndex];
-      const fastgltf::Accessor& tangentAcc = asset.accessors[tangentIt->accessorIndex];
+      AccessorGetter accGetter(&asset, attributesEnd);
+      auto posAcc = accGetter.get(posAttribute);
+      auto normalAcc = accGetter.get(normalAttribute);
+      auto textureAcc = accGetter.get(textureAttribute);
+      auto tangentAcc = accGetter.get(tangentAttribute);
       const auto& indexAcc = asset.accessors[primitive.indicesAccessor.value()];
+      Vertex vertex;
 
       for (size_t idx = 0; idx < indexAcc.count; ++idx)
       {
         auto vertexIdx = fastgltf::getAccessorElement<uint32_t>(asset, indexAcc, idx);
         auto posGltf =
-          fastgltf::getAccessorElement<fastgltf::math::fvec3>(asset, posAcc, vertexIdx);
-        auto normalGltf = fastgltf::getAccessorElement<fastgltf::math::fvec3>(
-          asset, normalAcc, vertexIdx
-        );
-        auto textureGltf = fastgltf::getAccessorElement<fastgltf::math::fvec2>(
-          asset, textureAcc, vertexIdx
-        );
-        auto tangentGltf = fastgltf::getAccessorElement<fastgltf::math::fvec4>(
-          asset, tangentAcc, vertexIdx
-        );
-
-        Vertex vertex;
+          fastgltf::getAccessorElement<fastgltf::math::fvec3>(asset, *posAcc, vertexIdx);
         vertex.pos = glm::make_vec3(posGltf.data());
+        auto normalGltf = fastgltf::getAccessorElement<fastgltf::math::fvec3>(
+          asset, *normalAcc, vertexIdx
+        );
         vertex.normal = glm::make_vec3(normalGltf.data());
-        vertex.texture = glm::make_vec2(textureGltf.data());
-        vertex.tangent = glm::make_vec4(tangentGltf.data());
+
+        if (textureAcc)
+        {
+          auto textureGltf = fastgltf::getAccessorElement<fastgltf::math::fvec2>(
+            asset, *textureAcc, vertexIdx
+          );
+          vertex.texture = glm::make_vec2(textureGltf.data());
+        }
+
+        if (tangentAcc)
+        {
+          auto tangentGltf = fastgltf::getAccessorElement<fastgltf::math::fvec4>(
+            asset, *tangentAcc, vertexIdx
+          );
+          vertex.tangent = glm::make_vec4(tangentGltf.data());
+        }
+
         vertices.push_back(vertex);
       }
     }
@@ -160,24 +192,28 @@ namespace RenderSystem
       {
         materialData.uvScale = glm::make_vec2(textureInfo.transform->uvScale.data());
       }
+      materialData.material.baseColorTexture =
+        loadTexture(asset, materialImages.baseColorImage);
     }
     if (materialGltf.normalTexture.has_value())
     {
       const auto& textureInfo = materialGltf.normalTexture.value();
       const auto& texture = asset.textures[textureInfo.textureIndex];
       materialImages.normalImage = texture.imageIndex.value();
+      materialData.material.normalMap = loadTexture(asset, materialImages.normalImage);
     }
     if (materialGltf.pbrData.metallicRoughnessTexture.has_value())
     {
       const auto& texInfo = materialGltf.pbrData.metallicRoughnessTexture.value();
       const auto& texture = asset.textures[texInfo.textureIndex];
       materialImages.metallicRoughnessImage = texture.imageIndex.value();
+      materialData.material.metallicRougnessTexture =
+        loadTexture(asset, materialImages.metallicRoughnessImage);
     }
-
-    materialData.material.baseColor = loadTexture(asset, materialImages.baseColorImage);
-    materialData.material.normalMap = loadTexture(asset, materialImages.normalImage);
-    materialData.material.metallicRougness =
-      loadTexture(asset, materialImages.metallicRoughnessImage);
+    materialData.material.baseColor =
+      glm::make_vec3(materialGltf.pbrData.baseColorFactor.data());
+    materialData.material.metallic = materialGltf.pbrData.metallicFactor;
+    materialData.material.rougness = materialGltf.pbrData.roughnessFactor;
 
     return materialData;
   }

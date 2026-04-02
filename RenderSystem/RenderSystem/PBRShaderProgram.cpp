@@ -59,7 +59,7 @@ namespace RenderSystem
     invoke([this, &lightPos]() { glUniform3fv(mLightPos, 1, glm::value_ptr(lightPos)); });
   }
 
-  void PBRShaderProgram::setLightColor(const glm::vec3& lightColor)
+  void PBRShaderProgram::setLightColor(const RGB& lightColor)
   {
     invoke([this, &lightColor]()
            { glUniform3fv(mLightColor, 1, glm::value_ptr(lightColor)); });
@@ -67,18 +67,50 @@ namespace RenderSystem
 
   void PBRShaderProgram::setBaseColorTexture(const ImageTexture& texture)
   {
-    invoke([this, &texture]() { texture.passToFragmentShader(mBaseColorTexture, 0); });
+    invoke(
+      [this, &texture]()
+      {
+        texture.passToFragmentShader(mBaseColorTexture, 0);
+        glUniform1i(mHasBaseColorTexture, 1);
+      }
+    );
   }
 
   void PBRShaderProgram::setNormalTexture(const ImageTexture& texture)
   {
-    invoke([this, &texture]() { texture.passToFragmentShader(mNormalTexture, 1); });
+    invoke(
+      [this, &texture]()
+      {
+        texture.passToFragmentShader(mNormalTexture, 1);
+        glUniform1i(mHasNormalTexture, 1);
+      }
+    );
   }
 
   void PBRShaderProgram::setMetallicRoughnessTexture(const ImageTexture& texture)
   {
-    invoke([this, &texture]()
-           { texture.passToFragmentShader(mMetallicRoughnessTexture, 2); });
+    invoke(
+      [this, &texture]()
+      {
+        texture.passToFragmentShader(mMetallicRoughnessTexture, 2);
+        glUniform1i(mHasMetallicRoughnessTexture, 1);
+      }
+    );
+  }
+
+  void PBRShaderProgram::setMetallic(float metallic)
+  {
+    invoke([this, metallic]() { glUniform1f(mMetallic, metallic); });
+  }
+
+  void PBRShaderProgram::setRougness(float roughness)
+  {
+    invoke([this, roughness]() { glUniform1f(mRoughness, roughness); });
+  }
+
+  void PBRShaderProgram::setBaseColor(const RGB& color)
+  {
+    invoke([this, &color]() { glUniform3fv(mBaseColor, 1, glm::value_ptr(color)); });
   }
 
   void PBRShaderProgram::initUniformLocations()
@@ -91,7 +123,11 @@ namespace RenderSystem
     mLightPos = getUniformLocation("lightPos");
     mLightColor = getUniformLocation("lightColor");
     mBaseColorTexture = getUniformLocation("baseColorTexture");
+    mBaseColor = getUniformLocation("baseColor");
+    mHasBaseColorTexture = getUniformLocation("hasBaseColorTexture");
     mNormalTexture = getUniformLocation("normalTexture");
+    mHasNormalTexture = getUniformLocation("hasNormalTexture");
     mMetallicRoughnessTexture = getUniformLocation("metallicRoughnessTexture");
+    mHasMetallicRoughnessTexture = getUniformLocation("hasMetallicRoughnessTexture");
   }
 }  // namespace RenderSystem

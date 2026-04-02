@@ -148,9 +148,21 @@ namespace RenderSystem
 
   void Scene::setPBRMaterial(const PBRMaterial& material)
   {
-    mPBRShaderProgram->setBaseColorTexture(*material.baseColor);
-    mPBRShaderProgram->setNormalTexture(*material.normalMap);
-    mPBRShaderProgram->setMetallicRoughnessTexture(*material.metallicRougness);
+    if (material.baseColorTexture)
+    {
+      mPBRShaderProgram->setBaseColorTexture(*material.baseColorTexture);
+    }
+    if (material.normalMap)
+    {
+      mPBRShaderProgram->setNormalTexture(*material.normalMap);
+    }
+    if (material.metallicRougnessTexture)
+    {
+      mPBRShaderProgram->setMetallicRoughnessTexture(*material.metallicRougnessTexture);
+    }
+    mPBRShaderProgram->setBaseColor(material.baseColor);
+    mPBRShaderProgram->setMetallic(material.metallic);
+    mPBRShaderProgram->setRougness(material.rougness);
   }
 
   void Scene::setProjectionToShaders(const glm::mat4& projection)

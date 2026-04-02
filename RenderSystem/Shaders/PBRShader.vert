@@ -9,6 +9,7 @@ out VS_OUT {
     vec3 fragPos;
     vec2 textureCoords;
     mat3 TBN;
+    vec3 vertexNormal;
 } vsOut;
 
 uniform mat4 model;
@@ -25,6 +26,7 @@ void main()
     vsOut.TBN = mat3(T, B, N);
     vsOut.fragPos = vec3(model * vec4(pos, 1.0));
     vsOut.textureCoords = uvScale * textureCoords;
+    vsOut.vertexNormal = normal;
 
     gl_Position = projection * view * vec4(vsOut.fragPos, 1.0);
 }

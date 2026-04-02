@@ -6,15 +6,25 @@ in VS_OUT {
     vec3 fragPos;
     vec2 textureCoords;
     mat3 TBN;
+    vec3 vertexNormal;
 } vsOut;
 
+uniform bool hasBaseColorTexture = false;
 uniform sampler2D baseColorTexture;
+uniform vec3 baseColor;
+
+uniform bool hasNormalTexture = false;
 uniform sampler2D normalTexture;
+
+uniform bool hasMetallicRoughnessTexture = false;
 uniform sampler2D metallicRoughnessTexture;
 
 uniform vec3 cameraPos;
 uniform vec3 lightPos;
 uniform vec3 lightColor;
+
+uniform float metallic;
+uniform float roughness;
 
 const float PI = 3.14159265359;
 
@@ -55,14 +65,44 @@ vec3 fresnelSchlick(float normalHalfViewLightCos, vec3 baseReflectivity)
     return baseReflectivity + (1.0 - baseReflectivity) * pow(1.0 - normalHalfViewLightCos, 5.0);
 }
 
+vec3 getBaseColor()
+{
+    if (hasBaseColorTexture)
+    {
+        return texture(baseColorTexture, vsOut.textureCoords).rgb;
+    }
+
+    return baseColor;
+}
+
+vec2 getMetallicRoughness()
+{
+    if (hasMetallicRoughnessTexture)
+    {
+        return texture(metallicRoughnessTexture, vsOut.textureCoords).bg;
+    }
+
+    return vec2(metallic, roughness);
+}
+
+vec3 getNormal()
+{
+    if (hasNormalTexture)
+    {
+        return getNormalFromTexture();
+    }
+
+    return vsOut.vertexNormal;
+}
+
 void main()
 {
-    vec3 albedo = texture(baseColorTexture, vsOut.textureCoords).rgb;
-    vec2 mr = texture(metallicRoughnessTexture, vsOut.textureCoords).bg;
+    vec3 albedo = getBaseColor();
+    vec2 mr = getMetallicRoughness();
     float metallic = mr.x;
     float roughness = mr.y;
 
-    vec3 N = getNormalFromTexture();
+    vec3 N = getNormal();
     vec3 V = normalize(cameraPos - vsOut.fragPos);
     vec3 L = normalize(lightPos - vsOut.fragPos);
     vec3 H = normalize(V + L);
