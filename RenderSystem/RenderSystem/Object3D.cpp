@@ -25,6 +25,24 @@ namespace RenderSystem
     init();
   }
 
+  Object3D::Object3D(
+    std::unique_ptr<Mesh> mesh,
+    const Material& material,
+    Skeleton&& skeleton,
+    std::vector<Animation>&& animations,
+    Pose&& currentPose
+  )
+    : mParent(nullptr),
+      mMesh(std::move(mesh)),
+      mMaterial(material),
+      mTransform(1.0f),
+      mUVScale(1.0f, 1.0f),
+      mSkeleton(skeleton),
+      mAnimations(animations),
+      mCurrentPose(currentPose)
+  {
+  }
+
   Object3D::~Object3D() = default;
 
   void Object3D::init()

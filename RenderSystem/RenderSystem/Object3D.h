@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 
+#include "Animation.h"
 #include "Material.h"
 #include "MeshCore/AABBox.h"
 #include "MeshCore/Mesh.h"
@@ -26,6 +27,13 @@ namespace RenderSystem
    public:
     Object3D();
     Object3D(std::unique_ptr<Mesh> mesh, const Material& material);
+    Object3D(
+      std::unique_ptr<Mesh> mesh,
+      const Material& material,
+      Skeleton&& skeleton,
+      std::vector<Animation>&& animations,
+      Pose&& currentPose
+    );
     Object3D(Object3D&& other) = delete;
     ~Object3D();
 
@@ -78,6 +86,9 @@ namespace RenderSystem
     glm::vec2 mUVScale;
     AABBox mBBox;
     Material mMaterial;
+    Skeleton mSkeleton;
+    std::vector<Animation> mAnimations;
+    Pose mCurrentPose;
     CallbackMechanism<childAddedCallback> mChildAddedCM;
     CallbackMechanism<objectUpdatedCallback> mObjectUpdatedCM;
     CallbackMechanism<bboxUpdatedCallback> mBBoxUpdatedCM;
