@@ -272,7 +272,9 @@ namespace RenderSystem
 
   template <typename T>
   AnimationSampler<T> parseSampler(
-    const fastgltf::Asset& asset, const fastgltf::AnimationSampler& gltfSampler
+    const fastgltf::Asset& asset,
+    const fastgltf::AnimationSampler& gltfSampler,
+    Animation& animation
   )
   {
     AnimationSampler<T> sampler;
@@ -284,6 +286,7 @@ namespace RenderSystem
     {
       auto time = fastgltf::getAccessorElement<float>(asset, inputAcc, keyframeIdx);
       auto value = parseAnimationAccessorValue<T>(asset, outputAcc, keyframeIdx);
+      animation.duration = std::max(animation.duration, time);
       sampler.keyframes.emplace_back(time, value);
     }
 
@@ -303,17 +306,17 @@ namespace RenderSystem
       const auto& gltfSampler = gltfAnimation.samplers[samplerIdx];
       if (samplerType == TransformComponent::Translation)
       {
-        auto sampler = parseSampler<glm::vec3>(asset, gltfSampler);
+        auto sampler = parseSampler<glm::vec3>(asset, gltfSampler, animation);
         animation.translationSamplers.push_back(sampler);
       }
       else if (samplerType == TransformComponent::Rotation)
       {
-        auto sampler = parseSampler<glm::quat>(asset, gltfSampler);
+        auto sampler = parseSampler<glm::quat>(asset, gltfSampler, animation);
         animation.rotationSamplers.push_back(sampler);
       }
       else if (samplerType == TransformComponent::Scale)
       {
-        auto sampler = parseSampler<glm::vec3>(asset, gltfSampler);
+        auto sampler = parseSampler<glm::vec3>(asset, gltfSampler, animation);
         animation.scaleSamplers.push_back(sampler);
       }
     }
@@ -329,6 +332,7 @@ namespace RenderSystem
     for (const auto& gltfAnimation : asset.animations)
     {
       Animation animation;
+      animation.name = gltfAnimation.name;
       std::vector<TransformComponent> samplerTypes(
         gltfAnimation.samplers.size(), TransformComponent::Unknown
       );

@@ -66,7 +66,7 @@ struct AnimationChannel
 struct Animation
 {
   std::string name;
-  float duration;
+  float duration {};
   std::vector<AnimationChannel> channels;
 
   std::vector<AnimationSampler<glm::vec3>> translationSamplers;
