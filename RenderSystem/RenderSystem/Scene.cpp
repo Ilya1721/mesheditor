@@ -60,6 +60,8 @@ namespace RenderSystem
       TAA_MOTION_VECTORS_VERTEX_SHADER_PATH, TAA_MOTION_VECTORS_FRAGMENT_SHADER_PATH,
       TAA_RESOLVE_VERTEX_SHADER_PATH, TAA_RESOLVE_FRAGMENT_SHADER_PATH
     );
+    mDecorationsController =
+      std::make_unique<SceneDecorationsController>(mRenderer.get());
     mCamera = std::make_unique<Camera>();
     init(meshFilePath);
   }
@@ -395,13 +397,8 @@ namespace RenderSystem
   {
     mBlinnPhongShaderProgram->setModel(glm::mat4(1.0f));
     mShadowMapController->setModel(glm::mat4(1.0f));
-
-    int startIndex = 0;
-    for (const auto& sceneDecoration : mSceneDecorations)
-    {
-      setBlinnPhongMaterial(sceneDecoration.material);
-      mRenderer->renderSceneDecoration(sceneDecoration, startIndex);
-    }
+    mDecorationsController->render([this](const SceneDecoration& decoration)
+                                   { setBlinnPhongMaterial(decoration.material); });
   }
 
   void Scene::renderHighlightedFaces()
@@ -468,21 +465,6 @@ namespace RenderSystem
   void Scene::setPickedObject(Object3D* pickedObject)
   {
     mPickedObject = pickedObject;
-  }
-
-  void Scene::addSceneDecoration(const SceneDecoration& sceneDecoration)
-  {
-    mSceneDecorations.push_back(sceneDecoration);
-    mSceneDecorationsRenderData.append(sceneDecoration.renderData);
-    mRenderer->loadDecorationsRenderData(mSceneDecorationsRenderData);
-  }
-
-  void Scene::addSceneDecorations(const std::vector<SceneDecoration>& sceneDecorations)
-  {
-    for (const auto& sceneDecoration : sceneDecorations)
-    {
-      addSceneDecoration(sceneDecoration);
-    }
   }
 
   void Scene::toggleWireframe()
@@ -563,6 +545,16 @@ namespace RenderSystem
     return {
       this, mShadowMapController.get(), mTAAController.get(), mSkyboxController.get()
     };
+  }
+
+  SceneDecorationsController* Scene::getDecorationsController()
+  {
+    return mDecorationsController.get();
+  }
+
+  const SceneDecorationsController* Scene::getDecorationsController() const
+  {
+    return mDecorationsController.get();
   }
 
   Point3D Scene::unProject(

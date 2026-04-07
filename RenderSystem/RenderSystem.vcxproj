@@ -150,7 +150,7 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <None Include="Shaders\BlinnPhongShader.vert" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="RenderSystem\AnimationEngine.cpp" />
+    <ClCompile Include="RenderSystem\AnimationController.cpp" />
     <ClCompile Include="RenderSystem\AnimationPlayer.cpp" />
     <ClCompile Include="RenderSystem\ControllerWithDepthMap.cpp" />
     <ClCompile Include="RenderSystem\CubemapTexture.cpp" />
@@ -160,6 +160,7 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <ClCompile Include="RenderSystem\ModelLoader.cpp" />
     <ClCompile Include="RenderSystem\ObjModelLoader.cpp" />
     <ClCompile Include="RenderSystem\PBRShaderProgram.cpp" />
+    <ClCompile Include="RenderSystem\SceneDecorationsController.cpp" />
     <ClCompile Include="RenderSystem\ScreenShaderProgram.cpp" />
     <ClCompile Include="RenderSystem\ShadowShaderProgram.cpp" />
     <ClCompile Include="RenderSystem\STLModelLoader.cpp" />
@@ -214,7 +215,7 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RenderSystem\Animation.h" />
-    <ClInclude Include="RenderSystem\AnimationEngine.h" />
+    <ClInclude Include="RenderSystem\AnimationController.h" />
     <ClInclude Include="RenderSystem\AnimationPlayer.h" />
     <ClInclude Include="RenderSystem\CameraListener.h" />
     <ClInclude Include="RenderSystem\ControllerWithDepthMap.h" />
@@ -225,6 +226,7 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <ClInclude Include="RenderSystem\ModelLoader.h" />
     <ClInclude Include="RenderSystem\ObjModelLoader.h" />
     <ClInclude Include="RenderSystem\PBRShaderProgram.h" />
+    <ClInclude Include="RenderSystem\SceneDecorationsController.h" />
     <ClInclude Include="RenderSystem\ScreenShaderProgram.h" />
     <ClInclude Include="RenderSystem\ShadowShaderProgram.h" />
     <ClInclude Include="RenderSystem\STLModelLoader.h" />

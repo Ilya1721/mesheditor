@@ -15,7 +15,7 @@
 #include "Object3DIntersection.h"
 #include "PBRShaderProgram.h"
 #include "Renderer.h"
-#include "SceneDecoration.h"
+#include "SceneDecorationsController.h"
 #include "ScreenShaderProgram.h"
 #include "ShadowMapController.h"
 #include "ShadowShaderProgram.h"
@@ -46,12 +46,12 @@ namespace RenderSystem
     Point3D unProject(
       const Point3D& posGL3D, const glm::mat4& projection, const glm::vec4& viewportData
     );
+    SceneDecorationsController* getDecorationsController();
+    const SceneDecorationsController* getDecorationsController() const;
 
     void onViewportChanged(Viewport* viewport) override;
 
     void setPickedObject(Object3D* pickedObject);
-    void addSceneDecoration(const SceneDecoration& sceneDecoration);
-    void addSceneDecorations(const std::vector<SceneDecoration>& sceneDecorations);
     void toggleWireframe();
     void highlightWholeObject(const Object3D* object);
     void setHighlightedFacesData(const HighlightedFacesData& data);
@@ -112,9 +112,8 @@ namespace RenderSystem
     std::unique_ptr<SkyboxController> mSkyboxController;
     std::unique_ptr<TAAController> mTAAController;
     std::vector<CameraListener*> mCameraListeners;
+    std::unique_ptr<SceneDecorationsController> mDecorationsController;
 
-    std::vector<SceneDecoration> mSceneDecorations;
-    RenderData mSceneDecorationsRenderData;
     bool mRenderWireframe;
     const Object3D* mHighlightedObject;
     HighlightedFacesData mHighlightedFacesData;
