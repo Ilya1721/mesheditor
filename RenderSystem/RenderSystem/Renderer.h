@@ -25,7 +25,7 @@ namespace RenderSystem
     void renderSceneDecoration(const SceneDecoration& sceneDecoration, int& startIndex);
     void renderHighlightedFace(int faceIdx, int vertexOffset);
     void renderWireframe(int objectVertexCount);
-    void renderWholeObjectHighlighted(const Object3D& object, int vertexOffset);
+    void renderObjectHighlighted(const Object3D& object, int vertexOffset);
     void renderSkybox();
     void renderScreenQuad();
     void loadModelRenderData(const RenderData& renderData);

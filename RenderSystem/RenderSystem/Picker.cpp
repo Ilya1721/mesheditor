@@ -25,12 +25,12 @@ namespace RenderSystem
     {
       auto pickedObject = intersectionData.intersectedObject;
       mScene->setPickedObject(pickedObject);
-      mScene->highlightWholeObject(pickedObject);
+      mScene->setHighlightedObject(pickedObject);
     }
     else
     {
       mScene->setPickedObject(nullptr);
-      mScene->highlightWholeObject(nullptr);
+      mScene->setHighlightedObject(nullptr);
     }
   }
 }  // namespace RenderSystem

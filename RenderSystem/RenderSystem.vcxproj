@@ -155,6 +155,7 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <ClCompile Include="RenderSystem\ControllerWithDepthMap.cpp" />
     <ClCompile Include="RenderSystem\CubemapTexture.cpp" />
     <ClCompile Include="RenderSystem\DebugVisualization.cpp" />
+    <ClCompile Include="RenderSystem\ExtraRenderModesController.cpp" />
     <ClCompile Include="RenderSystem\GlassShaderProgram.cpp" />
     <ClCompile Include="RenderSystem\GLTFModelLoader.cpp" />
     <ClCompile Include="RenderSystem\ModelLoader.cpp" />
@@ -221,6 +222,7 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <ClInclude Include="RenderSystem\ControllerWithDepthMap.h" />
     <ClInclude Include="RenderSystem\CubemapTexture.h" />
     <ClInclude Include="RenderSystem\DebugVisualization.h" />
+    <ClInclude Include="RenderSystem\ExtraRenderModesController.h" />
     <ClInclude Include="RenderSystem\GlassShaderProgram.h" />
     <ClInclude Include="RenderSystem\GLTFModelLoader.h" />
     <ClInclude Include="RenderSystem\ModelLoader.h" />

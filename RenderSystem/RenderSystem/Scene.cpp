@@ -6,6 +6,7 @@
 
 #include "Constants.h"
 #include "DebugVisualization.h"
+#include "ExtraRenderModesController.h"
 #include "GeometryCore/Ray.h"
 #include "MeshCore/Intersection.h"
 #include "ModelLoader.h"
@@ -27,11 +28,7 @@ namespace RenderSystem
 namespace RenderSystem
 {
   Scene::Scene(const std::string& meshFilePath, float aspectRatio)
-    : mPickedObject(nullptr),
-      mRenderWireframe(false),
-      mHighlightedObject(nullptr),
-      mModelObject(nullptr),
-      mAspectRatio(aspectRatio)
+    : mPickedObject(nullptr), mModelObject(nullptr), mAspectRatio(aspectRatio)
   {
     mRenderer = std::make_unique<Renderer>();
     mBlinnPhongShaderProgram = std::make_unique<BlinnPhongShaderProgram>(
@@ -62,6 +59,9 @@ namespace RenderSystem
     );
     mDecorationsController =
       std::make_unique<SceneDecorationsController>(mRenderer.get());
+    mExtraRenderModesController = std::make_unique<ExtraRenderModesController>(
+      mRenderer.get(), &mSceneObjectVertexOffsetMap
+    );
     mCamera = std::make_unique<Camera>();
     init(meshFilePath);
   }
@@ -332,7 +332,7 @@ namespace RenderSystem
       {
         renderHighlightedFaces();
         renderWireframe();
-        renderWholeObjectHighlighted();
+        renderObjectHighlighted();
       }
     );
   }
@@ -404,44 +404,28 @@ namespace RenderSystem
   void Scene::renderHighlightedFaces()
   {
     setBlinnPhongMaterial(HIGHLIGHT_MATERIAL);
-    for (const auto& faceIdx : mHighlightedFacesData.facesIndices)
-    {
-      mBlinnPhongShaderProgram->setModel(mHighlightedFacesData.parentObject->getTransform(
-      ));
-      mRenderer->renderHighlightedFace(
-        faceIdx, mSceneObjectVertexOffsetMap.at(mHighlightedFacesData.parentObject)
-      );
-    }
+    mExtraRenderModesController->renderHighlightedFaces(
+      [this](const Object3D* object)
+      { mBlinnPhongShaderProgram->setModel(object->getTransform()); }
+    );
   }
 
   void Scene::renderWireframe()
   {
-    if (!mRenderWireframe)
-    {
-      return;
-    }
-
     setBlinnPhongMaterial(WIREFRAME_MATERIAL);
-    for (const auto& [object, vertexOffset] : mSceneObjectVertexOffsetMap)
-    {
-      mBlinnPhongShaderProgram->setModel(object->getTransform());
-      mRenderer->renderWireframe(object->getVertexCount());
-    }
+    mExtraRenderModesController->renderWireframe(
+      [this](const Object3D* object)
+      { mBlinnPhongShaderProgram->setModel(object->getTransform()); }
+    );
   }
 
-  void Scene::renderWholeObjectHighlighted()
+  void Scene::renderObjectHighlighted()
   {
-    const auto& highlightedObjectIt =
-      mSceneObjectVertexOffsetMap.find(mHighlightedObject);
-    if (highlightedObjectIt == mSceneObjectVertexOffsetMap.end())
-    {
-      return;
-    }
-
     setBlinnPhongMaterial(HIGHLIGHT_MATERIAL);
-    const auto& [object, vertexCount] = *highlightedObjectIt;
-    mBlinnPhongShaderProgram->setModel(object->getTransform());
-    mRenderer->renderWholeObjectHighlighted(*object, vertexCount);
+    mExtraRenderModesController->renderObjectHighlighted(
+      [this](const Object3D* object)
+      { mBlinnPhongShaderProgram->setModel(object->getTransform()); }
+    );
   }
 
   void Scene::renderSkybox()
@@ -462,6 +446,14 @@ namespace RenderSystem
     mShadowMapController->setLightProjection(lightProjectionMatrix);
   }
 
+  void Scene::addSceneDecorations(const std::vector<SceneDecoration>& decorations)
+  {
+    for (const auto& decoration : decorations)
+    {
+      mDecorationsController->addDecoration(decoration);
+    }
+  }
+
   void Scene::setPickedObject(Object3D* pickedObject)
   {
     mPickedObject = pickedObject;
@@ -469,17 +461,17 @@ namespace RenderSystem
 
   void Scene::toggleWireframe()
   {
-    mRenderWireframe = !mRenderWireframe;
+    mExtraRenderModesController->toggleWireframe();
   }
 
-  void Scene::highlightWholeObject(const Object3D* object)
+  void Scene::setHighlightedObject(const Object3D* object)
   {
-    mHighlightedObject = object;
+    mExtraRenderModesController->setHighlightedObject(object);
   }
 
   void Scene::setHighlightedFacesData(const HighlightedFacesData& data)
   {
-    mHighlightedFacesData = data;
+    mExtraRenderModesController->setHighlightedFacesData(data);
   }
 
   void Scene::addPointLight(const PointLightParams& params, const Point3D& lightSourcePos)
@@ -545,16 +537,6 @@ namespace RenderSystem
     return {
       this, mShadowMapController.get(), mTAAController.get(), mSkyboxController.get()
     };
-  }
-
-  SceneDecorationsController* Scene::getDecorationsController()
-  {
-    return mDecorationsController.get();
-  }
-
-  const SceneDecorationsController* Scene::getDecorationsController() const
-  {
-    return mDecorationsController.get();
   }
 
   Point3D Scene::unProject(

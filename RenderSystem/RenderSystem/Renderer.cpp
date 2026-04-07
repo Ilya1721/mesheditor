@@ -35,7 +35,7 @@ namespace RenderSystem
     );
   }
 
-  void Renderer::renderWholeObjectHighlighted(const Object3D& object, int vertexOffset)
+  void Renderer::renderObjectHighlighted(const Object3D& object, int vertexOffset)
   {
     renderOverlayPrimitive([this, &object, vertexOffset]()
                            { renderBlinnPhongObject3D(object, vertexOffset); });

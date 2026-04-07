@@ -7,9 +7,9 @@
 #include "BlinnPhongShaderProgram.h"
 #include "Camera.h"
 #include "CameraListener.h"
+#include "ExtraRenderModesController.h"
 #include "GeometryCore/Typedefs.h"
 #include "GlassShaderProgram.h"
-#include "HighlightedFacesData.h"
 #include "LightParams.h"
 #include "Object3D.h"
 #include "Object3DIntersection.h"
@@ -46,28 +46,40 @@ namespace RenderSystem
     Point3D unProject(
       const Point3D& posGL3D, const glm::mat4& projection, const glm::vec4& viewportData
     );
-    SceneDecorationsController* getDecorationsController();
-    const SceneDecorationsController* getDecorationsController() const;
 
     void onViewportChanged(Viewport* viewport) override;
 
+    void addSceneDecorations(const std::vector<SceneDecoration>& decorations);
     void setPickedObject(Object3D* pickedObject);
     void toggleWireframe();
-    void highlightWholeObject(const Object3D* object);
+    void setHighlightedObject(const Object3D* object);
     void setHighlightedFacesData(const HighlightedFacesData& data);
     void addPointLight(const PointLightParams& params, const Point3D& lightSourcePos);
     void removePointLight(unsigned int index);
     void render();
 
    private:
+    const TAAColorTexture& resolveTAA();
+
     void addModelObject(const std::string& meshFilePath);
     void addFloorAsObject();
-    void registerRootObjectCallbacks();
+    void addCameraListeners();
+
+    void setBlinnPhongMaterial(const BlinnPhongMaterial& material);
+    void setGlassMaterial(const GlassMaterial& material);
+    void setPBRMaterial(const PBRMaterial& material);
+    void setProjectionToShaders(const glm::mat4& projection);
+
+    void writeSceneToShadowMap();
+    void writeSceneToTAATextures();
+
     void onObjectAddedToScene(const Object3D* object);
     void onSceneObjectUpdated(
       const Object3D* object, const std::unordered_set<UniqueVertex*>& vertices
     );
     void onSceneObjectBBoxUpdated();
+    void onCameraPosChanged();
+
     void renderSceneObjects(
       const std::function<void(const Object3D*)>& prerenderSetup, bool invokeModelShaders
     );
@@ -77,28 +89,21 @@ namespace RenderSystem
     void renderFullScene(
       const std::function<void(const Object3D*)>& prerenderSetup, bool invokeModelShaders
     );
-    void writeSceneToShadowMap();
-    void writeSceneToTAATextures();
-    void scenePrerenderSetup(const Object3D* obj);
-    const TAAColorTexture& resolveTAA();
     void renderDecorations();
     void renderHighlightedFaces();
     void renderWireframe();
-    void renderWholeObjectHighlighted();
+    void renderObjectHighlighted();
     void renderSkybox();
+    void renderFinalScreenTexture(const Texture2D& texture);
+    void renderShadows();
+
+    void scenePrerenderSetup(const Object3D* obj);
+    void registerRootObjectCallbacks();
     void updateDirLightProjection();
     void init(const std::string& meshFilePath);
-    void onCameraPosChanged();
     void registerCallbacks();
-    void addCameraListeners();
-    void renderFinalScreenTexture(const Texture2D& texture);
     void adjustFloor(Object3D* floor);
     void calcDirLightSourcePos();
-    void setBlinnPhongMaterial(const BlinnPhongMaterial& material);
-    void setGlassMaterial(const GlassMaterial& material);
-    void setPBRMaterial(const PBRMaterial& material);
-    void setProjectionToShaders(const glm::mat4& projection);
-    void renderShadows();
 
    private:
     std::unique_ptr<Renderer> mRenderer;
@@ -111,12 +116,10 @@ namespace RenderSystem
     std::unique_ptr<ShadowMapController> mShadowMapController;
     std::unique_ptr<SkyboxController> mSkyboxController;
     std::unique_ptr<TAAController> mTAAController;
-    std::vector<CameraListener*> mCameraListeners;
     std::unique_ptr<SceneDecorationsController> mDecorationsController;
+    std::unique_ptr<ExtraRenderModesController> mExtraRenderModesController;
+    std::vector<CameraListener*> mCameraListeners;
 
-    bool mRenderWireframe;
-    const Object3D* mHighlightedObject;
-    HighlightedFacesData mHighlightedFacesData;
     Object3D* mPickedObject;
     float mAspectRatio;
 
