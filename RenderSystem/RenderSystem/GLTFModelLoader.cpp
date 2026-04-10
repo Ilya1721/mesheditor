@@ -195,65 +195,17 @@ namespace
     return TransformComponent::Unknown;
   }
 
-  std::vector<AnimationChannel> parseChannels(
-    const fastgltf::Animation& animation,
-    const std::unordered_map<size_t, size_t>& nodeToJointMap,
-    std::vector<TransformComponent>& samplerTypes
-  )
-  {
-    std::vector<AnimationChannel> channels;
-    for (const auto& gltfChannel : animation.channels)
-    {
-      AnimationChannel channel {};
-      channel.samplerIndex = gltfChannel.samplerIndex;
-      auto nodeToJointIt = nodeToJointMap.find(*gltfChannel.nodeIndex);
-      if (nodeToJointIt != nodeToJointMap.end())
-      {
-        channel.jointIndex = nodeToJointIt->second;
-      }
-      auto transformComponent = parseTransformComponent(gltfChannel.path);
-      samplerTypes[channel.samplerIndex] = transformComponent;
-      channel.transformComponent = transformComponent;
-      channels.push_back(channel);
-    }
-
-    return channels;
-  }
-
   Interpolation parseInterpolation(fastgltf::AnimationInterpolation interpolation)
   {
     switch (interpolation)
     {
-      case fastgltf::AnimationInterpolation::Linear:
-        return Interpolation::Linear;
-      case fastgltf::AnimationInterpolation::Step:
-        return Interpolation::Step;
+    case fastgltf::AnimationInterpolation::Linear:
+      return Interpolation::Linear;
+    case fastgltf::AnimationInterpolation::Step:
+      return Interpolation::Step;
     }
 
     return Interpolation::Unknown;
-  }
-
-  template <typename T>
-  T parseAnimationAccessorValue(
-    const fastgltf::Asset& asset, const fastgltf::Accessor& accessor, size_t keyframeIdx
-  )
-  {
-    if constexpr (std::is_same_v<T, glm::vec3>)
-    {
-      auto vec3Gltf =
-        fastgltf::getAccessorElement<fastgltf::math::fvec3>(asset, accessor, keyframeIdx);
-      return glm::make_vec3(vec3Gltf.data());
-    }
-    else if constexpr (std::is_same_v<T, glm::quat>)
-    {
-      auto vec4Gltf =
-        fastgltf::getAccessorElement<fastgltf::math::fvec4>(asset, accessor, keyframeIdx);
-      auto vec4 = glm::make_vec4(vec4Gltf.data());
-      glm::quat value(vec4.w, vec4.x, vec4.y, vec4.z);
-      return glm::normalize(value);
-    }
-
-    return T();
   }
 
   template <typename T>
@@ -279,33 +231,79 @@ namespace
     return sampler;
   }
 
-  void parseSamplers(
+  template <typename T>
+  AnimationChannel<T> parseChannel(
     const fastgltf::Asset& asset,
     const fastgltf::Animation& gltfAnimation,
-    const std::vector<TransformComponent>& samplerTypes,
+    const fastgltf::AnimationChannel& gltfChannel,
+    const std::unordered_map<size_t, size_t>& nodeToJointMap,
     Animation& animation
   )
   {
-    for (size_t samplerIdx = 0; samplerIdx < gltfAnimation.samplers.size(); ++samplerIdx)
+    AnimationChannel<T> channel;
+    channel.transformComponent = parseTransformComponent(gltfChannel.path);
+    channel.jointIndex = nodeToJointMap.find(*gltfChannel.nodeIndex)->second;
+    const auto& gltfSampler = gltfAnimation.samplers[gltfChannel.samplerIndex];
+    channel.sampler = parseSampler<T>(asset, gltfSampler, animation);
+
+    return channel;
+  }
+
+  void parseChannels(
+    const fastgltf::Asset& asset,
+    const fastgltf::Animation& gltfAnimation,
+    const std::unordered_map<size_t, size_t>& nodeToJointMap,
+    Animation& animation
+  )
+  {
+    for (const auto& gltfChannel : gltfAnimation.channels)
     {
-      const auto& samplerType = samplerTypes[samplerIdx];
-      const auto& gltfSampler = gltfAnimation.samplers[samplerIdx];
-      if (samplerType == TransformComponent::Translation)
+      auto transformComponent = parseTransformComponent(gltfChannel.path);
+      if (transformComponent == TransformComponent::Translation)
       {
-        auto sampler = parseSampler<glm::vec3>(asset, gltfSampler, animation);
-        animation.translationSamplers.push_back(sampler);
+        auto channel = parseChannel<glm::vec3>(
+          asset, gltfAnimation, gltfChannel, nodeToJointMap, animation
+        );
+        animation.translationChannels.push_back(channel);
       }
-      else if (samplerType == TransformComponent::Rotation)
+      else if (transformComponent == TransformComponent::Rotation)
       {
-        auto sampler = parseSampler<glm::quat>(asset, gltfSampler, animation);
-        animation.rotationSamplers.push_back(sampler);
+        auto channel = parseChannel<glm::quat>(
+          asset, gltfAnimation, gltfChannel, nodeToJointMap, animation
+        );
+        animation.rotationChannels.push_back(channel);
       }
-      else if (samplerType == TransformComponent::Scale)
+      else if (transformComponent == TransformComponent::Scale)
       {
-        auto sampler = parseSampler<glm::vec3>(asset, gltfSampler, animation);
-        animation.scaleSamplers.push_back(sampler);
+        auto channel = parseChannel<glm::vec3>(
+          asset, gltfAnimation, gltfChannel, nodeToJointMap, animation
+        );
+        animation.scaleChannels.push_back(channel);
       }
     }
+  }
+
+  template <typename T>
+  T parseAnimationAccessorValue(
+    const fastgltf::Asset& asset, const fastgltf::Accessor& accessor, size_t keyframeIdx
+  )
+  {
+    if constexpr (std::is_same_v<T, glm::vec3>)
+    {
+      auto vec3Gltf =
+        fastgltf::getAccessorElement<fastgltf::math::fvec3>(asset, accessor, keyframeIdx);
+      return glm::make_vec3(vec3Gltf.data());
+    }
+    else if constexpr (std::is_same_v<T, glm::quat>)
+    {
+      auto vec4Gltf =
+        fastgltf::getAccessorElement<fastgltf::math::fvec4>(asset, accessor, keyframeIdx);
+      auto vec4 = glm::make_vec4(vec4Gltf.data());
+      glm::quat value(vec4.w, vec4.x, vec4.y, vec4.z);
+      return glm::normalize(value);
+    }
+
+    return T();
   }
 
   std::vector<Animation> parseAnimations(
@@ -319,11 +317,7 @@ namespace
     {
       Animation animation;
       animation.name = gltfAnimation.name;
-      std::vector<TransformComponent> samplerTypes(
-        gltfAnimation.samplers.size(), TransformComponent::Unknown
-      );
-      animation.channels = parseChannels(gltfAnimation, nodeToJointMap, samplerTypes);
-      parseSamplers(asset, gltfAnimation, samplerTypes, animation);
+      parseChannels(asset, gltfAnimation, nodeToJointMap, animation);
       animations.push_back(animation);
     }
 

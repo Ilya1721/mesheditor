@@ -50,7 +50,7 @@ namespace RenderSystem
   template <typename T> struct AnimationSampler
   {
     std::vector<Keyframe<T>> keyframes;
-    Interpolation interpolation;
+    Interpolation interpolation = Interpolation::Unknown;
   };
 
   enum class TransformComponent
@@ -61,22 +61,21 @@ namespace RenderSystem
     Unknown
   };
 
-  struct AnimationChannel
+  template <typename T> struct AnimationChannel
   {
     int jointIndex = -1;
-    int samplerIndex = -1;
-    TransformComponent transformComponent;
+    AnimationSampler<T> sampler;
+    TransformComponent transformComponent = TransformComponent::Unknown;
   };
 
   struct Animation
   {
     std::string name;
     float duration {};
-    std::vector<AnimationChannel> channels;
 
-    std::vector<AnimationSampler<glm::vec3>> translationSamplers;
-    std::vector<AnimationSampler<glm::quat>> rotationSamplers;
-    std::vector<AnimationSampler<glm::vec3>> scaleSamplers;
+    std::vector<AnimationChannel<glm::vec3>> translationChannels;
+    std::vector<AnimationChannel<glm::quat>> rotationChannels;
+    std::vector<AnimationChannel<glm::vec3>> scaleChannels;
   };
 
   glm::mat4 calcJointLocalTransform(const Pose& pose);

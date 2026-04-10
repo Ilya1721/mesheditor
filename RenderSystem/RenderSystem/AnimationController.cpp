@@ -85,14 +85,12 @@ namespace RenderSystem
 
   bool AnimationController::useSkinningTransforms() const
   {
-    return (
-      mObjectToAnimate && !mObjectToAnimate->getAnimations().empty() && mPlayAnimation
-    );
+    return (mObjectToAnimate && !mObjectToAnimate->getAnimations().empty());
   }
 
   void AnimationController::updateSkinningTransforms(float lastFrameTime)
   {
-    if (!useSkinningTransforms())
+    if (!useSkinningTransforms() || !mPlayAnimation)
     {
       return;
     }
@@ -159,24 +157,20 @@ namespace RenderSystem
   {
     const auto& animations = mObjectToAnimate->getAnimations();
     const auto& animation = animations[mCurrentAnimIdx];
-    for (const auto& channel : animation.channels)
+    for (const auto& channel : animation.translationChannels)
     {
       auto& pose = mPoses[channel.jointIndex];
-      if (channel.transformComponent == TransformComponent::Translation)
-      {
-        const auto& sampler = animation.translationSamplers[channel.samplerIndex];
-        updatePoseComponent(sampler, mCurrentTime, pose.translation);
-      }
-      else if (channel.transformComponent == TransformComponent::Rotation)
-      {
-        const auto& sampler = animation.rotationSamplers[channel.samplerIndex];
-        updatePoseComponent(sampler, mCurrentTime, pose.rotation);
-      }
-      else if (channel.transformComponent == TransformComponent::Scale)
-      {
-        const auto& sampler = animation.scaleSamplers[channel.samplerIndex];
-        updatePoseComponent(sampler, mCurrentTime, pose.scale);
-      }
+      updatePoseComponent(channel.sampler, mCurrentTime, pose.translation);
+    }
+    for (const auto& channel : animation.rotationChannels)
+    {
+      auto& pose = mPoses[channel.jointIndex];
+      updatePoseComponent(channel.sampler, mCurrentTime, pose.rotation);
+    }
+    for (const auto& channel : animation.scaleChannels)
+    {
+      auto& pose = mPoses[channel.jointIndex];
+      updatePoseComponent(channel.sampler, mCurrentTime, pose.scale);
     }
   }
 
