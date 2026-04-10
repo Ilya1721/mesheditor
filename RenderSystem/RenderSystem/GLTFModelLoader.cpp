@@ -151,6 +151,7 @@ namespace
   {
     auto& joint = skeleton.joints[jointIdx];
     joint.globalTransform = parentGlobalTransform * joint.localTransform;
+    joint.inverseGlobalTransform = glm::inverse(joint.globalTransform);
     for (const auto& childIdx : joint.childrenIndices)
     {
       calcJointGlobalTransform(skeleton, childIdx, joint.globalTransform);
