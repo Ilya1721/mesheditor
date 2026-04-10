@@ -25,8 +25,8 @@ namespace MeshCore
     Vector3D normal {};
     Point2D texture {};
     Vector4D tangent {1.0f, 0.0f, 0.0f, 1.0f};
-    Vector4D weights {};
-    glm::ivec4 jointIndices {};
+    Vector4D weights = {1.0f, 0.0f, 0.0f, 0.0f};
+    glm::ivec4 jointIndices {0, 0, 0, 0};
     HalfEdge* halfEdge = nullptr;
 
     bool operator==(const Vertex& other) const;

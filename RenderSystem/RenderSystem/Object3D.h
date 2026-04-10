@@ -31,8 +31,7 @@ namespace RenderSystem
       std::unique_ptr<Mesh> mesh,
       const Material& material,
       Skeleton&& skeleton,
-      std::vector<Animation>&& animations,
-      Pose&& currentPose
+      std::vector<Animation>&& animations
     );
     Object3D(Object3D&& other) = delete;
     ~Object3D();
@@ -51,6 +50,8 @@ namespace RenderSystem
     const std::vector<Vertex>& getVertices() const;
     const glm::vec2& getUVScale() const;
     const Material& getMaterial() const;
+    const Skeleton& getSkeleton() const;
+    const std::vector<Animation>& getAnimations() const;
 
     void addChild(std::unique_ptr<Object3D>&& child);
     void addOnChildAddedCallback(const std::function<childAddedCallback>& callback);
@@ -88,7 +89,6 @@ namespace RenderSystem
     Material mMaterial;
     Skeleton mSkeleton;
     std::vector<Animation> mAnimations;
-    Pose mCurrentPose;
     CallbackMechanism<childAddedCallback> mChildAddedCM;
     CallbackMechanism<objectUpdatedCallback> mObjectUpdatedCM;
     CallbackMechanism<bboxUpdatedCallback> mBBoxUpdatedCM;

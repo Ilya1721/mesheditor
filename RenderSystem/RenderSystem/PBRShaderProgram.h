@@ -30,6 +30,8 @@ namespace RenderSystem
     void setBaseColor(const RGB& color);
     void setMetallic(float metallic);
     void setRougness(float roughness);
+    void setUseSkinningTransform(bool useSkinningTransform);
+    void setSkinningTransforms(const std::vector<glm::mat4>& skinningTransforms);
 
    private:
     void setView(const glm::mat4& view);
@@ -53,5 +55,7 @@ namespace RenderSystem
     int mMetallic;
     int mRoughness;
     int mMetallicRoughnessTexture;
+    int mUseSkinningTransform;
+    int mSkinningTransforms;
   };
 }  // namespace RenderSystem

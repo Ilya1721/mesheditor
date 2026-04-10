@@ -57,15 +57,22 @@ namespace RenderSystem
     {
       mCompactData.emplace_back(vertex.tangent[coordIdx]);
     }
+    for (int coordIdx = 0; coordIdx < 4; ++coordIdx)
+    {
+      mCompactData.emplace_back(vertex.weights[coordIdx]);
+    }
+    for (int coordIdx = 0; coordIdx < 4; ++coordIdx)
+    {
+      mCompactData.emplace_back(vertex.jointIndices[coordIdx]);
+    }
   }
 
   void RenderData::updateVertex(
     const OriginalVertexData& vertexData, int startVertexOffset
   )
   {
-    for (unsigned int compactDataIdx = 12 * (startVertexOffset + vertexData.index),
-                      coordIdx = 0;
-         coordIdx < 3; ++compactDataIdx, ++coordIdx)
+    unsigned int compactDataIdx = 20 * (startVertexOffset + vertexData.index);
+    for (unsigned int coordIdx = 0; coordIdx < 3; ++compactDataIdx, ++coordIdx)
     {
       mCompactData[compactDataIdx] = vertexData.vertex->pos[coordIdx];
       mCompactData[compactDataIdx + 3ull] = vertexData.vertex->normal[coordIdx];
@@ -79,7 +86,7 @@ namespace RenderSystem
 
   int RenderData::getVertexCount() const
   {
-    return mCompactData.size() / 12;
+    return mCompactData.size() / 20;
   }
 
   RenderData RenderData::createRenderData(const Point3D& point)

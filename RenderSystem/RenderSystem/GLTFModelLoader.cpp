@@ -7,8 +7,10 @@
 
 #include "Animation.h"
 
-namespace RenderSystem
+namespace
 {
+  using namespace RenderSystem;
+
   class AccessorGetter
   {
    public:
@@ -46,41 +48,21 @@ namespace RenderSystem
     int metallicRoughnessImage = -1;
   };
 
-  std::vector<glm::mat4> parseInverseBindMatrices(
-    const fastgltf::Asset& asset, const fastgltf::Skin& skin
-  )
-  {
-    if (!skin.inverseBindMatrices.has_value())
-    {
-      return {};
-    }
-
-    std::vector<glm::mat4> inverseBindMatrices;
-    const auto& accessor = asset.accessors[*skin.inverseBindMatrices];
-    fastgltf::iterateAccessorWithIndex<fastgltf::math::fmat4x4>(
-      asset,
-      accessor,
-      [&inverseBindMatrices](const fastgltf::math::fmat4x4& matrix, size_t index)
-      { inverseBindMatrices.push_back(glm::make_mat4(matrix.data())); }
-    );
-
-    return inverseBindMatrices;
-  }
-
-  void parseJointTransform(Joint& joint, const fastgltf::Node& node)
+  void parseJointRestPose(Joint& joint, const fastgltf::Node& node)
   {
     std::visit(
       [&joint, &node](auto&& transform)
       {
+        auto& restPose = joint.restPose;
         using TransformType = std::decay_t<decltype(transform)>;
         if constexpr (std::is_same_v<TransformType, fastgltf::TRS>)
         {
-          joint.translation = glm::make_vec3(transform.translation.data());
-          joint.rotation = glm::quat(
+          restPose.translation = glm::make_vec3(transform.translation.data());
+          restPose.rotation = glm::quat(
             transform.rotation[3], transform.rotation[0], transform.rotation[1],
             transform.rotation[2]
           );
-          joint.scale = glm::make_vec3(transform.scale.data());
+          restPose.scale = glm::make_vec3(transform.scale.data());
         }
         else if constexpr (std::is_same_v<TransformType, fastgltf::math::fmat4x4>)
         {
@@ -88,9 +70,10 @@ namespace RenderSystem
           glm::vec3 skew {};
           glm::vec4 perspective {};
           glm::decompose(
-            glmMat4, joint.translation, joint.rotation, joint.scale, skew, perspective
+            glmMat4, restPose.translation, restPose.rotation, restPose.scale, skew,
+            perspective
           );
-          joint.rotation = glm::normalize(joint.rotation);
+          restPose.rotation = glm::normalize(restPose.rotation);
         }
       },
       node.transform
@@ -125,24 +108,16 @@ namespace RenderSystem
   )
   {
     skeleton.joints.resize(skin.joints.size());
-    auto inverseBindMatrices = parseInverseBindMatrices(asset, skin);
     for (size_t jointIdx = 0; jointIdx < skin.joints.size(); ++jointIdx)
     {
       auto& joint = skeleton.joints[jointIdx];
       auto nodeIdx = skin.joints[jointIdx];
       const auto& node = asset.nodes[nodeIdx];
       joint.name = node.name;
-      parseJointTransform(joint, node);
-      if (!inverseBindMatrices.empty())
-      {
-        joint.inverseBindMatrix = inverseBindMatrices[jointIdx];
-      }
-      else
-      {
-        joint.inverseBindMatrix = glm::mat4(1.0f);
-      }
-      skeleton.nameIndexMap.insert({joint.name, skeleton.joints.size() - 1});
+      parseJointRestPose(joint, node);
       parseJointParent(node, jointIdx, nodeToJointMap, skeleton);
+      joint.localTransform = calcJointLocalTransform(joint.restPose);
+      skeleton.nameIndexMap.insert({joint.name, skeleton.joints.size() - 1});
     }
   }
 
@@ -170,6 +145,18 @@ namespace RenderSystem
     return nodeToJoint;
   }
 
+  void calcJointGlobalTransform(
+    Skeleton& skeleton, size_t jointIdx, const glm::mat4& parentGlobalTransform
+  )
+  {
+    auto& joint = skeleton.joints[jointIdx];
+    joint.globalTransform = parentGlobalTransform * joint.localTransform;
+    for (const auto& childIdx : joint.childrenIndices)
+    {
+      calcJointGlobalTransform(skeleton, childIdx, joint.globalTransform);
+    }
+  }
+
   Skeleton parseSkeleton(
     const fastgltf::Asset& asset,
     const fastgltf::Node& node,
@@ -188,6 +175,7 @@ namespace RenderSystem
     Skeleton skeleton;
     parseJoints(asset, skin, node, nodeToJointMap, skeleton);
     skeleton.rootJointIndex = findRootJointIdx(skeleton.joints);
+    calcJointGlobalTransform(skeleton, skeleton.rootJointIndex, glm::mat4(1.0f));
 
     return skeleton;
   }
@@ -240,8 +228,6 @@ namespace RenderSystem
         return Interpolation::Linear;
       case fastgltf::AnimationInterpolation::Step:
         return Interpolation::Step;
-      case fastgltf::AnimationInterpolation::CubicSpline:
-        return Interpolation::CubicSpline;
     }
 
     return Interpolation::Unknown;
@@ -578,7 +564,9 @@ namespace RenderSystem
     std::unordered_map<size_t, size_t> nodeToJointMap;
     auto skeleton = parseSkeleton(asset, node, nodeToJointMap);
     auto animations = parseAnimations(asset, node, nodeToJointMap);
-    auto object3D = std::make_unique<Object3D>(std::move(mesh), materialData.material);
+    auto object3D = std::make_unique<Object3D>(
+      std::move(mesh), materialData.material, std::move(skeleton), std::move(animations)
+    );
     object3D->updateTransform(transform);
     object3D->setUVScale(materialData.uvScale);
 
@@ -619,7 +607,10 @@ namespace RenderSystem
       parseNodes(asset, nodeIdx, root, root);
     }
   }
+}
 
+namespace RenderSystem
+{
   std::unique_ptr<Object3D> loadGLTFModel(const std::filesystem::path& filePath)
   {
     std::runtime_error runTimeErr("Failed to load glTF file: " + filePath.string());
@@ -642,4 +633,4 @@ namespace RenderSystem
 
     return root;
   }
-}  // namespace RenderSystem
+}

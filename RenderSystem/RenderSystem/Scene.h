@@ -4,6 +4,7 @@
 #include <string>
 #include <unordered_map>
 
+#include "AnimationController.h"
 #include "BlinnPhongShaderProgram.h"
 #include "Camera.h"
 #include "CameraListener.h"
@@ -49,14 +50,22 @@ namespace RenderSystem
 
     void onViewportChanged(Viewport* viewport) override;
 
-    void addSceneDecorations(const std::vector<SceneDecoration>& decorations);
-    void setPickedObject(Object3D* pickedObject);
-    void toggleWireframe();
     void setHighlightedObject(const Object3D* object);
     void setHighlightedFacesData(const HighlightedFacesData& data);
+    void setPickedObject(Object3D* pickedObject);
+
     void addPointLight(const PointLightParams& params, const Point3D& lightSourcePos);
+    void addSceneDecorations(const std::vector<SceneDecoration>& decorations);
+
+    void toggleWireframe();
     void removePointLight(unsigned int index);
-    void render();
+    void render(float lastFrameTime);
+
+    void updateSkinningTransforms(float lastFrameTime);
+    void toggleAnimationPlaying();
+    void nextAnimation();
+    void prevAnimation();
+    void setObjectToAnimate(Object3D* object);
 
    private:
     const TAAColorTexture& resolveTAA();
@@ -97,35 +106,42 @@ namespace RenderSystem
     void renderFinalScreenTexture(const Texture2D& texture);
     void renderShadows();
 
-    void scenePrerenderSetup(const Object3D* obj);
+    void registerListenersCallbacks();
     void registerRootObjectCallbacks();
+
+    void scenePrerenderSetup(const Object3D* obj);
     void updateDirLightProjection();
-    void init(const std::string& meshFilePath);
-    void registerCallbacks();
     void adjustFloor(Object3D* floor);
-    void calcDirLightSourcePos();
+
+    void init(const std::string& meshFilePath);
+    void initSceneObjects(const std::string& meshFilePath);
+    void initShaders();
+    void initControllers();
+    void initListeners();
+    void initDirLight();
 
    private:
     std::unique_ptr<Renderer> mRenderer;
+    std::unique_ptr<Camera> mCamera;
     std::unique_ptr<BlinnPhongShaderProgram> mBlinnPhongShaderProgram;
     std::unique_ptr<PBRShaderProgram> mPBRShaderProgram;
     std::unique_ptr<GlassShaderProgram> mGlassShaderProgram;
     std::unique_ptr<ShadowShaderProgram> mShadowShaderProgram;
     std::unique_ptr<ScreenShaderProgram> mScreenShaderProgram;
-    std::unique_ptr<Camera> mCamera;
     std::unique_ptr<ShadowMapController> mShadowMapController;
     std::unique_ptr<SkyboxController> mSkyboxController;
     std::unique_ptr<TAAController> mTAAController;
     std::unique_ptr<SceneDecorationsController> mDecorationsController;
     std::unique_ptr<ExtraRenderModesController> mExtraRenderModesController;
+    std::unique_ptr<AnimationController> mAnimationController;
     std::vector<CameraListener*> mCameraListeners;
 
+    Object3D* mModelObject;
     Object3D* mPickedObject;
     float mAspectRatio;
 
     RenderData mSceneRenderData;
     std::unordered_map<const Object3D*, int> mSceneObjectVertexOffsetMap;
     Object3D mRootObject;
-    Object3D* mModelObject;
   };
 }  // namespace RenderSystem

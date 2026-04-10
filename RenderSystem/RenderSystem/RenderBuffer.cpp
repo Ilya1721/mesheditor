@@ -41,27 +41,33 @@ namespace RenderSystem
 
   void RenderBuffer::loadRenderData(const RenderData& renderData)
   {
+    constexpr auto stride = 20 * sizeof(float);
     const auto& compactData = renderData.getCompactData();
     glBufferData(
       GL_ARRAY_BUFFER, compactData.size() * sizeof(float), compactData.data(),
       GL_DYNAMIC_DRAW
     );
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(float), 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, 0);
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(
-      1, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(float),
-      reinterpret_cast<void*>(3 * sizeof(float))
+      1, 3, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<void*>(3 * sizeof(float))
     );
     glEnableVertexAttribArray(2);
     glVertexAttribPointer(
-      2, 2, GL_FLOAT, GL_FALSE, 12 * sizeof(float),
-      reinterpret_cast<void*>(6 * sizeof(float))
+      2, 2, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<void*>(6 * sizeof(float))
     );
     glEnableVertexAttribArray(3);
     glVertexAttribPointer(
-      3, 4, GL_FLOAT, GL_FALSE, 12 * sizeof(float),
-      reinterpret_cast<void*>(8 * sizeof(float))
+      3, 4, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<void*>(8 * sizeof(float))
+    );
+    glEnableVertexAttribArray(4);
+    glVertexAttribPointer(
+      4, 4, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<void*>(12 * sizeof(float))
+    );
+    glEnableVertexAttribArray(5);
+    glVertexAttribPointer(
+      5, 4, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<void*>(16 * sizeof(float))
     );
   }
 

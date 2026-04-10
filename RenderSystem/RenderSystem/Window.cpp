@@ -18,6 +18,37 @@ namespace
 {
   using namespace RenderSystem;
 
+  class FrameTimeMeasurer
+  {
+   public:
+    FrameTimeMeasurer() : mCurrentTime(), mLastTime(), mTimeDiff()
+    {
+      mLastTime = glfwGetTime();
+    }
+
+    float getTimeDiff() const
+    {
+      return std::min(mTimeDiff, 0.05f);
+    }
+
+    void update()
+    {
+      mCurrentTime = glfwGetTime();
+      mTimeDiff = mCurrentTime - mLastTime;
+      mLastTime = mCurrentTime;
+    }
+
+   private:
+    float mCurrentTime;
+    float mLastTime;
+    float mTimeDiff;
+  };
+}
+
+namespace
+{
+  using namespace RenderSystem;
+
   Window* instance = nullptr;
 
   void onMouseMove([[maybe_unused]] GLFWwindow* window, double cursorX, double cursorY)
@@ -131,11 +162,13 @@ namespace RenderSystem
 
   void Window::render()
   {
+    FrameTimeMeasurer measurer;
     while (!glfwWindowShouldClose(mWindow))
     {
-      mScene->render();
+      mScene->render(measurer.getTimeDiff());
       glfwSwapBuffers(mWindow);
-      glfwWaitEvents();
+      glfwPollEvents();
+      measurer.update();
     }
   }
 

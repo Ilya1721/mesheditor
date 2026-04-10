@@ -29,18 +29,17 @@ namespace RenderSystem
     std::unique_ptr<Mesh> mesh,
     const Material& material,
     Skeleton&& skeleton,
-    std::vector<Animation>&& animations,
-    Pose&& currentPose
+    std::vector<Animation>&& animations
   )
     : mParent(nullptr),
       mMesh(std::move(mesh)),
       mMaterial(material),
       mTransform(1.0f),
       mUVScale(1.0f, 1.0f),
-      mSkeleton(skeleton),
-      mAnimations(animations),
-      mCurrentPose(currentPose)
+      mSkeleton(std::move(skeleton)),
+      mAnimations(std::move(animations))
   {
+    init();
   }
 
   Object3D::~Object3D() = default;
@@ -149,6 +148,16 @@ namespace RenderSystem
   const Material& Object3D::getMaterial() const
   {
     return mMaterial;
+  }
+
+  const Skeleton& Object3D::getSkeleton() const
+  {
+    return mSkeleton;
+  }
+
+  const std::vector<Animation>& Object3D::getAnimations() const
+  {
+    return mAnimations;
   }
 
   void Object3D::addChild(std::unique_ptr<Object3D>&& child)

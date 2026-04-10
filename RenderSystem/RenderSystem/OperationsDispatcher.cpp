@@ -1,5 +1,6 @@
 #include "OperationsDispatcher.h"
 
+#include "AnimationPlayer.h"
 #include "Cloner.h"
 #include "Mover.h"
 #include "Orbit.h"
@@ -67,5 +68,6 @@ namespace RenderSystem
     addOperation<Mover>(mWindow, mScene, mCamera, mViewport);
     addOperation<Cloner>(mScene);
     addOperation<PointLightOperations>(mScene);
+    addOperation<AnimationPlayer>(mScene);
   }
 }  // namespace RenderSystem

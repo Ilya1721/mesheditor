@@ -108,6 +108,34 @@ namespace RenderSystem
     invoke([this, roughness]() { glUniform1f(mRoughness, roughness); });
   }
 
+  void PBRShaderProgram::setUseSkinningTransform(bool useSkinningTransform)
+  {
+    invoke([this, useSkinningTransform]()
+           { glUniform1i(mUseSkinningTransform, useSkinningTransform); });
+  }
+
+  void PBRShaderProgram::setSkinningTransforms(
+    const std::vector<glm::mat4>& skinningTransforms
+  )
+  {
+    if (skinningTransforms.empty())
+    {
+      return;
+    }
+
+    invoke(
+      [this, &skinningTransforms]()
+      {
+        glUniformMatrix4fv(
+          mSkinningTransforms,
+          skinningTransforms.size(),
+          GL_FALSE,
+          glm::value_ptr(skinningTransforms[0])
+        );
+      }
+    );
+  }
+
   void PBRShaderProgram::setBaseColor(const RGB& color)
   {
     invoke([this, &color]() { glUniform3fv(mBaseColor, 1, glm::value_ptr(color)); });
@@ -129,5 +157,7 @@ namespace RenderSystem
     mHasNormalTexture = getUniformLocation("hasNormalTexture");
     mMetallicRoughnessTexture = getUniformLocation("metallicRoughnessTexture");
     mHasMetallicRoughnessTexture = getUniformLocation("hasMetallicRoughnessTexture");
+    mUseSkinningTransform = getUniformLocation("useSkinningTransform");
+    mSkinningTransforms = getUniformLocation("skinningTransforms");
   }
 }  // namespace RenderSystem

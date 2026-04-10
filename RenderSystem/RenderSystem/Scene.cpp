@@ -31,6 +31,21 @@ namespace RenderSystem
     : mPickedObject(nullptr), mModelObject(nullptr), mAspectRatio(aspectRatio)
   {
     mRenderer = std::make_unique<Renderer>();
+    mCamera = std::make_unique<Camera>();
+    init(meshFilePath);
+  }
+
+  void Scene::init(const std::string& meshFilePath)
+  {
+    initShaders();
+    initControllers();
+    initListeners();
+    initSceneObjects(meshFilePath);
+    initDirLight();
+  }
+
+  void Scene::initShaders()
+  {
     mBlinnPhongShaderProgram = std::make_unique<BlinnPhongShaderProgram>(
       BLINN_PHONG_VERTEX_SHADER_PATH, BLINN_PHONG_FRAGMENT_SHADER_PATH
     );
@@ -46,6 +61,13 @@ namespace RenderSystem
     mScreenShaderProgram = std::make_unique<ScreenShaderProgram>(
       SCREEN_VERTEX_SHADER_PATH, SCREEN_FRAGMENT_SHADER_PATH
     );
+    mBlinnPhongShaderProgram->setDirLightParams(DIR_LIGHT_PARAMS);
+    mPBRShaderProgram->setLightColor(PBR_LIGHT_COLOR);
+    mShadowShaderProgram->setShadowBias(SHADOW_BIAS);
+  }
+
+  void Scene::initControllers()
+  {
     mShadowMapController = std::make_unique<ShadowMapController>(
       SHADOW_MAP_VERTEX_SHADER_PATH, SHADOW_MAP_FRAGMENT_SHADER_PATH
     );
@@ -62,23 +84,22 @@ namespace RenderSystem
     mExtraRenderModesController = std::make_unique<ExtraRenderModesController>(
       mRenderer.get(), &mSceneObjectVertexOffsetMap
     );
-    mCamera = std::make_unique<Camera>();
-    init(meshFilePath);
+    mAnimationController = std::make_unique<AnimationController>();
   }
 
-  void Scene::init(const std::string& meshFilePath)
+  void Scene::initSceneObjects(const std::string& meshFilePath)
   {
     registerRootObjectCallbacks();
     addModelObject(meshFilePath);
     addFloorAsObject();
     mRenderer->loadSkyboxRenderData(RenderData::getSkyboxRenderData());
     mRenderer->loadScreenQuadRenderData();
+  }
+
+  void Scene::initListeners()
+  {
     addCameraListeners();
-    registerCallbacks();
-    calcDirLightSourcePos();
-    mBlinnPhongShaderProgram->setDirLightParams(DIR_LIGHT_PARAMS);
-    mPBRShaderProgram->setLightColor(PBR_LIGHT_COLOR);
-    mShadowShaderProgram->setShadowBias(SHADOW_BIAS);
+    registerListenersCallbacks();
   }
 
   void Scene::onCameraPosChanged()
@@ -89,7 +110,7 @@ namespace RenderSystem
     }
   }
 
-  void Scene::registerCallbacks()
+  void Scene::registerListenersCallbacks()
   {
     mCamera->addOnCameraPosChangedCallback([this]() { onCameraPosChanged(); });
   }
@@ -119,7 +140,7 @@ namespace RenderSystem
     floor->setUVScale(Vector2D(10.0f, 10.0f));
   }
 
-  void Scene::calcDirLightSourcePos()
+  void Scene::initDirLight()
   {
     mBlinnPhongShaderProgram->setDirLightSourcePos(DIR_LIGHT_POS);
     mPBRShaderProgram->setLightPos(DIR_LIGHT_POS);
@@ -127,6 +148,35 @@ namespace RenderSystem
       glm::lookAt(DIR_LIGHT_POS, Point3D(0.0f, 0.0f, 0.0f), Vector3D(0.0f, 1.0f, 0.0f));
     mShadowMapController->setLightView(lightViewMatrix);
     mShadowShaderProgram->setLightView(lightViewMatrix);
+  }
+
+  void Scene::updateSkinningTransforms(float lastFrameTime)
+  {
+    mAnimationController->updateSkinningTransforms(lastFrameTime);
+    const auto& skinningTransforms = mAnimationController->getSkinningTransforms();
+    mPBRShaderProgram->setSkinningTransforms(skinningTransforms);
+  }
+
+  void Scene::toggleAnimationPlaying()
+  {
+    mAnimationController->toggleAnimationPlaying();
+  }
+
+  void Scene::nextAnimation()
+  {
+    mAnimationController->nextAnimation();
+  }
+
+  void Scene::prevAnimation()
+  {
+    mAnimationController->prevAnimation();
+  }
+
+  void Scene::setObjectToAnimate(Object3D* object)
+  {
+    mAnimationController->setObjectToAnimate(object);
+    auto useSkinningTransforms = mAnimationController->useSkinningTransforms();
+    mPBRShaderProgram->setUseSkinningTransform(useSkinningTransforms);
   }
 
   void Scene::setBlinnPhongMaterial(const BlinnPhongMaterial& material)
@@ -489,8 +539,9 @@ namespace RenderSystem
     mBlinnPhongShaderProgram->removePointLight(index);
   }
 
-  void Scene::render()
+  void Scene::render(float lastFrameTime)
   {
+    updateSkinningTransforms(lastFrameTime);
     mRenderer->cleanScreen();
     mTAAController->setView(mCamera->getViewMatrix());
     auto projection = mTAAController->makeJitteredProjection();
