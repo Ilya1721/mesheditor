@@ -155,6 +155,8 @@ namespace RenderSystem
     mAnimationController->updateSkinningTransforms(lastFrameTime);
     const auto& skinningTransforms = mAnimationController->getSkinningTransforms();
     mPBRShaderProgram->setSkinningTransforms(skinningTransforms);
+    mShadowMapController->setSkinningTransforms(skinningTransforms);
+    mShadowShaderProgram->setSkinningTransforms(skinningTransforms);
   }
 
   void Scene::toggleAnimationPlaying()
@@ -177,6 +179,8 @@ namespace RenderSystem
     mAnimationController->setObjectToAnimate(object);
     auto useSkinningTransforms = mAnimationController->useSkinningTransforms();
     mPBRShaderProgram->setUseSkinningTransform(useSkinningTransforms);
+    mShadowMapController->setUseSkinningTransform(useSkinningTransforms);
+    mShadowShaderProgram->setUseSkinningTransform(useSkinningTransforms);
   }
 
   void Scene::setBlinnPhongMaterial(const BlinnPhongMaterial& material)

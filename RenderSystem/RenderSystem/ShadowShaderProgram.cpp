@@ -62,6 +62,34 @@ namespace RenderSystem
            { glUniformMatrix4fv(mProjection, 1, false, glm::value_ptr(projection)); });
   }
 
+  void ShadowShaderProgram::setUseSkinningTransform(bool useSkinningTransform)
+  {
+    invoke([this, useSkinningTransform]()
+      { glUniform1i(mUseSkinningTransform, useSkinningTransform); });
+  }
+
+  void ShadowShaderProgram::setSkinningTransforms(
+    const std::vector<glm::mat4>& skinningTransforms
+  )
+  {
+    if (skinningTransforms.empty())
+    {
+      return;
+    }
+
+    invoke(
+      [this, &skinningTransforms]()
+      {
+        glUniformMatrix4fv(
+          mSkinningTransforms,
+          skinningTransforms.size(),
+          GL_FALSE,
+          glm::value_ptr(skinningTransforms[0])
+        );
+      }
+    );
+  }
+
   void ShadowShaderProgram::initUniformLocations()
   {
     mModel = getUniformLocation("model");
@@ -71,5 +99,7 @@ namespace RenderSystem
     mLightProjection = getUniformLocation("lightProjection");
     mShadowBias = getUniformLocation("shadowBias");
     mShadowMap = getUniformLocation("shadowMap");
+    mUseSkinningTransform = getUniformLocation("useSkinningTransform");
+    mSkinningTransforms = getUniformLocation("skinningTransforms");
   }
 }  // namespace RenderSystem

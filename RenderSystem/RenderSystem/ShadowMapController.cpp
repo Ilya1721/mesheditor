@@ -31,4 +31,16 @@ namespace RenderSystem
   {
     mShaderProgram.setLightProjection(lightProjection);
   }
+
+  void ShadowMapController::setUseSkinningTransform(bool useSkinningTransform)
+  {
+    mShaderProgram.setUseSkinningTransform(useSkinningTransform);
+  }
+
+  void ShadowMapController::setSkinningTransforms(
+    const std::vector<glm::mat4>& skinningTransforms
+  )
+  {
+    mShaderProgram.setSkinningTransforms(skinningTransforms);
+  }
 }  // namespace RenderSystem

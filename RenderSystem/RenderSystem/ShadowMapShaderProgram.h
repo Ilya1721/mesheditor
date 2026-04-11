@@ -17,6 +17,8 @@ namespace RenderSystem
     void setModel(const glm::mat4& model);
     void setLightView(const glm::mat4& lightView);
     void setLightProjection(const glm::mat4& lightProjection);
+    void setUseSkinningTransform(bool useSkinningTransform);
+    void setSkinningTransforms(const std::vector<glm::mat4>& skinningTransforms);
 
    private:
     void initUniformLocations();
@@ -25,5 +27,7 @@ namespace RenderSystem
     int mModel;
     int mLightView;
     int mLightProjection;
+    int mUseSkinningTransform;
+    int mSkinningTransforms;
   };
 }  // namespace RenderSystem

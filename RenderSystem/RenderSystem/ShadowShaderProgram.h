@@ -26,6 +26,8 @@ namespace RenderSystem
     void setLightProjection(const glm::mat4& lightProjection);
     void setShadowBias(float shadowBias);
     void setProjection(const glm::mat4& projection);
+    void setUseSkinningTransform(bool useSkinningTransform);
+    void setSkinningTransforms(const std::vector<glm::mat4>& skinningTransforms);
 
    private:
     void initUniformLocations();
@@ -38,5 +40,7 @@ namespace RenderSystem
     int mLightProjection;
     int mShadowBias;
     int mShadowMap;
+    int mUseSkinningTransform;
+    int mSkinningTransforms;
   };
 }  // namespace RenderSystem

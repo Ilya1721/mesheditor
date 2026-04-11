@@ -40,10 +40,40 @@ namespace RenderSystem
     );
   }
 
+  void ShadowMapShaderProgram::setUseSkinningTransform(bool useSkinningTransform)
+  {
+    invoke([this, useSkinningTransform]()
+      { glUniform1i(mUseSkinningTransform, useSkinningTransform); });
+  }
+
+  void ShadowMapShaderProgram::setSkinningTransforms(
+    const std::vector<glm::mat4>& skinningTransforms
+  )
+  {
+    if (skinningTransforms.empty())
+    {
+      return;
+    }
+
+    invoke(
+      [this, &skinningTransforms]()
+      {
+        glUniformMatrix4fv(
+          mSkinningTransforms,
+          skinningTransforms.size(),
+          GL_FALSE,
+          glm::value_ptr(skinningTransforms[0])
+        );
+      }
+    );
+  }
+
   void ShadowMapShaderProgram::initUniformLocations()
   {
     mModel = glGetUniformLocation(mShaderProgram, "model");
     mLightView = glGetUniformLocation(mShaderProgram, "lightView");
     mLightProjection = glGetUniformLocation(mShaderProgram, "lightProjection");
+    mUseSkinningTransform = getUniformLocation("useSkinningTransform");
+    mSkinningTransforms = getUniformLocation("skinningTransforms");
   }
 }  // namespace RenderSystem
