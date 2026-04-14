@@ -135,9 +135,9 @@ namespace RenderSystem
   void Scene::adjustFloor(Object3D* floor)
   {
     auto yOffset = mRootObject.getBBox().getHeight();
-    floor->updateTransform(glm::translate(Vector3D(0.0f, -yOffset, 0.0f)));
-    floor->updateTransform(glm::scale(Vector3D(100.0f, 1.0f, 100.0f)));
-    floor->setUVScale(Vector2D(10.0f, 10.0f));
+    floor->updateTransform(glm::translate(glm::vec3(0.0f, -yOffset, 0.0f)));
+    floor->updateTransform(glm::scale(glm::vec3(100.0f, 1.0f, 100.0f)));
+    floor->setUVScale(glm::vec2(10.0f, 10.0f));
   }
 
   void Scene::initDirLight()
@@ -145,7 +145,7 @@ namespace RenderSystem
     mBlinnPhongShaderProgram->setDirLightSourcePos(DIR_LIGHT_POS);
     mPBRShaderProgram->setLightPos(DIR_LIGHT_POS);
     const auto& lightViewMatrix =
-      glm::lookAt(DIR_LIGHT_POS, Point3D(0.0f, 0.0f, 0.0f), Vector3D(0.0f, 1.0f, 0.0f));
+      glm::lookAt(DIR_LIGHT_POS, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     mShadowMapController->setLightView(lightViewMatrix);
     mShadowShaderProgram->setLightView(lightViewMatrix);
   }
@@ -528,7 +528,7 @@ namespace RenderSystem
     mExtraRenderModesController->setHighlightedFacesData(data);
   }
 
-  void Scene::addPointLight(const PointLightParams& params, const Point3D& lightSourcePos)
+  void Scene::addPointLight(const PointLightParams& params, const glm::vec3& lightSourcePos)
   {
     auto pointLight = mBlinnPhongShaderProgram->addPointLight(params, lightSourcePos);
     auto pointLightRadius = mModelObject->getBBox().getHeight() * 0.05f;
@@ -573,7 +573,7 @@ namespace RenderSystem
     return mPickedObject;
   }
 
-  Point3D Scene::getDefaultPointLightSourcePos() const
+  glm::vec3 Scene::getDefaultPointLightSourcePos() const
   {
     const auto& bbox = mModelObject->getBBox();
     const auto& bboxCenter = bbox.getCenter();
@@ -594,8 +594,8 @@ namespace RenderSystem
     };
   }
 
-  Point3D Scene::unProject(
-    const Point3D& posGL3D, const glm::mat4& projection, const glm::vec4& viewportData
+  glm::vec3 Scene::unProject(
+    const glm::vec3& posGL3D, const glm::mat4& projection, const glm::vec4& viewportData
   )
   {
     return glm::unProject(posGL3D, mCamera->getViewMatrix(), projection, viewportData);

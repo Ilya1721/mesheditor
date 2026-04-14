@@ -4,7 +4,6 @@
 #include <vector>
 
 #include "GeometryCore/Plane.h"
-#include "GeometryCore/Typedefs.h"
 
 namespace GeometryCore
 {
@@ -27,24 +26,24 @@ namespace MeshCore
     void applyTransform(const glm::mat4& transform);
     void clear();
 
-    Point3D getCenter() const;
-    const Point3D& getMin() const;
-    const Point3D& getMax() const;
+    glm::vec3 getCenter() const;
+    const glm::vec3& getMin() const;
+    const glm::vec3& getMax() const;
     float getHeight() const;
     float getWidth() const;
     float getDepth() const;
-    std::optional<Point3D> getRayIntersectionPoint(const Ray& ray) const;
+    std::optional<glm::vec3> getRayIntersectionPoint(const Ray& ray) const;
     const std::vector<Plane> getBBoxPlanes() const;
-    bool isPointInsideBBox(const Point3D& point) const;
+    bool isPointInsideBBox(const glm::vec3& point) const;
 
    private:
     void calcBBoxPlanes();
     void init();
-    void setMinMax(const Point3D& min, const Point3D& max);
+    void setMinMax(const glm::vec3& min, const glm::vec3& max);
 
    private:
-    Point3D mMin;
-    Point3D mMax;
+    glm::vec3 mMin;
+    glm::vec3 mMax;
     std::vector<Plane> mBBoxPlanes;
   };
 }  // namespace MeshCore

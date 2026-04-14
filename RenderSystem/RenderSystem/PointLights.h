@@ -2,11 +2,8 @@
 
 #include <unordered_map>
 
-#include "GeometryCore/Typedefs.h"
 #include "LightParams.h"
 #include "PointLight.h"
-
-using namespace GeometryCore;
 
 namespace RenderSystem
 {
@@ -14,7 +11,7 @@ namespace RenderSystem
   {
    public:
     void init(int shaderProgram);
-    PointLight* addLight(const PointLightParams& params, const Point3D& lightSourcePos);
+    PointLight* addLight(const PointLightParams& params, const glm::vec3& lightSourcePos);
     void removeLight(unsigned int index);
     PointLight* getLight(unsigned int index);
 

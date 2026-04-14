@@ -9,7 +9,6 @@
 #include "Camera.h"
 #include "CameraListener.h"
 #include "ExtraRenderModesController.h"
-#include "GeometryCore/Typedefs.h"
 #include "GlassShaderProgram.h"
 #include "LightParams.h"
 #include "Object3D.h"
@@ -40,12 +39,12 @@ namespace RenderSystem
       const Ray& cursorRay, IntersectionMode intersectionMode
     );
     Object3D* getPickedObject() const;
-    Point3D getDefaultPointLightSourcePos() const;
+    glm::vec3 getDefaultPointLightSourcePos() const;
     const Object3D& getRootObject() const;
     std::vector<ViewportListener*> getViewportListeners();
     Camera* getCamera() const;
-    Point3D unProject(
-      const Point3D& posGL3D, const glm::mat4& projection, const glm::vec4& viewportData
+    glm::vec3 unProject(
+      const glm::vec3& posGL3D, const glm::mat4& projection, const glm::vec4& viewportData
     );
 
     void onViewportChanged(Viewport* viewport) override;
@@ -54,7 +53,7 @@ namespace RenderSystem
     void setHighlightedFacesData(const HighlightedFacesData& data);
     void setPickedObject(Object3D* pickedObject);
 
-    void addPointLight(const PointLightParams& params, const Point3D& lightSourcePos);
+    void addPointLight(const PointLightParams& params, const glm::vec3& lightSourcePos);
     void addSceneDecorations(const std::vector<SceneDecoration>& decorations);
 
     void toggleWireframe();

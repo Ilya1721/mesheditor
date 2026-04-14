@@ -9,7 +9,7 @@ namespace RenderSystem
   {
   }
 
-  void Orbit::onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos)
+  void Orbit::onMouseMove(const glm::vec2& startCursorPos, const glm::vec2& endCursorPos)
   {
     auto middleMouseButtonPressed =
       mWindow->isMouseButtonPressed(GLFW_MOUSE_BUTTON_MIDDLE);

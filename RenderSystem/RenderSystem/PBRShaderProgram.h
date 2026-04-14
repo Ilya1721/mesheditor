@@ -4,7 +4,6 @@
 #include "CameraListener.h"
 #include "ImageTexture.h"
 #include "ShaderProgram.h"
-#include "Typedefs.h"
 
 namespace RenderSystem
 {
@@ -23,11 +22,11 @@ namespace RenderSystem
     void setProjection(const glm::mat4& projection);
     void setUVScale(const glm::vec2& scale);
     void setLightPos(const glm::vec3& lightPos);
-    void setLightColor(const RGB& lightColor);
+    void setLightColor(const glm::vec3& lightColor);
     void setBaseColorTexture(const ImageTexture& texture);
     void setNormalTexture(const ImageTexture& texture);
     void setMetallicRoughnessTexture(const ImageTexture& texture);
-    void setBaseColor(const RGB& color);
+    void setBaseColor(const glm::vec3& color);
     void setMetallic(float metallic);
     void setRougness(float roughness);
     void setUseSkinningTransform(bool useSkinningTransform);

@@ -161,6 +161,7 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <ClCompile Include="RenderSystem\GLTFModelLoader.cpp" />
     <ClCompile Include="RenderSystem\ModelLoader.cpp" />
     <ClCompile Include="RenderSystem\ObjModelLoader.cpp" />
+    <ClCompile Include="RenderSystem\ParticlesController.cpp" />
     <ClCompile Include="RenderSystem\PBRShaderProgram.cpp" />
     <ClCompile Include="RenderSystem\SceneDecorationsController.cpp" />
     <ClCompile Include="RenderSystem\ScreenShaderProgram.cpp" />
@@ -228,6 +229,8 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <ClInclude Include="RenderSystem\GLTFModelLoader.h" />
     <ClInclude Include="RenderSystem\ModelLoader.h" />
     <ClInclude Include="RenderSystem\ObjModelLoader.h" />
+    <ClInclude Include="RenderSystem\Particle.h" />
+    <ClInclude Include="RenderSystem\ParticlesController.h" />
     <ClInclude Include="RenderSystem\PBRShaderProgram.h" />
     <ClInclude Include="RenderSystem\SceneDecorationsController.h" />
     <ClInclude Include="RenderSystem\ScreenShaderProgram.h" />
@@ -285,7 +288,6 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <ClInclude Include="RenderSystem\TAAResolveShaderProgram.h" />
     <ClInclude Include="RenderSystem\Texture.h" />
     <ClInclude Include="RenderSystem\Texture2D.h" />
-    <ClInclude Include="RenderSystem\Typedefs.h" />
     <ClInclude Include="RenderSystem\Viewport.h" />
     <ClInclude Include="RenderSystem\ViewportListener.h" />
     <ClInclude Include="RenderSystem\Window.h" />

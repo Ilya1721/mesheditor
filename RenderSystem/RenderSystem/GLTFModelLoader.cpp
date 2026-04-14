@@ -38,7 +38,7 @@ namespace
   struct MaterialData
   {
     PBRMaterial material {};
-    Vector2D uvScale {1.0f, 1.0f};
+    glm::vec2 uvScale {1.0f, 1.0f};
   };
 
   struct MaterialImages

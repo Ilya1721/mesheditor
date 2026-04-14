@@ -31,7 +31,7 @@ namespace MeshCore
         float posZ = radius * sinVertical * cosHorizontal;
 
         Vertex vertex;
-        vertex.pos = Vector3D(posX, posY, posZ);
+        vertex.pos = glm::vec3(posX, posY, posZ);
         vertex.normal = vertex.pos / radius;  // pos length is always radius
         tempVertices.push_back(vertex);
       }
@@ -75,36 +75,36 @@ namespace MeshCore
     float halfSide = sideLength * 0.5f;
     std::vector<Vertex> uniqueVertices;
     uniqueVertices.emplace_back(
-      Point3D(-halfSide, -halfSide, -halfSide), Vector3D(-1.0f, -1.0f, -1.0f),
-      Point2D(0.0f, 0.0f)
+      glm::vec3(-halfSide, -halfSide, -halfSide), glm::vec3(-1.0f, -1.0f, -1.0f),
+      glm::vec2(0.0f, 0.0f)
     );
     uniqueVertices.emplace_back(
-      Point3D(halfSide, -halfSide, -halfSide), Vector3D(1.0f, -1.0f, -1.0f),
-      Point2D(1.0f, 0.0f)
+      glm::vec3(halfSide, -halfSide, -halfSide), glm::vec3(1.0f, -1.0f, -1.0f),
+      glm::vec2(1.0f, 0.0f)
     );
     uniqueVertices.emplace_back(
-      Point3D(halfSide, halfSide, -halfSide), Vector3D(1.0f, 1.0f, -1.0f),
-      Point2D(1.0f, 1.0f)
+      glm::vec3(halfSide, halfSide, -halfSide), glm::vec3(1.0f, 1.0f, -1.0f),
+      glm::vec2(1.0f, 1.0f)
     );
     uniqueVertices.emplace_back(
-      Point3D(-halfSide, halfSide, -halfSide), Vector3D(-1.0f, 1.0f, -1.0f),
-      Point2D(0.0f, 1.0f)
+      glm::vec3(-halfSide, halfSide, -halfSide), glm::vec3(-1.0f, 1.0f, -1.0f),
+      glm::vec2(0.0f, 1.0f)
     );
     uniqueVertices.emplace_back(
-      Point3D(-halfSide, -halfSide, halfSide), Vector3D(-1.0f, -1.0f, 1.0f),
-      Point2D(0.0f, 0.0f)
+      glm::vec3(-halfSide, -halfSide, halfSide), glm::vec3(-1.0f, -1.0f, 1.0f),
+      glm::vec2(0.0f, 0.0f)
     );
     uniqueVertices.emplace_back(
-      Point3D(halfSide, -halfSide, halfSide), Vector3D(1.0f, -1.0f, 1.0f),
-      Point2D(1.0f, 0.0f)
+      glm::vec3(halfSide, -halfSide, halfSide), glm::vec3(1.0f, -1.0f, 1.0f),
+      glm::vec2(1.0f, 0.0f)
     );
     uniqueVertices.emplace_back(
-      Point3D(halfSide, halfSide, halfSide), Vector3D(1.0f, 1.0f, 1.0f),
-      Point2D(1.0f, 1.0f)
+      glm::vec3(halfSide, halfSide, halfSide), glm::vec3(1.0f, 1.0f, 1.0f),
+      glm::vec2(1.0f, 1.0f)
     );
     uniqueVertices.emplace_back(
-      Point3D(-halfSide, halfSide, halfSide), Vector3D(-1.0f, 1.0f, 1.0f),
-      Point2D(0.0f, 1.0f)
+      glm::vec3(-halfSide, halfSide, halfSide), glm::vec3(-1.0f, 1.0f, 1.0f),
+      glm::vec2(0.0f, 1.0f)
     );
 
     std::vector<Vertex> vertices;

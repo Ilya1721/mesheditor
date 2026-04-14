@@ -32,7 +32,7 @@ namespace
 namespace RenderSystem
 {
   SceneDecoration SceneDecoration::createDecoration(
-    const Point3D& point, const BlinnPhongMaterial& params
+    const glm::vec3& point, const BlinnPhongMaterial& params
   )
   {
     return getBaseSceneDecoration(params, GL_POINTS, RenderData::createRenderData(point));
@@ -73,8 +73,8 @@ namespace RenderSystem
   )
   {
     auto originY = -sceneBBoxHeight * FLOOR_BBOX_HEIGHT_COEF;
-    Point3D planeOrigin(0.0f, originY, 0.0f);
-    Vector3D planeNormal(0.0f, -1.0f, 0.0f);
+    glm::vec3 planeOrigin(0.0f, originY, 0.0f);
+    glm::vec3 planeNormal(0.0f, -1.0f, 0.0f);
 
     return createPlane(
       planeOrigin, planeNormal, FAR_PLANE_DISTANCE * 0.5, FAR_PLANE_DISTANCE * 0.5,
@@ -83,8 +83,8 @@ namespace RenderSystem
   }
 
   SceneDecoration SceneDecoration::createPlane(
-    const Point3D& origin,
-    const Vector3D& normal,
+    const glm::vec3& origin,
+    const glm::vec3& normal,
     float width,
     float height,
     const BlinnPhongMaterial& material
@@ -94,8 +94,8 @@ namespace RenderSystem
   }
 
   SceneDecoration SceneDecoration::createLine(
-    const Point3D& start,
-    const Point3D& end,
+    const glm::vec3& start,
+    const glm::vec3& end,
     bool withArrowHead,
     const BlinnPhongMaterial& material
   )
@@ -139,26 +139,26 @@ namespace RenderSystem
     const MeshCore::AABBox& bbox, const BlinnPhongMaterial& material
   )
   {
-    Point3D leftMinLowerCorner = bbox.getMin();
-    Point3D rightMinLowerCorner = {
+    glm::vec3 leftMinLowerCorner = bbox.getMin();
+    glm::vec3 rightMinLowerCorner = {
       bbox.getMax().x, leftMinLowerCorner.y, leftMinLowerCorner.z
     };
-    Point3D leftMaxLowerCorner = {
+    glm::vec3 leftMaxLowerCorner = {
       leftMinLowerCorner.x, leftMinLowerCorner.y, bbox.getMax().z
     };
-    Point3D rightMaxLowerCorner = {
+    glm::vec3 rightMaxLowerCorner = {
       rightMinLowerCorner.x, rightMinLowerCorner.y, bbox.getMax().z
     };
-    Point3D leftMinUpperCorner = {
+    glm::vec3 leftMinUpperCorner = {
       leftMinLowerCorner.x, bbox.getMax().y, leftMinLowerCorner.z
     };
-    Point3D rightMinUpperCorner = {
+    glm::vec3 rightMinUpperCorner = {
       rightMinLowerCorner.x, bbox.getMax().y, rightMinLowerCorner.z
     };
-    Point3D leftMaxUpperCorner = {
+    glm::vec3 leftMaxUpperCorner = {
       leftMaxLowerCorner.x, bbox.getMax().y, leftMaxLowerCorner.z
     };
-    Point3D rightMaxUpperCorner = {
+    glm::vec3 rightMaxUpperCorner = {
       rightMaxLowerCorner.x, bbox.getMax().y, rightMaxLowerCorner.z
     };
 
@@ -204,7 +204,7 @@ namespace RenderSystem
   }
 
   std::vector<SceneDecoration> SceneDecoration::createPoints(
-    const std::vector<Point3D>& points, const BlinnPhongMaterial& material
+    const std::vector<glm::vec3>& points, const BlinnPhongMaterial& material
   )
   {
     std::vector<SceneDecoration> pointDecorations;

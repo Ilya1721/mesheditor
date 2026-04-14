@@ -37,17 +37,17 @@ namespace RenderSystem
     return glm::lookAt(mEye, mTarget, mUp);
   }
 
-  const Point3D& Camera::getEye() const
+  const glm::vec3& Camera::getEye() const
   {
     return mEye;
   }
 
-  Vector3D Camera::getNormalizedDirection() const
+  glm::vec3 Camera::getNormalizedDirection() const
   {
     return glm::normalize(mTarget - mEye);
   }
 
-  Point3D Camera::projectToTargetPlane(const Point3D& cursorPosInWorldSpace) const
+  glm::vec3 Camera::projectToTargetPlane(const glm::vec3& cursorPosInWorldSpace) const
   {
     Ray cursorRay(cursorPosInWorldSpace, cursorPosInWorldSpace - mEye);
     return getTargetPlane().getIntersectionPoint(cursorRay).value();
@@ -66,7 +66,7 @@ namespace RenderSystem
   }
 
   void Camera::setEyeTargetUp(
-    const Point3D& eye, const Point3D& target, const Vector3D& up
+    const glm::vec3& eye, const glm::vec3& target, const glm::vec3& up
   )
   {
     mEye = eye;
@@ -77,8 +77,8 @@ namespace RenderSystem
   }
 
   void Camera::pan(
-    const Point3D& startPointInWorldSpace,
-    const Point3D& endPointInWorldSpace,
+    const glm::vec3& startPointInWorldSpace,
+    const glm::vec3& endPointInWorldSpace,
     PROJECTION_TYPE projectionType
   )
   {
@@ -98,7 +98,7 @@ namespace RenderSystem
     );
   }
 
-  void Camera::translate(const Vector3D& movement)
+  void Camera::translate(const glm::vec3& movement)
   {
     mEye += movement;
     mTarget += movement;
@@ -106,7 +106,7 @@ namespace RenderSystem
 
   glm::mat4 Camera::calculateViewMatrixWithTargetAtOrigin() const
   {
-    return glm::lookAt(mEye - mTarget, Point3D(0.0, 0.0, 0.0), mUp);
+    return glm::lookAt(mEye - mTarget, glm::vec3(0.0, 0.0, 0.0), mUp);
   }
 
   Plane Camera::getTargetPlane() const
@@ -114,9 +114,9 @@ namespace RenderSystem
     return {mTarget, mEye - mTarget};
   }
 
-  Point3D Camera::getCursorPosInNDCWithZ(const Point3D& cursorPosInNDC) const
+  glm::vec3 Camera::getCursorPosInNDCWithZ(const glm::vec3& cursorPosInNDC) const
   {
-    Point3D cursorPosInNDCWithZ = cursorPosInNDC;
+    glm::vec3 cursorPosInNDCWithZ = cursorPosInNDC;
     auto lengthSquared = std::powf(cursorPosInNDC.x, 2) + std::powf(cursorPosInNDC.y, 2);
     auto validZ =
       std::abs(sqrtf(1 - std::powf(cursorPosInNDC.x, 2) - std::powf(cursorPosInNDC.y, 2))
@@ -127,7 +127,7 @@ namespace RenderSystem
   }
 
   glm::mat4 Camera::getOrbitTransform(
-    const Point3D& startPosInNDCWithZ, const Point3D& endPosInNDCWithZ
+    const glm::vec3& startPosInNDCWithZ, const glm::vec3& endPosInNDCWithZ
   ) const
   {
     auto rotationAngle =
@@ -148,12 +148,12 @@ namespace RenderSystem
 
   glm::mat4 Camera::getSmoothOrbitTransform(float yaw, float pitch) const
   {
-    return glm::rotate(pitch, mRight) * glm::rotate(-yaw, Vector3D(0.0f, 1.0f, 0.0f));
+    return glm::rotate(pitch, mRight) * glm::rotate(-yaw, glm::vec3(0.0f, 1.0f, 0.0f));
   }
 
   glm::mat4 Camera::getCorrectionOrbitTransform() const
   {
-    Vector3D yAxis(0.0f, 1.0f, 0.0f);
+    glm::vec3 yAxis(0.0f, 1.0f, 0.0f);
     auto angle = glm::angle(mRight, yAxis) - HALF_PI;
     auto rotationAxis = glm::cross(mRight, yAxis);
 
@@ -162,7 +162,7 @@ namespace RenderSystem
 
   void Camera::validateCamera() const
   {
-    Vector3D nullVector(0.0f, 0.0f, 0.0f);
+    glm::vec3 nullVector(0.0f, 0.0f, 0.0f);
 
     if (isEqual(mUp, nullVector) || isEqual(mRight, nullVector))
     {
@@ -185,8 +185,8 @@ namespace RenderSystem
   }
 
   glm::vec3 Camera::getPanTranslationVector(
-    const Point3D& startPointInWorldSpace,
-    const Point3D& endPointInWorldSpace,
+    const glm::vec3& startPointInWorldSpace,
+    const glm::vec3& endPointInWorldSpace,
     PROJECTION_TYPE projectionType
   ) const
   {
@@ -199,7 +199,7 @@ namespace RenderSystem
     return startPointInWorldSpace - endPointInWorldSpace;
   }
 
-  Vector3D Camera::calcRight() const
+  glm::vec3 Camera::calcRight() const
   {
     auto directionNormalized = getNormalizedDirection();
     if (glm::epsilonNotEqual(glm::dot(directionNormalized, mUp), 0.0f, 1e-5f))
@@ -218,7 +218,7 @@ namespace RenderSystem
       [&bbox, &fov, this]()
       {
         auto distanceToCamera = fov > 0.0f ? calculateDistanceToCamera(bbox, fov) : 0.0f;
-        Point3D eye(mEye.x, mEye.y, bbox.getMax().z + distanceToCamera);
+        glm::vec3 eye(mEye.x, mEye.y, bbox.getMax().z + distanceToCamera);
         setEyeTargetUp(eye, mTarget, mUp);
       }
     );
@@ -231,7 +231,7 @@ namespace RenderSystem
     setEyeTargetUp(mTarget + cameraInverseDir, mTarget, up);
   }
 
-  void Camera::rawOrbit(const Point3D& startPointInNDC, const Point3D& endPointInNDC)
+  void Camera::rawOrbit(const glm::vec3& startPointInNDC, const glm::vec3& endPointInNDC)
   {
     invokeEditOperation(
       [&startPointInNDC, &endPointInNDC, this]()

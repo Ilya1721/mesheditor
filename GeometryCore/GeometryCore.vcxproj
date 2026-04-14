@@ -92,7 +92,6 @@
     <ClInclude Include="GeometryCore\Plane.h" />
     <ClInclude Include="GeometryCore\Ray.h" />
     <ClInclude Include="GeometryCore\Transforms.h" />
-    <ClInclude Include="GeometryCore\Typedefs.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GeometryCore\Line.cpp" />

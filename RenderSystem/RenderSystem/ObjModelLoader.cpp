@@ -17,9 +17,9 @@ namespace
 
   void parseFaceOBJ(
     std::vector<MeshCore::Vertex>& vertices,
-    const std::vector<Point3D>& positions,
-    const std::vector<Point2D>& textures,
-    const std::vector<Vector3D>& normals,
+    const std::vector<glm::vec3>& positions,
+    const std::vector<glm::vec2>& textures,
+    const std::vector<glm::vec3>& normals,
     char*& currentToken,
     char*& context,
     const char* delimiters
@@ -210,9 +210,9 @@ namespace
   std::unique_ptr<Object3D> loadTextOBJ(const std::filesystem::path& filePath)
   {
     auto fileContent = Utility::readFile(filePath);
-    std::vector<Point3D> positions;
-    std::vector<Point2D> textures;
-    std::vector<Vector3D> normals;
+    std::vector<glm::vec3> positions;
+    std::vector<glm::vec2> textures;
+    std::vector<glm::vec3> normals;
     std::vector<MeshCore::Vertex> vertices;
     BlinnPhongMaterial material;
 

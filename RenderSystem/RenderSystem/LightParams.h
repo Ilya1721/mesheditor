@@ -1,21 +1,21 @@
 #pragma once
 
-#include "Typedefs.h"
+#include <glm/glm.hpp>
 
 namespace RenderSystem
 {
   struct DirectionalLightParams
   {
-    RGB ambient {};
-    RGB diffuse {};
-    RGB specular {};
+    glm::vec3 ambient {};
+    glm::vec3 diffuse {};
+    glm::vec3 specular {};
   };
 
   struct PointLightParams
   {
-    RGB ambient {};
-    RGB diffuse {};
-    RGB specular {};
+    glm::vec3 ambient {};
+    glm::vec3 diffuse {};
+    glm::vec3 specular {};
 
     float constant {};
     float linear {};

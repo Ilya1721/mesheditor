@@ -17,11 +17,11 @@ namespace
     MAX
   };
 
-  Point3D getMinMaxPoint(
-    const Point3D& left, const Point3D& right, MinMaxOption minMaxOption
+  glm::vec3 getMinMaxPoint(
+    const glm::vec3& left, const glm::vec3& right, MinMaxOption minMaxOption
   )
   {
-    Point3D result {};
+    glm::vec3 result {};
     result.x = minMaxOption == MinMaxOption::MIN ? std::min(left.x, right.x)
                                                  : std::max(left.x, right.x);
     result.y = minMaxOption == MinMaxOption::MIN ? std::min(left.y, right.y)
@@ -46,7 +46,7 @@ namespace MeshCore
     calcBBoxPlanes();
   }
 
-  void AABBox::setMinMax(const Point3D& min, const Point3D& max)
+  void AABBox::setMinMax(const glm::vec3& min, const glm::vec3& max)
   {
     mMin = min;
     mMax = max;
@@ -55,8 +55,8 @@ namespace MeshCore
 
   void AABBox::applyMesh(const Mesh& mesh)
   {
-    Point3D min = mMin;
-    Point3D max = mMax;
+    glm::vec3 min = mMin;
+    glm::vec3 max = mMax;
 
     for (const auto& vertex : mesh.getVertices())
     {
@@ -77,8 +77,8 @@ namespace MeshCore
   {
     constexpr auto floatMax = std::numeric_limits<float>::max();
     constexpr auto floatMin = -floatMax;
-    Point3D min(floatMax, floatMax, floatMax);
-    Point3D max(floatMin, floatMin, floatMin);
+    glm::vec3 min(floatMax, floatMax, floatMax);
+    glm::vec3 max(floatMin, floatMin, floatMin);
     setMinMax(min, max);
   }
 
@@ -95,17 +95,17 @@ namespace MeshCore
     );
   }
 
-  Point3D AABBox::getCenter() const
+  glm::vec3 AABBox::getCenter() const
   {
     return (mMin + mMax) * 0.5f;
   }
 
-  const Point3D& AABBox::getMin() const
+  const glm::vec3& AABBox::getMin() const
   {
     return mMin;
   }
 
-  const Point3D& AABBox::getMax() const
+  const glm::vec3& AABBox::getMax() const
   {
     return mMax;
   }
@@ -130,7 +130,7 @@ namespace MeshCore
     return mBBoxPlanes;
   }
 
-  std::optional<Point3D> AABBox::getRayIntersectionPoint(const Ray& ray) const
+  std::optional<glm::vec3> AABBox::getRayIntersectionPoint(const Ray& ray) const
   {
     for (auto& bboxPlane : mBBoxPlanes)
     {
@@ -144,7 +144,7 @@ namespace MeshCore
     return {};
   }
 
-  bool AABBox::isPointInsideBBox(const Point3D& point) const
+  bool AABBox::isPointInsideBBox(const glm::vec3& point) const
   {
     for (int coordIdx = 0; coordIdx < 3; ++coordIdx)
     {

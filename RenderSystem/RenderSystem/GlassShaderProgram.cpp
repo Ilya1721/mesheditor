@@ -56,7 +56,7 @@ namespace RenderSystem
            { glUniform1f(mInterpolationFactor, interpolationFactor); });
   }
 
-  void GlassShaderProgram::setColor(const RGB& color)
+  void GlassShaderProgram::setColor(const glm::vec3& color)
   {
     invoke([this, &color]() { glUniform3fv(mColor, 1, glm::value_ptr(color)); });
   }

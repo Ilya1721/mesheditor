@@ -1,6 +1,5 @@
 #pragma once
 
-#include "GeometryCore/Typedefs.h"
 #include "Object3DIntersection.h"
 #include "Operation.h"
 
@@ -17,7 +16,7 @@ namespace RenderSystem
    public:
     SurfaceExtruder(Window* window, Scene* scene, Camera* camera);
 
-    void onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos) override;
+    void onMouseMove(const glm::vec2& startCursorPos, const glm::vec2& endCursorPos) override;
     void onMouseScroll(double offset) override {};
     void onMouseClick() override;
     void onKeyPressed(int key) override;

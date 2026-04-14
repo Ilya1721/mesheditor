@@ -26,6 +26,6 @@ namespace RenderSystem
   glm::mat4 Cloner::getInitialTransform(const MeshCore::AABBox& bbox) const
   {
     auto distance = 2.0f * (bbox.getMax().x - bbox.getMin().x);
-    return glm::translate(Vector3D(distance, 0.0f, 0.0f));
+    return glm::translate(glm::vec3(distance, 0.0f, 0.0f));
   }
 }  // namespace RenderSystem

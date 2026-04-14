@@ -35,12 +35,12 @@ namespace
     std::vector<MeshCore::Vertex> vertices;
     for (size_t faceIdx = 0; faceIdx < facesCount; ++faceIdx)
     {
-      Vector3D faceNormal {};
+      glm::vec3 faceNormal {};
       readCoordinatesFromBuffer(faceNormal, buffer);
 
       for (int vertexIdx = 0; vertexIdx < 3; ++vertexIdx)
       {
-        Point3D pos {};
+        glm::vec3 pos {};
         readCoordinatesFromBuffer(pos, buffer);
         vertices.push_back({pos, faceNormal});
       }
@@ -103,7 +103,7 @@ namespace
   std::unique_ptr<Object3D> loadTextSTL(std::string& fileContent)
   {
     std::vector<MeshCore::Vertex> vertices;
-    Vector3D faceNormal {};
+    glm::vec3 faceNormal {};
 
     parseText(
       fileContent,
@@ -116,7 +116,7 @@ namespace
         }
         else if (isEqual(currentToken, "vertex"))
         {
-          Point3D pos {};
+          glm::vec3 pos {};
           readTokenAsVector(currentToken, delimiters, context, pos);
           vertices.push_back({pos, faceNormal});
         }

@@ -10,7 +10,7 @@ namespace RenderSystem
   {
    public:
     PointLightOperations(Scene* scene);
-    void onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos) override;
+    void onMouseMove(const glm::vec2& startCursorPos, const glm::vec2& endCursorPos) override;
     void onMouseScroll(double offset) override {};
     void onMouseClick() override;
     void onKeyPressed(int key) override;

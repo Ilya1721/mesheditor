@@ -7,12 +7,12 @@
 
 namespace GeometryCore
 {
-  Plane::Plane(const Point3D& origin, const Vector3D& normal)
+  Plane::Plane(const glm::vec3& origin, const glm::vec3& normal)
     : origin(origin), normal(normal)
   {
   }
 
-  Point3D Plane::projectPoint(const Point3D& point) const
+  glm::vec3 Plane::projectPoint(const glm::vec3& point) const
   {
     auto dotProduct = glm::dot(origin - point, normal);
     if (glm::epsilonEqual(dotProduct, 0.0f, 1e-5f))
@@ -35,7 +35,7 @@ namespace GeometryCore
     return translationTransform * rotationTransform;
   }
 
-  std::optional<Point3D> Plane::getIntersectionPoint(const Ray& ray) const
+  std::optional<glm::vec3> Plane::getIntersectionPoint(const Ray& ray) const
   {
     if (glm::epsilonEqual(glm::dot(normal, ray.direction), 0.0f, 1e-6f))
     {

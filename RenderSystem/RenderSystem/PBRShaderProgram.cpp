@@ -59,7 +59,7 @@ namespace RenderSystem
     invoke([this, &lightPos]() { glUniform3fv(mLightPos, 1, glm::value_ptr(lightPos)); });
   }
 
-  void PBRShaderProgram::setLightColor(const RGB& lightColor)
+  void PBRShaderProgram::setLightColor(const glm::vec3& lightColor)
   {
     invoke([this, &lightColor]()
            { glUniform3fv(mLightColor, 1, glm::value_ptr(lightColor)); });
@@ -136,7 +136,7 @@ namespace RenderSystem
     );
   }
 
-  void PBRShaderProgram::setBaseColor(const RGB& color)
+  void PBRShaderProgram::setBaseColor(const glm::vec3& color)
   {
     invoke([this, &color]() { glUniform3fv(mBaseColor, 1, glm::value_ptr(color)); });
   }

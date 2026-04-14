@@ -1,18 +1,16 @@
 #pragma once
 
-#include "GeometryCore/Typedefs.h"
+#include <glm/glm.hpp>
 
 namespace RenderSystem
 {
-  using namespace GeometryCore;
-
   class Operation
   {
    public:
     virtual ~Operation() = default;
 
     virtual void onMouseMove(
-      const Point2D& startCursorPos, const Point2D& endCursorPos
+      const glm::vec2& startCursorPos, const glm::vec2& endCursorPos
     ) = 0;
     virtual void onMouseScroll(double offset) = 0;
     virtual void onMouseClick() = 0;

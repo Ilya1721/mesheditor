@@ -2,7 +2,6 @@
 
 #include <vector>
 
-#include "GeometryCore/Typedefs.h"
 #include "MeshCore/Surface.h"
 
 namespace MeshCore
@@ -18,7 +17,7 @@ namespace RenderSystem
   {
     MeshCore::Surface surface {};
     std::vector<int> surfaceIndices;
-    Point3D point {};
+    glm::vec3 point {};
 
     void assign(const MeshCore::MeshIntersection& meshIntersection);
   };

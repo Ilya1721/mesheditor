@@ -9,14 +9,14 @@ namespace MeshCore
 {
   struct MeshIntersectionTempData
   {
-    std::optional<Point3D> intersectionPoint;
+    std::optional<glm::vec3> intersectionPoint;
     int intersectedFaceIdx = -1;
   };
 
   struct MeshIntersection
   {
     std::vector<int> intersectedFacesIndices;
-    Point3D intersectionPoint {};
+    glm::vec3 intersectionPoint {};
     Surface intersectedSurface {};
   };
 

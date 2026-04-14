@@ -4,28 +4,24 @@
 #include <glm/gtx/hash.hpp>
 #include <unordered_set>
 
-#include "GeometryCore/Typedefs.h"
-
 namespace MeshCore
 {
-  using namespace GeometryCore;
-
   struct HalfEdge;
 
   struct Vertex
   {
     Vertex() = default;
     Vertex(
-      const Point3D& otherPos,
-      const Vector3D& otherNormal,
-      const Point2D& otherTexture = {}
+      const glm::vec3& otherPos,
+      const glm::vec3& otherNormal,
+      const glm::vec2& otherTexture = {}
     );
 
-    Point3D pos {};
-    Vector3D normal {};
-    Point2D texture {};
-    Vector4D tangent {1.0f, 0.0f, 0.0f, 1.0f};
-    Vector4D weights = {1.0f, 0.0f, 0.0f, 0.0f};
+    glm::vec3 pos {};
+    glm::vec3 normal {};
+    glm::vec2 texture {};
+    glm::vec4 tangent {1.0f, 0.0f, 0.0f, 1.0f};
+    glm::vec4 weights = {1.0f, 0.0f, 0.0f, 0.0f};
     glm::ivec4 jointIndices {0, 0, 0, 0};
     HalfEdge* halfEdge = nullptr;
 
@@ -43,11 +39,11 @@ namespace MeshCore
   {
     UniqueVertex(Vertex& originalVertex, int originalVertexIndex);
 
-    void updatePos(const Point3D& otherPos);
-    void updateNormal(const Vector3D& otherNormal);
+    void updatePos(const glm::vec3& otherPos);
+    void updateNormal(const glm::vec3& otherNormal);
 
     std::vector<OriginalVertexData> originalVertices;
-    std::unordered_set<Vector3D> adjacentFacesNormals;
+    std::unordered_set<glm::vec3> adjacentFacesNormals;
   };
 
   using HalfEdgeVerticesPair = std::pair<Vertex, Vertex>;

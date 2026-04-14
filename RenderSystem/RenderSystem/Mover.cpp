@@ -15,7 +15,7 @@ namespace RenderSystem
   {
   }
 
-  void Mover::onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos)
+  void Mover::onMouseMove(const glm::vec2& startCursorPos, const glm::vec2& endCursorPos)
   {
     const auto& pickedObject = mScene->getPickedObject();
     if (mEnabled && pickedObject)
@@ -34,7 +34,7 @@ namespace RenderSystem
   }
 
   glm::mat4 Mover::getTranslationTransform(
-    const Point2D& startCursorPos, const Point2D& endCursorPos
+    const glm::vec2& startCursorPos, const glm::vec2& endCursorPos
   ) const
   {
     const auto& startPosInWorldSpace = mWindow->unProject(startCursorPos);

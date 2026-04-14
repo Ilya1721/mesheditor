@@ -3,10 +3,12 @@
 #include "GeometryCore/Numeric.h"
 #include "GeometryCore/Transforms.h"
 
+using namespace GeometryCore;
+
 namespace MeshCore
 {
   Vertex::Vertex(
-    const Point3D& otherPos, const Vector3D& otherNormal, const Point2D& otherTexture
+    const glm::vec3& otherPos, const glm::vec3& otherNormal, const glm::vec2& otherTexture
   )
     : pos(otherPos), normal(otherNormal), texture(otherTexture)
   {
@@ -33,7 +35,7 @@ namespace MeshCore
     adjacentFacesNormals.insert(originalVertex.normal);
   }
 
-  void UniqueVertex::updatePos(const Point3D& otherPos)
+  void UniqueVertex::updatePos(const glm::vec3& otherPos)
   {
     pos = otherPos;
     for (auto& originalVertexData : originalVertices)
@@ -42,7 +44,7 @@ namespace MeshCore
     }
   }
 
-  void UniqueVertex::updateNormal(const Vector3D& otherNormal)
+  void UniqueVertex::updateNormal(const glm::vec3& otherNormal)
   {
     normal = otherNormal;
   }

@@ -2,15 +2,12 @@
 
 #include <glm/glm.hpp>
 
-#include "Typedefs.h"
-
 namespace GeometryCore
 {
   struct Line
   {
-    Point3D start;
-    Point3D end;
-
+    glm::vec3 start;
+    glm::vec3 end;
     glm::mat4 getTransformToSelf(const Line& input) const;
   };
 }  // namespace GeometryCore

@@ -4,11 +4,11 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/epsilon.hpp>
 
-#include "Typedefs.h"
-
 namespace GeometryCore
 {
-  bool isCloser(const Point3D& first, const Point3D& second, const Point3D& reference);
+  bool isCloser(
+    const glm::vec3& first, const glm::vec3& second, const glm::vec3& reference
+  );
   float getSquareOfTriangle(const std::array<float, 3>& edgesLengths);
   double roundToDigits(double value, int digits);
   glm::vec3 roundToDigits(glm::vec3 value, int digits);

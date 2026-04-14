@@ -4,7 +4,6 @@
 #include "CameraListener.h"
 #include "CubemapTexture.h"
 #include "ShaderProgram.h"
-#include "Typedefs.h"
 
 namespace RenderSystem
 {
@@ -26,7 +25,7 @@ namespace RenderSystem
     void setReflectionStrength(float reflectionStrength);
     void setTransparency(float transparency) const;
     void setInterpolationFactor(float interpolationFactor);
-    void setColor(const RGB& color);
+    void setColor(const glm::vec3& color);
     void setSkyboxCubemap(const CubemapTexture& texture);
 
    private:

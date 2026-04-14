@@ -1,6 +1,5 @@
 #pragma once
 
-#include "GeometryCore/Typedefs.h"
 #include "Operation.h"
 
 namespace RenderSystem
@@ -15,14 +14,14 @@ namespace RenderSystem
    public:
     Mover(Window* window, Scene* scene, Camera* camera, Viewport* viewport);
 
-    void onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos) override;
+    void onMouseMove(const glm::vec2& startCursorPos, const glm::vec2& endCursorPos) override;
     void onMouseScroll(double offset) override {};
     void onMouseClick() override {};
     void onKeyPressed(int key) override;
 
    private:
     glm::mat4 getTranslationTransform(
-      const Point2D& startCursorPos, const Point2D& endCursorPos
+      const glm::vec2& startCursorPos, const glm::vec2& endCursorPos
     ) const;
 
    private:

@@ -36,13 +36,13 @@ namespace RenderSystem
            { glUniformMatrix4fv(mModel, 1, false, glm::value_ptr(model)); });
   }
 
-  void BlinnPhongShaderProgram::setDirLightSourcePos(const Point3D& lightSourcePos)
+  void BlinnPhongShaderProgram::setDirLightSourcePos(const glm::vec3& lightSourcePos)
   {
     invoke([this, &lightSourcePos]()
            { mDirectionalLight.setLightSourcePos(glm::value_ptr(lightSourcePos)); });
   }
 
-  void BlinnPhongShaderProgram::setCameraPos(const Point3D& cameraPos)
+  void BlinnPhongShaderProgram::setCameraPos(const glm::vec3& cameraPos)
   {
     invoke([this, &cameraPos]()
            { mDirectionalLight.setCameraPos(glm::value_ptr(cameraPos)); });
@@ -65,17 +65,17 @@ namespace RenderSystem
            { glUniformMatrix4fv(mProjection, 1, false, glm::value_ptr(projection)); });
   }
 
-  void BlinnPhongShaderProgram::setAmbient(const RGB& ambient)
+  void BlinnPhongShaderProgram::setAmbient(const glm::vec3& ambient)
   {
     invoke([this, &ambient]() { glUniform3fv(mAmbient, 1, glm::value_ptr(ambient)); });
   }
 
-  void BlinnPhongShaderProgram::setDiffuse(const RGB& diffuse)
+  void BlinnPhongShaderProgram::setDiffuse(const glm::vec3& diffuse)
   {
     invoke([this, &diffuse]() { glUniform3fv(mDiffuse, 1, glm::value_ptr(diffuse)); });
   }
 
-  void BlinnPhongShaderProgram::setSpecular(const RGB& specular)
+  void BlinnPhongShaderProgram::setSpecular(const glm::vec3& specular)
   {
     invoke([this, &specular]() { glUniform3fv(mSpecular, 1, glm::value_ptr(specular)); });
   }
@@ -104,7 +104,7 @@ namespace RenderSystem
   }
 
   PointLight* BlinnPhongShaderProgram::addPointLight(
-    const PointLightParams& params, const Point3D& lightSourcePos
+    const PointLightParams& params, const glm::vec3& lightSourcePos
   )
   {
     return mPointLights.addLight(params, lightSourcePos);

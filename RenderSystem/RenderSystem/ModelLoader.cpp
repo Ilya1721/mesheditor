@@ -1,8 +1,8 @@
 #include "ModelLoader.h"
 
 #include "GLTFModelLoader.h"
-#include "ObjModelLoader.h"
 #include "Object3D.h"
+#include "ObjModelLoader.h"
 #include "STLModelLoader.h"
 #include "Utility/StringHelper.h"
 

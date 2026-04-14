@@ -89,10 +89,10 @@ namespace RenderSystem
     return mCompactData.size() / 20;
   }
 
-  RenderData RenderData::createRenderData(const Point3D& point)
+  RenderData RenderData::createRenderData(const glm::vec3& point)
   {
     RenderData renderData;
-    renderData.append({point, Vector3D(0.0f, 0.0f, 1.0f)});
+    renderData.append({point, glm::vec3(0.0f, 0.0f, 1.0f)});
     return renderData;
   }
 
@@ -127,10 +127,10 @@ namespace RenderSystem
       auto tangent = glm::tan(glm::radians(ARROW_HEAD_ANGLE));
       auto x = tangent * distance * ARROW_HEAD_LENGTH_COEF;
       auto y = defaultLine.end.y - (x / tangent);
-      vertices.emplace_back(defaultLine.end, Vector3D(0.0f, 0.0f, 1.0f));
-      vertices.emplace_back(Point3D(-x, y, 0.0f), Vector3D(0.0f, 0.0f, 1.0f));
-      vertices.emplace_back(defaultLine.end, Vector3D(0.0f, 0.0f, 1.0f));
-      vertices.emplace_back(Point3D(x, y, 0.0f), Vector3D(0.0f, 0.0f, 1.0f));
+      vertices.emplace_back(defaultLine.end, glm::vec3(0.0f, 0.0f, 1.0f));
+      vertices.emplace_back(glm::vec3(-x, y, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+      vertices.emplace_back(defaultLine.end, glm::vec3(0.0f, 0.0f, 1.0f));
+      vertices.emplace_back(glm::vec3(x, y, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
     }
 
     return generateRenderData(vertices, line.getTransformToSelf(defaultLine));
@@ -142,25 +142,25 @@ namespace RenderSystem
     auto halfWidth = width * 0.5f;
     auto halfLength = length * 0.5f;
     vertices.emplace_back(
-      Point3D(halfWidth, halfLength, 0.0f), Vector3D(0.0f, 0.0f, 1.0f)
+      glm::vec3(halfWidth, halfLength, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)
     );
     vertices.emplace_back(
-      Point3D(-halfWidth, halfLength, 0.0f), Vector3D(0.0f, 0.0f, 1.0f)
+      glm::vec3(-halfWidth, halfLength, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)
     );
     vertices.emplace_back(
-      Point3D(-halfWidth, -halfLength, 0.0f), Vector3D(0.0f, 0.0f, 1.0f)
+      glm::vec3(-halfWidth, -halfLength, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)
     );
     vertices.emplace_back(
-      Point3D(-halfWidth, -halfLength, 0.0f), Vector3D(0.0f, 0.0f, 1.0f)
+      glm::vec3(-halfWidth, -halfLength, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)
     );
     vertices.emplace_back(
-      Point3D(halfWidth, -halfLength, 0.0f), Vector3D(0.0f, 0.0f, 1.0f)
+      glm::vec3(halfWidth, -halfLength, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)
     );
     vertices.emplace_back(
-      Point3D(halfWidth, halfLength, 0.0f), Vector3D(0.0f, 0.0f, 1.0f)
+      glm::vec3(halfWidth, halfLength, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)
     );
 
-    Plane defaultPlane {Point3D(0.0f, 0.0f, 0.0f), Vector3D(0.0f, 0.0f, 1.0f)};
+    Plane defaultPlane {glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)};
     auto planeTransform = plane.getTransformToSelf(defaultPlane);
 
     return generateRenderData(vertices, planeTransform);

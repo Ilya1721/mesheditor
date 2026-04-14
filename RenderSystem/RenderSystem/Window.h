@@ -6,7 +6,6 @@
 #include <string>
 
 #include "Constants.h"
-#include "GeometryCore/Typedefs.h"
 #include "MeshCore/Intersection.h"
 #include "Object3DIntersection.h"
 #include "Viewport.h"
@@ -35,10 +34,10 @@ namespace RenderSystem
     Window(int width, int height, const std::string& meshFilePath);
     ~Window();
 
-    Point2D getCursorPos() const;
-    Point3D unProject(const Point2D& cursorPos, float depth = DEFAULT_Z_VALUE) const;
-    Point3D screenCoordinatesToNDC(
-      const Point2D& cursorPos, float depth = DEFAULT_Z_VALUE
+    glm::vec2 getCursorPos() const;
+    glm::vec3 unProject(const glm::vec2& cursorPos, float depth = DEFAULT_Z_VALUE) const;
+    glm::vec3 screenCoordinatesToNDC(
+      const glm::vec2& cursorPos, float depth = DEFAULT_Z_VALUE
     ) const;
     bool isMouseButtonPressed(int button) const;
     bool isKeyPressed(int key) const;
@@ -69,6 +68,6 @@ namespace RenderSystem
     std::unique_ptr<Viewport> mViewport;
     std::unique_ptr<OperationsDispatcher> mOperationsDispatcher;
     std::vector<ViewportListener*> mViewportListeners;
-    Point2D mSavedCursorPosition;
+    glm::vec2 mSavedCursorPosition;
   };
 }  // namespace RenderSystem

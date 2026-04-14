@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Typedefs.h"
+#include <glm/glm.hpp>
 
 namespace GeometryCore
 {
   struct Ray
   {
-    Point3D origin;
-    Vector3D direction;
+    glm::vec3 origin;
+    glm::vec3 direction;
 
     friend Ray operator*(const glm::mat4& transform, const Ray& ray);
   };

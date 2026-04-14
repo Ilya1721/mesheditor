@@ -11,8 +11,8 @@ namespace RenderSystem
   }
 
   void SurfaceHighlighter::onMouseMove(
-    [[maybe_unused]] const Point2D& startCursorPos,
-    [[maybe_unused]] const Point2D& endCursorPos
+    [[maybe_unused]] const glm::vec2& startCursorPos,
+    [[maybe_unused]] const glm::vec2& endCursorPos
   )
   {
     if (mEnabled)

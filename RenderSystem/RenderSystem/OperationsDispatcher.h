@@ -4,13 +4,10 @@
 #include <memory>
 #include <vector>
 
-#include "GeometryCore/Typedefs.h"
 #include "Operation.h"
 
 namespace RenderSystem
 {
-  using namespace GeometryCore;
-
   class Window;
   class Viewport;
   class Scene;
@@ -23,7 +20,7 @@ namespace RenderSystem
       Window* window, Viewport* viewport, Scene* scene, Camera* camera
     );
 
-    void onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos);
+    void onMouseMove(const glm::vec2& startCursorPos, const glm::vec2& endCursorPos);
     void onMouseScroll(double offset);
     void onMouseClick();
     void onKeyPressed(int key);

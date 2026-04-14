@@ -3,8 +3,6 @@
 #include <glm/glm.hpp>
 #include <unordered_set>
 
-#include "GeometryCore/Typedefs.h"
-
 namespace GeometryCore
 {
   struct Plane;
@@ -24,7 +22,7 @@ namespace MeshCore
     Plane getPerpendicularPlane() const;
 
     std::unordered_set<Face*> faces;
-    Vector3D normal {};
+    glm::vec3 normal {};
 
    private:
     Face* mInitialFace = nullptr;

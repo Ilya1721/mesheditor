@@ -172,7 +172,7 @@ namespace RenderSystem
     }
   }
 
-  Point2D Window::getCursorPos() const
+  glm::vec2 Window::getCursorPos() const
   {
     double x, y;
     glfwGetCursorPos(mWindow, &x, &y);
@@ -187,21 +187,21 @@ namespace RenderSystem
     }
   }
 
-  Point3D Window::unProject(const Point2D& cursorPos, float depth) const
+  glm::vec3 Window::unProject(const glm::vec2& cursorPos, float depth) const
   {
     glm::vec4 viewportData = {
       mViewport->getPos().x, mViewport->getPos().y, mViewport->getWidth(),
       mViewport->getHeight()
     };
-    Point3D cursorPosGL3D(cursorPos.x, mViewport->getHeight() - cursorPos.y, depth);
+    glm::vec3 cursorPosGL3D(cursorPos.x, mViewport->getHeight() - cursorPos.y, depth);
     return mScene->unProject(
       cursorPosGL3D, mViewport->getProjectionMatrix(), viewportData
     );
   }
 
-  Point3D Window::screenCoordinatesToNDC(const Point2D& cursorPos, float depth) const
+  glm::vec3 Window::screenCoordinatesToNDC(const glm::vec2& cursorPos, float depth) const
   {
-    Point3D ndcPos {};
+    glm::vec3 ndcPos {};
     ndcPos.x = (2.0f * cursorPos.x) / mViewport->getWidth() - 1.0f;
     ndcPos.y =
       2.0f * (mViewport->getHeight() - cursorPos.y) / mViewport->getHeight() - 1.0f;
@@ -238,7 +238,7 @@ namespace RenderSystem
 
   void Window::onMouseMove(double cursorX, double cursorY)
   {
-    Point2D currentCursorPosition(cursorX, cursorY);
+    glm::vec2 currentCursorPosition(cursorX, cursorY);
     mOperationsDispatcher->onMouseMove(mSavedCursorPosition, currentCursorPosition);
     mSavedCursorPosition = currentCursorPosition;
   }

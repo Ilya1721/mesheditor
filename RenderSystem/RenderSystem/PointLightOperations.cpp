@@ -13,7 +13,7 @@ namespace RenderSystem
   }
 
   void PointLightOperations::onMouseMove(
-    const Point2D& startCursorPos, const Point2D& endCursorPos
+    const glm::vec2& startCursorPos, const glm::vec2& endCursorPos
   )
   {
   }

@@ -16,7 +16,7 @@ namespace RenderSystem
   }
 
   PointLight* PointLights::addLight(
-    const PointLightParams& params, const Point3D& lightSourcePos
+    const PointLightParams& params, const glm::vec3& lightSourcePos
   )
   {
     auto index = mLights.size();

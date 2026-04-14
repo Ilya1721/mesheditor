@@ -13,9 +13,9 @@ namespace
 {
   using namespace MeshCore;
 
-  Vector3D calcAverage(const std::unordered_set<Vector3D>& vecSet)
+  glm::vec3 calcAverage(const std::unordered_set<glm::vec3>& vecSet)
   {
-    Vector3D result {};
+    glm::vec3 result {};
     for (const auto& vec : vecSet)
     {
       result += vec;

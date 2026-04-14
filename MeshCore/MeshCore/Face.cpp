@@ -23,7 +23,7 @@ namespace MeshCore
   {
   }
 
-  std::optional<Point3D> Face::getIntersectionPoint(const Ray& ray) const
+  std::optional<glm::vec3> Face::getIntersectionPoint(const Ray& ray) const
   {
     Plane facePlane(halfEdge->vertex->pos, calcNormal());
     auto rayPlaneIntersectionPoint = facePlane.getIntersectionPoint(ray);
@@ -36,7 +36,7 @@ namespace MeshCore
     return {};
   }
 
-  Vector3D Face::calcNormal() const
+  glm::vec3 Face::calcNormal() const
   {
     auto firstEdge = halfEdge->next->vertex->pos - halfEdge->vertex->pos;
     auto secondEdge = halfEdge->prev->vertex->pos - halfEdge->next->vertex->pos;
@@ -44,10 +44,10 @@ namespace MeshCore
     return glm::cross(firstEdge, secondEdge);
   }
 
-  bool Face::isPointInside(const Point3D& point) const
+  bool Face::isPointInside(const glm::vec3& point) const
   {
     auto verticesPositions = getVerticesPositions();
-    std::array<std::array<Vector3D, 3>, 3> littleTriangles {};
+    std::array<std::array<glm::vec3, 3>, 3> littleTriangles {};
     littleTriangles[0] = {
       verticesPositions[0] - point, verticesPositions[1] - verticesPositions[0],
       point - verticesPositions[1]
@@ -77,7 +77,7 @@ namespace MeshCore
     {
       auto crossProduct =
         glm::cross(littleTriangles[triangleIdx][1], littleTriangles[triangleIdx][2]);
-      if (!isEqual(crossProduct, Vector3D(0.0f, 0.0f, 0.0f)))
+      if (!isEqual(crossProduct, glm::vec3(0.0f, 0.0f, 0.0f)))
       {
         trianglesSquaresSum +=
           getSquareOfTriangle(littleTrianglesEdgesLengths[triangleIdx]);
@@ -87,9 +87,9 @@ namespace MeshCore
     return glm::epsilonEqual(trianglesSquaresSum, getSquare(), 1e-6f);
   }
 
-  std::vector<Vector3D> Face::getAllEdges() const
+  std::vector<glm::vec3> Face::getAllEdges() const
   {
-    std::vector<Vector3D> edges;
+    std::vector<glm::vec3> edges;
     EdgeWalker edgeWalker(halfEdge);
     edgeWalker.forEach(
       [&edges](const HalfEdge* edge)
@@ -109,7 +109,7 @@ namespace MeshCore
   }
 
   std::unordered_set<Face*> Face::getAdjacentFaces(
-    bool filterByNormal, const Vector3D* normalPtr
+    bool filterByNormal, const glm::vec3* normalPtr
   ) const
   {
     std::unordered_set<Face*> uniqueAdjacentFaces;
@@ -168,7 +168,7 @@ namespace MeshCore
   }
 
   void Face::move(
-    const Vector3D& movement, std::unordered_set<UniqueVertex*>& alreadyChangedVertices
+    const glm::vec3& movement, std::unordered_set<UniqueVertex*>& alreadyChangedVertices
   )
   {
     EdgeWalker edgeWalker(halfEdge);
@@ -185,9 +185,9 @@ namespace MeshCore
     );
   }
 
-  std::vector<Point3D> Face::getVerticesPositions() const
+  std::vector<glm::vec3> Face::getVerticesPositions() const
   {
-    std::vector<Point3D> verticesPositions;
+    std::vector<glm::vec3> verticesPositions;
     EdgeWalker edgeWalker(halfEdge);
     edgeWalker.forEach([&verticesPositions](const HalfEdge* edge)
                        { verticesPositions.emplace_back(edge->vertex->pos); });

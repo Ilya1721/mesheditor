@@ -1,26 +1,26 @@
 #pragma once
 
+#include <glm/glm.hpp>
 #include <memory>
 #include <variant>
 
 #include "ImageTexture.h"
-#include "Typedefs.h"
 
 namespace RenderSystem
 {
-  static inline constexpr RGB DEFAULT_RGB {1.0f, 1.0f, 1.0f};
+  static inline constexpr glm::vec3 DEFAULT_RGB {1.0f, 1.0f, 1.0f};
 
   struct RGBOrTexture
   {
-    RGB rgb = DEFAULT_RGB;
+    glm::vec3 rgb = DEFAULT_RGB;
     std::shared_ptr<ImageTexture> texture;
   };
 
   struct BlinnPhongMaterial
   {
-    RGB ambient = DEFAULT_RGB;
+    glm::vec3 ambient = DEFAULT_RGB;
     RGBOrTexture diffuse;
-    RGB specular = DEFAULT_RGB;
+    glm::vec3 specular = DEFAULT_RGB;
     float shininess;
   };
 
@@ -30,7 +30,7 @@ namespace RenderSystem
     float reflectionStrength;
     float transparency;
     float interpolationFactor;
-    RGB color = DEFAULT_RGB;
+    glm::vec3 color = DEFAULT_RGB;
   };
 
   struct PBRMaterial
@@ -38,7 +38,7 @@ namespace RenderSystem
     std::shared_ptr<ImageTexture> baseColorTexture;
     std::shared_ptr<ImageTexture> normalMap;
     std::shared_ptr<ImageTexture> metallicRougnessTexture;
-    RGB baseColor = DEFAULT_RGB;
+    glm::vec3 baseColor = DEFAULT_RGB;
     float metallic;
     float rougness;
   };

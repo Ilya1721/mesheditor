@@ -11,7 +11,7 @@ namespace RenderSystem
   {
   }
 
-  void Pan::onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos)
+  void Pan::onMouseMove(const glm::vec2& startCursorPos, const glm::vec2& endCursorPos)
   {
     auto middleMouseButtonPressed =
       mWindow->isMouseButtonPressed(GLFW_MOUSE_BUTTON_MIDDLE);

@@ -11,7 +11,7 @@ namespace RenderSystem
    public:
     AnimationPlayer(Scene* scene);
 
-    void onMouseMove(const Point2D& startCursorPos, const Point2D& endCursorPos)
+    void onMouseMove(const glm::vec2& startCursorPos, const glm::vec2& endCursorPos)
       override {};
     void onMouseScroll(double offset) override {};
     void onMouseClick() override {};

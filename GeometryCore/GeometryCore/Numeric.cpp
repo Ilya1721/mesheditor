@@ -5,7 +5,9 @@
 
 namespace GeometryCore
 {
-  bool isCloser(const Point3D& first, const Point3D& second, const Point3D& reference)
+  bool isCloser(
+    const glm::vec3& first, const glm::vec3& second, const glm::vec3& reference
+  )
   {
     return glm::distance(first, reference) < glm::distance(second, reference);
   }

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "GeometryCore/Typedefs.h"
 #include "Material.h"
 #include "MeshCore/AABBox.h"
 #include "RenderData.h"
@@ -23,7 +22,7 @@ namespace RenderSystem
     unsigned int renderMode;
 
     static SceneDecoration createDecoration(
-      const Point3D& point, const BlinnPhongMaterial& material
+      const glm::vec3& point, const BlinnPhongMaterial& material
     );
     static SceneDecoration createDecoration(
       const Ray& ray, float length, const BlinnPhongMaterial& material
@@ -39,15 +38,15 @@ namespace RenderSystem
       float sceneBBoxHeight, const BlinnPhongMaterial& floorBlinnPhongMaterial
     );
     static SceneDecoration createPlane(
-      const Point3D& origin,
-      const Vector3D& normal,
+      const glm::vec3& origin,
+      const glm::vec3& normal,
       float width,
       float height,
       const BlinnPhongMaterial& material
     );
     static SceneDecoration createLine(
-      const Point3D& start,
-      const Point3D& end,
+      const glm::vec3& start,
+      const glm::vec3& end,
       bool withArrowHead,
       const BlinnPhongMaterial& material
     );
@@ -59,7 +58,7 @@ namespace RenderSystem
       const MeshCore::AABBox& bbox, const BlinnPhongMaterial& material
     );
     static std::vector<SceneDecoration> createPoints(
-      const std::vector<Point3D>& points, const BlinnPhongMaterial& material
+      const std::vector<glm::vec3>& points, const BlinnPhongMaterial& material
     );
   };
 }  // namespace RenderSystem
