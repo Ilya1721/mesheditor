@@ -8,12 +8,12 @@ namespace RenderSystem
   {
     glm::vec3 position;
     glm::vec3 velocity;
-    glm::vec4 color;
+    glm::vec4 colorMultiplier;
 
     float sideLength;
-    float rotation;
-    float life;
-    float maxLife;
-    float frame;
+    float viewDirRotation;
+    float blendedFrameIdx;
+    float currentTime;
+    float duration;
   };
 }

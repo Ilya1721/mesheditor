@@ -3,9 +3,10 @@
 #ifdef __gl_h_
 #undef __gl_h_
 #endif
+#include <glad/glad.h>
+
 #include "Constants.h"
-#include "glad/glad.h"
-#include "stb_image/stb_image.h"
+#include "ImageLoader.h"
 
 namespace RenderSystem
 {
@@ -14,21 +15,9 @@ namespace RenderSystem
     create(width, height, nullptr, 4);
   }
 
-  ImageTexture::ImageTexture(ImageTexture&& other) noexcept
-  {
-    *this = std::move(other);
-  }
-
-  ImageTexture& ImageTexture::operator=(ImageTexture&& other) noexcept
-  {
-    if (this != &other)
-    {
-      Texture2D::operator=(std::move(other));
-    }
-    return *this;
-  }
-
-  void ImageTexture::create(int width, int height, unsigned char* data, int colorChannels)
+  void ImageTexture::create(
+    int width, int height, const unsigned char* data, int colorChannels
+  )
   {
     invoke(
       [&width, &height, &data, &colorChannels, this]()
@@ -57,26 +46,19 @@ namespace RenderSystem
 
   ImageTexture::ImageTexture(const std::string& filePath) : Texture2D()
   {
-    if (filePath.empty())
-    {
-      return;
-    }
-    int colorChannels = 0;
-    auto data = stbi_load(filePath.c_str(), &mWidth, &mHeight, &colorChannels, 0);
-    create(mWidth, mHeight, data, colorChannels);
-    stbi_image_free(data);
+    loadImage(
+      filePath,
+      [this](int width, int height, const unsigned char* decodedData, int colorChannels)
+      { create(width, height, decodedData, colorChannels); }
+    );
   }
 
-  ImageTexture::ImageTexture(const unsigned char* data, int dataLength)
+  ImageTexture::ImageTexture(const unsigned char* data, int dataSize)
   {
-    if (data == nullptr || dataLength <= 0)
-    {
-      return;
-    }
-    int width {}, height {}, colorChannels {};
-    auto decoded =
-      stbi_load_from_memory(data, dataLength, &width, &height, &colorChannels, 0);
-    create(width, height, decoded, colorChannels);
-    stbi_image_free(decoded);
+    loadImage(
+      data, dataSize,
+      [this](int width, int height, const unsigned char* decodedData, int colorChannels)
+      { create(width, height, decodedData, colorChannels); }
+    );
   }
 }  // namespace RenderSystem

@@ -19,6 +19,9 @@ namespace RenderSystem
    private:
     void initParameters();
     void loadCubemapFaces(const std::array<path, 6>& faces);
+    void createCubemapTexture(
+      int width, int height, const unsigned char* data, int colorChannels, int faceIdx
+    );
     void bind() const override;
     void unbind() const override;
   };

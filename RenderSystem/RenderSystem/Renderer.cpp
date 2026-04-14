@@ -6,7 +6,7 @@
 #undef __gl_h_
 #endif
 #include "Object3D.h"
-#include "glad/glad.h"
+#include <glad/glad.h>
 
 using namespace MeshCore;
 

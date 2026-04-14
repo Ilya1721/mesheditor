@@ -5,8 +5,9 @@
 #ifdef __gl_h_
 #undef __gl_h_
 #endif
+#include <glad/glad.h>
+
 #include "Constants.h"
-#include "glad/glad.h"
 
 namespace RenderSystem
 {

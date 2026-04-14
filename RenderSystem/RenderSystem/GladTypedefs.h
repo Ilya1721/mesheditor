@@ -3,9 +3,9 @@
 #ifdef __gl_h_
 #undef __gl_h_
 #endif
-#include <functional>
+#include <glad/glad.h>
 
-#include "glad/glad.h"
+#include <functional>
 
 namespace RenderSystem
 {

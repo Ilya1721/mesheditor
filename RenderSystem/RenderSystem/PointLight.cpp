@@ -3,11 +3,12 @@
 #ifdef __gl_h_
 #undef __gl_h_
 #endif
+#include <glad/glad.h>
+
 #include <format>
 #include <glm/gtc/type_ptr.hpp>
 
 #include "LightParams.h"
-#include "glad/glad.h"
 
 namespace RenderSystem
 {

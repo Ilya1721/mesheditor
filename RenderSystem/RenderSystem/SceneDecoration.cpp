@@ -3,12 +3,13 @@
 #ifdef __gl_h_
 #undef __gl_h_
 #endif
+#include <glad/glad.h>
+
 #include "Constants.h"
 #include "GeometryCore/Line.h"
 #include "GeometryCore/Plane.h"
 #include "GeometryCore/Ray.h"
 #include "MeshCore/Vertex.h"
-#include "glad/glad.h"
 
 using namespace MeshCore;
 

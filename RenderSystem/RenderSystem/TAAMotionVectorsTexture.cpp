@@ -3,16 +3,10 @@
 #ifdef __gl_h_
 #undef __gl_h_
 #endif
-#include "glad/glad.h"
+#include <glad/glad.h>
 
 namespace RenderSystem
 {
-  TAAMotionVectorsTexture::TAAMotionVectorsTexture(int width, int height)
-    : Texture2D(width, height)
-  {
-    create(width, height);
-  }
-
   void TAAMotionVectorsTexture::create(int width, int height)
   {
     invoke(

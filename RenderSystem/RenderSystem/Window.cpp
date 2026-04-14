@@ -3,6 +3,7 @@
 #ifdef __gl_h_
 #undef __gl_h_
 #endif
+#include <glad/glad.h>
 #include <glfw/glfw3.h>
 
 #include <iostream>
@@ -12,7 +13,6 @@
 #include "OperationsDispatcher.h"
 #include "Scene.h"
 #include "Viewport.h"
-#include "glad/glad.h"
 
 namespace
 {

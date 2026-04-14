@@ -5,7 +5,7 @@
 #ifdef __gl_h_
 #undef __gl_h_
 #endif
-#include "glad/glad.h"
+#include <glad/glad.h>
 
 namespace RenderSystem
 {
@@ -43,7 +43,7 @@ namespace RenderSystem
   void ShadowMapShaderProgram::setUseSkinningTransform(bool useSkinningTransform)
   {
     invoke([this, useSkinningTransform]()
-      { glUniform1i(mUseSkinningTransform, useSkinningTransform); });
+           { glUniform1i(mUseSkinningTransform, useSkinningTransform); });
   }
 
   void ShadowMapShaderProgram::setSkinningTransforms(

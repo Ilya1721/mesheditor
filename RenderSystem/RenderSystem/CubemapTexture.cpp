@@ -3,9 +3,9 @@
 #ifdef __gl_h_
 #undef __gl_h_
 #endif
-#include <stb_image/stb_image.h>
+#include <glad/glad.h>
 
-#include "glad/glad.h"
+#include "ImageLoader.h"
 
 namespace RenderSystem
 {
@@ -31,28 +31,29 @@ namespace RenderSystem
 
   void CubemapTexture::loadCubemapFaces(const std::array<path, 6>& faces)
   {
+    for (unsigned int faceIdx = 0; faceIdx < faces.size(); ++faceIdx)
+    {
+      loadImage(
+        faces[faceIdx].string(),
+        [faceIdx,
+         this](int width, int height, const unsigned char* decodedData, int colorChannels)
+        { createCubemapTexture(width, height, decodedData, colorChannels, faceIdx); }
+      );
+    }
+  }
+
+  void CubemapTexture::createCubemapTexture(
+    int width, int height, const unsigned char* data, int colorChannels, int faceIdx
+  )
+  {
     invoke(
-      [&faces]()
+      [&width, &height, &data, &colorChannels, &faceIdx, this]()
       {
-        int width, height, nrChannels;
-        for (unsigned int i = 0; i < faces.size(); ++i)
-        {
-          unsigned char* data =
-            stbi_load(faces[i].string().c_str(), &width, &height, &nrChannels, 0);
-          const auto colorFormat = getColorFormat(nrChannels);
-          if (data)
-          {
-            glTexImage2D(
-              GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, colorFormat, width, height, 0,
-              colorFormat, GL_UNSIGNED_BYTE, data
-            );
-            stbi_image_free(data);
-          }
-          else
-          {
-            stbi_image_free(data);
-          }
-        }
+        const auto colorFormat = getColorFormat(colorChannels);
+        glTexImage2D(
+          GL_TEXTURE_CUBE_MAP_POSITIVE_X + faceIdx, 0, colorFormat, width, height, 0,
+          colorFormat, GL_UNSIGNED_BYTE, data
+        );
       }
     );
   }

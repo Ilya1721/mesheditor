@@ -157,8 +157,10 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <ClCompile Include="RenderSystem\CubemapTexture.cpp" />
     <ClCompile Include="RenderSystem\DebugVisualization.cpp" />
     <ClCompile Include="RenderSystem\ExtraRenderModesController.cpp" />
+    <ClCompile Include="RenderSystem\FlipbookTexture.cpp" />
     <ClCompile Include="RenderSystem\GlassShaderProgram.cpp" />
     <ClCompile Include="RenderSystem\GLTFModelLoader.cpp" />
+    <ClCompile Include="RenderSystem\ImageLoader.cpp" />
     <ClCompile Include="RenderSystem\ModelLoader.cpp" />
     <ClCompile Include="RenderSystem\ObjModelLoader.cpp" />
     <ClCompile Include="RenderSystem\ParticlesController.cpp" />
@@ -225,8 +227,10 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <ClInclude Include="RenderSystem\CubemapTexture.h" />
     <ClInclude Include="RenderSystem\DebugVisualization.h" />
     <ClInclude Include="RenderSystem\ExtraRenderModesController.h" />
+    <ClInclude Include="RenderSystem\FlipbookTexture.h" />
     <ClInclude Include="RenderSystem\GlassShaderProgram.h" />
     <ClInclude Include="RenderSystem\GLTFModelLoader.h" />
+    <ClInclude Include="RenderSystem\ImageLoader.h" />
     <ClInclude Include="RenderSystem\ModelLoader.h" />
     <ClInclude Include="RenderSystem\ObjModelLoader.h" />
     <ClInclude Include="RenderSystem\Particle.h" />

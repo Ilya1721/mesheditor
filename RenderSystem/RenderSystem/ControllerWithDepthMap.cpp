@@ -3,8 +3,9 @@
 #ifdef __gl_h_
 #undef __gl_h_
 #endif
+#include <glad/glad.h>
+
 #include "ShaderProgram.h"
-#include "glad/glad.h"
 
 namespace RenderSystem
 {
