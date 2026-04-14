@@ -21,8 +21,6 @@ namespace
     {
       return glm::slerp(left.value, right.value, interpolationFactor);
     }
-
-    return T();
   }
 
   template <typename T>

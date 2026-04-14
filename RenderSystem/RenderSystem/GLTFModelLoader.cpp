@@ -102,7 +102,6 @@ namespace
   void parseJoints(
     const fastgltf::Asset& asset,
     const fastgltf::Skin& skin,
-    const fastgltf::Node& node,
     const std::unordered_map<size_t, size_t>& nodeToJointMap,
     Skeleton& skeleton
   )
@@ -121,7 +120,7 @@ namespace
     }
   }
 
-  size_t findRootJointIdx(const std::vector<Joint>& joints)
+  int findRootJointIdx(const std::vector<Joint>& joints)
   {
     for (size_t jointIdx = 0; jointIdx < joints.size(); ++jointIdx)
     {
@@ -174,7 +173,7 @@ namespace
     nodeToJointMap = mapNodeToJoint(skin);
 
     Skeleton skeleton;
-    parseJoints(asset, skin, node, nodeToJointMap, skeleton);
+    parseJoints(asset, skin, nodeToJointMap, skeleton);
     skeleton.rootJointIndex = findRootJointIdx(skeleton.joints);
     calcJointGlobalTransform(skeleton, skeleton.rootJointIndex, glm::mat4(1.0f));
 
@@ -200,10 +199,10 @@ namespace
   {
     switch (interpolation)
     {
-    case fastgltf::AnimationInterpolation::Linear:
-      return Interpolation::Linear;
-    case fastgltf::AnimationInterpolation::Step:
-      return Interpolation::Step;
+      case fastgltf::AnimationInterpolation::Linear:
+        return Interpolation::Linear;
+      case fastgltf::AnimationInterpolation::Step:
+        return Interpolation::Step;
     }
 
     return Interpolation::Unknown;
@@ -303,8 +302,6 @@ namespace
       glm::quat value(vec4.w, vec4.x, vec4.y, vec4.z);
       return glm::normalize(value);
     }
-
-    return T();
   }
 
   std::vector<Animation> parseAnimations(
