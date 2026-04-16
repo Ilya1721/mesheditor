@@ -1,12 +1,12 @@
 #include "Camera.h"
 
+#include <glm/gtc/constants.hpp>
 #include <glm/gtc/epsilon.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/vector_angle.hpp>
 
 #include "Constants.h"
-#include "GeometryCore/Constants.h"
 #include "GeometryCore/Numeric.h"
 #include "GeometryCore/Plane.h"
 #include "GeometryCore/Ray.h"
@@ -154,7 +154,7 @@ namespace RenderSystem
   glm::mat4 Camera::getCorrectionOrbitTransform() const
   {
     glm::vec3 yAxis(0.0f, 1.0f, 0.0f);
-    auto angle = glm::angle(mRight, yAxis) - HALF_PI;
+    auto angle = glm::angle(mRight, yAxis) - glm::half_pi<float>();
     auto rotationAxis = glm::cross(mRight, yAxis);
 
     return glm::rotate(angle, rotationAxis);

@@ -220,13 +220,6 @@ namespace RenderSystem
     return glfwGetKey(mWindow, key) == GLFW_PRESS;
   }
 
-  Object3DIntersection Window::getCursorSceneIntersection(
-    IntersectionMode intersectionMode
-  )
-  {
-    return mScene->getRayIntersection(castCursorRay(), intersectionMode);
-  }
-
   Ray Window::castCursorRay() const
   {
     auto nearCursorPosInWorldSpace = unProject(getCursorPos(), 0.0f);

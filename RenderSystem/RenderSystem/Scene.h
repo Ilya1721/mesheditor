@@ -13,6 +13,8 @@
 #include "LightParams.h"
 #include "Object3D.h"
 #include "Object3DIntersection.h"
+#include "ParticlesController.h"
+#include "ParticlesShaderProgram.h"
 #include "PBRShaderProgram.h"
 #include "Renderer.h"
 #include "SceneDecorationsController.h"
@@ -36,9 +38,10 @@ namespace RenderSystem
     Scene(Scene&& scene) = delete;
 
     Object3DIntersection getRayIntersection(
-      const Ray& cursorRay, IntersectionMode intersectionMode
+      const Ray& cursorRay, IntersectionMode intersectionMode = IntersectionMode::SURFACE
     );
     Object3D* getPickedObject() const;
+    glm::vec3 getGroundPlaneIntersection(const Ray& cursorRay) const;
     glm::vec3 getDefaultPointLightSourcePos() const;
     const Object3D& getRootObject() const;
     std::vector<ViewportListener*> getViewportListeners();
@@ -65,6 +68,12 @@ namespace RenderSystem
     void nextAnimation();
     void prevAnimation();
     void setObjectToAnimate(Object3D* object);
+
+    void updateParticles(float lastFrameTime);
+    void startGeneratingParticles(const glm::vec3& point);
+    void stopGeneratingParticles();
+    void moreParticles();
+    void lessParticles();
 
    private:
     const TAAColorTexture& resolveTAA();
@@ -118,6 +127,7 @@ namespace RenderSystem
     void initControllers();
     void initListeners();
     void initDirLight();
+    void initParticles();
 
    private:
     std::unique_ptr<Renderer> mRenderer;
@@ -127,12 +137,14 @@ namespace RenderSystem
     std::unique_ptr<GlassShaderProgram> mGlassShaderProgram;
     std::unique_ptr<ShadowShaderProgram> mShadowShaderProgram;
     std::unique_ptr<ScreenShaderProgram> mScreenShaderProgram;
+    std::unique_ptr<ParticlesShaderProgram> mParticlesShaderProgram;
     std::unique_ptr<ShadowMapController> mShadowMapController;
     std::unique_ptr<SkyboxController> mSkyboxController;
     std::unique_ptr<TAAController> mTAAController;
     std::unique_ptr<SceneDecorationsController> mDecorationsController;
     std::unique_ptr<ExtraRenderModesController> mExtraRenderModesController;
     std::unique_ptr<AnimationController> mAnimationController;
+    std::unique_ptr<ParticlesController> mParticlesController;
     std::vector<CameraListener*> mCameraListeners;
 
     Object3D* mModelObject;

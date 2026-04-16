@@ -142,6 +142,10 @@ namespace RenderSystem
     R"(./RenderSystem/Shaders/SkyboxShader.vert)";
   const std::filesystem::path SKYBOX_FRAGMENT_SHADER_PATH =
     R"(./RenderSystem/Shaders/SkyboxShader.frag)";
+  const std::filesystem::path PARTICLES_VERTEX_SHADER_PATH =
+    R"(./RenderSystem/Shaders/ParticlesShader.vert)";
+  const std::filesystem::path PARTICLES_FRAGMENT_SHADER_PATH =
+    R"(./RenderSystem/Shaders/ParticlesShader.frag)";
   const std::array<std::filesystem::path, 6> SKYBOX_CUBEMAP_TEXTURES = {
     R"(./ThirdParty/resources/textures/skybox/right.png)",
     R"(./ThirdParty/resources/textures/skybox/left.png)",
@@ -151,7 +155,9 @@ namespace RenderSystem
     R"(./ThirdParty/resources/textures/skybox/back.png)",
   };
   const std::string FLOOR_MESH_PATH =
-    R"(C:/MyPersonalSpace/Dev/3DModels/Blender/Floor/Floor.obj)";
+    R"(./ThirdParty/Models/Floor/Obj/Floor.obj)";
+  const std::string FIRE_FLIPBOOK_PATH =
+    R"(./ThirdParty/resources/textures/fire/FireFlipbook.png)";
 
   constexpr int SAMPLE_COUNT_TAA = 8;
 
@@ -168,4 +174,6 @@ namespace RenderSystem
   const std::unordered_set<std::string> SUPPORTED_TEXTURE_EXTENSIONS = {
     ".png", ".jpg", ".jpeg", ".bmp", ".tga"
   };
+  constexpr size_t MAX_PARTICLES = 1000;
+  constexpr float PARTICLES_PER_SECOND = 200.0f;
 }  // namespace RenderSystem

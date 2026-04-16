@@ -41,9 +41,7 @@ namespace RenderSystem
     ) const;
     bool isMouseButtonPressed(int button) const;
     bool isKeyPressed(int key) const;
-    Object3DIntersection getCursorSceneIntersection(
-      IntersectionMode intersectionMode = IntersectionMode::SURFACE
-    );
+    Ray castCursorRay() const;
 
     void render();
 
@@ -60,7 +58,6 @@ namespace RenderSystem
     void setCallbacks();
     void onViewportChanged();
     void addViewportListeners();
-    Ray castCursorRay() const;
 
    private:
     GLFWwindow* mWindow;

@@ -42,6 +42,7 @@ namespace RenderSystem
     initListeners();
     initSceneObjects(meshFilePath);
     initDirLight();
+    initParticles();
   }
 
   void Scene::initShaders()
@@ -60,6 +61,9 @@ namespace RenderSystem
     );
     mScreenShaderProgram = std::make_unique<ScreenShaderProgram>(
       SCREEN_VERTEX_SHADER_PATH, SCREEN_FRAGMENT_SHADER_PATH
+    );
+    mParticlesShaderProgram = std::make_unique<ParticlesShaderProgram>(
+      PARTICLES_VERTEX_SHADER_PATH, PARTICLES_FRAGMENT_SHADER_PATH
     );
     mBlinnPhongShaderProgram->setDirLightParams(DIR_LIGHT_PARAMS);
     mPBRShaderProgram->setLightColor(PBR_LIGHT_COLOR);
@@ -85,6 +89,7 @@ namespace RenderSystem
       mRenderer.get(), &mSceneObjectVertexOffsetMap
     );
     mAnimationController = std::make_unique<AnimationController>();
+    mParticlesController = std::make_unique<ParticlesController>();
   }
 
   void Scene::initSceneObjects(const std::string& meshFilePath)
@@ -121,7 +126,8 @@ namespace RenderSystem
       mCameraListeners.end(),
       std::initializer_list<CameraListener*> {
         mBlinnPhongShaderProgram.get(), mPBRShaderProgram.get(), mSkyboxController.get(),
-        mGlassShaderProgram.get(), mShadowShaderProgram.get()
+        mGlassShaderProgram.get(), mShadowShaderProgram.get(),
+        mParticlesShaderProgram.get()
       }
     );
   }
@@ -144,10 +150,19 @@ namespace RenderSystem
   {
     mBlinnPhongShaderProgram->setDirLightSourcePos(DIR_LIGHT_POS);
     mPBRShaderProgram->setLightPos(DIR_LIGHT_POS);
-    const auto& lightViewMatrix =
-      glm::lookAt(DIR_LIGHT_POS, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    const auto& lightViewMatrix = glm::lookAt(
+      DIR_LIGHT_POS, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)
+    );
     mShadowMapController->setLightView(lightViewMatrix);
     mShadowShaderProgram->setLightView(lightViewMatrix);
+  }
+
+  void Scene::initParticles()
+  {
+    const auto& flipbook = mParticlesController->getFlipbook();
+    mParticlesShaderProgram->setFlipbookCols(flipbook.cols);
+    mParticlesShaderProgram->setFlipbookRows(flipbook.rows);
+    mParticlesShaderProgram->setFlipbookTexture(*flipbook.texture);
   }
 
   void Scene::updateSkinningTransforms(float lastFrameTime)
@@ -181,6 +196,31 @@ namespace RenderSystem
     mPBRShaderProgram->setUseSkinningTransform(useSkinningTransforms);
     mShadowMapController->setUseSkinningTransform(useSkinningTransforms);
     mShadowShaderProgram->setUseSkinningTransform(useSkinningTransforms);
+  }
+
+  void Scene::updateParticles(float lastFrameTime)
+  {
+    mParticlesController->update(lastFrameTime);
+  }
+
+  void Scene::startGeneratingParticles(const glm::vec3& point)
+  {
+    mParticlesController->startGeneratingParticles(point);
+  }
+
+  void Scene::stopGeneratingParticles()
+  {
+    mParticlesController->stopGeneratingParticles();
+  }
+
+  void Scene::moreParticles()
+  {
+    mParticlesController->moreParticles();
+  }
+
+  void Scene::lessParticles()
+  {
+    mParticlesController->lessParticles();
   }
 
   void Scene::setBlinnPhongMaterial(const BlinnPhongMaterial& material)
@@ -528,7 +568,9 @@ namespace RenderSystem
     mExtraRenderModesController->setHighlightedFacesData(data);
   }
 
-  void Scene::addPointLight(const PointLightParams& params, const glm::vec3& lightSourcePos)
+  void Scene::addPointLight(
+    const PointLightParams& params, const glm::vec3& lightSourcePos
+  )
   {
     auto pointLight = mBlinnPhongShaderProgram->addPointLight(params, lightSourcePos);
     auto pointLightRadius = mModelObject->getBBox().getHeight() * 0.05f;
@@ -573,6 +615,15 @@ namespace RenderSystem
     return mPickedObject;
   }
 
+  glm::vec3 Scene::getGroundPlaneIntersection(const Ray& cursorRay) const
+  {
+    glm::vec3 origin(0.0f, 0.0f, 0.0f);
+    Plane groundPlane(origin, glm::vec3(0.0f, 1.0f, 0.0f));
+    auto intersectionPoint = groundPlane.getIntersectionPoint(cursorRay);
+
+    return intersectionPoint.value_or(origin);
+  }
+
   glm::vec3 Scene::getDefaultPointLightSourcePos() const
   {
     const auto& bbox = mModelObject->getBBox();
@@ -590,7 +641,8 @@ namespace RenderSystem
   std::vector<ViewportListener*> Scene::getViewportListeners()
   {
     return {
-      this, mShadowMapController.get(), mTAAController.get(), mSkyboxController.get()
+      this, mShadowMapController.get(), mTAAController.get(), mSkyboxController.get(),
+      mParticlesShaderProgram.get()
     };
   }
 

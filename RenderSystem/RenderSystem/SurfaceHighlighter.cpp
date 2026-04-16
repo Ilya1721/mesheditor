@@ -17,7 +17,8 @@ namespace RenderSystem
   {
     if (mEnabled)
     {
-      auto intersectionData = mWindow->getCursorSceneIntersection();
+      auto cursorRay = mWindow->castCursorRay();
+      auto intersectionData = mScene->getRayIntersection(cursorRay);
       mScene->setHighlightedFacesData(
         {intersectionData.raySurfaceIntersection.surfaceIndices,
          intersectionData.intersectedObject}

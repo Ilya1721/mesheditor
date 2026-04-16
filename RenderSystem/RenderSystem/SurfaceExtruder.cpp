@@ -44,7 +44,8 @@ namespace RenderSystem
   {
     if (mEnabled && mWindow->isMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT))
     {
-      mIntersectionData = mWindow->getCursorSceneIntersection();
+      auto cursorRay = mWindow->castCursorRay();
+      mIntersectionData = mScene->getRayIntersection(cursorRay);
       toggleSurfaceMovement(
         !mIntersectionData.raySurfaceIntersection.surfaceIndices.empty()
       );
