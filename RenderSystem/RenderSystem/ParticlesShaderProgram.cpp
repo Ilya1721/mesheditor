@@ -21,8 +21,10 @@ namespace RenderSystem
       mView(),
       mProjection(),
       mFlipbookCols(),
-      mFlipbookRows()
+      mFlipbookRows(),
+      mFlipbookTexture()
   {
+    initUniformLocations();
   }
 
   void ParticlesShaderProgram::onCameraPosChanged(Camera* camera)

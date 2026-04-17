@@ -56,7 +56,14 @@ namespace RenderSystem
   {
     mParticlesRenderBuffer.invoke(
       [activeParticlesCount]()
-      { glDrawArraysInstanced(GL_TRIANGLES, 0, 6, activeParticlesCount); }
+      {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glDepthMask(GL_FALSE);
+        glDrawArraysInstanced(GL_TRIANGLES, 0, 6, activeParticlesCount);
+        glDisable(GL_BLEND);
+        glDepthMask(GL_TRUE);
+      }
     );
   }
 

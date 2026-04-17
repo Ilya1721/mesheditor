@@ -5,6 +5,7 @@
 #include "Mover.h"
 #include "Orbit.h"
 #include "Pan.h"
+#include "ParticlesGenerator.h"
 #include "Picker.h"
 #include "PointLightOperations.h"
 #include "SurfaceExtruder.h"
@@ -69,5 +70,6 @@ namespace RenderSystem
     addOperation<Cloner>(mScene);
     addOperation<PointLightOperations>(mScene);
     addOperation<AnimationPlayer>(mScene);
+    addOperation<ParticlesGenerator>(mWindow, mScene);
   }
 }  // namespace RenderSystem

@@ -161,7 +161,6 @@ namespace RenderSystem
     const auto& flipbook = mParticlesController->getFlipbook();
     mParticlesShaderProgram->setFlipbookCols(flipbook.cols);
     mParticlesShaderProgram->setFlipbookRows(flipbook.rows);
-    mParticlesShaderProgram->setFlipbookTexture(*flipbook.texture);
   }
 
   void Scene::initRenderer()
@@ -417,6 +416,8 @@ namespace RenderSystem
 
   void Scene::renderParticles()
   {
+    const auto& flipbook = mParticlesController->getFlipbook();
+    mParticlesShaderProgram->setFlipbookTexture(*flipbook.texture);
     mParticlesShaderProgram->invoke(
       [this]()
       {
@@ -624,6 +625,7 @@ namespace RenderSystem
   void Scene::render(float lastFrameTime)
   {
     updateSkinningTransforms(lastFrameTime);
+    updateParticles(lastFrameTime);
     mRenderer->cleanScreen();
     mTAAController->setView(mCamera->getViewMatrix());
     auto projection = mTAAController->makeJitteredProjection();
