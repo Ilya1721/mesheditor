@@ -2,7 +2,7 @@
 
 #include "Material.h"
 #include "MeshCore/AABBox.h"
-#include "RenderData.h"
+#include "MeshRenderData.h"
 
 namespace GeometryCore
 {
@@ -17,7 +17,7 @@ namespace RenderSystem
 {
   struct SceneDecoration
   {
-    RenderData renderData;
+    MeshRenderData renderData;
     BlinnPhongMaterial material;
     unsigned int renderMode;
 

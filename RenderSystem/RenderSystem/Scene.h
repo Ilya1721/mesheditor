@@ -77,6 +77,7 @@ namespace RenderSystem
 
    private:
     const TAAColorTexture& resolveTAA();
+    ParticlesRenderData getParticlesRenderData() const;
 
     void addModelObject(const std::string& meshFilePath);
     void addFloorAsObject();
@@ -113,6 +114,7 @@ namespace RenderSystem
     void renderSkybox();
     void renderFinalScreenTexture(const Texture2D& texture);
     void renderShadows();
+    void renderParticles();
 
     void registerListenersCallbacks();
     void registerRootObjectCallbacks();
@@ -128,6 +130,7 @@ namespace RenderSystem
     void initListeners();
     void initDirLight();
     void initParticles();
+    void initRenderer();
 
    private:
     std::unique_ptr<Renderer> mRenderer;
@@ -151,7 +154,7 @@ namespace RenderSystem
     Object3D* mPickedObject;
     float mAspectRatio;
 
-    RenderData mSceneRenderData;
+    MeshRenderData mSceneRenderData;
     std::unordered_map<const Object3D*, int> mSceneObjectVertexOffsetMap;
     Object3D mRootObject;
   };

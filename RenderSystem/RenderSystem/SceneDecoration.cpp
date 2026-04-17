@@ -18,7 +18,7 @@ namespace
   using namespace RenderSystem;
 
   SceneDecoration getBaseSceneDecoration(
-    const BlinnPhongMaterial& material, int renderMode, const RenderData& renderData
+    const BlinnPhongMaterial& material, int renderMode, const MeshRenderData& renderData
   )
   {
     SceneDecoration primitive;
@@ -36,7 +36,7 @@ namespace RenderSystem
     const glm::vec3& point, const BlinnPhongMaterial& params
   )
   {
-    return getBaseSceneDecoration(params, GL_POINTS, RenderData::createRenderData(point));
+    return getBaseSceneDecoration(params, GL_POINTS, MeshRenderData::createRenderData(point));
   }
 
   SceneDecoration SceneDecoration::createDecoration(
@@ -44,7 +44,7 @@ namespace RenderSystem
   )
   {
     return getBaseSceneDecoration(
-      material, GL_LINES, RenderData::createRenderData(ray, length)
+      material, GL_LINES, MeshRenderData::createRenderData(ray, length)
     );
   }
 
@@ -53,7 +53,7 @@ namespace RenderSystem
   )
   {
     return getBaseSceneDecoration(
-      material, GL_LINES, RenderData::createRenderData(line, withArrowHead)
+      material, GL_LINES, MeshRenderData::createRenderData(line, withArrowHead)
     );
   }
 
@@ -65,7 +65,7 @@ namespace RenderSystem
   )
   {
     return getBaseSceneDecoration(
-      material, GL_TRIANGLES, RenderData::createRenderData(plane, width, length)
+      material, GL_TRIANGLES, MeshRenderData::createRenderData(plane, width, length)
     );
   }
 

@@ -3,8 +3,12 @@
 #include <functional>
 #include <unordered_map>
 
-#include "RenderBuffer.h"
+#include "MeshRenderBuffer.h"
+#include "MeshRenderData.h"
+#include "ParticlesRenderBuffer.h"
+#include "ParticlesRenderData.h"
 #include "SceneDecoration.h"
+#include "StaticQuadRenderBuffer.h"
 
 namespace RenderSystem
 {
@@ -28,19 +32,24 @@ namespace RenderSystem
     void renderObjectHighlighted(const Object3D& object, int vertexOffset);
     void renderSkybox();
     void renderScreenQuad();
-    void loadModelRenderData(const RenderData& renderData);
-    void loadDecorationsRenderData(const RenderData& renderData);
-    void loadSkyboxRenderData(const RenderData& renderData);
-    void loadScreenQuadRenderData();
+    void renderParticles(size_t activeParticlesCount);
+    void loadModelRenderData(const MeshRenderData& renderData);
+    void loadDecorationsRenderData(const MeshRenderData& renderData);
+    void loadSkyboxRenderData(const MeshRenderData& renderData);
+    void loadParticlesRenderData();
+    void loadParticleQuadRenderData(const std::vector<float>& renderData);
+    void loadScreenQuadRenderData(const std::vector<float>& renderData);
+    void updateParticlesRenderData(const ParticlesRenderData& renderData);
     void cleanScreen();
 
    private:
     void renderOverlayPrimitive(const std::function<void()>& renderFunc);
 
    private:
-    RenderBuffer mModelRenderBuffer;
-    RenderBuffer mDecorationsRenderBuffer;
-    RenderBuffer mSkyboxRenderBuffer;
-    RenderBuffer mScreenQuadRenderBuffer;
+    MeshRenderBuffer mModelRenderBuffer;
+    MeshRenderBuffer mDecorationsRenderBuffer;
+    MeshRenderBuffer mSkyboxRenderBuffer;
+    StaticQuadRenderBuffer mScreenQuadRenderBuffer;
+    ParticlesRenderBuffer mParticlesRenderBuffer;
   };
 }  // namespace RenderSystem

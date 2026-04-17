@@ -97,8 +97,7 @@ namespace RenderSystem
     registerRootObjectCallbacks();
     addModelObject(meshFilePath);
     addFloorAsObject();
-    mRenderer->loadSkyboxRenderData(RenderData::getSkyboxRenderData());
-    mRenderer->loadScreenQuadRenderData();
+    initRenderer();
   }
 
   void Scene::initListeners()
@@ -165,6 +164,14 @@ namespace RenderSystem
     mParticlesShaderProgram->setFlipbookTexture(*flipbook.texture);
   }
 
+  void Scene::initRenderer()
+  {
+    mRenderer->loadSkyboxRenderData(MeshRenderData::getSkyboxRenderData());
+    mRenderer->loadScreenQuadRenderData(SCREEN_QUAD_VERTICES);
+    mRenderer->loadParticleQuadRenderData(PARTICLE_QUAD_VERTICES);
+    mRenderer->loadParticlesRenderData();
+  }
+
   void Scene::updateSkinningTransforms(float lastFrameTime)
   {
     mAnimationController->updateSkinningTransforms(lastFrameTime);
@@ -201,6 +208,8 @@ namespace RenderSystem
   void Scene::updateParticles(float lastFrameTime)
   {
     mParticlesController->update(lastFrameTime);
+    auto renderData = getParticlesRenderData();
+    mRenderer->updateParticlesRenderData(renderData);
   }
 
   void Scene::startGeneratingParticles(const glm::vec3& point)
@@ -406,6 +415,18 @@ namespace RenderSystem
     }
   }
 
+  void Scene::renderParticles()
+  {
+    mParticlesShaderProgram->invoke(
+      [this]()
+      {
+        const auto& activeParticlesIndices =
+          mParticlesController->getActiveParticlesIndices();
+        mRenderer->renderParticles(activeParticlesIndices.size());
+      }
+    );
+  }
+
   void Scene::renderRawScene(
     const std::function<void(const Object3D*)>& prerenderSetup, bool invokeModelShaders
   )
@@ -421,6 +442,7 @@ namespace RenderSystem
     renderSkybox();
     renderRawScene(prerenderSetup, invokeModelShaders);
     renderShadows();
+    renderParticles();
     mBlinnPhongShaderProgram->invoke(
       [this]()
       {
@@ -485,6 +507,20 @@ namespace RenderSystem
   const TAAColorTexture& Scene::resolveTAA()
   {
     return mTAAController->resolveTAA([this]() { mRenderer->renderScreenQuad(); });
+  }
+
+  ParticlesRenderData Scene::getParticlesRenderData() const
+  {
+    const auto& activeParticlesIndices =
+      mParticlesController->getActiveParticlesIndices();
+    const auto& particles = mParticlesController->getParticles();
+    ParticlesRenderData renderData;
+    for (const auto& particleIdx : activeParticlesIndices)
+    {
+      renderData.append(particles[particleIdx]);
+    }
+
+    return renderData;
   }
 
   void Scene::renderDecorations()

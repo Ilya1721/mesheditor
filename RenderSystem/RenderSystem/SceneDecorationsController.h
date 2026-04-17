@@ -3,7 +3,7 @@
 #include <functional>
 #include <vector>
 
-#include "RenderData.h"
+#include "MeshRenderData.h"
 #include "SceneDecoration.h"
 
 namespace RenderSystem
@@ -22,7 +22,7 @@ namespace RenderSystem
 
    private:
     std::vector<SceneDecoration> mSceneDecorations;
-    RenderData mSceneDecorationsRenderData;
+    MeshRenderData mSceneDecorationsRenderData;
     Renderer* mRenderer;
   };
 }

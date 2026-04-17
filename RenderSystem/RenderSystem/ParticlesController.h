@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <random>
+#include <unordered_set>
 #include <vector>
 
 #include "FlipbookTexture.h"
@@ -23,6 +24,8 @@ namespace RenderSystem
     ParticlesController();
 
     const Flipbook& getFlipbook() const;
+    const std::vector<Particle>& getParticles() const;
+    const std::unordered_set<size_t>& getActiveParticlesIndices() const;
 
     void update(float lastFrameTime);
     void startGeneratingParticles(const glm::vec3& point);
@@ -36,12 +39,16 @@ namespace RenderSystem
     size_t getFirstInactiveParticleIdx() const;
     void activateParticles(int particlesToGenerate);
     void updateActiveParticles(float lastFrameTime);
+    void updateActiveParticle(size_t particleIdx, float lastFrameTime);
+    void activateParticle(size_t particleIdx);
+    void deactivateParticle(size_t particleIdx);
     void init();
     void reset();
 
    private:
     Flipbook mFlipbook;
     std::vector<Particle> mParticles;
+    std::unordered_set<size_t> mActiveParticlesIndices;
     Emitter mEmitter;
     float mParticlesPerSecond;
     float mParticlesRemainder;

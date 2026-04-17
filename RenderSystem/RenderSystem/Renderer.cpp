@@ -5,14 +5,15 @@
 #ifdef __gl_h_
 #undef __gl_h_
 #endif
-#include "Object3D.h"
 #include <glad/glad.h>
+
+#include "Object3D.h"
 
 using namespace MeshCore;
 
 namespace RenderSystem
 {
-  Renderer::Renderer() : mModelRenderBuffer(), mDecorationsRenderBuffer()
+  Renderer::Renderer()
   {
   }
 
@@ -49,6 +50,14 @@ namespace RenderSystem
   void Renderer::renderScreenQuad()
   {
     mScreenQuadRenderBuffer.invoke([]() { glDrawArrays(GL_TRIANGLES, 0, 6); });
+  }
+
+  void Renderer::renderParticles(size_t activeParticlesCount)
+  {
+    mParticlesRenderBuffer.invoke(
+      [activeParticlesCount]()
+      { glDrawArraysInstanced(GL_TRIANGLES, 0, 6, activeParticlesCount); }
+    );
   }
 
   void Renderer::renderBlinnPhongObject3D(const Object3D& object, int vertexOffset)
@@ -109,27 +118,48 @@ namespace RenderSystem
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   }
 
-  void Renderer::loadDecorationsRenderData(const RenderData& renderData)
+  void Renderer::loadDecorationsRenderData(const MeshRenderData& renderData)
   {
     mDecorationsRenderBuffer.invoke(
       [this, &renderData]() { mDecorationsRenderBuffer.loadRenderData(renderData); }
     );
   }
 
-  void Renderer::loadSkyboxRenderData(const RenderData& renderData)
+  void Renderer::loadSkyboxRenderData(const MeshRenderData& renderData)
   {
     mSkyboxRenderBuffer.invoke([this, &renderData]()
                                { mSkyboxRenderBuffer.loadRenderData(renderData); });
   }
 
-  void Renderer::loadScreenQuadRenderData()
+  void Renderer::updateParticlesRenderData(const ParticlesRenderData& renderData)
   {
-    mScreenQuadRenderBuffer.invoke([this]()
-                                   { mScreenQuadRenderBuffer.loadScreenQuadRenderData(); }
+    mParticlesRenderBuffer.invoke(
+      [this, &renderData]()
+      { mParticlesRenderBuffer.updateParticlesRenderData(renderData); }
     );
   }
 
-  void Renderer::loadModelRenderData(const RenderData& renderData)
+  void Renderer::loadParticlesRenderData()
+  {
+    mParticlesRenderBuffer.invoke([this]()
+                                  { mParticlesRenderBuffer.loadParticlesRenderData(); });
+  }
+
+  void Renderer::loadParticleQuadRenderData(const std::vector<float>& renderData)
+  {
+    mParticlesRenderBuffer.invoke(
+      [this, &renderData]() { mParticlesRenderBuffer.loadQuadRenderData(renderData); }
+    );
+  }
+
+  void Renderer::loadScreenQuadRenderData(const std::vector<float>& renderData)
+  {
+    mScreenQuadRenderBuffer.invoke([this, &renderData]()
+                                   { mScreenQuadRenderBuffer.loadRenderData(renderData); }
+    );
+  }
+
+  void Renderer::loadModelRenderData(const MeshRenderData& renderData)
   {
     mModelRenderBuffer.invoke([this, &renderData]()
                               { mModelRenderBuffer.loadRenderData(renderData); });

@@ -6,14 +6,14 @@ namespace RenderSystem
 {
   struct Emitter
   {
-    glm::vec3 position;
+    glm::vec3 position {};
   };
 
   struct Particle
   {
-    glm::vec3 position;
-    glm::vec3 velocity;
-    glm::vec4 colorMultiplier;
+    glm::vec3 position {};
+    glm::vec3 velocity {};
+    glm::vec4 colorMultiplier {};
     bool isActive = false;
     float sideLength {};
     float viewDirRotation {};

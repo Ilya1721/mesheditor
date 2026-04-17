@@ -20,6 +20,16 @@ namespace RenderSystem
     return mFlipbook;
   }
 
+  const std::vector<Particle>& ParticlesController::getParticles() const
+  {
+    return mParticles;
+  }
+
+  const std::unordered_set<size_t>& ParticlesController::getActiveParticlesIndices() const
+  {
+    return mActiveParticlesIndices;
+  }
+
   void ParticlesController::init()
   {
     mFlipbook.texture = std::make_unique<FlipbookTexture>(FIRE_FLIPBOOK_PATH);
@@ -33,6 +43,7 @@ namespace RenderSystem
   {
     mParticles.clear();
     mParticles.resize(MAX_PARTICLES);
+    mActiveParticlesIndices.clear();
     mParticlesPerSecond = PARTICLES_PER_SECOND;
     mParticlesRemainder = 0.0f;
   }
@@ -66,12 +77,20 @@ namespace RenderSystem
 
   void ParticlesController::moreParticles()
   {
-    mParticlesPerSecond += getIncreaseStep();
+    auto particlesPerSecond = mParticlesPerSecond + getIncreaseStep();
+    if (static_cast<size_t>(particlesPerSecond) <= MAX_PARTICLES)
+    {
+      mParticlesPerSecond = particlesPerSecond;
+    }
   }
 
   void ParticlesController::lessParticles()
   {
-    mParticlesPerSecond -= getIncreaseStep();
+    auto particlesPerSecond = mParticlesPerSecond - getIncreaseStep();
+    if (static_cast<size_t>(particlesPerSecond) >= MIN_PARTICLES)
+    {
+      mParticlesPerSecond = particlesPerSecond;
+    }
   }
 
   float ParticlesController::getIncreaseStep() const
@@ -103,42 +122,61 @@ namespace RenderSystem
     for (int counter = 0; counter <= particlesToGenerate; ++counter)
     {
       auto particleIdx = getFirstInactiveParticleIdx();
-      auto& particle = mParticles[particleIdx];
-      particle.isActive = true;
-      particle.position = mEmitter.position;
-      particle.velocity = glm::vec3(
-        randomFloat(-0.5f, 0.5f), randomFloat(1.0f, 3.0f), randomFloat(-0.5f, 0.5f)
-      );
-      particle.sideLength = randomFloat(0.2f, 0.8f);
-      particle.viewDirRotation = randomFloat(0.0f, glm::two_pi<float>());
-      particle.currentTime = 0.0f;
-      particle.duration = randomFloat(0.8f, 1.5f);
-      particle.blendedFrameIdx = randomFloat(0.0f, mFlipbook.totalFrames);
-      particle.colorMultiplier = glm::vec4(1.0f);
+      activateParticle(particleIdx);
     }
   }
 
   void ParticlesController::updateActiveParticles(float lastFrameTime)
   {
-    for (auto& particle : mParticles)
+    for (size_t particleIdx = 0; particleIdx < mParticles.size(); ++particleIdx)
     {
-      if (!particle.isActive)
-      {
-        continue;
-      }
-
-      particle.currentTime += lastFrameTime;
-      if (particle.currentTime >= particle.duration)
-      {
-        particle.isActive = false;
-        continue;
-      }
-
-      auto lifeTime = particle.currentTime / particle.duration;
-      particle.blendedFrameIdx = lifeTime * mFlipbook.totalFrames;
-      particle.colorMultiplier.a = 1.0f - lifeTime;
-      particle.sideLength = glm::mix(0.2f, 1.0f, glm::sin(lifeTime * glm::pi<float>()));
-      particle.position += particle.velocity * lastFrameTime;
+      updateActiveParticle(particleIdx, lastFrameTime);
     }
+  }
+
+  void ParticlesController::updateActiveParticle(size_t particleIdx, float lastFrameTime)
+  {
+    auto& particle = mParticles[particleIdx];
+    if (!particle.isActive)
+    {
+      return;
+    }
+
+    particle.currentTime += lastFrameTime;
+    if (particle.currentTime >= particle.duration)
+    {
+      deactivateParticle(particleIdx);
+      return;
+    }
+
+    auto lifeTime = particle.currentTime / particle.duration;
+    particle.blendedFrameIdx = lifeTime * mFlipbook.totalFrames;
+    particle.colorMultiplier.a = 1.0f - lifeTime;
+    particle.sideLength = glm::mix(0.2f, 1.0f, glm::sin(lifeTime * glm::pi<float>()));
+    particle.position += particle.velocity * lastFrameTime;
+  }
+
+  void ParticlesController::activateParticle(size_t particleIdx)
+  {
+    auto& particle = mParticles[particleIdx];
+    particle.isActive = true;
+    particle.position = mEmitter.position;
+    particle.velocity = glm::vec3(
+      randomFloat(-0.5f, 0.5f), randomFloat(1.0f, 3.0f), randomFloat(-0.5f, 0.5f)
+    );
+    particle.sideLength = randomFloat(0.2f, 0.8f);
+    particle.viewDirRotation = randomFloat(0.0f, glm::two_pi<float>());
+    particle.currentTime = 0.0f;
+    particle.duration = randomFloat(0.8f, 1.5f);
+    particle.blendedFrameIdx = randomFloat(0.0f, mFlipbook.totalFrames);
+    particle.colorMultiplier = glm::vec4(1.0f);
+    mActiveParticlesIndices.insert(particleIdx);
+  }
+
+  void ParticlesController::deactivateParticle(size_t particleIdx)
+  {
+    auto& particle = mParticles[particleIdx];
+    particle.isActive = false;
+    mActiveParticlesIndices.erase(particleIdx);
   }
 }

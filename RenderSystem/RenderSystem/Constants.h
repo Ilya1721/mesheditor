@@ -154,8 +154,7 @@ namespace RenderSystem
     R"(./ThirdParty/resources/textures/skybox/front.png)",
     R"(./ThirdParty/resources/textures/skybox/back.png)",
   };
-  const std::string FLOOR_MESH_PATH =
-    R"(./ThirdParty/Models/Floor/Obj/Floor.obj)";
+  const std::string FLOOR_MESH_PATH = R"(./ThirdParty/Models/Floor/Obj/Floor.obj)";
   const std::string FIRE_FLIPBOOK_PATH =
     R"(./ThirdParty/resources/textures/fire/FireFlipbook.png)";
 
@@ -164,10 +163,15 @@ namespace RenderSystem
   const auto DIR_LIGHT_POS =
     glm::vec3(LIGHT_SOURCE_POS_X, LIGHT_SOURCE_POS_Y, LIGHT_SOURCE_POS_Z);
 
-  constexpr float SCREEN_QUAD_VERTICES[] = {-1.0f, -1.0f, 0.0f,  0.0f, 1.0f, -1.0f,
-                                            1.0f,  0.0f,  -1.0f, 1.0f, 0.0f, 1.0f,
-                                            -1.0f, 1.0f,  0.0f,  1.0f, 1.0f, -1.0f,
-                                            1.0f,  0.0f,  1.0f,  1.0f, 1.0f, 1.0f};
+  const std::vector<float> SCREEN_QUAD_VERTICES = {-1.0f, -1.0f, 0.0f,  0.0f, 1.0f, -1.0f,
+                                                   1.0f,  0.0f,  -1.0f, 1.0f, 0.0f, 1.0f,
+                                                   -1.0f, 1.0f,  0.0f,  1.0f, 1.0f, -1.0f,
+                                                   1.0f,  0.0f,  1.0f,  1.0f, 1.0f, 1.0f};
+
+  const std::vector<float> PARTICLE_QUAD_VERTICES = {
+    -0.5f, -0.5f, 0.0f, 0.0f, 0.5f,  -0.5f, 1.0f, 0.0f, 0.5f,  0.5f,  1.0f, 1.0f,
+    0.5f,  0.5f,  1.0f, 1.0f, -0.5f, 0.5f,  0.0f, 1.0f, -0.5f, -0.5f, 0.0f, 0.0f
+  };
 
   constexpr int STL_HEADER_SIZE = 80;
   const inline std::string DELIMITERS = " ,\t\n/";
@@ -175,5 +179,6 @@ namespace RenderSystem
     ".png", ".jpg", ".jpeg", ".bmp", ".tga"
   };
   constexpr size_t MAX_PARTICLES = 1000;
+  constexpr size_t MIN_PARTICLES = 1;
   constexpr float PARTICLES_PER_SECOND = 200.0f;
 }  // namespace RenderSystem
