@@ -72,6 +72,7 @@ namespace RenderSystem
 
   void ParticlesController::stopGeneratingParticles()
   {
+    reset();
     mGenerateParticles = false;
   }
 

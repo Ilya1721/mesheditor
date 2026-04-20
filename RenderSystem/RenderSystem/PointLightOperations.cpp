@@ -26,7 +26,7 @@ namespace RenderSystem
   {
     switch (key)
     {
-      case GLFW_KEY_P:
+      case GLFW_KEY_L:
         addPointLight();
         break;
       case GLFW_KEY_D:
