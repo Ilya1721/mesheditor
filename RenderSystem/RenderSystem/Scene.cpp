@@ -139,8 +139,8 @@ namespace RenderSystem
 
   void Scene::adjustFloor(Object3D* floor)
   {
-    auto yOffset = mRootObject.getBBox().getHeight();
-    floor->updateTransform(glm::translate(glm::vec3(0.0f, -yOffset, 0.0f)));
+    auto halfBBoxHeight = mRootObject.getBBox().getHeight() * 0.5;
+    floor->updateTransform(glm::translate(glm::vec3(0.0f, -halfBBoxHeight, 0.0f)));
     floor->updateTransform(glm::scale(glm::vec3(100.0f, 1.0f, 100.0f)));
     floor->setUVScale(glm::vec2(10.0f, 10.0f));
   }
@@ -655,8 +655,10 @@ namespace RenderSystem
 
   glm::vec3 Scene::getGroundPlaneIntersection(const Ray& cursorRay) const
   {
-    glm::vec3 origin(0.0f, 0.0f, 0.0f);
-    Plane groundPlane(origin, glm::vec3(0.0f, 1.0f, 0.0f));
+    auto halfBBoxHeight = mRootObject.getBBox().getHeight() * 0.5;
+    glm::vec3 origin(0.0f, -halfBBoxHeight, 0.0f);
+    glm::vec3 upVector(0.0f, 1.0f, 0.0f);
+    Plane groundPlane(origin, upVector);
     auto intersectionPoint = groundPlane.getIntersectionPoint(cursorRay);
 
     return intersectionPoint.value_or(origin);
