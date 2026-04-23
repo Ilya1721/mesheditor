@@ -1,16 +1,14 @@
 #pragma once
 
-#include "AbstractShaderProgram.h"
+#include <glm/glm.hpp>
+
 #include "CameraListener.h"
 #include "DepthTexture.h"
 #include "ShaderProgram.h"
 
 namespace RenderSystem
 {
-  class ShadowShaderProgram :
-    public ShaderProgram,
-    public AbstractShaderProgram,
-    public CameraListener
+  class ShadowShaderProgram : public ShaderProgram, public CameraListener
   {
    public:
     ShadowShaderProgram(
@@ -20,7 +18,7 @@ namespace RenderSystem
 
     void onCameraPosChanged(Camera* camera) override;
 
-    void setModel(const glm::mat4& model) override;
+    void setModel(const glm::mat4& model);
     void setShadowMap(const DepthTexture& texture) const;
     void setLightView(const glm::mat4& lightView);
     void setLightProjection(const glm::mat4& lightProjection);

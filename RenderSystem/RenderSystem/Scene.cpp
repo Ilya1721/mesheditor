@@ -43,6 +43,7 @@ namespace RenderSystem
     initSceneObjects(meshFilePath);
     initDirLight();
     initParticles();
+    initWater();
   }
 
   void Scene::initShaders()
@@ -64,6 +65,9 @@ namespace RenderSystem
     );
     mParticlesShaderProgram = std::make_unique<ParticlesShaderProgram>(
       PARTICLES_VERTEX_SHADER_PATH, PARTICLES_FRAGMENT_SHADER_PATH
+    );
+    mWaterShaderProgram = std::make_unique<WaterShaderProgram>(
+      WATER_VERTEX_SHADER_PATH, WATER_FRAGMENT_SHADER_PATH
     );
     mBlinnPhongShaderProgram->setDirLightParams(DIR_LIGHT_PARAMS);
     mPBRShaderProgram->setLightColor(PBR_LIGHT_COLOR);
@@ -90,6 +94,7 @@ namespace RenderSystem
     );
     mAnimationController = std::make_unique<AnimationController>();
     mParticlesController = std::make_unique<ParticlesController>();
+    mWaterController = std::make_unique<WaterController>();
   }
 
   void Scene::initSceneObjects(const std::string& meshFilePath)
@@ -126,7 +131,7 @@ namespace RenderSystem
       std::initializer_list<CameraListener*> {
         mBlinnPhongShaderProgram.get(), mPBRShaderProgram.get(), mSkyboxController.get(),
         mGlassShaderProgram.get(), mShadowShaderProgram.get(),
-        mParticlesShaderProgram.get()
+        mParticlesShaderProgram.get(), mWaterShaderProgram.get()
       }
     );
   }
@@ -163,12 +168,26 @@ namespace RenderSystem
     mParticlesShaderProgram->setFlipbookRows(flipbook.rows);
   }
 
+  void Scene::initWater()
+  {
+    const auto& waterBlock = mWaterController->getWaterBlock();
+    mWaterShaderProgram->setWaves(waterBlock.waves);
+    mWaterShaderProgram->setNormalMapMoves(waterBlock.normalMapMoves);
+    mWaterShaderProgram->setNormalStrength(waterBlock.normalStrength);
+    mWaterShaderProgram->setDepthFalloff(waterBlock.depthFalloff);
+    mWaterShaderProgram->setFresnelPower(waterBlock.fresnelPower);
+    mWaterShaderProgram->setReflectionIntensity(waterBlock.reflectionIntensity);
+    mWaterShaderProgram->setDeepColor(waterBlock.deepColor);
+    mWaterShaderProgram->setShallowColor(waterBlock.shallowColor);
+  }
+
   void Scene::initRenderer()
   {
     mRenderer->loadSkyboxRenderData(MeshRenderData::getSkyboxRenderData());
     mRenderer->loadScreenQuadRenderData(SCREEN_QUAD_VERTICES);
     mRenderer->loadParticleQuadRenderData(PARTICLE_QUAD_VERTICES);
     mRenderer->loadParticlesRenderData();
+    mRenderer->loadWaterRenderData(mWaterController->getPlaneRenderData());
   }
 
   void Scene::updateSkinningTransforms(float lastFrameTime)
@@ -229,6 +248,26 @@ namespace RenderSystem
   void Scene::lessParticles()
   {
     mParticlesController->lessParticles();
+  }
+
+  void Scene::updateWater(float lastFrameTime)
+  {
+    mWaterController->updateWater(lastFrameTime);
+    auto currentTime = mWaterController->getCurrentTime();
+    mWaterShaderProgram->setVTime(currentTime);
+    mWaterShaderProgram->setFTime(currentTime);
+  }
+
+  void Scene::startGeneratingWater(const glm::vec3& pos)
+  {
+    mWaterController->startGeneratingWater();
+    auto model = glm::translate(glm::mat4(1.0f), pos);
+    mWaterShaderProgram->setModel(model);
+  }
+
+  void Scene::stopGeneratingWater()
+  {
+    mWaterController->stopGeneratingWater();
   }
 
   void Scene::setBlinnPhongMaterial(const BlinnPhongMaterial& material)
@@ -428,6 +467,24 @@ namespace RenderSystem
     );
   }
 
+  void Scene::renderWater()
+  {
+    if (!mWaterController->isGeneratingWater())
+    {
+      return;
+    }
+
+    mWaterShaderProgram->setSkyboxCubemap(mSkyboxController->getCubemapTexture());
+    mWaterShaderProgram->setNormalMap(mWaterController->getNormalMap());
+    mWaterShaderProgram->invoke(
+      [this]()
+      {
+        auto vertexCount = mWaterController->getPlaneRenderData().getVertexCount();
+        mRenderer->renderWater(vertexCount);
+      }
+    );
+  }
+
   void Scene::renderRawScene(
     const std::function<void(const Object3D*)>& prerenderSetup, bool invokeModelShaders
   )
@@ -444,6 +501,7 @@ namespace RenderSystem
     renderRawScene(prerenderSetup, invokeModelShaders);
     renderShadows();
     renderParticles();
+    renderWater();
     mBlinnPhongShaderProgram->invoke(
       [this]()
       {
@@ -626,6 +684,7 @@ namespace RenderSystem
   {
     updateSkinningTransforms(lastFrameTime);
     updateParticles(lastFrameTime);
+    updateWater(lastFrameTime);
     mRenderer->cleanScreen();
     mTAAController->setView(mCamera->getViewMatrix());
     auto projection = mTAAController->makeJitteredProjection();
@@ -653,10 +712,11 @@ namespace RenderSystem
     return mPickedObject;
   }
 
-  glm::vec3 Scene::getGroundPlaneIntersection(const Ray& cursorRay) const
+  glm::vec3 Scene::getGroundPlaneIntersection(const Ray& cursorRay, float yTranslate)
+    const
   {
     auto halfBBoxHeight = mRootObject.getBBox().getHeight() * 0.5;
-    glm::vec3 origin(0.0f, -halfBBoxHeight, 0.0f);
+    glm::vec3 origin(0.0f, -halfBBoxHeight + yTranslate, 0.0f);
     glm::vec3 upVector(0.0f, 1.0f, 0.0f);
     Plane groundPlane(origin, upVector);
     auto intersectionPoint = groundPlane.getIntersectionPoint(cursorRay);
@@ -681,8 +741,12 @@ namespace RenderSystem
   std::vector<ViewportListener*> Scene::getViewportListeners()
   {
     return {
-      this, mShadowMapController.get(), mTAAController.get(), mSkyboxController.get(),
-      mParticlesShaderProgram.get()
+      this,
+      mShadowMapController.get(),
+      mTAAController.get(),
+      mSkyboxController.get(),
+      mParticlesShaderProgram.get(),
+      mWaterShaderProgram.get()
     };
   }
 

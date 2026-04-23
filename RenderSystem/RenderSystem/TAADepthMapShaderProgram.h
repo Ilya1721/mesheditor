@@ -1,13 +1,14 @@
 #pragma once
 
-#include "AbstractShaderProgram.h"
+#include <glm/glm.hpp>
+
 #include "ShaderProgram.h"
 
 using namespace std::filesystem;
 
 namespace RenderSystem
 {
-  class TAADepthMapShaderProgram : public ShaderProgram, public AbstractShaderProgram
+  class TAADepthMapShaderProgram : public ShaderProgram
   {
    public:
     TAADepthMapShaderProgram(
@@ -15,7 +16,7 @@ namespace RenderSystem
     );
     virtual ~TAADepthMapShaderProgram() = default;
 
-    void setModel(const glm::mat4& model) override;
+    void setModel(const glm::mat4& model);
     void setView(const glm::mat4& view);
     void setProjection(const glm::mat4& projection);
 

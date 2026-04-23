@@ -33,7 +33,9 @@ namespace RenderSystem
     void renderSkybox();
     void renderScreenQuad();
     void renderParticles(size_t activeParticlesCount);
+    void renderWater(size_t vertexCount);
     void loadModelRenderData(const MeshRenderData& renderData);
+    void loadWaterRenderData(const MeshRenderData& renderData);
     void loadDecorationsRenderData(const MeshRenderData& renderData);
     void loadSkyboxRenderData(const MeshRenderData& renderData);
     void loadParticlesRenderData();
@@ -49,6 +51,7 @@ namespace RenderSystem
     MeshRenderBuffer mModelRenderBuffer;
     MeshRenderBuffer mDecorationsRenderBuffer;
     MeshRenderBuffer mSkyboxRenderBuffer;
+    MeshRenderBuffer mWaterRenderBuffer;
     StaticQuadRenderBuffer mScreenQuadRenderBuffer;
     ParticlesRenderBuffer mParticlesRenderBuffer;
   };

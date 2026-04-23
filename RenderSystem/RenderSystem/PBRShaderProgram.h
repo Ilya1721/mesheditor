@@ -1,16 +1,14 @@
 #pragma once
 
-#include "AbstractShaderProgram.h"
+#include <glm/glm.hpp>
+
 #include "CameraListener.h"
 #include "ImageTexture.h"
 #include "ShaderProgram.h"
 
 namespace RenderSystem
 {
-  class PBRShaderProgram :
-    public ShaderProgram,
-    public AbstractShaderProgram,
-    public CameraListener
+  class PBRShaderProgram : public ShaderProgram, public CameraListener
   {
    public:
     PBRShaderProgram(

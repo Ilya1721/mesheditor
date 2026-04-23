@@ -2,7 +2,7 @@
 
 in vec3 vertexPos;
 in vec3 vertexNormal;
-in vec2 vertexTexture;
+in vec2 vertexUV;
 
 uniform vec3 dirLightPos;
 uniform vec3 cameraPos;
@@ -72,7 +72,7 @@ vec3 blinnPhongDirectional()
 
   if (material.hasDiffuseTexture)
   {
-    pixelColor *= texture(diffuseTexture, vertexTexture).rgb;
+    pixelColor *= texture(diffuseTexture, vertexUV).rgb;
   } 
 
   return pixelColor;

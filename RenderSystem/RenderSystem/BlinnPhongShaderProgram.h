@@ -1,6 +1,5 @@
 #pragma once
 
-#include "AbstractShaderProgram.h"
 #include "CameraListener.h"
 #include "DirectionalLight.h"
 #include "ImageTexture.h"
@@ -9,10 +8,7 @@
 
 namespace RenderSystem
 {
-  class BlinnPhongShaderProgram :
-    public ShaderProgram,
-    public AbstractShaderProgram,
-    public CameraListener
+  class BlinnPhongShaderProgram : public ShaderProgram, public CameraListener
   {
     friend class DirLightSource;
 
@@ -22,7 +18,7 @@ namespace RenderSystem
       const std::filesystem::path& fragmentShaderPath
     );
     void onCameraPosChanged(Camera* camera) override;
-    void setModel(const glm::mat4& model) override;
+    void setModel(const glm::mat4& model);
     void setDirLightParams(const DirectionalLightParams& light);
     void setDirLightSourcePos(const glm::vec3& pos);
     void setProjection(const glm::mat4& projection);

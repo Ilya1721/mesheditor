@@ -11,11 +11,11 @@ uniform vec2 uvScale;
 
 out vec3 vertexPos;
 out vec3 vertexNormal;
-out vec2 vertexTexture;
+out vec2 vertexUV;
 
 void main()
 {
-	vertexTexture = uvScale * textureCoords;
+	vertexUV = uvScale * textureCoords;
 	vertexNormal = vec3(model * vec4(normal, 0.0));
 	vertexPos = vec3(model * vec4(pos, 1.0));
 	gl_Position = projection * view * vec4(vertexPos, 1.0);

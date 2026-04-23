@@ -13,9 +13,9 @@
 #include "LightParams.h"
 #include "Object3D.h"
 #include "Object3DIntersection.h"
+#include "PBRShaderProgram.h"
 #include "ParticlesController.h"
 #include "ParticlesShaderProgram.h"
-#include "PBRShaderProgram.h"
 #include "Renderer.h"
 #include "SceneDecorationsController.h"
 #include "ScreenShaderProgram.h"
@@ -24,6 +24,8 @@
 #include "SkyboxController.h"
 #include "TAAController.h"
 #include "ViewportListener.h"
+#include "WaterController.h"
+#include "WaterShaderProgram.h"
 
 namespace RenderSystem
 {
@@ -41,7 +43,8 @@ namespace RenderSystem
       const Ray& cursorRay, IntersectionMode intersectionMode = IntersectionMode::SURFACE
     );
     Object3D* getPickedObject() const;
-    glm::vec3 getGroundPlaneIntersection(const Ray& cursorRay) const;
+    glm::vec3 getGroundPlaneIntersection(const Ray& cursorRay, float yTranslate = 0.0f)
+      const;
     glm::vec3 getDefaultPointLightSourcePos() const;
     const Object3D& getRootObject() const;
     std::vector<ViewportListener*> getViewportListeners();
@@ -74,6 +77,10 @@ namespace RenderSystem
     void stopGeneratingParticles();
     void moreParticles();
     void lessParticles();
+
+    void updateWater(float lastFrameTime);
+    void startGeneratingWater(const glm::vec3& pos);
+    void stopGeneratingWater();
 
    private:
     const TAAColorTexture& resolveTAA();
@@ -115,6 +122,7 @@ namespace RenderSystem
     void renderFinalScreenTexture(const Texture2D& texture);
     void renderShadows();
     void renderParticles();
+    void renderWater();
 
     void registerListenersCallbacks();
     void registerRootObjectCallbacks();
@@ -131,6 +139,7 @@ namespace RenderSystem
     void initDirLight();
     void initParticles();
     void initRenderer();
+    void initWater();
 
    private:
     std::unique_ptr<Renderer> mRenderer;
@@ -141,6 +150,7 @@ namespace RenderSystem
     std::unique_ptr<ShadowShaderProgram> mShadowShaderProgram;
     std::unique_ptr<ScreenShaderProgram> mScreenShaderProgram;
     std::unique_ptr<ParticlesShaderProgram> mParticlesShaderProgram;
+    std::unique_ptr<WaterShaderProgram> mWaterShaderProgram;
     std::unique_ptr<ShadowMapController> mShadowMapController;
     std::unique_ptr<SkyboxController> mSkyboxController;
     std::unique_ptr<TAAController> mTAAController;
@@ -148,6 +158,7 @@ namespace RenderSystem
     std::unique_ptr<ExtraRenderModesController> mExtraRenderModesController;
     std::unique_ptr<AnimationController> mAnimationController;
     std::unique_ptr<ParticlesController> mParticlesController;
+    std::unique_ptr<WaterController> mWaterController;
     std::vector<CameraListener*> mCameraListeners;
 
     Object3D* mModelObject;

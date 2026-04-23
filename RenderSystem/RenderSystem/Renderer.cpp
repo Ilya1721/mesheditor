@@ -67,6 +67,12 @@ namespace RenderSystem
     );
   }
 
+  void Renderer::renderWater(size_t vertexCount)
+  {
+    mWaterRenderBuffer.invoke([vertexCount]()
+                              { glDrawArrays(GL_TRIANGLES, 0, vertexCount); });
+  }
+
   void Renderer::renderBlinnPhongObject3D(const Object3D& object, int vertexOffset)
   {
     mModelRenderBuffer.invoke(
@@ -170,6 +176,12 @@ namespace RenderSystem
   {
     mModelRenderBuffer.invoke([this, &renderData]()
                               { mModelRenderBuffer.loadRenderData(renderData); });
+  }
+
+  void Renderer::loadWaterRenderData(const MeshRenderData& renderData)
+  {
+    mWaterRenderBuffer.invoke([this, &renderData]()
+                              { mWaterRenderBuffer.loadRenderData(renderData); });
   }
 
   void Renderer::renderSceneDecoration(

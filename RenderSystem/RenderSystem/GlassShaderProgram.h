@@ -1,16 +1,14 @@
 #pragma once
 
-#include "AbstractShaderProgram.h"
+#include <glm/glm.hpp>
+
 #include "CameraListener.h"
 #include "CubemapTexture.h"
 #include "ShaderProgram.h"
 
 namespace RenderSystem
 {
-  class GlassShaderProgram :
-    public ShaderProgram,
-    public AbstractShaderProgram,
-    public CameraListener
+  class GlassShaderProgram : public ShaderProgram, public CameraListener
   {
    public:
     GlassShaderProgram(
@@ -19,7 +17,7 @@ namespace RenderSystem
     );
 
     void onCameraPosChanged(Camera* camera) override;
-    void setModel(const glm::mat4& model) override;
+    void setModel(const glm::mat4& model);
     void setProjection(const glm::mat4& projection);
     void setRefractiveIndex(float refractiveIndex);
     void setReflectionStrength(float reflectionStrength);

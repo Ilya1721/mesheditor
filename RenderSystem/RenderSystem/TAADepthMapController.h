@@ -1,5 +1,7 @@
 #pragma once
 
+#include <glm/glm.hpp>
+
 #include "DepthTexture.h"
 #include "FrameBufferObject.h"
 #include "TAADepthMapShaderProgram.h"

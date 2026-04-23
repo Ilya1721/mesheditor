@@ -146,6 +146,10 @@ namespace RenderSystem
     R"(./RenderSystem/Shaders/ParticlesShader.vert)";
   const std::filesystem::path PARTICLES_FRAGMENT_SHADER_PATH =
     R"(./RenderSystem/Shaders/ParticlesShader.frag)";
+  const std::filesystem::path WATER_VERTEX_SHADER_PATH =
+    R"(./RenderSystem/Shaders/WaterShader.vert)";
+  const std::filesystem::path WATER_FRAGMENT_SHADER_PATH =
+    R"(./RenderSystem/Shaders/WaterShader.frag)";
   const std::array<std::filesystem::path, 6> SKYBOX_CUBEMAP_TEXTURES = {
     R"(./ThirdParty/resources/textures/skybox/right.png)",
     R"(./ThirdParty/resources/textures/skybox/left.png)",
@@ -157,6 +161,8 @@ namespace RenderSystem
   const std::string FLOOR_MESH_PATH = R"(./ThirdParty/Models/Floor/Obj/Floor.obj)";
   const std::string FIRE_FLIPBOOK_PATH =
     R"(./ThirdParty/resources/textures/fire/FireFlipbook.png)";
+  const std::string WATER_NORMAL_MAP_PATH =
+    R"(./ThirdParty/resources/textures/water/NormalMap.jpg)";
 
   constexpr int SAMPLE_COUNT_TAA = 8;
 
@@ -181,4 +187,6 @@ namespace RenderSystem
   constexpr size_t MAX_PARTICLES = 1000;
   constexpr size_t MIN_PARTICLES = 1;
   constexpr float PARTICLES_PER_SECOND = 200.0f;
+
+  const glm::vec3 WATER_COLOR = {0.0f, 0.0f, 1.0f};
 }  // namespace RenderSystem

@@ -10,6 +10,7 @@
 #include "PointLightOperations.h"
 #include "SurfaceExtruder.h"
 #include "SurfaceHighlighter.h"
+#include "WaterGenerator.h"
 #include "WireframeRenderer.h"
 #include "Zoom.h"
 
@@ -71,5 +72,6 @@ namespace RenderSystem
     addOperation<PointLightOperations>(mScene);
     addOperation<AnimationPlayer>(mScene);
     addOperation<ParticlesGenerator>(mWindow, mScene);
+    addOperation<WaterGenerator>(mWindow, mScene);
   }
 }  // namespace RenderSystem

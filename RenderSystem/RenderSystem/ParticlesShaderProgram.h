@@ -23,7 +23,6 @@ namespace RenderSystem
     void onCameraPosChanged(Camera* camera) override;
     void onViewportChanged(Viewport* viewport) override;
 
-    void setProjection(const glm::mat4& projection);
     void setFlipbookCols(int cols);
     void setFlipbookRows(int rows);
     void setFlipbookTexture(const FlipbookTexture& texture);
@@ -31,6 +30,7 @@ namespace RenderSystem
    private:
     void initUniformLocations();
     void setView(const glm::mat4& view);
+    void setProjection(const glm::mat4& projection);
 
    private:
     int mView;

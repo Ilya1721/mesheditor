@@ -8,12 +8,12 @@ namespace RenderSystem
     const std::string& filePath, const std::function<TextureCreator>& textureCreator
   )
   {
-    if (filePath.empty())
-    {
-      return;
-    }
     int colorChannels, width, height;
     auto data = stbi_load(filePath.c_str(), &width, &height, &colorChannels, 0);
+    if (!data)
+    {
+      throw std::exception("Couldn't load the image");
+    }
     textureCreator(width, height, data, colorChannels);
     stbi_image_free(data);
   }
@@ -31,6 +31,10 @@ namespace RenderSystem
     int width, height, colorChannels;
     auto decodedData =
       stbi_load_from_memory(data, dataLength, &width, &height, &colorChannels, 0);
+    if (!decodedData)
+    {
+      throw std::exception("Couldn't load the image");
+    }
     textureCreator(width, height, decodedData, colorChannels);
     stbi_image_free(decodedData);
   }
