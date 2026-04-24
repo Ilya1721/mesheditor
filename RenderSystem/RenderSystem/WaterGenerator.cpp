@@ -15,7 +15,7 @@ namespace RenderSystem
     if (key == GLFW_KEY_W)
     {
       auto cursorRay = mWindow->castCursorRay();
-      auto groundPlanePoint = mScene->getGroundPlaneIntersection(cursorRay, 1.0f);
+      auto groundPlanePoint = mScene->getGroundPlaneIntersection(cursorRay, 1.2f);
       mScene->startGeneratingWater(groundPlanePoint);
     }
     else if (key == GLFW_KEY_ESCAPE)

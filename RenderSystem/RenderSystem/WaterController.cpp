@@ -59,8 +59,8 @@ namespace RenderSystem
     mNormalMap = std::make_unique<ImageTexture>(WATER_NORMAL_MAP_PATH);
     mWaterBlock.fresnelPower = 5;
     mWaterBlock.depthFalloff = 0.05f;
-    mWaterBlock.reflectionIntensity = 0.5f;
-    mWaterBlock.normalStrength = 0.6f;
+    mWaterBlock.reflectionIntensity = 0.75f;
+    mWaterBlock.normalStrength = 0.75f;
     mWaterBlock.shallowColor = glm::vec3(0.0f, 0.8f, 0.7f);
     mWaterBlock.deepColor = glm::vec3(0.0f, 0.2f, 0.5f);
     mWaterBlock.normalMapMoves.emplace_back(0.05f, 0.02f);

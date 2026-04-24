@@ -23,16 +23,22 @@ uniform int normalMapMoveCount;
 
 void main()
 {
-    vec3 combinedNormal = vec3(0.0);
+    vec3 tangent = vec3(1, 0, 0);
+    vec3 bitangent = vec3(0, 0, 1);
+    vec3 normalWS = vec3(0, 1, 0);
+    mat3 TBN = mat3(tangent, bitangent, normalWS);
+
+    vec3 combinedNormalTS = vec3(0.0);
     for (int moveIdx = 0; moveIdx < normalMapMoveCount; moveIdx++)
     {
         vec2 uv = vertexUV + fTime * normalMapMoves[moveIdx];
         vec3 normal = texture(normalMap, uv).xyz * 2.0 - 1.0;
-        combinedNormal += normal;
+        combinedNormalTS += normal;
     }
 
-    combinedNormal = normalize(combinedNormal);
-    vec3 normal = normalize(mix(vec3(0,1,0), combinedNormal, normalStrength));
+    combinedNormalTS = normalize(combinedNormalTS);
+    vec3 combinedNormalWS = normalize(TBN * combinedNormalTS);
+    vec3 normal = normalize(mix(vec3(0,1,0), combinedNormalWS, normalStrength));
     vec3 viewDir = normalize(cameraPos - vertexPos);
 
     float fresnel = pow(1.0 - max(dot(viewDir, normal), 0.0), fresnelPower);
