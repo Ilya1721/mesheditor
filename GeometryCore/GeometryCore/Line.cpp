@@ -2,8 +2,6 @@
 
 #include <glm/gtx/vector_angle.hpp>
 
-#include "Transforms.h"
-
 namespace GeometryCore
 {
   glm::mat4 Line::getTransformToSelf(const Line& input) const
@@ -14,8 +12,8 @@ namespace GeometryCore
     auto rotationAngle =
       glm::angle(glm::normalize(originLineDir), glm::normalize(inputLineDir));
 
-    auto rotationTransform = getRotationTransform(-rotationAngle, rotationAxis);
-    auto translationTransform = getTranslationTransform(start, input.start);
+    auto rotationTransform = glm::rotate(-rotationAngle, rotationAxis);
+    auto translationTransform = glm::translate(start - input.start);
 
     return translationTransform * rotationTransform;
   }

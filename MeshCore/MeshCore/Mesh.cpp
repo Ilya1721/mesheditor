@@ -1,5 +1,7 @@
 #include "Mesh.h"
 
+#include <array>
+
 #include "Constants.h"
 #include "Face.h"
 #include "GeometryCore/Numeric.h"

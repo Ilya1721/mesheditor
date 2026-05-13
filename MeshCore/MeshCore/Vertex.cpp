@@ -1,7 +1,6 @@
 #include "Vertex.h"
 
 #include "GeometryCore/Numeric.h"
-#include "GeometryCore/Transforms.h"
 
 using namespace GeometryCore;
 
@@ -22,8 +21,8 @@ namespace MeshCore
   Vertex operator*(const glm::mat4& transform, const Vertex& vertex)
   {
     Vertex newVertex {};
-    newVertex.pos = transformPoint(vertex.pos, transform);
-    newVertex.normal = glm::normalize(transformVector(vertex.normal, transform));
+    newVertex.pos = transform * glm::vec4(vertex.pos, 1.0f);
+    newVertex.normal = glm::normalize(transform * glm::vec4(vertex.normal, 0.0f));
 
     return newVertex;
   }

@@ -222,10 +222,11 @@ namespace RenderSystem
 
   Ray Window::castCursorRay() const
   {
-    auto nearCursorPosInWorldSpace = unProject(getCursorPos(), 0.0f);
-    auto farCursorPosInWorldSpace = unProject(getCursorPos(), 1.0f);
+    auto nearCursorPosWorldSpace = unProject(getCursorPos(), 0.0f);
+    auto farCursorPosWorldSpace = unProject(getCursorPos(), 1.0f);
     return {
-      nearCursorPosInWorldSpace, farCursorPosInWorldSpace - nearCursorPosInWorldSpace
+      nearCursorPosWorldSpace,
+      glm::normalize(farCursorPosWorldSpace - nearCursorPosWorldSpace)
     };
   }
 

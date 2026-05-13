@@ -3,7 +3,6 @@
 #include <glm/gtx/vector_angle.hpp>
 
 #include "Ray.h"
-#include "Transforms.h"
 
 namespace GeometryCore
 {
@@ -29,8 +28,8 @@ namespace GeometryCore
     auto rotationAxis = glm::cross(normal, source.normal);
     auto rotationAngle =
       glm::angle(glm::normalize(normal), glm::normalize(source.normal));
-    auto rotationTransform = getRotationTransform(rotationAngle, rotationAxis);
-    auto translationTransform = getTranslationTransform(origin, source.origin);
+    auto rotationTransform = glm::rotate(rotationAngle, rotationAxis);
+    auto translationTransform = glm::translate(origin - source.origin);
 
     return translationTransform * rotationTransform;
   }
@@ -44,6 +43,10 @@ namespace GeometryCore
 
     auto distanceToPlane = (glm::dot(normal, origin) - glm::dot(normal, ray.origin)) /
                            glm::dot(normal, ray.direction);
+
+    if (distanceToPlane < 0.0f) {
+      return {};
+    }
 
     return std::make_optional(ray.origin + ray.direction * distanceToPlane);
   }

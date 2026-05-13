@@ -38,68 +38,40 @@ namespace MeshCore
 
   glm::vec3 Face::calcNormal() const
   {
-    auto firstEdge = halfEdge->next->vertex->pos - halfEdge->vertex->pos;
-    auto secondEdge = halfEdge->prev->vertex->pos - halfEdge->next->vertex->pos;
+    const auto& vertices = getVerticesPositions();
+    auto leftEdge = vertices[1] - vertices[0];
+    auto rightEdge = vertices[2] - vertices[0];
 
-    return glm::cross(firstEdge, secondEdge);
+    return glm::normalize(glm::cross(leftEdge, rightEdge));
   }
 
   bool Face::isPointInside(const glm::vec3& point) const
   {
-    auto verticesPositions = getVerticesPositions();
-    std::array<std::array<glm::vec3, 3>, 3> littleTriangles {};
-    littleTriangles[0] = {
-      verticesPositions[0] - point, verticesPositions[1] - verticesPositions[0],
-      point - verticesPositions[1]
-    };
-    littleTriangles[1] = {
-      verticesPositions[1] - point, verticesPositions[2] - verticesPositions[1],
-      point - verticesPositions[2]
-    };
-    littleTriangles[2] = {
-      verticesPositions[2] - point, verticesPositions[0] - verticesPositions[2],
-      point - verticesPositions[0]
-    };
+    const auto& vertices = getVerticesPositions();
+    std::array<glm::vec3, 6> littleTrianglesEdges {};
+    littleTrianglesEdges[0] = point - vertices[0];
+    littleTrianglesEdges[1] = point - vertices[1];
+    littleTrianglesEdges[2] = point - vertices[1];
+    littleTrianglesEdges[3] = point - vertices[2];
+    littleTrianglesEdges[4] = point - vertices[2];
+    littleTrianglesEdges[5] = point - vertices[0];
 
-    std::array<std::array<float, 3>, 3> littleTrianglesEdgesLengths {};
-    for (int triangleIdx = 0; triangleIdx < 3; ++triangleIdx)
+    float littleTrianglesTotalSquare = 0.0f;
+    for (size_t edgeIdx = 0; edgeIdx < 6; edgeIdx += 2)
     {
-      for (int edgeIdx = 0; edgeIdx < 3; ++edgeIdx)
-      {
-        littleTrianglesEdgesLengths[triangleIdx][edgeIdx] =
-          glm::length(littleTriangles[triangleIdx][edgeIdx]);
-      }
+      const auto& leftEdge = littleTrianglesEdges[edgeIdx];
+      const auto& rightEdge = littleTrianglesEdges[edgeIdx + 1];
+      littleTrianglesTotalSquare += getTriangleSquare(leftEdge, rightEdge);
     }
 
-    float trianglesSquaresSum = 0.0f;
+    auto leftEdge = vertices[1] - vertices[0];
+    auto rightEdge = vertices[2] - vertices[0];
+    auto bigTriangleSquare = getTriangleSquare(leftEdge, rightEdge);
 
-    for (int triangleIdx = 0; triangleIdx < 3; ++triangleIdx)
-    {
-      auto crossProduct =
-        glm::cross(littleTriangles[triangleIdx][1], littleTriangles[triangleIdx][2]);
-      if (!isEqual(crossProduct, glm::vec3(0.0f, 0.0f, 0.0f)))
-      {
-        trianglesSquaresSum +=
-          getSquareOfTriangle(littleTrianglesEdgesLengths[triangleIdx]);
-      }
-    }
-
-    return glm::epsilonEqual(trianglesSquaresSum, getSquare(), 1e-6f);
+    return glm::epsilonEqual(littleTrianglesTotalSquare, bigTriangleSquare, 1e-6f);
   }
 
-  std::vector<glm::vec3> Face::getAllEdges() const
-  {
-    std::vector<glm::vec3> edges;
-    EdgeWalker edgeWalker(halfEdge);
-    edgeWalker.forEach(
-      [&edges](const HalfEdge* edge)
-      { edges.emplace_back(edge->next->vertex->pos - edge->vertex->pos); }
-    );
-
-    return edges;
-  }
-
-  std::vector<HalfEdge*> Face::getAllHalfEdges() const
+  std::vector<HalfEdge*> Face::getHalfEdges() const
   {
     std::vector<HalfEdge*> edges;
     EdgeWalker edgeWalker(halfEdge);
@@ -114,7 +86,7 @@ namespace MeshCore
   {
     std::unordered_set<Face*> uniqueAdjacentFaces;
 
-    for (const auto& edge : getAllHalfEdges())
+    for (const auto& edge : getHalfEdges())
     {
       OutgoingEdgeFinder finder(edge);
       finder.collectAll();
@@ -157,14 +129,6 @@ namespace MeshCore
     );
 
     return outgoingEdge;
-  }
-
-  float Face::getSquare() const
-  {
-    auto edges = getAllEdges();
-    return getSquareOfTriangle(
-      {glm::length(edges[0]), glm::length(edges[1]), glm::length(edges[2])}
-    );
   }
 
   void Face::move(

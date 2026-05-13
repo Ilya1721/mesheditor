@@ -81,17 +81,17 @@ namespace RenderSystem
     const Ray& ray, IntersectionMode intersectionMode, int facesIndexOffset
   )
   {
-    Object3DIntersection objectIntersection;
+    Object3DIntersection closestIntersection;
     TreeWalker walker(this);
     walker.forEach(
-      [&ray, &objectIntersection, &intersectionMode, &facesIndexOffset,
+      [&ray, &closestIntersection, &intersectionMode, &facesIndexOffset,
        this](Object3D* object)
       {
         const auto& faces = object->mMesh->getFaces();
         const auto currentFacesIndexOffset = faces.size() + facesIndexOffset;
-        auto invertedRay = glm::inverse(object->getTransform()) * ray;
+        auto rayLocalSpace = glm::inverse(object->getTransform()) * ray;
         auto meshIntersection = object->mMesh->getRayIntersection(
-          invertedRay, intersectionMode, currentFacesIndexOffset
+          rayLocalSpace, intersectionMode, currentFacesIndexOffset
         );
         facesIndexOffset += faces.size();
 
@@ -100,18 +100,22 @@ namespace RenderSystem
           return;
         }
 
-        if (isCloser(
+        meshIntersection.intersectionPoint =
+          object->getTransform() * glm::vec4(meshIntersection.intersectionPoint, 1.0f);
+
+        if (!closestIntersection.intersectedObject ||
+            isCloser(
               meshIntersection.intersectionPoint,
-              objectIntersection.raySurfaceIntersection.point, invertedRay.origin
+              closestIntersection.raySurfaceIntersection.point, ray.origin
             ))
         {
-          objectIntersection.intersectedObject = object;
-          objectIntersection.raySurfaceIntersection.assign(meshIntersection);
+          closestIntersection.intersectedObject = object;
+          closestIntersection.raySurfaceIntersection.assign(meshIntersection);
         }
       }
     );
 
-    return objectIntersection;
+    return closestIntersection;
   }
 
   std::unique_ptr<Object3D> Object3D::clone()

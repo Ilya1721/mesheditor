@@ -3,7 +3,6 @@
 #include "GeometryCore/Numeric.h"
 #include "GeometryCore/Plane.h"
 #include "GeometryCore/Ray.h"
-#include "GeometryCore/Transforms.h"
 #include "Mesh.h"
 #include "Vertex.h"
 
@@ -84,7 +83,7 @@ namespace MeshCore
 
   void AABBox::applyTransform(const glm::mat4& transform)
   {
-    setMinMax(transformPoint(mMin, transform), transformPoint(mMax, transform));
+    setMinMax(transform * glm::vec4(mMin, 1.0f), transform * glm::vec4(mMax, 1.0f));
   }
 
   void AABBox::applyBBox(const AABBox& other)

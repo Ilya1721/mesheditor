@@ -10,7 +10,6 @@
 #include "GeometryCore/Numeric.h"
 #include "GeometryCore/Plane.h"
 #include "GeometryCore/Ray.h"
-#include "GeometryCore/Transforms.h"
 #include "MeshCore/AABBox.h"
 
 using namespace GeometryCore;
@@ -49,7 +48,7 @@ namespace RenderSystem
 
   glm::vec3 Camera::projectToTargetPlane(const glm::vec3& cursorPosInWorldSpace) const
   {
-    Ray cursorRay(cursorPosInWorldSpace, cursorPosInWorldSpace - mEye);
+    Ray cursorRay(cursorPosInWorldSpace, mEye - cursorPosInWorldSpace);
     return getTargetPlane().getIntersectionPoint(cursorRay).value();
   }
 
@@ -138,10 +137,9 @@ namespace RenderSystem
     }
 
     auto rotationAxisInNDC = glm::cross(startPosInNDCWithZ, endPosInNDCWithZ);
-    auto rotationAxisInCameraSpace = transformVector(
-      rotationAxisInNDC, glm::inverse(calculateViewMatrixWithTargetAtOrigin())
-    );
-    auto unitRotationAxisInCameraSpace = glm::normalize(rotationAxisInCameraSpace);
+    auto viewMatrixInv = glm::inverse(calculateViewMatrixWithTargetAtOrigin());
+    auto rotationAxisInCameraSpace = viewMatrixInv * glm::vec4(rotationAxisInNDC, 0.0f);
+    glm::vec3 unitRotationAxisInCameraSpace = glm::normalize(rotationAxisInCameraSpace);
 
     return glm::rotate(-rotationAngle * ORBIT_SPEED_COEF, unitRotationAxisInCameraSpace);
   }
@@ -226,8 +224,8 @@ namespace RenderSystem
 
   void Camera::rotateCamera(const glm::mat4& rotationTransform)
   {
-    auto cameraInverseDir = transformVector(mEye - mTarget, rotationTransform);
-    auto up = transformVector(mUp, rotationTransform);
+    glm::vec3 cameraInverseDir = rotationTransform * glm::vec4(mEye - mTarget, 0.0f);
+    glm::vec3 up = rotationTransform * glm::vec4(mUp, 0.0f);
     setEyeTargetUp(mTarget + cameraInverseDir, mTarget, up);
   }
 

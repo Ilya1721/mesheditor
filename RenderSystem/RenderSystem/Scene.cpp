@@ -5,7 +5,6 @@
 #include <glm/gtx/transform.hpp>
 
 #include "Constants.h"
-#include "DebugVisualization.h"
 #include "ExtraRenderModesController.h"
 #include "GeometryCore/Ray.h"
 #include "MeshCore/Intersection.h"

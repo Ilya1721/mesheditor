@@ -28,13 +28,11 @@ namespace MeshCore
     std::optional<glm::vec3> getIntersectionPoint(const Ray& ray) const;
     glm::vec3 calcNormal() const;
     bool isPointInside(const glm::vec3& point) const;
-    std::vector<glm::vec3> getAllEdges() const;
-    std::vector<HalfEdge*> getAllHalfEdges() const;
+    std::vector<HalfEdge*> getHalfEdges() const;
     std::unordered_set<Face*> getAdjacentFaces(
       bool filterByNormal = false, const glm::vec3* normalPtr = nullptr
     ) const;
     HalfEdge* findOutgoingEdge(const UniqueVertex* vertex) const;
-    float getSquare() const;
     std::vector<glm::vec3> getVerticesPositions() const;
 
     void move(
