@@ -19,8 +19,14 @@ namespace RenderSystem
 
   void Renderer::renderHighlightedFace(int faceIdx, int vertexOffset)
   {
-    renderOverlayPrimitive([faceIdx, vertexOffset]()
-                           { glDrawArrays(GL_TRIANGLES, faceIdx * 3 + vertexOffset, 3); }
+    renderOverlayPrimitive(
+      [this, faceIdx, vertexOffset]()
+      {
+        mModelRenderBuffer.invoke(
+          [&faceIdx, vertexOffset]()
+          { glDrawArrays(GL_TRIANGLES, faceIdx * 3 + vertexOffset, 3); }
+        );
+      }
     );
   }
 

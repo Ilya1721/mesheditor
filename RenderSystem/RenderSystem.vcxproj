@@ -57,7 +57,7 @@
       <ConformanceMode>Default</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\;$(SolutionDir)GeometryCore\;$(SolutionDir)MeshCore\;$(SolutionDir)Utility\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\libs;$(SolutionDir)GeometryCore\;$(SolutionDir)MeshCore\;$(SolutionDir)Utility\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <EnableModules>false</EnableModules>
       <TranslateIncludes>false</TranslateIncludes>
@@ -92,7 +92,7 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
       <ConformanceMode>Default</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\;$(SolutionDir)GeometryCore\;$(SolutionDir)MeshCore\;$(SolutionDir)Utility\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\libs;$(SolutionDir)GeometryCore\;$(SolutionDir)MeshCore\;$(SolutionDir)Utility\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <EnableModules>false</EnableModules>
       <TranslateIncludes>false</TranslateIncludes>

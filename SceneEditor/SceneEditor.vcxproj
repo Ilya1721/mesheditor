@@ -65,7 +65,7 @@
       <BuildStlModules>false</BuildStlModules>
       <AdditionalModuleDependencies>
       </AdditionalModuleDependencies>
-      <AdditionalIncludeDirectories>$(SolutionDir)RenderSystem\;$(SolutionDir)ThirdParty\;$(SolutionDir)GeometryCore\;$(SolutionDir)MeshCore\;$(SolutionDir)Utility\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)RenderSystem\;$(SolutionDir)ThirdParty\libs;$(SolutionDir)GeometryCore\;$(SolutionDir)MeshCore\;$(SolutionDir)Utility\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
       <TranslateIncludes>false</TranslateIncludes>
     </ClCompile>
@@ -73,7 +73,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>GeometryCore.lib;glfw3.lib;glad.lib;stb_image.lib;fastgltf.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)ThirdParty\glfw\lib\;$(SolutionDir)ThirdParty\glad\lib\;$(SolutionDir)ThirdParty\stb_image\lib\;$(SolutionDir)ThirdParty\fastgltf\lib\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)ThirdParty\libs\glfw\lib\;$(SolutionDir)ThirdParty\libs\glad\lib\;$(SolutionDir)ThirdParty\libs\stb_image\lib\;$(SolutionDir)ThirdParty\libs\fastgltf\lib\$(Configuration)\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -89,7 +89,7 @@
       <BuildStlModules>false</BuildStlModules>
       <AdditionalModuleDependencies>
       </AdditionalModuleDependencies>
-      <AdditionalIncludeDirectories>$(SolutionDir)RenderSystem\;$(SolutionDir)ThirdParty\;$(SolutionDir)GeometryCore\;$(SolutionDir)MeshCore\;$(SolutionDir)Utility\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)RenderSystem\;$(SolutionDir)ThirdParty\libs;$(SolutionDir)GeometryCore\;$(SolutionDir)MeshCore\;$(SolutionDir)Utility\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
       <TranslateIncludes>false</TranslateIncludes>
     </ClCompile>
@@ -99,7 +99,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>GeometryCore.lib;glfw3.lib;glad.lib;stb_image.lib;fastgltf.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)ThirdParty\glfw\lib\;$(SolutionDir)ThirdParty\glad\lib\;$(SolutionDir)ThirdParty\stb_image\lib\;$(SolutionDir)ThirdParty\fastgltf\lib\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)ThirdParty\libs\glfw\lib\;$(SolutionDir)ThirdParty\libs\glad\lib\;$(SolutionDir)ThirdParty\libs\stb_image\lib\;$(SolutionDir)ThirdParty\libs\fastgltf\lib\$(Configuration)\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
