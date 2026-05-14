@@ -2,6 +2,7 @@
 
 #include "AnimationPlayer.h"
 #include "Cloner.h"
+#include "GlassMaker.h"
 #include "Mover.h"
 #include "Orbit.h"
 #include "Pan.h"
@@ -71,6 +72,7 @@ namespace RenderSystem
     addOperation<Cloner>(mScene);
     addOperation<PointLightOperations>(mScene);
     addOperation<AnimationPlayer>(mScene);
+    addOperation<GlassMaker>(mScene);
     addOperation<ParticlesGenerator>(mWindow, mScene);
     addOperation<WaterGenerator>(mWindow, mScene);
   }

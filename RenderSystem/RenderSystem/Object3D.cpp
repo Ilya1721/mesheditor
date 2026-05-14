@@ -211,6 +211,11 @@ namespace RenderSystem
     mUVScale = uvScale;
   }
 
+  void Object3D::setMaterial(const Material& material)
+  {
+    mMaterial = material;
+  }
+
   void Object3D::materialVisitor(
     const std::function<void(const BlinnPhongMaterial&)>& blinnPhongAction,
     const std::function<void(const GlassMaterial&)>& glassAction,

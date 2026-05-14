@@ -162,6 +162,8 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <ClCompile Include="RenderSystem\DebugVisualization.cpp" />
     <ClCompile Include="RenderSystem\ExtraRenderModesController.cpp" />
     <ClCompile Include="RenderSystem\FlipbookTexture.cpp" />
+    <ClCompile Include="RenderSystem\GlassMaker.cpp" />
+    <ClCompile Include="RenderSystem\GlassMakerController.cpp" />
     <ClCompile Include="RenderSystem\GlassShaderProgram.cpp" />
     <ClCompile Include="RenderSystem\GLTFModelLoader.cpp" />
     <ClCompile Include="RenderSystem\ImageLoader.cpp" />
@@ -243,6 +245,8 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <ClInclude Include="RenderSystem\DebugVisualization.h" />
     <ClInclude Include="RenderSystem\ExtraRenderModesController.h" />
     <ClInclude Include="RenderSystem\FlipbookTexture.h" />
+    <ClInclude Include="RenderSystem\GlassMaker.h" />
+    <ClInclude Include="RenderSystem\GlassMakerController.h" />
     <ClInclude Include="RenderSystem\GlassShaderProgram.h" />
     <ClInclude Include="RenderSystem\GLTFModelLoader.h" />
     <ClInclude Include="RenderSystem\ImageLoader.h" />

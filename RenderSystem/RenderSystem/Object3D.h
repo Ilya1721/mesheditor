@@ -60,10 +60,7 @@ namespace RenderSystem
     void onMeshUpdated(const std::unordered_set<UniqueVertex*>& vertices);
     void moveToOrigin();
     void setUVScale(const glm::vec2& uvScale);
-    template <MaterialType T> void setMaterial(T material)
-    {
-      mMaterial = std::move(material);
-    }
+    void setMaterial(const Material& material);
     void materialVisitor(
       const std::function<void(const BlinnPhongMaterial&)>& blinnPhongAction,
       const std::function<void(const GlassMaterial&)>& glassAction,
