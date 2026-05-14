@@ -22,7 +22,7 @@ namespace RenderSystem
     {
       mGlassMakerController.setGlassMaterial(pickedObject);
     }
-    else if (key == GLFW_KEY_C)
+    else if (key == GLFW_KEY_R)
     {
       mGlassMakerController.resetObjectMaterial(pickedObject);
     }

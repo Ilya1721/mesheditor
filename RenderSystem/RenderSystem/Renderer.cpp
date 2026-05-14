@@ -33,11 +33,16 @@ namespace RenderSystem
   void Renderer::renderWireframe(int objectVertexCount)
   {
     renderOverlayPrimitive(
-      [&objectVertexCount]()
+      [this, &objectVertexCount]()
       {
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        glDrawArrays(GL_TRIANGLES, 0, objectVertexCount);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        mModelRenderBuffer.invoke(
+          [&objectVertexCount]()
+          {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            glDrawArrays(GL_TRIANGLES, 0, objectVertexCount);
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+          }
+        );
       }
     );
   }

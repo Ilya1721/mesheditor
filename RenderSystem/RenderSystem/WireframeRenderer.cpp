@@ -12,7 +12,7 @@ namespace RenderSystem
 
   void WireframeRenderer::onKeyPressed(int key)
   {
-    if (key == GLFW_KEY_W)
+    if (key == GLFW_KEY_Q)
     {
       mScene->toggleWireframe();
     }

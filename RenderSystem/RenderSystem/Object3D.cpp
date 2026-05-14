@@ -125,6 +125,10 @@ namespace RenderSystem
     newObject->mBBox = mBBox;
     newObject->mTransform = mTransform;
     newObject->mParent = mParent;
+    newObject->mMaterial = mMaterial;
+    newObject->mUVScale = mUVScale;
+    newObject->mSkeleton = mSkeleton;
+    newObject->mAnimations = mAnimations;
 
     for (const auto& child : mChildren)
     {
