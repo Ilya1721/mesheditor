@@ -33,10 +33,8 @@ namespace RenderSystem
 
   void PointLights::removeLight(unsigned int index)
   {
-    auto pointLightIt = mLights.find(index);
-    if (pointLightIt == mLights.end())
-      return;
-    pointLightIt->second.setParams(PointLightParams {});
+    mLights.erase(index);
+    glUniform1i(mLightsCount, mLights.size());
   }
 
   PointLight* PointLights::getLight(unsigned int index)

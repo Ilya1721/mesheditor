@@ -12,38 +12,15 @@ namespace RenderSystem
   {
   }
 
-  void PointLightOperations::onMouseMove(
-    const glm::vec2& startCursorPos, const glm::vec2& endCursorPos
-  )
-  {
-  }
-
-  void PointLightOperations::onMouseClick()
-  {
-  }
-
   void PointLightOperations::onKeyPressed(int key)
   {
-    switch (key)
+    if (key == GLFW_KEY_L)
     {
-      case GLFW_KEY_L:
-        addPointLight();
-        break;
-      case GLFW_KEY_D:
-        removePointLight();
-        break;
-      default:
-        break;
+      mScene->addPointLight(POINT_LIGHT_PARAMS, mScene->getDefaultPointLightSourcePos());
     }
-  }
-
-  void PointLightOperations::addPointLight()
-  {
-    mScene->addPointLight(POINT_LIGHT_PARAMS, mScene->getDefaultPointLightSourcePos());
-  }
-
-  void PointLightOperations::removePointLight()
-  {
-    mScene->removePointLight(mSelectedLightIdx);
+    else if (key == GLFW_KEY_D)
+    {
+      mScene->removePointLight(mSelectedLightIdx);
+    }
   }
 }  // namespace RenderSystem

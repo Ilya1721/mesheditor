@@ -68,7 +68,7 @@ namespace RenderSystem
     glm::vec3(1.0f, 1.0f, 1.0f),
     glm::vec3(1.0f, 1.0f, 1.0f),
     glm::vec3(0.1f, 0.1f, 0.1f),
-    1.0f,
+    5.0f,
     0.009f,
     0.003f
   };
