@@ -58,7 +58,7 @@ vec3 blinnPhongDirectional()
   vec3 lightSpecular = directionalLightParams.specular;
 
   vec3 reversedLightUnitDir = normalize(dirLightPos - vertexPos);
-  float diffuseStrength = max(dot(vertexNormal, reversedLightUnitDir), 0.0);
+  float diffuseStrength = max(dot(vertexNormal, reversedLightUnitDir), 0.3);
   vec3 diffuse = diffuseStrength * lightDiffuse * material.diffuse;
 
   vec3 reversedCameraUnitDir = normalize(cameraPos - vertexPos);
