@@ -56,19 +56,19 @@ namespace MeshCore
     littleTrianglesEdges[4] = point - vertices[2];
     littleTrianglesEdges[5] = point - vertices[0];
 
-    float littleTrianglesTotalSquare = 0.0f;
+    float littleTrianglesTotalArea = 0.0f;
     for (size_t edgeIdx = 0; edgeIdx < 6; edgeIdx += 2)
     {
       const auto& leftEdge = littleTrianglesEdges[edgeIdx];
       const auto& rightEdge = littleTrianglesEdges[edgeIdx + 1];
-      littleTrianglesTotalSquare += getTriangleSquare(leftEdge, rightEdge);
+      littleTrianglesTotalArea += getTriangleArea(leftEdge, rightEdge);
     }
 
     auto leftEdge = vertices[1] - vertices[0];
     auto rightEdge = vertices[2] - vertices[0];
-    auto bigTriangleSquare = getTriangleSquare(leftEdge, rightEdge);
+    auto bigTriangleArea = getTriangleArea(leftEdge, rightEdge);
 
-    return glm::epsilonEqual(littleTrianglesTotalSquare, bigTriangleSquare, 1e-6f);
+    return glm::epsilonEqual(littleTrianglesTotalArea, bigTriangleArea, 1e-6f);
   }
 
   std::vector<HalfEdge*> Face::getHalfEdges() const

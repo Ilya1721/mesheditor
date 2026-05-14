@@ -10,7 +10,7 @@ namespace GeometryCore
   );
   double roundToDigits(double value, int digits);
   glm::vec3 roundToDigits(const glm::vec3& value, int digits);
-  float getTriangleSquare(const glm::vec3& leftEdge, const glm::vec3& rightEdge);
+  float getTriangleArea(const glm::vec3& leftEdge, const glm::vec3& rightEdge);
   bool isGreater(float first, float second, float tolerance = 1e-6f);
   bool isLess(float first, float second, float tolerance = 1e-6f);
 

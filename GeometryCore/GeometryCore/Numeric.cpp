@@ -24,7 +24,7 @@ namespace GeometryCore
     return glm::round(value * factor) / factor;
   }
 
-  float getTriangleSquare(const glm::vec3& leftEdge, const glm::vec3& rightEdge)
+  float getTriangleArea(const glm::vec3& leftEdge, const glm::vec3& rightEdge)
   {
     auto crossProductVector = glm::cross(leftEdge, rightEdge);
     return glm::length(crossProductVector) * 0.5f;
