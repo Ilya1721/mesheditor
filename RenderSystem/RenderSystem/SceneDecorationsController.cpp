@@ -1,6 +1,7 @@
 #include "SceneDecorationsController.h"
 
 #include "Renderer.h"
+#include "ShaderProgram.h"
 
 namespace RenderSystem
 {
@@ -9,13 +10,19 @@ namespace RenderSystem
   {
   }
 
-  void SceneDecorationsController::render(const DecorationsPrerenderSetup& prerenderSetup)
+  void SceneDecorationsController::render(
+    const DecorationsPrerenderSetup& prerenderSetup, const GetShader& getShader
+  )
   {
     int startIndex = 0;
     for (const auto& sceneDecoration : mSceneDecorations)
     {
       prerenderSetup(sceneDecoration);
-      mRenderer->renderSceneDecoration(sceneDecoration, startIndex);
+      auto shaderProgram = getShader(sceneDecoration);
+      shaderProgram->invoke(
+        [this, &sceneDecoration, &startIndex]()
+        { mRenderer->renderSceneDecoration(sceneDecoration, startIndex); }
+      );
     }
   }
 

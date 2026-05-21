@@ -8,6 +8,7 @@
 #include "ExtraRenderModesController.h"
 #include "GeometryCore/Ray.h"
 #include "MeshCore/Intersection.h"
+#include "MeshCore/MeshFactory.h"
 #include "ModelLoader.h"
 #include "PointLightObject3D.h"
 #include "Renderer.h"
@@ -67,6 +68,9 @@ namespace RenderSystem
     );
     mWaterShaderProgram = std::make_unique<WaterShaderProgram>(
       WATER_VERTEX_SHADER_PATH, WATER_FRAGMENT_SHADER_PATH
+    );
+    mColorShaderProgram = std::make_unique<ColorShaderProgram>(
+      COLOR_VERTEX_SHADER_PATH, COLOR_FRAGMENT_SHADER_PATH
     );
     mBlinnPhongShaderProgram->setDirLightParams(DIR_LIGHT_PARAMS);
     mPBRShaderProgram->setLightColor(PBR_LIGHT_COLOR);
@@ -130,7 +134,8 @@ namespace RenderSystem
       std::initializer_list<CameraListener*> {
         mBlinnPhongShaderProgram.get(), mPBRShaderProgram.get(), mSkyboxController.get(),
         mGlassShaderProgram.get(), mShadowShaderProgram.get(),
-        mParticlesShaderProgram.get(), mWaterShaderProgram.get()
+        mParticlesShaderProgram.get(), mWaterShaderProgram.get(),
+        mColorShaderProgram.get()
       }
     );
   }
@@ -180,9 +185,29 @@ namespace RenderSystem
     mWaterShaderProgram->setShallowColor(waterBlock.shallowColor);
   }
 
+  MeshRenderData Scene::getSkyboxRenderData()
+  {
+    auto skyboxVertices = MeshCore::createCube(1.0f);
+    auto renderData = MeshRenderData::generateRenderData(skyboxVertices);
+    return renderData;
+  }
+
+  ShaderProgram* Scene::getSceneDecorationShader(const SceneDecoration& decoration) const
+  {
+    ShaderProgram* shaderProgram = nullptr;
+    decoration.materialVisitor(
+      [this, &shaderProgram](const BlinnPhongMaterial& material)
+      { shaderProgram = mBlinnPhongShaderProgram.get(); },
+      [this, &shaderProgram](const ColorMaterial& material)
+      { shaderProgram = mColorShaderProgram.get(); }
+    );
+
+    return shaderProgram;
+  }
+
   void Scene::initRenderer()
   {
-    mRenderer->loadSkyboxRenderData(MeshRenderData::getSkyboxRenderData());
+    mRenderer->loadSkyboxRenderData(getSkyboxRenderData());
     mRenderer->loadScreenQuadRenderData(SCREEN_QUAD_VERTICES);
     mRenderer->loadParticleQuadRenderData(PARTICLE_QUAD_VERTICES);
     mRenderer->loadParticlesRenderData();
@@ -307,12 +332,18 @@ namespace RenderSystem
     mPBRShaderProgram->setRougness(material.rougness);
   }
 
+  void Scene::setColorMaterial(const ColorMaterial& material)
+  {
+    mColorShaderProgram->setColor(material.color);
+  }
+
   void Scene::setProjectionToShaders(const glm::mat4& projection)
   {
     mBlinnPhongShaderProgram->setProjection(projection);
     mPBRShaderProgram->setProjection(projection);
     mGlassShaderProgram->setProjection(projection);
     mShadowShaderProgram->setProjection(projection);
+    mColorShaderProgram->setProjection(projection);
   }
 
   void Scene::addModelObject(const std::string& meshFilePath)
@@ -489,7 +520,7 @@ namespace RenderSystem
   )
   {
     renderSceneObjects(prerenderSetup, invokeModelShaders);
-    mBlinnPhongShaderProgram->invoke([this]() { renderDecorations(); });
+    renderDecorations();
   }
 
   void Scene::renderFullScene(
@@ -562,6 +593,22 @@ namespace RenderSystem
     );
   }
 
+  void Scene::decorationPrerenderSetup(const SceneDecoration& decoration)
+  {
+    decoration.materialVisitor(
+      [this](const BlinnPhongMaterial& material)
+      {
+        setBlinnPhongMaterial(material);
+        mBlinnPhongShaderProgram->setModel(glm::mat4(1.0f));
+      },
+      [this](const ColorMaterial& material)
+      {
+        setColorMaterial(material);
+        mColorShaderProgram->setModel(glm::mat4(1.0f));
+      }
+    );
+  }
+
   const TAAColorTexture& Scene::resolveTAA()
   {
     return mTAAController->resolveTAA([this]() { mRenderer->renderScreenQuad(); });
@@ -583,10 +630,11 @@ namespace RenderSystem
 
   void Scene::renderDecorations()
   {
-    mBlinnPhongShaderProgram->setModel(glm::mat4(1.0f));
-    mShadowMapController->setModel(glm::mat4(1.0f));
-    mDecorationsController->render([this](const SceneDecoration& decoration)
-                                   { setBlinnPhongMaterial(decoration.material); });
+    auto prerenderSetup = [this](const SceneDecoration& decoration)
+    { decorationPrerenderSetup(decoration); };
+    auto getShader = [this](const SceneDecoration& decoration)
+    { return getSceneDecorationShader(decoration); };
+    mDecorationsController->render(prerenderSetup, getShader);
   }
 
   void Scene::renderHighlightedFaces()

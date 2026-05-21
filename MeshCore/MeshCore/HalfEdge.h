@@ -4,6 +4,7 @@ namespace MeshCore
 {
   struct UniqueVertex;
   struct Face;
+  class Curve2D;
 
   struct HalfEdge
   {
@@ -12,5 +13,6 @@ namespace MeshCore
     HalfEdge* twin = nullptr;
     UniqueVertex* vertex = nullptr;
     Face* face = nullptr;
+    Curve2D* curve = nullptr;
   };
 }  // namespace MeshCore

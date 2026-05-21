@@ -8,17 +8,16 @@
 #include "Constants.h"
 #include "GeometryCore/Line.h"
 #include "GeometryCore/Plane.h"
-#include "GeometryCore/Ray.h"
+#include "MeshCore/BRepFactory.h"
+#include "MeshCore/MeshFactory.h"
 #include "MeshCore/Vertex.h"
-
-using namespace MeshCore;
 
 namespace
 {
   using namespace RenderSystem;
 
-  SceneDecoration getBaseSceneDecoration(
-    const BlinnPhongMaterial& material, int renderMode, const MeshRenderData& renderData
+  SceneDecoration createBaseSceneDecoration(
+    const Material& material, int renderMode, const MeshRenderData& renderData
   )
   {
     SceneDecoration primitive;
@@ -32,45 +31,30 @@ namespace
 
 namespace RenderSystem
 {
-  SceneDecoration SceneDecoration::createDecoration(
-    const glm::vec3& point, const BlinnPhongMaterial& params
-  )
+  void SceneDecoration::materialVisitor(
+    const std::function<void(const BlinnPhongMaterial&)>& blinnPhongAction,
+    const std::function<void(const ColorMaterial&)>& colorAction
+  ) const
   {
-    return getBaseSceneDecoration(params, GL_POINTS, MeshRenderData::createRenderData(point));
-  }
-
-  SceneDecoration SceneDecoration::createDecoration(
-    const GeometryCore::Ray& ray, float length, const BlinnPhongMaterial& material
-  )
-  {
-    return getBaseSceneDecoration(
-      material, GL_LINES, MeshRenderData::createRenderData(ray, length)
-    );
-  }
-
-  SceneDecoration SceneDecoration::createDecoration(
-    const GeometryCore::Line& line, bool withArrowHead, const BlinnPhongMaterial& material
-  )
-  {
-    return getBaseSceneDecoration(
-      material, GL_LINES, MeshRenderData::createRenderData(line, withArrowHead)
-    );
-  }
-
-  SceneDecoration SceneDecoration::createDecoration(
-    const GeometryCore::Plane& plane,
-    float width,
-    float length,
-    const BlinnPhongMaterial& material
-  )
-  {
-    return getBaseSceneDecoration(
-      material, GL_TRIANGLES, MeshRenderData::createRenderData(plane, width, length)
+    std::visit(
+      [&](auto&& material)
+      {
+        using MaterialType = std::decay_t<decltype(material)>;
+        if constexpr (std::is_same_v<MaterialType, BlinnPhongMaterial>)
+        {
+          blinnPhongAction(material);
+        }
+        else if constexpr (std::is_same_v<MaterialType, ColorMaterial>)
+        {
+          colorAction(material);
+        }
+      },
+      material
     );
   }
 
   SceneDecoration SceneDecoration::createSceneFloor(
-    float sceneBBoxHeight, const BlinnPhongMaterial& floorMaterial
+    float sceneBBoxHeight, const Material& floorMaterial
   )
   {
     auto originY = -sceneBBoxHeight * FLOOR_BBOX_HEIGHT_COEF;
@@ -88,20 +72,28 @@ namespace RenderSystem
     const glm::vec3& normal,
     float width,
     float height,
-    const BlinnPhongMaterial& material
+    const Material& material
   )
   {
-    return SceneDecoration::createDecoration({origin, normal}, width, height, material);
+    GeometryCore::Plane plane(origin, normal);
+    auto planeVertices = MeshCore::createPlane(plane, width, height);
+    auto renderData = MeshRenderData::generateRenderData(planeVertices);
+
+    return createBaseSceneDecoration(material, GL_TRIANGLES, renderData);
   }
 
   SceneDecoration SceneDecoration::createLine(
     const glm::vec3& start,
     const glm::vec3& end,
     bool withArrowHead,
-    const BlinnPhongMaterial& material
+    const Material& material
   )
   {
-    return SceneDecoration::createDecoration({start, end}, withArrowHead, material);
+    GeometryCore::Line line {start, end};
+    auto lineVertices = MeshCore::createLine(line, withArrowHead);
+    auto renderData = MeshRenderData::generateRenderData(lineVertices);
+
+    return createBaseSceneDecoration(material, GL_LINES, renderData);
   }
 
   std::vector<SceneDecoration> SceneDecoration::createGlobalAxes(float length)
@@ -125,7 +117,6 @@ namespace RenderSystem
   )
   {
     std::vector<SceneDecoration> verticesNormals;
-
     for (const auto& vertex : vertices)
     {
       verticesNormals.emplace_back(
@@ -137,7 +128,7 @@ namespace RenderSystem
   }
 
   std::vector<SceneDecoration> SceneDecoration::createBoundingBox(
-    const MeshCore::AABBox& bbox, const BlinnPhongMaterial& material
+    const MeshCore::AABBox& bbox, const Material& material
   )
   {
     glm::vec3 leftMinLowerCorner = bbox.getMin();
@@ -205,15 +196,30 @@ namespace RenderSystem
   }
 
   std::vector<SceneDecoration> SceneDecoration::createPoints(
-    const std::vector<glm::vec3>& points, const BlinnPhongMaterial& material
+    const std::vector<glm::vec3>& points, const Material& material
   )
   {
     std::vector<SceneDecoration> pointDecorations;
     for (const auto& point : points)
     {
-      pointDecorations.emplace_back(createDecoration(point, material));
+      Vertex vertex(point, glm::vec3(0.0f));
+      auto renderData = MeshRenderData::generateRenderData({vertex});
+      pointDecorations.emplace_back(
+        createBaseSceneDecoration(material, GL_POINTS, renderData)
+      );
     }
 
     return pointDecorations;
+  }
+
+  SceneDecoration SceneDecoration::createBRepCircle(
+    float radius, const glm::vec3& normal, const Material& material
+  )
+  {
+    auto brepCircle = MeshCore::createBRepCircle(radius, normal);
+    auto circleVertices = MeshCore::getBRepCurveVertices(brepCircle, 12);
+    auto renderData = MeshRenderData::generateRenderData(circleVertices);
+
+    return createBaseSceneDecoration(material, GL_LINES, renderData);
   }
 }  // namespace RenderSystem

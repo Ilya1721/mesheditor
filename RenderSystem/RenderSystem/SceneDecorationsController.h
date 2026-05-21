@@ -9,15 +9,19 @@
 namespace RenderSystem
 {
   class Renderer;
+  class ShaderProgram;
 
   using DecorationsPrerenderSetup = std::function<void(const SceneDecoration&)>;
+  using GetShader = std::function<ShaderProgram*(const SceneDecoration&)>;
 
   class SceneDecorationsController
   {
    public:
     SceneDecorationsController(Renderer* renderer);
 
-    void render(const DecorationsPrerenderSetup& prerenderSetup);
+    void render(
+      const DecorationsPrerenderSetup& prerenderSetup, const GetShader& getShader
+    );
     void addDecoration(const SceneDecoration& sceneDecoration);
 
    private:

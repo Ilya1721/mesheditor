@@ -18,47 +18,42 @@ namespace RenderSystem
   struct SceneDecoration
   {
     MeshRenderData renderData;
-    BlinnPhongMaterial material;
-    unsigned int renderMode;
+    Material material;
+    unsigned int renderMode {};
 
-    static SceneDecoration createDecoration(
-      const glm::vec3& point, const BlinnPhongMaterial& material
-    );
-    static SceneDecoration createDecoration(
-      const Ray& ray, float length, const BlinnPhongMaterial& material
-    );
-    static SceneDecoration createDecoration(
-      const Line& line, bool withArrowHead, const BlinnPhongMaterial& material
-    );
-    static SceneDecoration createDecoration(
-      const Plane& plane, float width, float length, const BlinnPhongMaterial& material
-    );
+    void materialVisitor(
+      const std::function<void(const BlinnPhongMaterial&)>& blinnPhongAction,
+      const std::function<void(const ColorMaterial&)>& colorAction
+    ) const;
 
     static SceneDecoration createSceneFloor(
-      float sceneBBoxHeight, const BlinnPhongMaterial& floorBlinnPhongMaterial
+      float sceneBBoxHeight, const Material& floorMaterial
     );
     static SceneDecoration createPlane(
       const glm::vec3& origin,
       const glm::vec3& normal,
       float width,
       float height,
-      const BlinnPhongMaterial& material
+      const Material& material
     );
     static SceneDecoration createLine(
       const glm::vec3& start,
       const glm::vec3& end,
       bool withArrowHead,
-      const BlinnPhongMaterial& material
+      const Material& material
     );
     static std::vector<SceneDecoration> createGlobalAxes(float length = 10.0f);
     static std::vector<SceneDecoration> createVerticesNormals(
       const std::vector<MeshCore::Vertex>& vertices
     );
     static std::vector<SceneDecoration> createBoundingBox(
-      const MeshCore::AABBox& bbox, const BlinnPhongMaterial& material
+      const MeshCore::AABBox& bbox, const Material& material
     );
     static std::vector<SceneDecoration> createPoints(
-      const std::vector<glm::vec3>& points, const BlinnPhongMaterial& material
+      const std::vector<glm::vec3>& points, const Material& material
+    );
+    static SceneDecoration createBRepCircle(
+      float radius, const glm::vec3& normal, const Material& material
     );
   };
 }  // namespace RenderSystem

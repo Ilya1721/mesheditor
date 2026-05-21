@@ -1,31 +1,7 @@
 #include "MeshRenderData.h"
 
-#include "DebugVisualization.h"
-#include "GeometryCore/Line.h"
-#include "GeometryCore/Numeric.h"
-#include "GeometryCore/Plane.h"
-#include "GeometryCore/Ray.h"
-#include "MeshCore/Constants.h"
 #include "MeshCore/MeshFactory.h"
 #include "MeshCore/Vertex.h"
-
-namespace
-{
-  using namespace RenderSystem;
-
-  MeshRenderData generateRenderData(
-    const std::vector<Vertex>& vertices, const glm::mat4& transform
-  )
-  {
-    MeshRenderData renderData;
-    for (const auto& vertex : vertices)
-    {
-      renderData.append(transform * vertex);
-    }
-
-    return renderData;
-  }
-}  // namespace
 
 namespace RenderSystem
 {
@@ -79,87 +55,16 @@ namespace RenderSystem
     return mCompactData.size() / 20;
   }
 
-  MeshRenderData MeshRenderData::createRenderData(const glm::vec3& point)
-  {
-    MeshRenderData renderData;
-    renderData.append({point, glm::vec3(0.0f, 0.0f, 1.0f)});
-    return renderData;
-  }
-
-  MeshRenderData MeshRenderData::createRenderData(const Ray& ray, float length)
-  {
-    MeshRenderData renderData;
-    renderData.append({ray.origin, ray.direction});
-    renderData.append({ray.origin + ray.direction * length, ray.direction});
-
-    return renderData;
-  }
-
-  MeshRenderData MeshRenderData::createRenderData(const Line& line, bool withArrowHead)
-  {
-    auto distance = glm::distance(line.start, line.end);
-    auto defaultLineDir = glm::vec3(0.0f, distance, 0.0f);
-    auto lineDir = line.end - line.start;
-    auto crossProduct = glm::cross(defaultLineDir, lineDir);
-    if (isEqual(crossProduct, glm::vec3(0.0f, 0.0f, 0.0f)) &&
-        glm::dot(defaultLineDir, lineDir) < 0.0f)
-    {
-      distance = -distance;
-    }
-
-    std::vector<Vertex> vertices;
-    Line defaultLine {glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, distance, 0.0f)};
-    vertices.emplace_back(defaultLine.start, glm::vec3(0.0f, 0.0f, 1.0f));
-    vertices.emplace_back(defaultLine.end, glm::vec3(0.0f, 0.0f, 1.0f));
-
-    if (withArrowHead)
-    {
-      auto tangent = glm::tan(glm::radians(ARROW_HEAD_ANGLE));
-      auto x = tangent * distance * ARROW_HEAD_LENGTH_COEF;
-      auto y = defaultLine.end.y - (x / tangent);
-      vertices.emplace_back(defaultLine.end, glm::vec3(0.0f, 0.0f, 1.0f));
-      vertices.emplace_back(glm::vec3(-x, y, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-      vertices.emplace_back(defaultLine.end, glm::vec3(0.0f, 0.0f, 1.0f));
-      vertices.emplace_back(glm::vec3(x, y, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-    }
-
-    return generateRenderData(vertices, line.getTransformToSelf(defaultLine));
-  }
-
-  MeshRenderData MeshRenderData::createRenderData(
-    const Plane& plane, float width, float length
+  MeshRenderData MeshRenderData::generateRenderData(
+    const std::vector<Vertex>& vertices, const glm::mat4& transform
   )
   {
-    std::vector<Vertex> vertices;
-    auto halfWidth = width * 0.5f;
-    auto halfLength = length * 0.5f;
-    vertices.emplace_back(
-      glm::vec3(halfWidth, halfLength, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)
-    );
-    vertices.emplace_back(
-      glm::vec3(-halfWidth, halfLength, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)
-    );
-    vertices.emplace_back(
-      glm::vec3(-halfWidth, -halfLength, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)
-    );
-    vertices.emplace_back(
-      glm::vec3(-halfWidth, -halfLength, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)
-    );
-    vertices.emplace_back(
-      glm::vec3(halfWidth, -halfLength, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)
-    );
-    vertices.emplace_back(
-      glm::vec3(halfWidth, halfLength, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)
-    );
+    MeshRenderData renderData;
+    for (const auto& vertex : vertices)
+    {
+      renderData.append(transform * vertex);
+    }
 
-    Plane defaultPlane {glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)};
-    auto planeTransform = plane.getTransformToSelf(defaultPlane);
-
-    return generateRenderData(vertices, planeTransform);
-  }
-
-  MeshRenderData MeshRenderData::getSkyboxRenderData()
-  {
-    return generateRenderData(createCube(1.0f), glm::mat4(1.0f));
+    return renderData;
   }
 }

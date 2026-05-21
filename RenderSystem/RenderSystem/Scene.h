@@ -8,6 +8,7 @@
 #include "BlinnPhongShaderProgram.h"
 #include "Camera.h"
 #include "CameraListener.h"
+#include "ColorShaderProgram.h"
 #include "ExtraRenderModesController.h"
 #include "GlassShaderProgram.h"
 #include "LightParams.h"
@@ -85,6 +86,8 @@ namespace RenderSystem
    private:
     const TAAColorTexture& resolveTAA();
     ParticlesRenderData getParticlesRenderData() const;
+    MeshRenderData getSkyboxRenderData();
+    ShaderProgram* getSceneDecorationShader(const SceneDecoration& decoration) const;
 
     void addModelObject(const std::string& meshFilePath);
     void addFloorAsObject();
@@ -93,6 +96,7 @@ namespace RenderSystem
     void setBlinnPhongMaterial(const BlinnPhongMaterial& material);
     void setGlassMaterial(const GlassMaterial& material);
     void setPBRMaterial(const PBRMaterial& material);
+    void setColorMaterial(const ColorMaterial& material);
     void setProjectionToShaders(const glm::mat4& projection);
 
     void writeSceneToShadowMap();
@@ -128,6 +132,7 @@ namespace RenderSystem
     void registerRootObjectCallbacks();
 
     void scenePrerenderSetup(const Object3D* obj);
+    void decorationPrerenderSetup(const SceneDecoration& decoration);
     void updateDirLightProjection();
     void adjustFloor(Object3D* floor);
 
@@ -151,6 +156,7 @@ namespace RenderSystem
     std::unique_ptr<ScreenShaderProgram> mScreenShaderProgram;
     std::unique_ptr<ParticlesShaderProgram> mParticlesShaderProgram;
     std::unique_ptr<WaterShaderProgram> mWaterShaderProgram;
+    std::unique_ptr<ColorShaderProgram> mColorShaderProgram;
     std::unique_ptr<ShadowMapController> mShadowMapController;
     std::unique_ptr<SkyboxController> mSkyboxController;
     std::unique_ptr<TAAController> mTAAController;

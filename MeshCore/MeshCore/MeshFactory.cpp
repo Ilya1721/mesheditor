@@ -4,6 +4,10 @@
 #include <numbers>
 #include <vector>
 
+#include "BRepCurve.h"
+#include "Constants.h"
+#include "GeometryCore/Numeric.h"
+
 using namespace std::numbers;
 
 namespace MeshCore
@@ -144,6 +148,103 @@ namespace MeshCore
     vertices.insert(
       vertices.end(), {uniqueVertices[6], uniqueVertices[7], uniqueVertices[3]}
     );
+
+    return vertices;
+  }
+
+  std::vector<Vertex> createCircle(float radius, const glm::vec3& normal)
+  {
+    return {};
+  }
+
+  std::vector<Vertex> createPlane(const Plane& plane, float width, float length)
+  {
+    std::vector<Vertex> vertices;
+    auto halfWidth = width * 0.5f;
+    auto halfLength = length * 0.5f;
+    vertices.emplace_back(
+      glm::vec3(halfWidth, halfLength, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)
+    );
+    vertices.emplace_back(
+      glm::vec3(-halfWidth, halfLength, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)
+    );
+    vertices.emplace_back(
+      glm::vec3(-halfWidth, -halfLength, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)
+    );
+    vertices.emplace_back(
+      glm::vec3(-halfWidth, -halfLength, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)
+    );
+    vertices.emplace_back(
+      glm::vec3(halfWidth, -halfLength, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)
+    );
+    vertices.emplace_back(
+      glm::vec3(halfWidth, halfLength, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)
+    );
+
+    Plane defaultPlane {glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)};
+    auto planeTransform = plane.getTransformToSelf(defaultPlane);
+    for (auto& vertex : vertices)
+    {
+      vertex = planeTransform * vertex;
+    }
+
+    return vertices;
+  }
+
+  std::vector<Vertex> createLine(const GeometryCore::Line& line, bool withArrowHead)
+  {
+    auto distance = glm::distance(line.start, line.end);
+    auto defaultLineDir = glm::vec3(0.0f, distance, 0.0f);
+    auto lineDir = line.end - line.start;
+    auto crossProduct = glm::cross(defaultLineDir, lineDir);
+    if (isEqual(crossProduct, glm::vec3(0.0f, 0.0f, 0.0f)) &&
+        glm::dot(defaultLineDir, lineDir) < 0.0f)
+    {
+      distance = -distance;
+    }
+
+    std::vector<Vertex> vertices;
+    Line defaultLine {glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, distance, 0.0f)};
+    vertices.emplace_back(defaultLine.start, glm::vec3(0.0f, 0.0f, 1.0f));
+    vertices.emplace_back(defaultLine.end, glm::vec3(0.0f, 0.0f, 1.0f));
+
+    if (withArrowHead)
+    {
+      auto tangent = glm::tan(glm::radians(ARROW_HEAD_ANGLE));
+      auto x = tangent * distance * ARROW_HEAD_LENGTH_COEF;
+      auto y = defaultLine.end.y - (x / tangent);
+      vertices.emplace_back(defaultLine.end, glm::vec3(0.0f, 0.0f, 1.0f));
+      vertices.emplace_back(glm::vec3(-x, y, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+      vertices.emplace_back(defaultLine.end, glm::vec3(0.0f, 0.0f, 1.0f));
+      vertices.emplace_back(glm::vec3(x, y, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    }
+
+    auto transform = line.getTransformToSelf(defaultLine);
+    for (auto& vertex : vertices)
+    {
+      vertex = transform * vertex;
+    }
+
+    return vertices;
+  }
+
+  std::vector<Vertex> createRay(const GeometryCore::Ray& ray, float length)
+  {
+    Vertex start(ray.origin, glm::vec3(0.0f));
+    Vertex end(ray.origin + ray.direction * length, glm::vec3(0.0f));
+
+    return {start, end};
+  }
+
+  std::vector<Vertex> getBRepCurveVertices(const NURBSCurve3D& curve, size_t segments)
+  {
+    std::vector<Vertex> vertices;
+    for (size_t segmentIdx = 0; segmentIdx <= segments; ++segmentIdx)
+    {
+      float t = segmentIdx / float(segments);
+      auto point = curve.getPoint(t);
+      vertices.emplace_back(point, glm::vec3());
+    }
 
     return vertices;
   }

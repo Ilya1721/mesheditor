@@ -128,6 +128,8 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Shaders\ColorShader.frag" />
+    <None Include="Shaders\ColorShader.vert" />
     <None Include="Shaders\GlassShader.frag" />
     <None Include="Shaders\GlassShader.vert" />
     <None Include="Shaders\ParticlesShader.frag" />
@@ -157,6 +159,7 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <ClCompile Include="RenderSystem\Animation.cpp" />
     <ClCompile Include="RenderSystem\AnimationController.cpp" />
     <ClCompile Include="RenderSystem\AnimationPlayer.cpp" />
+    <ClCompile Include="RenderSystem\ColorShaderProgram.cpp" />
     <ClCompile Include="RenderSystem\ControllerWithDepthMap.cpp" />
     <ClCompile Include="RenderSystem\CubemapTexture.cpp" />
     <ClCompile Include="RenderSystem\DebugVisualization.cpp" />
@@ -240,6 +243,7 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <ClInclude Include="RenderSystem\AnimationController.h" />
     <ClInclude Include="RenderSystem\AnimationPlayer.h" />
     <ClInclude Include="RenderSystem\CameraListener.h" />
+    <ClInclude Include="RenderSystem\ColorShaderProgram.h" />
     <ClInclude Include="RenderSystem\ControllerWithDepthMap.h" />
     <ClInclude Include="RenderSystem\CubemapTexture.h" />
     <ClInclude Include="RenderSystem\DebugVisualization.h" />

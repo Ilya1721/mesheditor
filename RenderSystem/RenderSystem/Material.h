@@ -43,11 +43,21 @@ namespace RenderSystem
     float rougness;
   };
 
+  struct ColorMaterial
+  {
+    glm::vec3 color = DEFAULT_RGB;
+  };
+
   template <typename T>
   concept MaterialType = std::same_as<std::remove_cvref_t<T>, BlinnPhongMaterial> ||
                          std::same_as<std::remove_cvref_t<T>, GlassMaterial> ||
-                         std::same_as<std::remove_cvref_t<T>, PBRMaterial>;
+                         std::same_as<std::remove_cvref_t<T>, PBRMaterial> ||
+                         std::same_as<std::remove_cvref_t<T>, ColorMaterial>;
 
-  using Material =
-    std::variant<std::monostate, BlinnPhongMaterial, GlassMaterial, PBRMaterial>;
+  using Material = std::variant<
+    std::monostate,
+    BlinnPhongMaterial,
+    GlassMaterial,
+    PBRMaterial,
+    ColorMaterial>;
 }  // namespace RenderSystem
