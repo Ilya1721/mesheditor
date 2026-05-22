@@ -124,6 +124,7 @@
     <ClInclude Include="MeshCore\MeshFactory.h" />
     <ClInclude Include="MeshCore\OutgoingEdgeFinder.h" />
     <ClInclude Include="MeshCore\Surface.h" />
+    <ClInclude Include="MeshCore\TransformUtils.h" />
     <ClInclude Include="MeshCore\TreeWalker.h" />
     <ClInclude Include="MeshCore\Vertex.h" />
     <ClInclude Include="MeshCore\VerticesHash.h" />
@@ -140,6 +141,7 @@
     <ClCompile Include="MeshCore\MeshFactory.cpp" />
     <ClCompile Include="MeshCore\OutgoingEdgeFinder.cpp" />
     <ClCompile Include="MeshCore\Surface.cpp" />
+    <ClCompile Include="MeshCore\TransformUtils.cpp" />
     <ClCompile Include="MeshCore\Vertex.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

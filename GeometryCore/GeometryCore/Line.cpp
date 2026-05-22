@@ -1,20 +1,24 @@
 #include "Line.h"
 
-#include <glm/gtx/vector_angle.hpp>
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/transform.hpp>
 
 namespace GeometryCore
 {
-  glm::mat4 Line::getTransformToSelf(const Line& input) const
+  Line::Line(const glm::vec3& start, const glm::vec3& end) : start(start), end(end)
   {
-    auto originLineDir = end - start;
-    auto inputLineDir = input.end - input.start;
-    auto rotationAxis = glm::cross(originLineDir, inputLineDir);
-    auto rotationAngle =
-      glm::angle(glm::normalize(originLineDir), glm::normalize(inputLineDir));
+  }
 
-    auto rotationTransform = glm::rotate(-rotationAngle, rotationAxis);
-    auto translationTransform = glm::translate(start - input.start);
+  glm::mat4 Line::getTransformToSelf(const Line& source) const
+  {
+    auto targetVec = end - start;
+    auto sourceVec = source.end - source.start;
+    auto targetDir = glm::normalize(targetVec);
+    auto sourceDir = glm::normalize(sourceVec);
+    auto rotationQuat = glm::quat(sourceDir, targetDir);
+    auto rotation = glm::toMat4(rotationQuat);
+    auto translation = glm::translate(start - source.start);
 
-    return translationTransform * rotationTransform;
+    return translation * rotation;
   }
 }  // namespace GeometryCore

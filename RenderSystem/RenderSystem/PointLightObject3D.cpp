@@ -8,10 +8,10 @@ using namespace MeshCore;
 
 namespace RenderSystem
 {
-  PointLightObject3D::PointLightObject3D(PointLight* pointLight, float radius)
+  PointLightObject3D::PointLightObject3D(PointLight* pointLight)
     : mPointLight(pointLight)
   {
-    mMesh = std::make_unique<Mesh>(createSphere(radius));
+    mMesh = std::make_unique<Mesh>(createUnitSphereAtOrigin());
     init();
   }
 

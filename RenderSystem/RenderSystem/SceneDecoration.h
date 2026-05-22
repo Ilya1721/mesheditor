@@ -53,7 +53,16 @@ namespace RenderSystem
       const std::vector<glm::vec3>& points, const Material& material
     );
     static SceneDecoration createBRepCircle(
-      float radius, const glm::vec3& normal, const Material& material
+      const glm::vec3& center,
+      const glm::vec3& normal,
+      float radius,
+      const Material& material
+    );
+    static SceneDecoration createCircle(
+      const glm::vec3& center,
+      const glm::vec3& normal,
+      float radius,
+      const Material& material
     );
   };
 }  // namespace RenderSystem

@@ -187,7 +187,7 @@ namespace RenderSystem
 
   MeshRenderData Scene::getSkyboxRenderData()
   {
-    auto skyboxVertices = MeshCore::createCube(1.0f);
+    auto skyboxVertices = MeshCore::createUnitCubeAtOrigin();
     auto renderData = MeshRenderData::generateRenderData(skyboxVertices);
     return renderData;
   }
@@ -716,9 +716,11 @@ namespace RenderSystem
   {
     auto pointLight = mBlinnPhongShaderProgram->addPointLight(params, lightSourcePos);
     auto pointLightRadius = mModelObject->getBBox().getHeight() * 0.05f;
-    auto pointLightObject3D =
-      std::make_unique<PointLightObject3D>(pointLight, pointLightRadius);
-    pointLightObject3D->updateTransform(glm::translate(lightSourcePos));
+    auto pointLightObject3D = std::make_unique<PointLightObject3D>(pointLight);
+    glm::vec3 scaleVec(pointLightRadius, pointLightRadius, pointLightRadius);
+    pointLightObject3D->updateTransform(
+      glm::translate(lightSourcePos) * glm::scale(scaleVec)
+    );
     mRootObject.addChild(std::move(pointLightObject3D));
   }
 

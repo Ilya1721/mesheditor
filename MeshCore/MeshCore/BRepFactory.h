@@ -4,6 +4,5 @@
 
 namespace MeshCore
 {
-  NURBSCurve3D createBRepCircle(float radius, const glm::vec3& normal);
+  NURBSCurve3D createUnitXYBRepCircle();
 }
-

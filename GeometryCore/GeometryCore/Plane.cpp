@@ -1,6 +1,7 @@
 #include "Plane.h"
 
-#include <glm/gtx/vector_angle.hpp>
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/transform.hpp>
 
 #include "Ray.h"
 
@@ -25,13 +26,11 @@ namespace GeometryCore
 
   glm::mat4 Plane::getTransformToSelf(const Plane& source) const
   {
-    auto rotationAxis = glm::cross(normal, source.normal);
-    auto rotationAngle =
-      glm::angle(glm::normalize(normal), glm::normalize(source.normal));
-    auto rotationTransform = glm::rotate(rotationAngle, rotationAxis);
-    auto translationTransform = glm::translate(origin - source.origin);
+    auto rotationQuat = glm::quat(source.normal, normal);
+    auto rotation = glm::toMat4(rotationQuat);
+    auto translation = glm::translate(origin - source.origin);
 
-    return translationTransform * rotationTransform;
+    return translation * rotation;
   }
 
   std::optional<glm::vec3> Plane::getIntersectionPoint(const Ray& ray) const
@@ -44,7 +43,8 @@ namespace GeometryCore
     auto distanceToPlane = (glm::dot(normal, origin) - glm::dot(normal, ray.origin)) /
                            glm::dot(normal, ray.direction);
 
-    if (distanceToPlane < 0.0f) {
+    if (distanceToPlane < 0.0f)
+    {
       return {};
     }
 

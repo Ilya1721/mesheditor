@@ -7,9 +7,9 @@
 
 #include "Constants.h"
 #include "GeometryCore/Line.h"
-#include "GeometryCore/Plane.h"
 #include "MeshCore/BRepFactory.h"
 #include "MeshCore/MeshFactory.h"
+#include "MeshCore/TransformUtils.h"
 #include "MeshCore/Vertex.h"
 
 namespace
@@ -75,9 +75,9 @@ namespace RenderSystem
     const Material& material
   )
   {
-    GeometryCore::Plane plane(origin, normal);
-    auto planeVertices = MeshCore::createPlane(plane, width, height);
-    auto renderData = MeshRenderData::generateRenderData(planeVertices);
+    auto planeVertices = MeshCore::createUnitXYPlane();
+    auto transform = MeshCore::getUnitXYPlaneTransform(origin, normal, width, height);
+    auto renderData = MeshRenderData::generateRenderData(planeVertices, transform);
 
     return createBaseSceneDecoration(material, GL_TRIANGLES, renderData);
   }
@@ -89,9 +89,9 @@ namespace RenderSystem
     const Material& material
   )
   {
-    GeometryCore::Line line {start, end};
-    auto lineVertices = MeshCore::createLine(line, withArrowHead);
-    auto renderData = MeshRenderData::generateRenderData(lineVertices);
+    auto unitXLineVertices = MeshCore::createUnitXLine(withArrowHead);
+    auto transform = MeshCore::getUnitXLineTransform(start, end);
+    auto renderData = MeshRenderData::generateRenderData(unitXLineVertices, transform);
 
     return createBaseSceneDecoration(material, GL_LINES, renderData);
   }
@@ -213,13 +213,31 @@ namespace RenderSystem
   }
 
   SceneDecoration SceneDecoration::createBRepCircle(
-    float radius, const glm::vec3& normal, const Material& material
+    const glm::vec3& center,
+    const glm::vec3& normal,
+    float radius,
+    const Material& material
   )
   {
-    auto brepCircle = MeshCore::createBRepCircle(radius, normal);
-    auto circleVertices = MeshCore::getBRepCurveVertices(brepCircle, 12);
-    auto renderData = MeshRenderData::generateRenderData(circleVertices);
+    auto brepCircle = MeshCore::createUnitXYBRepCircle();
+    auto circleVertices = MeshCore::getBRepCurveVertices(brepCircle, 32);
+    auto transform = MeshCore::getUnitXYCircleTransform(center, normal, radius);
+    auto renderData = MeshRenderData::generateRenderData(circleVertices, transform);
 
-    return createBaseSceneDecoration(material, GL_LINES, renderData);
+    return createBaseSceneDecoration(material, GL_LINE_STRIP, renderData);
+  }
+
+  SceneDecoration SceneDecoration::createCircle(
+    const glm::vec3& center,
+    const glm::vec3& normal,
+    float radius,
+    const Material& material
+  )
+  {
+    auto circleVertices = MeshCore::createUnitXYCircle(32);
+    auto transform = MeshCore::getUnitXYCircleTransform(center, normal, radius);
+    auto renderData = MeshRenderData::generateRenderData(circleVertices, transform);
+
+    return createBaseSceneDecoration(material, GL_LINE_STRIP, renderData);
   }
 }  // namespace RenderSystem

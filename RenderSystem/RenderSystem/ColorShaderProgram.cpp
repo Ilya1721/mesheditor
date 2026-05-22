@@ -21,6 +21,7 @@ namespace RenderSystem
       mProjection(),
       mColor()
   {
+    initUniformLocations();
   }
 
   void ColorShaderProgram::onCameraPosChanged(Camera* camera)
