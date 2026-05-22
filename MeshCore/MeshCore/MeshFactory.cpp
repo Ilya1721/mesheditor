@@ -222,4 +222,42 @@ namespace MeshCore
 
     return vertices;
   }
+
+  std::vector<Vertex> getBRepSurfaceVertices(
+    const NURBSSurface& surface, size_t resolutionU, size_t resolutionV
+  )
+  {
+    std::vector<Vertex> vertices;
+
+    for (size_t x = 0; x < resolutionU; ++x)
+    {
+      float u0 = static_cast<float>(x) / resolutionU;
+      float u1 = static_cast<float>(x + 1) / resolutionU;
+      for (size_t y = 0; y < resolutionV; ++y)
+      {
+        float v0 = static_cast<float>(y) / resolutionV;
+        float v1 = static_cast<float>(y + 1) / resolutionV;
+
+        glm::vec3 p00 = surface.getPoint(u0, v0);
+        glm::vec3 p10 = surface.getPoint(u1, v0);
+        glm::vec3 p01 = surface.getPoint(u0, v1);
+        glm::vec3 p11 = surface.getPoint(u1, v1);
+
+        glm::vec3 n00 = surface.getNormal(u0, v0);
+        glm::vec3 n10 = surface.getNormal(u1, v0);
+        glm::vec3 n01 = surface.getNormal(u0, v1);
+        glm::vec3 n11 = surface.getNormal(u1, v1);
+
+        vertices.push_back({p00, n00});
+        vertices.push_back({p01, n01});
+        vertices.push_back({p10, n10});
+
+        vertices.push_back({p10, n10});
+        vertices.push_back({p01, n01});
+        vertices.push_back({p11, n11});
+      }
+    }
+
+    return vertices;
+  }
 }  // namespace MeshCore

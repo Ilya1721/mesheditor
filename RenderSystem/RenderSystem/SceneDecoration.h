@@ -36,6 +36,13 @@ namespace RenderSystem
       float height,
       const Material& material
     );
+    static SceneDecoration createBRepPlane(
+      const glm::vec3& origin,
+      const glm::vec3& normal,
+      float width,
+      float height,
+      const Material& material
+    );
     static SceneDecoration createLine(
       const glm::vec3& start,
       const glm::vec3& end,

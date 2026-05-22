@@ -4,7 +4,7 @@
 
 namespace MeshCore
 {
-  glm::vec3 BRepNURBSSurface::getPoint(float u, float v)
+  glm::vec3 NURBSSurface::getPoint(float u, float v) const
   {
     glm::vec4 numerator(0.0f, 0.0f, 0.0f, 0.0f);
     float denominator = 0.0f;
@@ -26,7 +26,7 @@ namespace MeshCore
     return numerator / denominator;
   }
 
-  glm::vec3 BRepNURBSSurface::getNormal(float u, float v)
+  glm::vec3 NURBSSurface::getNormal(float u, float v) const
   {
     glm::vec3 uDir(0.0f);
     glm::vec3 vDir(0.0f);
@@ -51,5 +51,29 @@ namespace MeshCore
     }
 
     return glm::normalize(glm::cross(uDir, vDir));
+  }
+
+  void NURBSSurface::setSmoothnessLevels(int smoothnessLevelU, int smoothnessLevelV)
+  {
+    mSmoothnessLevelU = smoothnessLevelU;
+    mSmoothnessLevelV = smoothnessLevelV;
+  }
+
+  void NURBSSurface::setBoundaries(
+    const std::vector<float>& boundariesU, const std::vector<float>& boundariesV
+  )
+  {
+    mBoundariesU = boundariesU;
+    mBoundariesV = boundariesV;
+  }
+
+  void NURBSSurface::setControlPoints(const std::vector<std::vector<glm::vec4>>& controlPoints)
+  {
+    mControlPoints = controlPoints;
+  }
+
+  void NURBSSurface::setWeights(const std::vector<std::vector<float>>& weights)
+  {
+    mWeights = weights;
   }
 }

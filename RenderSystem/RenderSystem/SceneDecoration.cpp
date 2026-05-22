@@ -82,6 +82,22 @@ namespace RenderSystem
     return createBaseSceneDecoration(material, GL_TRIANGLES, renderData);
   }
 
+  SceneDecoration SceneDecoration::createBRepPlane(
+    const glm::vec3& origin,
+    const glm::vec3& normal,
+    float width,
+    float height,
+    const Material& material
+  )
+  {
+    auto brepPlane = MeshCore::createUnitXYBRepPlane();
+    auto planeVertices = MeshCore::getBRepSurfaceVertices(brepPlane, 16, 16);
+    auto transform = MeshCore::getUnitXYPlaneTransform(origin, normal, width, height);
+    auto renderData = MeshRenderData::generateRenderData(planeVertices, transform);
+
+    return createBaseSceneDecoration(material, GL_TRIANGLES, renderData);
+  }
+
   SceneDecoration SceneDecoration::createLine(
     const glm::vec3& start,
     const glm::vec3& end,

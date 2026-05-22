@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "BRepCurve.h"
+#include "BRepSurface.h"
 #include "Vertex.h"
 
 namespace MeshCore
@@ -14,4 +15,7 @@ namespace MeshCore
   std::vector<Vertex> createUnitXYPlane();
   std::vector<Vertex> createUnitXLine(bool withArrowHead);
   std::vector<Vertex> getBRepCurveVertices(const NURBSCurve3D& curve, size_t segments);
+  std::vector<Vertex> getBRepSurfaceVertices(
+    const NURBSSurface& surface, size_t resolutionU, size_t resolutionV
+  );
 }  // namespace MeshCore
