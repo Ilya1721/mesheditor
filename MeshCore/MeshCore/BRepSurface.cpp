@@ -2,6 +2,14 @@
 
 #include "BRepUtils.h"
 
+namespace
+{
+  float getAdjustedParameter(float p, float min, float max)
+  {
+    return min + p * (max - min);
+  }
+}
+
 namespace MeshCore
 {
   glm::vec3 NURBSSurface::getPoint(float u, float v) const
@@ -31,7 +39,7 @@ namespace MeshCore
     glm::vec3 uDir(0.0f);
     glm::vec3 vDir(0.0f);
 
-    for (int cpUIdx = 0; cpUIdx < mControlPoints.size(); ++cpUIdx)
+    for (size_t cpUIdx = 0; cpUIdx < mControlPoints.size(); ++cpUIdx)
     {
       float basisWeightU = getBasisWeight(cpUIdx, mSmoothnessLevelU, u, mBoundariesU);
       float basisWeightChangeU =
@@ -51,6 +59,22 @@ namespace MeshCore
     }
 
     return glm::normalize(glm::cross(uDir, vDir));
+  }
+
+  float NURBSSurface::getAdjustedU(float u) const
+  {
+    auto uMin = mBoundariesU[mSmoothnessLevelU];
+    auto uMax = mBoundariesU[mControlPoints.size()];
+
+    return getAdjustedParameter(u, uMin, uMax);
+  }
+
+  float NURBSSurface::getAdjustedV(float v) const
+  {
+    auto vMin = mBoundariesV[mSmoothnessLevelV];
+    auto vMax = mBoundariesV[mControlPoints[0].size()];
+
+    return getAdjustedParameter(v, vMin, vMax);
   }
 
   void NURBSSurface::setSmoothnessLevels(int smoothnessLevelU, int smoothnessLevelV)

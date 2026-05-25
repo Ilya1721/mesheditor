@@ -256,4 +256,20 @@ namespace RenderSystem
 
     return createBaseSceneDecoration(material, GL_LINE_STRIP, renderData);
   }
+
+  SceneDecoration SceneDecoration::createBRepCylinder(
+    const glm::vec3& origin,
+    const glm::vec3& normal,
+    float radius,
+    float height,
+    const Material& material
+  )
+  {
+    auto brepCylinder = MeshCore::createUnitBRepCylinder();
+    auto cylinderVertices = MeshCore::getBRepSurfaceVertices(brepCylinder, 32, 32);
+    auto transform = MeshCore::getUnitCylinderTransform(origin, normal, radius, height);
+    auto renderData = MeshRenderData::generateRenderData(cylinderVertices, transform);
+
+    return createBaseSceneDecoration(material, GL_TRIANGLES, renderData);
+  }
 }  // namespace RenderSystem

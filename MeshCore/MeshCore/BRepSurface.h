@@ -23,6 +23,8 @@ namespace MeshCore
    public:
     glm::vec3 getPoint(float u, float v) const override;
     glm::vec3 getNormal(float u, float v) const override;
+    float getAdjustedU(float u) const;
+    float getAdjustedV(float v) const;
 
     void setSmoothnessLevels(int smoothnessLevelU, int smoothnessLevelV);
     void setBoundaries(
@@ -32,8 +34,8 @@ namespace MeshCore
     void setWeights(const std::vector<std::vector<float>>& weights);
 
    private:
-    int mSmoothnessLevelU;
-    int mSmoothnessLevelV;
+    int mSmoothnessLevelU {};
+    int mSmoothnessLevelV {};
     std::vector<float> mBoundariesU;
     std::vector<float> mBoundariesV;
     std::vector<std::vector<glm::vec4>> mControlPoints;

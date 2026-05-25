@@ -13,7 +13,7 @@ namespace MeshCore
   )
   {
     auto scaleFactor = glm::vec3(radius, radius, 1.0f);
-    auto scale = glm::scale(glm::mat4(1.0f), scaleFactor);
+    auto scale = glm::scale(scaleFactor);
     auto rotationQuat = glm::quat(glm::vec3(0.0f, 0.0f, 1.0f), normal);
     auto rotation = glm::toMat4(rotationQuat);
     auto translation = glm::translate(center);
@@ -30,7 +30,7 @@ namespace MeshCore
       glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)
     );
     auto scaleFactor = glm::vec3(width, height, 1.0f);
-    auto scale = glm::scale(glm::mat4(1.0f), scaleFactor);
+    auto scale = glm::scale(scaleFactor);
 
     return targetPlane.getTransformToSelf(sourcePlane) * scale;
   }
@@ -42,8 +42,21 @@ namespace MeshCore
       glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f)
     };
     auto scaleFactor = glm::vec3(glm::length(end - start), 1.0f, 1.0f);
-    auto scale = glm::scale(glm::mat4(1.0f), scaleFactor);
+    auto scale = glm::scale(scaleFactor);
 
     return targetLine.getTransformToSelf(sourceLine) * scale;
+  }
+
+  glm::mat4 getUnitCylinderTransform(
+    const glm::vec3& origin, const glm::vec3& normal, float radius, float height
+  )
+  {
+    glm::vec3 scaleFactor(radius, radius, height);
+    auto scale = glm::scale(scaleFactor);
+    auto rotationQuat = glm::quat(glm::vec3(0.0f, 1.0f, 0.0f), normal);
+    auto rotation = glm::toMat4(rotationQuat);
+    auto translation = glm::translate(origin);
+
+    return translation * rotation * scale;
   }
 }

@@ -71,5 +71,12 @@ namespace RenderSystem
       float radius,
       const Material& material
     );
+    static SceneDecoration createBRepCylinder(
+      const glm::vec3& origin,
+      const glm::vec3& normal,
+      float radius,
+      float height,
+      const Material& material
+    );
   };
 }  // namespace RenderSystem

@@ -6,7 +6,6 @@
 
 #include "BRepCurve.h"
 #include "Constants.h"
-#include "GeometryCore/Numeric.h"
 
 using namespace std::numbers;
 
@@ -215,7 +214,7 @@ namespace MeshCore
     std::vector<Vertex> vertices;
     for (size_t segmentIdx = 0; segmentIdx <= segments; ++segmentIdx)
     {
-      auto t = std::min(segmentIdx / float(segments), 0.999999f);
+      auto t = std::min(segmentIdx / float(segments), 1.0f - EPSILON);
       auto point = curve.getPoint(t);
       vertices.emplace_back(point, glm::vec3(0.0f));
     }
@@ -231,12 +230,16 @@ namespace MeshCore
 
     for (size_t x = 0; x < resolutionU; ++x)
     {
-      float u0 = static_cast<float>(x) / resolutionU;
-      float u1 = static_cast<float>(x + 1) / resolutionU;
+      auto tx0 = static_cast<float>(x) / resolutionU;
+      auto tx1 = static_cast<float>(x + 1) / resolutionU;
+      auto u0 = surface.getAdjustedU(tx0);
+      auto u1 = surface.getAdjustedU(std::min(tx1, 1.0f - EPSILON));
       for (size_t y = 0; y < resolutionV; ++y)
       {
-        float v0 = static_cast<float>(y) / resolutionV;
-        float v1 = static_cast<float>(y + 1) / resolutionV;
+        auto ty0 = static_cast<float>(y) / resolutionV;
+        auto ty1 = static_cast<float>(y + 1) / resolutionV;
+        auto v0 = surface.getAdjustedV(ty0);
+        auto v1 = surface.getAdjustedV(std::min(ty1, 1.0f - EPSILON));
 
         glm::vec3 p00 = surface.getPoint(u0, v0);
         glm::vec3 p10 = surface.getPoint(u1, v0);
