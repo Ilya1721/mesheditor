@@ -272,4 +272,14 @@ namespace RenderSystem
 
     return createBaseSceneDecoration(material, GL_TRIANGLES, renderData);
   }
+
+  SceneDecoration SceneDecoration::createBRepModel(
+    const MeshCore::BRepModel& model, const Material& material
+  )
+  {
+    auto vertices = MeshCore::getBRepModelVertices(model);
+    auto renderData = MeshRenderData::generateRenderData(vertices);
+
+    return createBaseSceneDecoration(material, GL_TRIANGLES, renderData);
+  }
 }  // namespace RenderSystem

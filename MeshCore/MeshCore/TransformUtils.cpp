@@ -53,7 +53,7 @@ namespace MeshCore
   {
     glm::vec3 scaleFactor(radius, radius, height);
     auto scale = glm::scale(scaleFactor);
-    auto rotationQuat = glm::quat(glm::vec3(0.0f, 1.0f, 0.0f), normal);
+    auto rotationQuat = glm::quat(glm::vec3(0.0f, 0.0f, 1.0f), normal);
     auto rotation = glm::toMat4(rotationQuat);
     auto translation = glm::translate(origin);
 

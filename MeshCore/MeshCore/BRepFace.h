@@ -1,16 +1,24 @@
 #pragma once
 
+#include <memory>
 #include <vector>
+
+#include "BRepDomain.h"
+#include "BRepEdge.h"
+#include "BRepUVMapper.h"
 
 namespace MeshCore
 {
   class BRepSurface;
-  class BRepLoop;
 
   struct BRepFace
   {
     BRepSurface* surface;
-    BRepLoop* outerLoop;
-    std::vector<BRepLoop*> innerLoops;
+    std::unique_ptr<BRepLoop> outerLoop;
+    std::vector<std::unique_ptr<BRepLoop>> innerLoops;
+    std::unique_ptr<BRepFaceUVMapper> uvMapper;
+
+    SurfaceDomain getDomain() const;
+    bool isPointInside(const glm::vec2& uv) const;
   };
 }

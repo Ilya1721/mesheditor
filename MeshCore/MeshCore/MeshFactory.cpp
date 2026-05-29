@@ -9,6 +9,63 @@
 
 using namespace std::numbers;
 
+namespace
+{
+  using namespace MeshCore;
+
+  std::pair<float, float> getT0T1(size_t t, size_t resolution, float min, float max)
+  {
+    auto t0 = static_cast<float>(t) / resolution;
+    auto t1 = static_cast<float>(t + 1) / resolution;
+    auto td0 = tFromDomain(t0, min, max);
+    auto td1 = tFromDomain(std::min(t1, 1.0f - EPSILON), min, max);
+
+    return std::make_pair(td0, td1);
+  }
+
+  bool isCellInsideFace(const BRepFace& face, float u0, float u1, float v0, float v1)
+  {
+    glm::vec2 uv00(u0, v0);
+    glm::vec2 uv10(u1, v0);
+    glm::vec2 uv01(u0, v1);
+    glm::vec2 uv11(u1, v1);
+
+    bool inside00 = face.isPointInside(uv00);
+    bool inside10 = face.isPointInside(uv10);
+    bool inside01 = face.isPointInside(uv01);
+    bool inside11 = face.isPointInside(uv11);
+
+    return inside00 && inside10 && inside01 && inside11;
+  }
+
+  std::vector<Vertex> getCellVertices(
+    const BRepSurface& surface, float su0, float su1, float sv0, float sv1
+  )
+  {
+    std::vector<Vertex> vertices;
+
+    glm::vec3 p00 = surface.getPoint(su0, sv0);
+    glm::vec3 p10 = surface.getPoint(su1, sv0);
+    glm::vec3 p01 = surface.getPoint(su0, sv1);
+    glm::vec3 p11 = surface.getPoint(su1, sv1);
+
+    glm::vec3 n00 = surface.getNormal(su0, sv0);
+    glm::vec3 n10 = surface.getNormal(su1, sv0);
+    glm::vec3 n01 = surface.getNormal(su0, sv1);
+    glm::vec3 n11 = surface.getNormal(su1, sv1);
+
+    vertices.push_back({p00, n00});
+    vertices.push_back({p01, n01});
+    vertices.push_back({p10, n10});
+
+    vertices.push_back({p10, n10});
+    vertices.push_back({p01, n01});
+    vertices.push_back({p11, n11});
+
+    return vertices;
+  }
+}
+
 namespace MeshCore
 {
   std::vector<Vertex> createUnitSphereAtOrigin()
@@ -209,12 +266,12 @@ namespace MeshCore
     return vertices;
   }
 
-  std::vector<Vertex> getBRepCurveVertices(const NURBSCurve3D& curve, size_t segments)
+  std::vector<Vertex> getBRepCurveVertices(const Curve3D& curve, size_t segments)
   {
     std::vector<Vertex> vertices;
     for (size_t segmentIdx = 0; segmentIdx <= segments; ++segmentIdx)
     {
-      auto t = std::min(segmentIdx / float(segments), 1.0f - EPSILON);
+      auto t = std::min(segmentIdx / static_cast<float>(segments), 1.0f - EPSILON);
       auto point = curve.getPoint(t);
       vertices.emplace_back(point, glm::vec3(0.0f));
     }
@@ -223,42 +280,65 @@ namespace MeshCore
   }
 
   std::vector<Vertex> getBRepSurfaceVertices(
-    const NURBSSurface& surface, size_t resolutionU, size_t resolutionV
+    const BRepSurface& surface, size_t resolutionU, size_t resolutionV
   )
   {
     std::vector<Vertex> vertices;
+    auto domain = surface.getDomain();
 
     for (size_t x = 0; x < resolutionU; ++x)
     {
-      auto tx0 = static_cast<float>(x) / resolutionU;
-      auto tx1 = static_cast<float>(x + 1) / resolutionU;
-      auto u0 = surface.getAdjustedU(tx0);
-      auto u1 = surface.getAdjustedU(std::min(tx1, 1.0f - EPSILON));
       for (size_t y = 0; y < resolutionV; ++y)
       {
-        auto ty0 = static_cast<float>(y) / resolutionV;
-        auto ty1 = static_cast<float>(y + 1) / resolutionV;
-        auto v0 = surface.getAdjustedV(ty0);
-        auto v1 = surface.getAdjustedV(std::min(ty1, 1.0f - EPSILON));
-
-        glm::vec3 p00 = surface.getPoint(u0, v0);
-        glm::vec3 p10 = surface.getPoint(u1, v0);
-        glm::vec3 p01 = surface.getPoint(u0, v1);
-        glm::vec3 p11 = surface.getPoint(u1, v1);
-
-        glm::vec3 n00 = surface.getNormal(u0, v0);
-        glm::vec3 n10 = surface.getNormal(u1, v0);
-        glm::vec3 n01 = surface.getNormal(u0, v1);
-        glm::vec3 n11 = surface.getNormal(u1, v1);
-
-        vertices.push_back({p00, n00});
-        vertices.push_back({p01, n01});
-        vertices.push_back({p10, n10});
-
-        vertices.push_back({p10, n10});
-        vertices.push_back({p01, n01});
-        vertices.push_back({p11, n11});
+        auto [su0, su1] = getT0T1(x, resolutionU, domain.uMin, domain.uMax);
+        auto [sv0, sv1] = getT0T1(y, resolutionV, domain.vMin, domain.vMax);
+        auto cellVertices = getCellVertices(surface, su0, su1, sv0, sv1);
+        vertices.insert(vertices.end(), cellVertices.begin(), cellVertices.end());
       }
+    }
+
+    return vertices;
+  }
+
+  std::vector<Vertex> getBRepFaceVertices(
+    const BRepFace& face, size_t resolutionU, size_t resolutionV
+  )
+  {
+    std::vector<Vertex> vertices;
+    auto faceDomain = face.getDomain();
+    auto surfaceDomain = face.surface->getDomain();
+
+    for (size_t x = 0; x < resolutionU; ++x)
+    {
+      for (size_t y = 0; y < resolutionV; ++y)
+      {
+        auto [fu0, fu1] = getT0T1(x, resolutionU, faceDomain.uMin, faceDomain.uMax);
+        auto [fv0, fv1] = getT0T1(y, resolutionV, faceDomain.vMin, faceDomain.vMax);
+
+        if (!isCellInsideFace(face, fu0, fu1, fv0, fv1))
+        {
+          continue;
+        }
+
+        auto [su0, sv0] =
+          face.uvMapper->faceToSurfaceUV(faceDomain, surfaceDomain, fu0, fv0);
+        auto [su1, sv1] =
+          face.uvMapper->faceToSurfaceUV(faceDomain, surfaceDomain, fu1, fv1);
+        auto cellVertices = getCellVertices(*face.surface, su0, su1, sv0, sv1);
+        vertices.insert(vertices.end(), cellVertices.begin(), cellVertices.end());
+      }
+    }
+
+    return vertices;
+  }
+
+  std::vector<Vertex> getBRepModelVertices(const BRepModel& model)
+  {
+    std::vector<Vertex> vertices;
+    for (const auto& face : model.faces)
+    {
+      auto faceVertices = getBRepFaceVertices(*face, 32, 32);
+      vertices.insert(vertices.end(), faceVertices.begin(), faceVertices.end());
     }
 
     return vertices;

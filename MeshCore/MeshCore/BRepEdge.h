@@ -1,20 +1,30 @@
 #pragma once
 
+#include "BRepCurve.h"
+
 namespace MeshCore
 {
-  struct HalfEdge;
-  class Curve2D;
-  class Curve3D;
+  struct BRepFace;
+  struct BRepVertex;
 
   struct BRepEdge
   {
-    Curve3D* curve3D;
-    Curve2D* curveOnSurface;
-    HalfEdge* halfEdge;
+    std::unique_ptr<Curve3D> curve;
+  };
+
+  struct BRepHalfEdge
+  {
+    std::unique_ptr<Curve2D> pCurve;
+    BRepVertex* vertex = nullptr;
+    BRepEdge* edge;
+    BRepFace* face;
+    BRepHalfEdge* prev;
+    BRepHalfEdge* next;
+    bool isReversed;
   };
 
   struct BRepLoop
   {
-    BRepEdge* start;
+    BRepHalfEdge* start;
   };
 }

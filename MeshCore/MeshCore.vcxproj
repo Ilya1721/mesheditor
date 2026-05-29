@@ -109,12 +109,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MeshCore\AABBox.h" />
+    <ClInclude Include="MeshCore\BRepDomain.h" />
     <ClInclude Include="MeshCore\BRepCurve.h" />
     <ClInclude Include="MeshCore\BRepEdge.h" />
     <ClInclude Include="MeshCore\BRepFactory.h" />
+    <ClInclude Include="MeshCore\BRepModel.h" />
     <ClInclude Include="MeshCore\BRepSurface.h" />
     <ClInclude Include="MeshCore\BRepFace.h" />
     <ClInclude Include="MeshCore\BRepUtils.h" />
+    <ClInclude Include="MeshCore\BRepUVMapper.h" />
+    <ClInclude Include="MeshCore\BRepVertex.h" />
     <ClInclude Include="MeshCore\Constants.h" />
     <ClInclude Include="MeshCore\EdgeWalker.h" />
     <ClInclude Include="MeshCore\Face.h" />
@@ -132,9 +136,12 @@
   <ItemGroup>
     <ClCompile Include="MeshCore\AABBox.cpp" />
     <ClCompile Include="MeshCore\BRepCurve.cpp" />
+    <ClCompile Include="MeshCore\BRepDomain.cpp" />
+    <ClCompile Include="MeshCore\BRepFace.cpp" />
     <ClCompile Include="MeshCore\BRepFactory.cpp" />
     <ClCompile Include="MeshCore\BRepSurface.cpp" />
     <ClCompile Include="MeshCore\BRepUtils.cpp" />
+    <ClCompile Include="MeshCore\BRepUVMapper.cpp" />
     <ClCompile Include="MeshCore\EdgeWalker.cpp" />
     <ClCompile Include="MeshCore\Face.cpp" />
     <ClCompile Include="MeshCore\Mesh.cpp" />

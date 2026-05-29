@@ -3,19 +3,18 @@
 #include <glm/glm.hpp>
 #include <vector>
 
+#include "BRepDomain.h"
+
 namespace MeshCore
 {
-  struct SurfaceDomain
-  {
-    float uMin, uMax;
-    float vMin, vMax;
-  };
-
   class BRepSurface
   {
    public:
+    virtual ~BRepSurface() = default;
     virtual glm::vec3 getPoint(float u, float v) const = 0;
     virtual glm::vec3 getNormal(float u, float v) const = 0;
+    virtual SurfaceDomain getDomain() const = 0;
+    virtual void applyTransform(const glm::mat4& transform) = 0;
   };
 
   class NURBSSurface : public BRepSurface
@@ -23,8 +22,8 @@ namespace MeshCore
    public:
     glm::vec3 getPoint(float u, float v) const override;
     glm::vec3 getNormal(float u, float v) const override;
-    float getAdjustedU(float u) const;
-    float getAdjustedV(float v) const;
+    SurfaceDomain getDomain() const override;
+    void applyTransform(const glm::mat4& transform) override;
 
     void setSmoothnessLevels(int smoothnessLevelU, int smoothnessLevelV);
     void setBoundaries(

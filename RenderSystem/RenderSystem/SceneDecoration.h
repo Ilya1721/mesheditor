@@ -2,6 +2,7 @@
 
 #include "Material.h"
 #include "MeshCore/AABBox.h"
+#include "MeshCore/BRepModel.h"
 #include "MeshRenderData.h"
 
 namespace GeometryCore
@@ -77,6 +78,9 @@ namespace RenderSystem
       float radius,
       float height,
       const Material& material
+    );
+    static SceneDecoration createBRepModel(
+      const MeshCore::BRepModel& model, const Material& material
     );
   };
 }  // namespace RenderSystem

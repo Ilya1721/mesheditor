@@ -1,5 +1,6 @@
 #include "BRepCurve.h"
 
+#include <glm/gtc/constants.hpp>
 #include <glm/gtc/epsilon.hpp>
 
 #include "BRepUtils.h"
@@ -7,6 +8,39 @@
 
 namespace MeshCore
 {
+  CylinderCurve2D::CylinderCurve2D(float v) : mV(v)
+  {
+  }
+
+  glm::vec2 CylinderCurve2D::getPoint(float t) const
+  {
+    return glm::vec2(t, mV);
+  }
+
+  CurveDomain CylinderCurve2D::getDomain() const
+  {
+    return {0.0f, glm::two_pi<float>()};
+  }
+
+  CircleCurve2D::CircleCurve2D(float radius) : mRadius(radius)
+  {
+  }
+
+  glm::vec2 CircleCurve2D::getPoint(float t) const
+  {
+    return glm::vec2(mRadius * cosf(t), mRadius * sinf(t));
+  }
+
+  CurveDomain CircleCurve2D::getDomain() const
+  {
+    return {0.0f, glm::two_pi<float>()};
+  }
+
+  float CircleCurve2D::getRadius() const
+  {
+    return mRadius;
+  }
+
   NURBSCurve2D::NURBSCurve2D(
     int smoothnessLevel,
     const std::vector<float>& boundaries,
@@ -68,5 +102,13 @@ namespace MeshCore
     }
 
     return weightedSum;
+  }
+
+  void Curve::applyTransform(const glm::mat4& transform)
+  {
+    for (auto& controlPoint : mControlPoints)
+    {
+      controlPoint = transform * controlPoint;
+    }
   }
 }

@@ -3,6 +3,11 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/transform.hpp>
 
+#include "BRepCurve.h"
+#include "BRepEdge.h"
+#include "Constants.h"
+#include "TransformUtils.h"
+
 namespace MeshCore
 {
   NURBSCurve3D createUnitXYBRepCircle()
@@ -94,5 +99,108 @@ namespace MeshCore
     surface.setSmoothnessLevels(2, 1);
 
     return surface;
+  }
+
+  BRepModel createBRepCylinder(
+    const glm::vec3& origin, const glm::vec3& normal, float radius, float height
+  )
+  {
+    glm::vec3 centerBottom = origin;
+    glm::vec3 centerTop = origin + glm::normalize(normal) * height;
+
+    auto bottomCircleTransform = getUnitXYCircleTransform(centerBottom, normal, radius);
+    auto bottomCircle = createUnitXYBRepCircle();
+    bottomCircle.applyTransform(bottomCircleTransform);
+    auto topCircleTransform = getUnitXYCircleTransform(centerTop, normal, radius);
+    auto topCircle = createUnitXYBRepCircle();
+    topCircle.applyTransform(topCircleTransform);
+
+    auto bottomEdge = std::make_unique<BRepEdge>();
+    auto topEdge = std::make_unique<BRepEdge>();
+    bottomEdge->curve = std::make_unique<NURBSCurve3D>(std::move(bottomCircle));
+    topEdge->curve = std::make_unique<NURBSCurve3D>(std::move(topCircle));
+
+    auto sideFace = std::make_unique<BRepFace>();
+    auto bottomFace = std::make_unique<BRepFace>();
+    auto topFace = std::make_unique<BRepFace>();
+
+    auto cylinderSurface = std::make_unique<NURBSSurface>(createUnitBRepCylinder());
+    auto cylinderTransform = getUnitCylinderTransform(origin, normal, radius, height);
+    cylinderSurface->applyTransform(cylinderTransform);
+    sideFace->surface = cylinderSurface.get();
+    sideFace->uvMapper = std::make_unique<AffineFaceUVMapper>();
+
+    auto planeSize = 2.0f * radius;
+    auto bottomPlane = std::make_unique<NURBSSurface>(createUnitXYBRepPlane());
+    auto bottomPlaneTransform =
+      getUnitXYPlaneTransform(centerBottom, normal, planeSize, planeSize);
+    bottomPlane->applyTransform(bottomPlaneTransform);
+    bottomFace->surface = bottomPlane.get();
+    bottomFace->uvMapper = std::make_unique<AffineFaceUVMapper>();
+
+    auto topPlane = std::make_unique<NURBSSurface>(createUnitXYBRepPlane());
+    auto topPlaneTransform =
+      getUnitXYPlaneTransform(centerTop, normal, planeSize, planeSize);
+    topPlane->applyTransform(topPlaneTransform);
+    topFace->surface = topPlane.get();
+    topFace->uvMapper = std::make_unique<AffineFaceUVMapper>();
+
+    sideFace->outerLoop = std::make_unique<BRepLoop>();
+    topFace->outerLoop = std::make_unique<BRepLoop>();
+    bottomFace->outerLoop = std::make_unique<BRepLoop>();
+
+    auto sideTopHalfEdge = std::make_unique<BRepHalfEdge>();
+    sideTopHalfEdge->edge = topEdge.get();
+    sideTopHalfEdge->face = sideFace.get();
+    sideTopHalfEdge->isReversed = true;
+
+    auto sideBottomHalfEdge = std::make_unique<BRepHalfEdge>();
+    sideBottomHalfEdge->edge = bottomEdge.get();
+    sideBottomHalfEdge->face = sideFace.get();
+    sideBottomHalfEdge->isReversed = false;
+
+    sideTopHalfEdge->next = sideBottomHalfEdge.get();
+    sideTopHalfEdge->prev = sideBottomHalfEdge.get();
+    sideBottomHalfEdge->next = sideTopHalfEdge.get();
+    sideBottomHalfEdge->prev = sideTopHalfEdge.get();
+
+    auto topHalfEdge = std::make_unique<BRepHalfEdge>();
+    topHalfEdge->edge = topEdge.get();
+    topHalfEdge->face = topFace.get();
+    topHalfEdge->isReversed = false;
+    topHalfEdge->next = topHalfEdge.get();
+    topHalfEdge->prev = topHalfEdge.get();
+
+    auto bottomHalfEdge = std::make_unique<BRepHalfEdge>();
+    bottomHalfEdge->edge = bottomEdge.get();
+    bottomHalfEdge->face = bottomFace.get();
+    bottomHalfEdge->isReversed = true;
+    bottomHalfEdge->next = bottomHalfEdge.get();
+    bottomHalfEdge->prev = bottomHalfEdge.get();
+
+    sideTopHalfEdge->pCurve = std::make_unique<CylinderCurve2D>(height);
+    sideBottomHalfEdge->pCurve = std::make_unique<CylinderCurve2D>(0);
+    topHalfEdge->pCurve = std::make_unique<CircleCurve2D>(radius);
+    bottomHalfEdge->pCurve = std::make_unique<CircleCurve2D>(radius);
+
+    sideFace->outerLoop->start = sideTopHalfEdge.get();
+    topFace->outerLoop->start = topHalfEdge.get();
+    bottomFace->outerLoop->start = bottomHalfEdge.get();
+
+    BRepModel model;
+    model.edges.push_back(std::move(bottomEdge));
+    model.edges.push_back(std::move(topEdge));
+    model.halfEdges.push_back(std::move(sideTopHalfEdge));
+    model.halfEdges.push_back(std::move(sideBottomHalfEdge));
+    model.halfEdges.push_back(std::move(topHalfEdge));
+    model.halfEdges.push_back(std::move(bottomHalfEdge));
+    model.surfaces.push_back(std::move(bottomPlane));
+    model.surfaces.push_back(std::move(topPlane));
+    model.surfaces.push_back(std::move(cylinderSurface));
+    model.faces.push_back(std::move(sideFace));
+    model.faces.push_back(std::move(bottomFace));
+    model.faces.push_back(std::move(topFace));
+
+    return model;
   }
 }
