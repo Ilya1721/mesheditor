@@ -1,8 +1,9 @@
 #include "ModelLoader.h"
 
 #include "GLTFModelLoader.h"
-#include "Object3D.h"
 #include "ObjModelLoader.h"
+#include "Object3D.h"
+#include "PLYModelLoader.h"
 #include "STLModelLoader.h"
 #include "Utility/StringHelper.h"
 
@@ -15,15 +16,37 @@ namespace RenderSystem
     const auto& extension = filePath.extension().string();
     if (isEqual(extension, ".stl"))
     {
-      return loadSTLModel(filePath);
+      STLModelLoader loader;
+      return loader.loadModel(filePath);
     }
     else if (isEqual(extension, ".obj"))
     {
-      return loadOBJModel(filePath);
+      OBJModelLoader loader;
+      return loader.load(filePath);
     }
     else if (isEqual(extension, ".glb"))
     {
-      return loadGLTFModel(filePath);
+      GLTFModelLoader loader;
+      return loader.load(filePath);
+    }
+    else if (isEqual(extension, ".glb"))
+    {
+      PLYModelLoader loader;
+      return loader.loadModel(filePath);
+    }
+    else
+    {
+      throw std::exception("Unsupported file format");
+    }
+  }
+
+  std::vector<Vertex> loadVerticesFromFile(const std::filesystem::path& filePath)
+  {
+    const auto& extension = filePath.extension().string();
+    if (isEqual(extension, ".ply"))
+    {
+      PLYModelLoader loader;
+      return loader.loadVertices(filePath);
     }
     else
     {

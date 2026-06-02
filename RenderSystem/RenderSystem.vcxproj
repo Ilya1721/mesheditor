@@ -173,6 +173,7 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <ClCompile Include="RenderSystem\MeshRenderBuffer.cpp" />
     <ClCompile Include="RenderSystem\MeshRenderData.cpp" />
     <ClCompile Include="RenderSystem\ModelLoader.cpp" />
+    <ClCompile Include="RenderSystem\ModelLoaderUtils.cpp" />
     <ClCompile Include="RenderSystem\ObjModelLoader.cpp" />
     <ClCompile Include="RenderSystem\ParticlesController.cpp" />
     <ClCompile Include="RenderSystem\ParticlesGenerator.cpp" />
@@ -180,6 +181,7 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <ClCompile Include="RenderSystem\ParticlesRenderData.cpp" />
     <ClCompile Include="RenderSystem\ParticlesShaderProgram.cpp" />
     <ClCompile Include="RenderSystem\PBRShaderProgram.cpp" />
+    <ClCompile Include="RenderSystem\PLYModelLoader.cpp" />
     <ClCompile Include="RenderSystem\SceneDecorationsController.cpp" />
     <ClCompile Include="RenderSystem\StaticQuadRenderBuffer.cpp" />
     <ClCompile Include="RenderSystem\ScreenShaderProgram.cpp" />
@@ -257,6 +259,7 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <ClInclude Include="RenderSystem\MeshRenderBuffer.h" />
     <ClInclude Include="RenderSystem\MeshRenderData.h" />
     <ClInclude Include="RenderSystem\ModelLoader.h" />
+    <ClInclude Include="RenderSystem\ModelLoaderUtils.h" />
     <ClInclude Include="RenderSystem\ObjModelLoader.h" />
     <ClInclude Include="RenderSystem\Particle.h" />
     <ClInclude Include="RenderSystem\ParticlesController.h" />
@@ -265,6 +268,7 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <ClInclude Include="RenderSystem\ParticlesRenderData.h" />
     <ClInclude Include="RenderSystem\ParticlesShaderProgram.h" />
     <ClInclude Include="RenderSystem\PBRShaderProgram.h" />
+    <ClInclude Include="RenderSystem\PLYModelLoader.h" />
     <ClInclude Include="RenderSystem\SceneDecorationsController.h" />
     <ClInclude Include="RenderSystem\StaticQuadRenderBuffer.h" />
     <ClInclude Include="RenderSystem\ScreenShaderProgram.h" />

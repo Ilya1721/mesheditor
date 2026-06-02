@@ -1,6 +1,5 @@
 #include "GLTFModelLoader.h"
 
-#include <fastgltf/core.hpp>
 #include <fastgltf/tools.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
@@ -33,12 +32,6 @@ namespace
    private:
     const fastgltf::Asset* mAsset;
     const fastgltf::Attribute* mAttributeEnd;
-  };
-
-  struct MaterialData
-  {
-    PBRMaterial material {};
-    glm::vec2 uvScale {1.0f, 1.0f};
   };
 
   struct MaterialImages
@@ -99,27 +92,6 @@ namespace
     }
   }
 
-  void parseJoints(
-    const fastgltf::Asset& asset,
-    const fastgltf::Skin& skin,
-    const std::unordered_map<size_t, size_t>& nodeToJointMap,
-    Skeleton& skeleton
-  )
-  {
-    skeleton.joints.resize(skin.joints.size());
-    for (size_t jointIdx = 0; jointIdx < skin.joints.size(); ++jointIdx)
-    {
-      auto& joint = skeleton.joints[jointIdx];
-      auto nodeIdx = skin.joints[jointIdx];
-      const auto& node = asset.nodes[nodeIdx];
-      joint.name = node.name;
-      parseJointRestPose(joint, node);
-      parseJointParent(node, jointIdx, nodeToJointMap, skeleton);
-      joint.localTransform = calcJointLocalTransform(joint.restPose);
-      skeleton.nameIndexMap.insert({joint.name, skeleton.joints.size() - 1});
-    }
-  }
-
   int findRootJointIdx(const std::vector<Joint>& joints)
   {
     for (size_t jointIdx = 0; jointIdx < joints.size(); ++jointIdx)
@@ -155,29 +127,6 @@ namespace
     {
       calcJointGlobalTransform(skeleton, childIdx, joint.globalTransform);
     }
-  }
-
-  Skeleton parseSkeleton(
-    const fastgltf::Asset& asset,
-    const fastgltf::Node& node,
-    std::unordered_map<size_t, size_t>& nodeToJointMap
-  )
-  {
-    if (!node.skinIndex.has_value())
-    {
-      return {};
-    }
-
-    auto skinIndex = *node.skinIndex;
-    const auto& skin = asset.skins[skinIndex];
-    nodeToJointMap = mapNodeToJoint(skin);
-
-    Skeleton skeleton;
-    parseJoints(asset, skin, nodeToJointMap, skeleton);
-    skeleton.rootJointIndex = findRootJointIdx(skeleton.joints);
-    calcJointGlobalTransform(skeleton, skeleton.rootJointIndex, glm::mat4(1.0f));
-
-    return skeleton;
   }
 
   TransformComponent parseTransformComponent(fastgltf::AnimationPath animationPath)
@@ -249,40 +198,6 @@ namespace
     return channel;
   }
 
-  void parseChannels(
-    const fastgltf::Asset& asset,
-    const fastgltf::Animation& gltfAnimation,
-    const std::unordered_map<size_t, size_t>& nodeToJointMap,
-    Animation& animation
-  )
-  {
-    for (const auto& gltfChannel : gltfAnimation.channels)
-    {
-      auto transformComponent = parseTransformComponent(gltfChannel.path);
-      if (transformComponent == TransformComponent::Translation)
-      {
-        auto channel = parseChannel<glm::vec3>(
-          asset, gltfAnimation, gltfChannel, nodeToJointMap, animation
-        );
-        animation.translationChannels.push_back(channel);
-      }
-      else if (transformComponent == TransformComponent::Rotation)
-      {
-        auto channel = parseChannel<glm::quat>(
-          asset, gltfAnimation, gltfChannel, nodeToJointMap, animation
-        );
-        animation.rotationChannels.push_back(channel);
-      }
-      else if (transformComponent == TransformComponent::Scale)
-      {
-        auto channel = parseChannel<glm::vec3>(
-          asset, gltfAnimation, gltfChannel, nodeToJointMap, animation
-        );
-        animation.scaleChannels.push_back(channel);
-      }
-    }
-  }
-
   template <typename T>
   T parseAnimationAccessorValue(
     const fastgltf::Asset& asset, const fastgltf::Accessor& accessor, size_t keyframeIdx
@@ -302,24 +217,6 @@ namespace
       glm::quat value(vec4.w, vec4.x, vec4.y, vec4.z);
       return glm::normalize(value);
     }
-  }
-
-  std::vector<Animation> parseAnimations(
-    const fastgltf::Asset& asset,
-    const fastgltf::Node& node,
-    const std::unordered_map<size_t, size_t>& nodeToJointMap
-  )
-  {
-    std::vector<Animation> animations;
-    for (const auto& gltfAnimation : asset.animations)
-    {
-      Animation animation;
-      animation.name = gltfAnimation.name;
-      parseChannels(asset, gltfAnimation, nodeToJointMap, animation);
-      animations.push_back(animation);
-    }
-
-    return animations;
   }
 
   glm::vec4 parseWeights(
@@ -344,12 +241,201 @@ namespace
 
     return weights;
   }
+}
 
-  std::vector<Vertex> parseVertices(
-    const fastgltf::Asset& asset, const fastgltf::Mesh& mesh
+namespace RenderSystem
+{
+  void GLTFModelLoader::parseChannels(
+    const fastgltf::Animation& gltfAnimation,
+    const std::unordered_map<size_t, size_t>& nodeToJointMap,
+    Animation& animation
+  ) const
+  {
+    for (const auto& gltfChannel : gltfAnimation.channels)
+    {
+      auto transformComponent = parseTransformComponent(gltfChannel.path);
+      if (transformComponent == TransformComponent::Translation)
+      {
+        auto channel = parseChannel<glm::vec3>(
+          *mAsset, gltfAnimation, gltfChannel, nodeToJointMap, animation
+        );
+        animation.translationChannels.push_back(channel);
+      }
+      else if (transformComponent == TransformComponent::Rotation)
+      {
+        auto channel = parseChannel<glm::quat>(
+          *mAsset, gltfAnimation, gltfChannel, nodeToJointMap, animation
+        );
+        animation.rotationChannels.push_back(channel);
+      }
+      else if (transformComponent == TransformComponent::Scale)
+      {
+        auto channel = parseChannel<glm::vec3>(
+          *mAsset, gltfAnimation, gltfChannel, nodeToJointMap, animation
+        );
+        animation.scaleChannels.push_back(channel);
+      }
+    }
+  }
+
+  std::vector<Animation> GLTFModelLoader::parseAnimations(
+    const fastgltf::Node& node, const std::unordered_map<size_t, size_t>& nodeToJointMap
   )
   {
+    std::vector<Animation> animations;
+    for (const auto& gltfAnimation : mAsset->animations)
+    {
+      Animation animation;
+      animation.name = gltfAnimation.name;
+      parseChannels(gltfAnimation, nodeToJointMap, animation);
+      animations.push_back(animation);
+    }
+
+    return animations;
+  }
+
+  void GLTFModelLoader::parseJoints(
+    const fastgltf::Skin& skin,
+    const std::unordered_map<size_t, size_t>& nodeToJointMap,
+    Skeleton& skeleton
+  )
+  {
+    skeleton.joints.resize(skin.joints.size());
+    for (size_t jointIdx = 0; jointIdx < skin.joints.size(); ++jointIdx)
+    {
+      auto& joint = skeleton.joints[jointIdx];
+      auto nodeIdx = skin.joints[jointIdx];
+      const auto& node = mAsset->nodes[nodeIdx];
+      joint.name = node.name;
+      parseJointRestPose(joint, node);
+      parseJointParent(node, jointIdx, nodeToJointMap, skeleton);
+      joint.localTransform = calcJointLocalTransform(joint.restPose);
+      skeleton.nameIndexMap.insert({joint.name, skeleton.joints.size() - 1});
+    }
+  }
+
+  Skeleton GLTFModelLoader::parseSkeleton(
+    const fastgltf::Node& node, std::unordered_map<size_t, size_t>& nodeToJointMap
+  )
+  {
+    if (!node.skinIndex.has_value())
+    {
+      return {};
+    }
+
+    auto skinIndex = *node.skinIndex;
+    const auto& skin = mAsset->skins[skinIndex];
+    nodeToJointMap = mapNodeToJoint(skin);
+
+    Skeleton skeleton;
+    parseJoints(skin, nodeToJointMap, skeleton);
+    skeleton.rootJointIndex = findRootJointIdx(skeleton.joints);
+    calcJointGlobalTransform(skeleton, skeleton.rootJointIndex, glm::mat4(1.0f));
+
+    return skeleton;
+  }
+
+  std::shared_ptr<ImageTexture> GLTFModelLoader::loadTextureFromMemory(
+    const fastgltf::sources::BufferView& bufferViewSource
+  )
+  {
+    const auto& bufferView = mAsset->bufferViews[bufferViewSource.bufferViewIndex];
+    const auto& buffer = mAsset->buffers[bufferView.bufferIndex];
+    std::shared_ptr<ImageTexture> imageTexture;
+
+    std::visit(
+      [&imageTexture, &bufferView](auto&& data)
+      {
+        using BufferDataType = std::decay_t<decltype(data)>;
+        if constexpr (std::is_same_v<BufferDataType, fastgltf::sources::Array>)
+        {
+          auto convertedData = reinterpret_cast<const unsigned char*>(
+            data.bytes.data() + bufferView.byteOffset
+          );
+          imageTexture = std::make_shared<ImageTexture>(convertedData, data.bytes.size());
+        }
+      },
+      buffer.data
+    );
+
+    return imageTexture;
+  }
+
+  std::shared_ptr<ImageTexture> GLTFModelLoader::loadTexture(int imageIndex)
+  {
+    std::shared_ptr<ImageTexture> imageTexture;
+    const fastgltf::Image& image = mAsset->images[imageIndex];
+    std::visit(
+      [this, &image, &imageTexture](auto&& data)
+      {
+        using ImageDataType = std::decay_t<decltype(data)>;
+        if constexpr (std::is_same_v<ImageDataType, fastgltf::sources::BufferView>)
+        {
+          imageTexture = loadTextureFromMemory(data);
+        }
+        else if constexpr (std::is_same_v<ImageDataType, fastgltf::sources::URI>)
+        {
+          imageTexture = std::make_shared<ImageTexture>(data.uri.c_str());
+        }
+      },
+      image.data
+    );
+
+    return imageTexture;
+  }
+
+  MaterialData GLTFModelLoader::parseMaterial(const fastgltf::Node& node)
+  {
+    auto meshId = node.meshIndex.value();
+    const auto& mesh = mAsset->meshes[meshId];
+    const auto& primitive = mesh.primitives[0];
+
+    MaterialData materialData;
+    if (!primitive.materialIndex.has_value())
+    {
+      return materialData;
+    }
+
+    const auto& materialGltf = mAsset->materials[primitive.materialIndex.value()];
+    MaterialImages materialImages;
+    if (materialGltf.pbrData.baseColorTexture.has_value())
+    {
+      const auto& textureInfo = materialGltf.pbrData.baseColorTexture.value();
+      const auto& texture = mAsset->textures[textureInfo.textureIndex];
+      materialImages.baseColorImage = texture.imageIndex.value();
+      if (textureInfo.transform)
+      {
+        materialData.uvScale = glm::make_vec2(textureInfo.transform->uvScale.data());
+      }
+      materialData.material.baseColorTexture = loadTexture(materialImages.baseColorImage);
+    }
+    if (materialGltf.normalTexture.has_value())
+    {
+      const auto& textureInfo = materialGltf.normalTexture.value();
+      const auto& texture = mAsset->textures[textureInfo.textureIndex];
+      materialImages.normalImage = texture.imageIndex.value();
+      materialData.material.normalMap = loadTexture(materialImages.normalImage);
+    }
+    if (materialGltf.pbrData.metallicRoughnessTexture.has_value())
+    {
+      const auto& texInfo = materialGltf.pbrData.metallicRoughnessTexture.value();
+      const auto& texture = mAsset->textures[texInfo.textureIndex];
+      materialImages.metallicRoughnessImage = texture.imageIndex.value();
+      materialData.material.metallicRougnessTexture =
+        loadTexture(materialImages.metallicRoughnessImage);
+    }
+    materialData.material.baseColor =
+      glm::make_vec3(materialGltf.pbrData.baseColorFactor.data());
+    materialData.material.metallic = materialGltf.pbrData.metallicFactor;
+    materialData.material.rougness = materialGltf.pbrData.roughnessFactor;
+
+    return materialData;
+  }
+
+  std::vector<Vertex> GLTFModelLoader::parseVertices(size_t meshId)
+  {
     std::vector<Vertex> vertices;
+    const auto& mesh = mAsset->meshes[meshId];
 
     for (const auto& primitive : mesh.primitives)
     {
@@ -371,31 +457,32 @@ namespace
         throw std::runtime_error("Non-indexed primitives not supported");
       }
 
-      AccessorGetter accGetter(&asset, attributesEnd);
+      AccessorGetter accGetter(mAsset, attributesEnd);
       auto posAcc = accGetter.get(posAttribute);
       auto normalAcc = accGetter.get(normalAttribute);
       auto textureAcc = accGetter.get(textureAttribute);
       auto tangentAcc = accGetter.get(tangentAttribute);
       auto jointIndicesAcc = accGetter.get(jointIndicesAttribute);
       auto weightsAcc = accGetter.get(weightsAttribute);
-      const auto& indexAcc = asset.accessors[primitive.indicesAccessor.value()];
+      const auto& indexAcc = mAsset->accessors[primitive.indicesAccessor.value()];
       Vertex vertex;
 
       for (size_t idx = 0; idx < indexAcc.count; ++idx)
       {
-        auto vertexIdx = fastgltf::getAccessorElement<uint32_t>(asset, indexAcc, idx);
-        auto posGltf =
-          fastgltf::getAccessorElement<fastgltf::math::fvec3>(asset, *posAcc, vertexIdx);
+        auto vertexIdx = fastgltf::getAccessorElement<uint32_t>(*mAsset, indexAcc, idx);
+        auto posGltf = fastgltf::getAccessorElement<fastgltf::math::fvec3>(
+          *mAsset, *posAcc, vertexIdx
+        );
         vertex.pos = glm::make_vec3(posGltf.data());
         auto normalGltf = fastgltf::getAccessorElement<fastgltf::math::fvec3>(
-          asset, *normalAcc, vertexIdx
+          *mAsset, *normalAcc, vertexIdx
         );
         vertex.normal = glm::make_vec3(normalGltf.data());
 
         if (textureAcc)
         {
           auto textureGltf = fastgltf::getAccessorElement<fastgltf::math::fvec2>(
-            asset, *textureAcc, vertexIdx
+            *mAsset, *textureAcc, vertexIdx
           );
           vertex.texture = glm::make_vec2(textureGltf.data());
         }
@@ -403,7 +490,7 @@ namespace
         if (tangentAcc)
         {
           auto tangentGltf = fastgltf::getAccessorElement<fastgltf::math::fvec4>(
-            asset, *tangentAcc, vertexIdx
+            *mAsset, *tangentAcc, vertexIdx
           );
           vertex.tangent = glm::make_vec4(tangentGltf.data());
         }
@@ -411,7 +498,7 @@ namespace
         if (jointIndicesAcc)
         {
           auto jointIndicesGltf = fastgltf::getAccessorElement<fastgltf::math::uvec4>(
-            asset, *jointIndicesAcc, vertexIdx
+            *mAsset, *jointIndicesAcc, vertexIdx
           );
           vertex.jointIndices = glm::make_vec4(jointIndicesGltf.data());
         }
@@ -419,7 +506,7 @@ namespace
         if (weightsAcc)
         {
           auto weightsGltf = fastgltf::getAccessorElement<fastgltf::math::fvec4>(
-            asset, *weightsAcc, vertexIdx
+            *mAsset, *weightsAcc, vertexIdx
           );
           vertex.weights = parseWeights(*weightsAcc, weightsGltf);
         }
@@ -431,118 +518,14 @@ namespace
     return vertices;
   }
 
-  std::unique_ptr<Mesh> parseMesh(
-    const fastgltf::Asset& asset, const fastgltf::Node& node
-  )
+  std::unique_ptr<Mesh> GLTFModelLoader::parseMesh(const fastgltf::Node& node)
   {
     auto meshId = node.meshIndex.value();
-    const auto& mesh = asset.meshes[meshId];
-    auto vertices = parseVertices(asset, mesh);
-
+    auto vertices = parseVertices(meshId);
     return std::make_unique<Mesh>(vertices);
   }
 
-  std::shared_ptr<ImageTexture> loadTextureFromMemory(
-    const fastgltf::Asset& asset, const fastgltf::sources::BufferView& bufferViewSource
-  )
-  {
-    const auto& bufferView = asset.bufferViews[bufferViewSource.bufferViewIndex];
-    const auto& buffer = asset.buffers[bufferView.bufferIndex];
-    std::shared_ptr<ImageTexture> imageTexture;
-
-    std::visit(
-      [&imageTexture, &bufferView](auto&& data)
-      {
-        using BufferDataType = std::decay_t<decltype(data)>;
-        if constexpr (std::is_same_v<BufferDataType, fastgltf::sources::Array>)
-        {
-          auto convertedData = reinterpret_cast<const unsigned char*>(
-            data.bytes.data() + bufferView.byteOffset
-          );
-          imageTexture = std::make_shared<ImageTexture>(convertedData, data.bytes.size());
-        }
-      },
-      buffer.data
-    );
-
-    return imageTexture;
-  }
-
-  std::shared_ptr<ImageTexture> loadTexture(const fastgltf::Asset& asset, int imageIndex)
-  {
-    std::shared_ptr<ImageTexture> imageTexture;
-    const fastgltf::Image& image = asset.images[imageIndex];
-    std::visit(
-      [&asset, &image, &imageTexture](auto&& data)
-      {
-        using ImageDataType = std::decay_t<decltype(data)>;
-        if constexpr (std::is_same_v<ImageDataType, fastgltf::sources::BufferView>)
-        {
-          imageTexture = loadTextureFromMemory(asset, data);
-        }
-        else if constexpr (std::is_same_v<ImageDataType, fastgltf::sources::URI>)
-        {
-          imageTexture = std::make_shared<ImageTexture>(data.uri.c_str());
-        }
-      },
-      image.data
-    );
-
-    return imageTexture;
-  }
-
-  MaterialData parseMaterial(const fastgltf::Asset& asset, const fastgltf::Node& node)
-  {
-    auto meshId = node.meshIndex.value();
-    const auto& mesh = asset.meshes[meshId];
-    const auto& primitive = mesh.primitives[0];
-
-    MaterialData materialData;
-    if (!primitive.materialIndex.has_value())
-    {
-      return materialData;
-    }
-
-    const auto& materialGltf = asset.materials[primitive.materialIndex.value()];
-    MaterialImages materialImages;
-    if (materialGltf.pbrData.baseColorTexture.has_value())
-    {
-      const auto& textureInfo = materialGltf.pbrData.baseColorTexture.value();
-      const auto& texture = asset.textures[textureInfo.textureIndex];
-      materialImages.baseColorImage = texture.imageIndex.value();
-      if (textureInfo.transform)
-      {
-        materialData.uvScale = glm::make_vec2(textureInfo.transform->uvScale.data());
-      }
-      materialData.material.baseColorTexture =
-        loadTexture(asset, materialImages.baseColorImage);
-    }
-    if (materialGltf.normalTexture.has_value())
-    {
-      const auto& textureInfo = materialGltf.normalTexture.value();
-      const auto& texture = asset.textures[textureInfo.textureIndex];
-      materialImages.normalImage = texture.imageIndex.value();
-      materialData.material.normalMap = loadTexture(asset, materialImages.normalImage);
-    }
-    if (materialGltf.pbrData.metallicRoughnessTexture.has_value())
-    {
-      const auto& texInfo = materialGltf.pbrData.metallicRoughnessTexture.value();
-      const auto& texture = asset.textures[texInfo.textureIndex];
-      materialImages.metallicRoughnessImage = texture.imageIndex.value();
-      materialData.material.metallicRougnessTexture =
-        loadTexture(asset, materialImages.metallicRoughnessImage);
-    }
-    materialData.material.baseColor =
-      glm::make_vec3(materialGltf.pbrData.baseColorFactor.data());
-    materialData.material.metallic = materialGltf.pbrData.metallicFactor;
-    materialData.material.rougness = materialGltf.pbrData.roughnessFactor;
-
-    return materialData;
-  }
-
-  std::unique_ptr<Object3D> parseNode(
-    const fastgltf::Asset& asset, const fastgltf::Node& node
-  )
+  std::unique_ptr<Object3D> GLTFModelLoader::parseNode(const fastgltf::Node& node)
   {
     if (!node.meshIndex.has_value())
     {
@@ -551,11 +534,11 @@ namespace
 
     auto transformGltf = fastgltf::getTransformMatrix(node);
     auto transform = glm::make_mat4(transformGltf.data());
-    auto mesh = parseMesh(asset, node);
-    auto materialData = parseMaterial(asset, node);
+    auto mesh = parseMesh(node);
+    auto materialData = parseMaterial(node);
     std::unordered_map<size_t, size_t> nodeToJointMap;
-    auto skeleton = parseSkeleton(asset, node, nodeToJointMap);
-    auto animations = parseAnimations(asset, node, nodeToJointMap);
+    auto skeleton = parseSkeleton(node, nodeToJointMap);
+    auto animations = parseAnimations(node, nodeToJointMap);
     auto object3D = std::make_unique<Object3D>(
       std::move(mesh), materialData.material, std::move(skeleton), std::move(animations)
     );
@@ -565,15 +548,12 @@ namespace
     return object3D;
   }
 
-  void parseNodes(
-    const fastgltf::Asset& asset,
-    size_t nodeIdx,
-    Object3D* currentParentObject,
-    Object3D* root
+  void GLTFModelLoader::parseNodes(
+    size_t nodeIdx, Object3D* currentParentObject, Object3D* root
   )
   {
-    const auto& node = asset.nodes[nodeIdx];
-    auto object3D = parseNode(asset, node);
+    const auto& node = mAsset->nodes[nodeIdx];
+    auto object3D = parseNode(node);
     Object3D* parentObject = nullptr;
     if (object3D)
     {
@@ -586,24 +566,21 @@ namespace
     }
     for (const auto& childIdx : node.children)
     {
-      parseNodes(asset, childIdx, parentObject, root);
+      parseNodes(childIdx, parentObject, root);
     }
   }
 
-  void parseAsset(const fastgltf::Asset& asset, Object3D* root)
+  void GLTFModelLoader::parseAsset(Object3D* root)
   {
-    size_t defaultSceneIdx = asset.defaultScene.value();
-    const auto& defaultScene = asset.scenes[defaultSceneIdx];
+    size_t defaultSceneIdx = mAsset->defaultScene.value();
+    const auto& defaultScene = mAsset->scenes[defaultSceneIdx];
     for (const auto& nodeIdx : defaultScene.nodeIndices)
     {
-      parseNodes(asset, nodeIdx, root, root);
+      parseNodes(nodeIdx, root, root);
     }
   }
-}
 
-namespace RenderSystem
-{
-  std::unique_ptr<Object3D> loadGLTFModel(const std::filesystem::path& filePath)
+  std::unique_ptr<Object3D> GLTFModelLoader::load(const std::filesystem::path& filePath)
   {
     std::runtime_error runTimeErr("Failed to load glTF file: " + filePath.string());
     auto data = fastgltf::GltfDataBuffer::FromPath(filePath);
@@ -620,8 +597,9 @@ namespace RenderSystem
       throw runTimeErr;
     }
 
+    mAsset = &asset.get();
     auto root = std::make_unique<Object3D>(std::make_unique<Mesh>(), PBRMaterial {});
-    parseAsset(asset.get(), root.get());
+    parseAsset(root.get());
 
     return root;
   }

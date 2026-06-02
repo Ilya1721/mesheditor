@@ -8,25 +8,48 @@ using namespace Utility;
 
 namespace
 {
-  using namespace RenderSystem;
-
-  const BlinnPhongMaterial& DEFAULT_MATERIAL = EMERALD_MATERIAL;
-
-  using parseTokenFunc =
-    void(char*& currentToken, char*& context, const char* delimeters);
-
-  void readCoordinatesFromBuffer(glm::vec3& coordinates, const char*& buffer)
+  glm::vec3 readBinaryXYZ(const char*& buffer)
   {
-    for (int coordIdx = 0; coordIdx < 3; ++coordIdx)
+    glm::vec3 xyz {};
+    for (size_t coordIdx = 0; coordIdx < 3; ++coordIdx)
     {
-      coordinates[coordIdx] = *reinterpret_cast<const float*>(buffer);
+      xyz[coordIdx] = *reinterpret_cast<const float*>(buffer);
       buffer += sizeof(float);
     }
+
+    return xyz;
+  }
+}  // namespace
+
+namespace RenderSystem
+{
+  std::unique_ptr<Object3D> STLModelLoader::loadModel(
+    const std::filesystem::path& filePath
+  )
+  {
+    mFileContent = readFile(filePath);
+    if (mFileContent.empty())
+    {
+      throw std::exception("File content is empty");
+    }
+
+    return isBinary() ? loadBinary() : loadText();
   }
 
-  std::unique_ptr<Object3D> loadBinarySTL(const std::string& fileContent)
+  bool STLModelLoader::isBinary() const
   {
-    const char* buffer = fileContent.c_str();
+    const char* buffer = mFileContent.c_str();
+    buffer += STL_HEADER_SIZE;
+
+    auto numberOfTriangles = *reinterpret_cast<const uint32_t*>(buffer);
+    auto correctBinaryFileSize = numberOfTriangles * 50 + 84;
+
+    return correctBinaryFileSize == mFileContent.size();
+  }
+
+  std::unique_ptr<Object3D> STLModelLoader::loadBinary()
+  {
+    const char* buffer = mFileContent.c_str();
     buffer += STL_HEADER_SIZE;
 
     auto facesCount = *reinterpret_cast<const uint32_t*>(buffer);
@@ -35,106 +58,40 @@ namespace
     std::vector<MeshCore::Vertex> vertices;
     for (size_t faceIdx = 0; faceIdx < facesCount; ++faceIdx)
     {
-      glm::vec3 faceNormal {};
-      readCoordinatesFromBuffer(faceNormal, buffer);
-
+      auto faceNormal = readBinaryXYZ(buffer);
       for (int vertexIdx = 0; vertexIdx < 3; ++vertexIdx)
       {
-        glm::vec3 pos {};
-        readCoordinatesFromBuffer(pos, buffer);
+        auto pos = readBinaryXYZ(buffer);
         vertices.push_back({pos, faceNormal});
       }
-
       buffer += sizeof(uint16_t);
     }
 
     auto mesh = std::make_unique<MeshCore::Mesh>(vertices);
-
-    return std::make_unique<Object3D>(std::move(mesh), DEFAULT_MATERIAL);
+    return std::make_unique<Object3D>(std::move(mesh), EMERALD_MATERIAL);
   }
 
-  bool isBinarySTL(const std::string& fileContent)
-  {
-    if (fileContent.empty())
-    {
-      throw std::exception("File content is empty");
-    }
-
-    const char* buffer = fileContent.c_str();
-    buffer += STL_HEADER_SIZE;
-
-    auto numberOfTriangles = *reinterpret_cast<const uint32_t*>(buffer);
-    auto correctBinaryFileSize = numberOfTriangles * 50 + 84;
-
-    return correctBinaryFileSize == fileContent.size();
-  }
-
-  template <typename Vec>
-  void readTokenAsVector(
-    char*& currentToken,
-    const char* delimiters,
-    char*& context,
-    Vec& coordinates,
-    int dimensions = 3
-  )
-  {
-    for (int coordIdx = 0; coordIdx < dimensions; ++coordIdx)
-    {
-      currentToken = strtok_s(nullptr, delimiters, &context);
-      coordinates[coordIdx] = std::stof(currentToken);
-    }
-  }
-
-  void parseText(
-    std::string& fileContent, const std::function<parseTokenFunc>& parseToken
-  )
-  {
-    char* context = nullptr;
-    auto delimiters = DELIMITERS.c_str();
-    char* currentToken = strtok_s(fileContent.data(), delimiters, &context);
-
-    while (currentToken != nullptr)
-    {
-      parseToken(currentToken, context, delimiters);
-      currentToken = strtok_s(nullptr, delimiters, &context);
-    }
-  }
-
-  std::unique_ptr<Object3D> loadTextSTL(std::string& fileContent)
+  std::unique_ptr<Object3D> STLModelLoader::loadText()
   {
     std::vector<MeshCore::Vertex> vertices;
     glm::vec3 faceNormal {};
+    mContext = nullptr;
+    mCurrentToken = strtok_s(mFileContent.data(), DELIMITERS.c_str(), &mContext);
 
-    parseText(
-      fileContent,
-      [&vertices,
-       &faceNormal](char*& currentToken, char*& context, const char* delimiters)
+    while (mCurrentToken != nullptr)
+    {
+      if (isEqual(mCurrentToken, "normal"))
       {
-        if (isEqual(currentToken, "normal"))
-        {
-          readTokenAsVector(currentToken, delimiters, context, faceNormal);
-        }
-        else if (isEqual(currentToken, "vertex"))
-        {
-          glm::vec3 pos {};
-          readTokenAsVector(currentToken, delimiters, context, pos);
-          vertices.push_back({pos, faceNormal});
-        }
+        faceNormal = readXYZ();
       }
-    );
+      else if (isEqual(mCurrentToken, "vertex"))
+      {
+        vertices.push_back({readXYZ(), faceNormal});
+      }
+      mCurrentToken = strtok_s(nullptr, DELIMITERS.c_str(), &mContext);
+    }
 
     auto mesh = std::make_unique<MeshCore::Mesh>(vertices);
-
-    return std::make_unique<Object3D>(std::move(mesh), DEFAULT_MATERIAL);
-  }
-}  // namespace
-
-namespace RenderSystem
-{
-  std::unique_ptr<Object3D> loadSTLModel(const std::filesystem::path& filePath)
-  {
-    auto fileContent = readFile(filePath);
-    return isBinarySTL(fileContent) ? loadBinarySTL(fileContent)
-                                    : loadTextSTL(fileContent);
+    return std::make_unique<Object3D>(std::move(mesh), EMERALD_MATERIAL);
   }
 }  // namespace RenderSystem

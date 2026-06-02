@@ -12,27 +12,171 @@ namespace
 {
   using namespace RenderSystem;
 
-  using parseTokenFunc =
-    void(char*& currentToken, char*& context, const char* delimeters);
+  std::string getExtension(const std::string& path)
+  {
+    auto dotPos = path.find_last_of('.');
+    if (dotPos == std::string::npos)
+    {
+      return "";
+    }
+    return path.substr(dotPos);
+  }
 
-  void parseFaceOBJ(
+  bool isPathAbsolute(const std::string& path)
+  {
+    return path.size() > 2 && path[1] == ':';
+  }
+}  // namespace
+
+namespace RenderSystem
+{
+  BlinnPhongMaterial ObjMaterialLoader::load(const std::filesystem::path& filePath)
+  {
+    mFileContent = Utility::readFile(filePath);
+    if (mFileContent.empty())
+    {
+      throw std::exception("Could not parse the .mtl file");
+    }
+
+    BlinnPhongMaterial material;
+    mContext = nullptr;
+    mCurrentToken = strtok_s(mFileContent.data(), DELIMITERS.c_str(), &mContext);
+
+    while (mCurrentToken != nullptr)
+    {
+      if (Utility::isEqual(mCurrentToken, "Ns"))
+      {
+        mCurrentToken = strtok_s(nullptr, DELIMITERS.c_str(), &mContext);
+        material.shininess = std::stof(mCurrentToken);
+      }
+      else if (Utility::isEqual(mCurrentToken, "Ka"))
+      {
+        material.ambient = readXYZ();
+      }
+      else if (Utility::isEqual(mCurrentToken, "Kd"))
+      {
+        material.diffuse.rgb = readXYZ();
+      }
+      else if (Utility::isEqual(mCurrentToken, "Ks"))
+      {
+        material.specular = readXYZ();
+      }
+      else if (Utility::isEqual(mCurrentToken, "map_Kd"))
+      {
+        material.diffuse.texture = parseTexture(filePath);
+      }
+      mCurrentToken = strtok_s(nullptr, DELIMITERS.c_str(), &mContext);
+    }
+
+    return material;
+  }
+
+  std::shared_ptr<ImageTexture> ObjMaterialLoader::parseTexture(
+    const std::filesystem::path& filePath
+  )
+  {
+    auto texturePath = parseTexturePath();
+    std::filesystem::path fullTexturePath;
+    if (isPathAbsolute(texturePath))
+    {
+      fullTexturePath = texturePath;
+    }
+    else
+    {
+      fullTexturePath = filePath.parent_path() / std::filesystem::path(texturePath);
+    }
+
+    return std::make_shared<ImageTexture>(fullTexturePath.string());
+  }
+
+  std::string ObjMaterialLoader::parseTexturePath()
+  {
+    std::vector<std::string> pathParts;
+    while (SUPPORTED_TEXTURE_EXTENSIONS.find(getExtension(mCurrentToken)) ==
+           SUPPORTED_TEXTURE_EXTENSIONS.end())
+    {
+      mCurrentToken = strtok_s(nullptr, DELIMITERS.c_str(), &mContext);
+      pathParts.push_back(mCurrentToken);
+    }
+
+    auto beginIt = pathParts[0] == "." ? pathParts.begin() + 1 : pathParts.begin();
+
+    return std::accumulate(
+      std::next(beginIt), pathParts.end(), *beginIt,
+      [](const std::string& a, const std::string& b) { return a + "\\" + b; }
+    );
+  }
+
+  std::unique_ptr<Object3D> OBJModelLoader::load(const std::filesystem::path& filePath)
+  {
+    mFileContent = Utility::readFile(filePath);
+    if (mFileContent.empty())
+    {
+      throw std::exception("Could not parse the .obj file");
+    }
+
+    return loadText(filePath);
+  }
+
+  std::unique_ptr<Object3D> OBJModelLoader::loadText(const std::filesystem::path& filePath
+  )
+  {
+    std::vector<glm::vec3> positions;
+    std::vector<glm::vec2> textures;
+    std::vector<glm::vec3> normals;
+    std::vector<MeshCore::Vertex> vertices;
+    BlinnPhongMaterial material;
+
+    mContext = nullptr;
+    mCurrentToken = strtok_s(mFileContent.data(), DELIMITERS.c_str(), &mContext);
+
+    while (mCurrentToken != nullptr)
+    {
+      if (isEqual(mCurrentToken, "v"))
+      {
+        positions.push_back(readXYZ());
+      }
+      else if (isEqual(mCurrentToken, "vt"))
+      {
+        textures.push_back(readXYZ(2));
+      }
+      else if (isEqual(mCurrentToken, "vn"))
+      {
+        normals.push_back(readXYZ());
+      }
+      else if (isEqual(mCurrentToken, "f"))
+      {
+        parseFaceOBJ(vertices, positions, textures, normals);
+      }
+      else if (isEqual(mCurrentToken, "mtllib"))
+      {
+        auto mtlFileName = parseMaterialFileName();
+        auto mtlFilePath = filePath.parent_path() / mtlFileName;
+        ObjMaterialLoader materialLoader;
+        material = materialLoader.load(mtlFilePath);
+      }
+      mCurrentToken = strtok_s(nullptr, DELIMITERS.c_str(), &mContext);
+    }
+
+    auto mesh = std::make_unique<MeshCore::Mesh>(vertices);
+    return std::make_unique<Object3D>(std::move(mesh), material);
+  }
+
+  void OBJModelLoader::parseFaceOBJ(
     std::vector<MeshCore::Vertex>& vertices,
     const std::vector<glm::vec3>& positions,
     const std::vector<glm::vec2>& textures,
-    const std::vector<glm::vec3>& normals,
-    char*& currentToken,
-    char*& context,
-    const char* delimiters
+    const std::vector<glm::vec3>& normals
   )
   {
     std::vector<MeshCore::Vertex> tempVertices;
-    while (context[0] != 'f' && context[0] != '\0')
+    while (mContext[0] != 'f' && mContext[0] != '\0')
     {
       std::vector<size_t> vertexIndices;
       for (size_t i = 0; i < 3; ++i)
       {
-        currentToken = strtok_s(nullptr, delimiters, &context);
-        vertexIndices.push_back(std::stoul(currentToken) - 1ull);
+        mCurrentToken = strtok_s(nullptr, DELIMITERS.c_str(), &mContext);
+        vertexIndices.push_back(std::stoul(mCurrentToken) - 1ull);
       }
       MeshCore::Vertex vertex;
       vertex.pos = positions[vertexIndices[0]];
@@ -56,208 +200,18 @@ namespace
     }
   }
 
-  std::string getExtension(const std::string& path)
-  {
-    auto dotPos = path.find_last_of('.');
-    if (dotPos == std::string::npos)
-    {
-      return "";
-    }
-    return path.substr(dotPos);
-  }
-
-  std::string parseTexturePath(
-    char*& currentToken, char*& context, const char* delimiters
-  )
-  {
-    std::vector<std::string> pathParts;
-    while (SUPPORTED_TEXTURE_EXTENSIONS.find(getExtension(currentToken)) ==
-           SUPPORTED_TEXTURE_EXTENSIONS.end())
-    {
-      currentToken = strtok_s(nullptr, delimiters, &context);
-      pathParts.push_back(currentToken);
-    }
-
-    auto beginIt = pathParts[0] == "." ? pathParts.begin() + 1 : pathParts.begin();
-
-    return std::accumulate(
-      std::next(beginIt), pathParts.end(), *beginIt,
-      [](const std::string& a, const std::string& b) { return a + "\\" + b; }
-    );
-  }
-
-  bool isPathAbsolute(const std::string& path)
-  {
-    return path.size() > 2 && path[1] == ':';
-  }
-
-  std::string parseMaterialFileName(
-    char*& currentToken, char*& context, const char* delimiters
-  )
+  std::string OBJModelLoader::parseMaterialFileName()
   {
     std::vector<std::string> nameParts;
-    while (!std::string(currentToken).ends_with(".mtl"))
+    while (!std::string(mCurrentToken).ends_with(".mtl"))
     {
-      currentToken = strtok_s(nullptr, delimiters, &context);
-      nameParts.push_back(currentToken);
+      mCurrentToken = strtok_s(nullptr, DELIMITERS.c_str(), &mContext);
+      nameParts.push_back(mCurrentToken);
     }
 
     return std::accumulate(
       std::next(nameParts.begin()), nameParts.end(), nameParts[0],
       [](const std::string& a, const std::string& b) { return a + " " + b; }
     );
-  }
-
-  template <typename Vec>
-  void readTokenAsVector(
-    char*& currentToken,
-    const char* delimiters,
-    char*& context,
-    Vec& coordinates,
-    int dimensions = 3
-  )
-  {
-    for (int coordIdx = 0; coordIdx < dimensions; ++coordIdx)
-    {
-      currentToken = strtok_s(nullptr, delimiters, &context);
-      coordinates[coordIdx] = std::stof(currentToken);
-    }
-  }
-
-  template <typename T>
-  void addParsedVecToArray(
-    std::vector<T>& arr,
-    char*& currentToken,
-    char*& context,
-    const char* delimiters,
-    int dimensions = 3
-  )
-  {
-    T vec {};
-    readTokenAsVector(currentToken, delimiters, context, vec, dimensions);
-    arr.push_back(vec);
-  }
-
-  void parseText(
-    std::string& fileContent, const std::function<parseTokenFunc>& parseToken
-  )
-  {
-    char* context = nullptr;
-    auto delimiters = DELIMITERS.c_str();
-    char* currentToken = strtok_s(fileContent.data(), delimiters, &context);
-
-    while (currentToken != nullptr)
-    {
-      parseToken(currentToken, context, delimiters);
-      currentToken = strtok_s(nullptr, delimiters, &context);
-    }
-  }
-
-  std::shared_ptr<ImageTexture> parseTexture(
-    const std::filesystem::path& filePath,
-    char*& currentToken,
-    char*& context,
-    const char* delimiters
-  )
-  {
-    auto texturePath = parseTexturePath(currentToken, context, delimiters);
-    std::filesystem::path fullTexturePath;
-    if (isPathAbsolute(texturePath))
-    {
-      fullTexturePath = texturePath;
-    }
-    else
-    {
-      fullTexturePath = filePath.parent_path() / std::filesystem::path(texturePath);
-    }
-
-    return std::make_shared<ImageTexture>(fullTexturePath.string());
-  }
-
-  void parseTextMTL(const std::filesystem::path& filePath, BlinnPhongMaterial& material)
-  {
-    auto fileContent = Utility::readFile(filePath);
-    parseText(
-      fileContent,
-      [&material, &filePath](char*& currentToken, char*& context, const char* delimiters)
-      {
-        if (Utility::isEqual(currentToken, "Ns"))
-        {
-          currentToken = strtok_s(nullptr, delimiters, &context);
-          material.shininess = std::stof(currentToken);
-        }
-        else if (Utility::isEqual(currentToken, "Ka"))
-        {
-          readTokenAsVector(currentToken, delimiters, context, material.ambient, 3);
-        }
-        else if (Utility::isEqual(currentToken, "Kd"))
-        {
-          readTokenAsVector(currentToken, delimiters, context, material.diffuse.rgb, 3);
-        }
-        else if (Utility::isEqual(currentToken, "Ks"))
-        {
-          readTokenAsVector(currentToken, delimiters, context, material.specular, 3);
-        }
-        else if (Utility::isEqual(currentToken, "map_Kd"))
-        {
-          material.diffuse.texture =
-            parseTexture(filePath, currentToken, context, delimiters);
-        }
-      }
-    );
-  }
-
-  std::unique_ptr<Object3D> loadTextOBJ(const std::filesystem::path& filePath)
-  {
-    auto fileContent = Utility::readFile(filePath);
-    std::vector<glm::vec3> positions;
-    std::vector<glm::vec2> textures;
-    std::vector<glm::vec3> normals;
-    std::vector<MeshCore::Vertex> vertices;
-    BlinnPhongMaterial material;
-
-    parseText(
-      fileContent,
-      [&positions, &normals, &textures, &vertices, &filePath,
-       &material](char*& currentToken, char*& context, const char* delimiters)
-      {
-        if (isEqual(currentToken, "v"))
-        {
-          addParsedVecToArray(positions, currentToken, context, delimiters);
-        }
-        else if (isEqual(currentToken, "vt"))
-        {
-          addParsedVecToArray(textures, currentToken, context, delimiters, 2);
-        }
-        else if (isEqual(currentToken, "vn"))
-        {
-          addParsedVecToArray(normals, currentToken, context, delimiters);
-        }
-        else if (isEqual(currentToken, "f"))
-        {
-          parseFaceOBJ(
-            vertices, positions, textures, normals, currentToken, context, delimiters
-          );
-        }
-        else if (isEqual(currentToken, "mtllib"))
-        {
-          auto mtlFileName = parseMaterialFileName(currentToken, context, delimiters);
-          auto mtlFilePath = filePath.parent_path() / mtlFileName;
-          parseTextMTL(mtlFilePath, material);
-        }
-      }
-    );
-
-    auto mesh = std::make_unique<MeshCore::Mesh>(vertices);
-
-    return std::make_unique<Object3D>(std::move(mesh), material);
-  }
-}  // namespace
-
-namespace RenderSystem
-{
-  std::unique_ptr<Object3D> loadOBJModel(const std::filesystem::path& filePath)
-  {
-    return loadTextOBJ(filePath);
   }
 }  // namespace RenderSystem
