@@ -7,14 +7,14 @@
 
 namespace RenderSystem
 {
-  struct MaterialData
-  {
-    PBRMaterial material {};
-    glm::vec2 uvScale {1.0f, 1.0f};
-  };
-
   class GLTFModelLoader
   {
+    struct MaterialData
+    {
+      PBRMaterial material {};
+      glm::vec2 uvScale {1.0f, 1.0f};
+    };
+
    public:
     std::unique_ptr<Object3D> load(const std::filesystem::path& filePath);
 

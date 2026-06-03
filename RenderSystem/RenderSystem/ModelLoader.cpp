@@ -1,6 +1,8 @@
 #include "ModelLoader.h"
 
+#include "Constants.h"
 #include "GLTFModelLoader.h"
+#include "MeshCore/PointCloudUitls.h"
 #include "ObjModelLoader.h"
 #include "Object3D.h"
 #include "PLYModelLoader.h"
@@ -29,10 +31,12 @@ namespace RenderSystem
       GLTFModelLoader loader;
       return loader.load(filePath);
     }
-    else if (isEqual(extension, ".glb"))
+    else if (isEqual(extension, ".ply"))
     {
       PLYModelLoader loader;
-      return loader.loadModel(filePath);
+      auto pointCloud = loader.loadPointCloud(filePath);
+      auto mesh = pointCloudToMesh(pointCloud);
+      return std::make_unique<Object3D>(std::move(mesh), RUBY_MATERIAL);
     }
     else
     {
@@ -46,7 +50,7 @@ namespace RenderSystem
     if (isEqual(extension, ".ply"))
     {
       PLYModelLoader loader;
-      return loader.loadVertices(filePath);
+      return loader.loadPointCloud(filePath);
     }
     else
     {

@@ -2,19 +2,42 @@
 
 #include <filesystem>
 
+#include "MeshCore/PointCloud.h"
 #include "ModelLoaderUtils.h"
-#include "Object3D.h"
 
 namespace RenderSystem
 {
+  using namespace MeshCore;
+
   class PLYModelLoader : public ModelLoaderUtils
   {
+    struct PropertyType
+    {
+      std::string type;
+      std::string property;
+    };
+
+    struct Header
+    {
+      bool isBinary;
+      size_t vertexCount;
+      std::vector<PropertyType> propertyTypes;
+    };
+
    public:
-    std::unique_ptr<Object3D> loadModel(const std::filesystem::path& filePath);
-    std::vector<Vertex> loadVertices(const std::filesystem::path& filePath);
+    PointCloud loadPointCloud(const std::filesystem::path& filePath);
 
    private:
-    std::vector<Vertex> loadBinary(const std::string& filePath);
-    std::vector<Vertex> loadText(const std::string& filePath);
+    PointCloud parseVertices();
+    std::string readNextTokenAsString();
+    float parseValue(const PropertyType& propertyType);
+    float parseTextValue(const PropertyType& propertyType);
+    float parseBinaryValue(const PropertyType& propertyType);
+    float convertColorValue(float value, const std::string& type);
+    void parseHeader();
+    void parseProperty(const PropertyType& propertyType, Vertex& vertex);
+
+   private:
+    Header mHeader;
   };
 }

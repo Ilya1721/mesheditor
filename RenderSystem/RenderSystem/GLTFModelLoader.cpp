@@ -384,7 +384,7 @@ namespace RenderSystem
     return imageTexture;
   }
 
-  MaterialData GLTFModelLoader::parseMaterial(const fastgltf::Node& node)
+  GLTFModelLoader::MaterialData GLTFModelLoader::parseMaterial(const fastgltf::Node& node)
   {
     auto meshId = node.meshIndex.value();
     const auto& mesh = mAsset->meshes[meshId];
