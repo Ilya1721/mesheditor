@@ -10,7 +10,7 @@ namespace RenderSystem
   void MeshRenderBuffer::loadRenderData(const MeshRenderData& renderData)
   {
     mVBO.bind();
-    constexpr auto stride = 20 * sizeof(float);
+    constexpr auto stride = 23 * sizeof(float);
     const auto& compactData = renderData.getCompactData();
     glBufferData(
       GL_ARRAY_BUFFER, compactData.size() * sizeof(float), compactData.data(),
@@ -28,15 +28,19 @@ namespace RenderSystem
     );
     glEnableVertexAttribArray(3);
     glVertexAttribPointer(
-      3, 4, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<void*>(8 * sizeof(float))
+      3, 3, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<void*>(8 * sizeof(float))
     );
     glEnableVertexAttribArray(4);
     glVertexAttribPointer(
-      4, 4, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<void*>(12 * sizeof(float))
+      4, 4, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<void*>(11 * sizeof(float))
     );
     glEnableVertexAttribArray(5);
     glVertexAttribPointer(
-      5, 4, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<void*>(16 * sizeof(float))
+      5, 4, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<void*>(15 * sizeof(float))
+    );
+    glEnableVertexAttribArray(6);
+    glVertexAttribPointer(
+      6, 4, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<void*>(19 * sizeof(float))
     );
     mVBO.unbind();
   }

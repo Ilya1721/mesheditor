@@ -115,6 +115,14 @@ namespace RenderSystem
     );
   }
 
+  void Renderer::renderPointCloud(const Object3D& object, int vertexOffset)
+  {
+    mModelRenderBuffer.invoke(
+      [&object, &vertexOffset]()
+      { glDrawArrays(GL_POINTS, vertexOffset, object.getVertexCount()); }
+    );
+  }
+
   void Renderer::renderObject3DShadow(const Object3D& object, int vertexOffset)
   {
     mModelRenderBuffer.invoke(

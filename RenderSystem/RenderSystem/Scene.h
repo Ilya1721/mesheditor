@@ -27,6 +27,7 @@
 #include "ViewportListener.h"
 #include "WaterController.h"
 #include "WaterShaderProgram.h"
+#include "PointCloudShaderProgram.h"
 
 namespace RenderSystem
 {
@@ -157,6 +158,7 @@ namespace RenderSystem
     std::unique_ptr<ParticlesShaderProgram> mParticlesShaderProgram;
     std::unique_ptr<WaterShaderProgram> mWaterShaderProgram;
     std::unique_ptr<ColorShaderProgram> mColorShaderProgram;
+    std::unique_ptr<PointCloudShaderProgram> mPointCloudShaderProgram;
     std::unique_ptr<ShadowMapController> mShadowMapController;
     std::unique_ptr<SkyboxController> mSkyboxController;
     std::unique_ptr<TAAController> mTAAController;

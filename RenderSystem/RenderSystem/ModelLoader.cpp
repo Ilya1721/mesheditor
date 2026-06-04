@@ -9,11 +9,32 @@
 #include "STLModelLoader.h"
 #include "Utility/StringHelper.h"
 
+namespace fs = std::filesystem;
 using namespace Utility;
 
-namespace RenderSystem
+namespace
 {
-  std::unique_ptr<Object3D> loadModelFromFile(const std::filesystem::path& filePath)
+  using namespace RenderSystem;
+
+  std::string getFolderFilesExtension(const fs::path& folderPath)
+  {
+    for (const auto& entry : fs::directory_iterator(folderPath))
+    {
+      if (!entry.is_regular_file())
+      {
+        continue;
+      }
+
+      if (entry.path().extension().string() == ".ply")
+      {
+        return ".ply";
+      }
+
+      throw std::exception("Folder with unsupported files");
+    }
+  }
+
+  std::unique_ptr<Object3D> loadModelFromFile(const fs::path& filePath)
   {
     const auto& extension = filePath.extension().string();
     if (isEqual(extension, ".stl"))
@@ -44,7 +65,23 @@ namespace RenderSystem
     }
   }
 
-  std::vector<Vertex> loadVerticesFromFile(const std::filesystem::path& filePath)
+  std::unique_ptr<Object3D> loadPLYModelFromDirectory(const fs::path& folderPath)
+  {
+    return {};
+  }
+
+  std::unique_ptr<Object3D> loadModelFromDirectory(const fs::path& folderPath)
+  {
+    auto folderFilesExtension = getFolderFilesExtension(folderPath);
+    if (folderFilesExtension == ".ply")
+    {
+      return loadPLYModelFromDirectory(folderPath);
+    }
+
+    return {};
+  }
+
+  std::vector<Vertex> loadVerticesFromFile(const fs::path& filePath)
   {
     const auto& extension = filePath.extension().string();
     if (isEqual(extension, ".ply"))
@@ -56,5 +93,44 @@ namespace RenderSystem
     {
       throw std::exception("Unsupported file format");
     }
+  }
+
+  std::vector<Vertex> loadPLYVerticesFromDirectory(const fs::path& folderPath)
+  {
+    return {};
+  }
+
+  std::vector<Vertex> loadVerticesFromDirectory(const fs::path& folderPath)
+  {
+    auto folderFilesExtension = getFolderFilesExtension(folderPath);
+    if (folderFilesExtension == ".ply")
+    {
+      return loadPLYVerticesFromDirectory(folderPath);
+    }
+
+    return {};
+  }
+}
+
+namespace RenderSystem
+{
+  std::unique_ptr<Object3D> loadModel(const std::filesystem::path& path)
+  {
+    if (fs::is_directory(path))
+    {
+      return loadModelFromDirectory(path);
+    }
+
+    return loadModelFromFile(path);
+  }
+
+  std::vector<Vertex> loadVertices(const std::filesystem::path& path)
+  {
+    if (fs::is_directory(path))
+    {
+      return loadVerticesFromDirectory(path);
+    }
+
+    return loadVerticesFromFile(path);
   }
 }  // namespace RenderSystem

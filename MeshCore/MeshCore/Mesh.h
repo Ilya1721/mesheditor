@@ -23,7 +23,7 @@ namespace MeshCore
   {
    public:
     Mesh();
-    Mesh(const std::vector<Vertex>& vertices);
+    Mesh(const std::vector<Vertex>& vertices, bool buildHalfEdges = true);
     Mesh(Mesh&& other) = delete;
     ~Mesh();
     bool operator==(const Mesh& other) const = default;
@@ -37,7 +37,6 @@ namespace MeshCore
     std::unique_ptr<Mesh> clone() const;
 
    private:
-    void init();
     void prepareHalfEdgeDataStructure();
     void createFace(size_t lastVertexIdx);
     void createHalfEdgesForFace(size_t lastVertexIdx);

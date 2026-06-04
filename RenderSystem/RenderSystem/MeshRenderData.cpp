@@ -24,6 +24,10 @@ namespace RenderSystem
     {
       mCompactData.push_back(vertex.texture[coordIdx]);
     }
+    for (int coordIdx = 0; coordIdx < 3; ++coordIdx)
+    {
+      mCompactData.push_back(vertex.color[coordIdx]);
+    }
     for (int coordIdx = 0; coordIdx < 4; ++coordIdx)
     {
       mCompactData.push_back(vertex.tangent[coordIdx]);
@@ -42,7 +46,7 @@ namespace RenderSystem
     const OriginalVertexData& vertexData, int startVertexOffset
   )
   {
-    unsigned int compactDataIdx = 20 * (startVertexOffset + vertexData.index);
+    unsigned int compactDataIdx = 23 * (startVertexOffset + vertexData.index);
     for (unsigned int coordIdx = 0; coordIdx < 3; ++compactDataIdx, ++coordIdx)
     {
       mCompactData[compactDataIdx] = vertexData.vertex->pos[coordIdx];
@@ -52,7 +56,7 @@ namespace RenderSystem
 
   int MeshRenderData::getVertexCount() const
   {
-    return mCompactData.size() / 20;
+    return mCompactData.size() / 23;
   }
 
   MeshRenderData MeshRenderData::generateRenderData(

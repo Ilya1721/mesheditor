@@ -48,16 +48,22 @@ namespace RenderSystem
     glm::vec3 color = DEFAULT_RGB;
   };
 
+  struct PointCloudMaterial
+  {
+  };
+
   template <typename T>
   concept MaterialType = std::same_as<std::remove_cvref_t<T>, BlinnPhongMaterial> ||
                          std::same_as<std::remove_cvref_t<T>, GlassMaterial> ||
                          std::same_as<std::remove_cvref_t<T>, PBRMaterial> ||
-                         std::same_as<std::remove_cvref_t<T>, ColorMaterial>;
+                         std::same_as<std::remove_cvref_t<T>, ColorMaterial> ||
+                         std::same_as<std::remove_cvref_t<T>, PointCloudMaterial>;
 
   using Material = std::variant<
     std::monostate,
     BlinnPhongMaterial,
     GlassMaterial,
     PBRMaterial,
-    ColorMaterial>;
+    ColorMaterial,
+    PointCloudMaterial>;
 }  // namespace RenderSystem

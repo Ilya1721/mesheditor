@@ -64,7 +64,8 @@ namespace RenderSystem
     void materialVisitor(
       const std::function<void(const BlinnPhongMaterial&)>& blinnPhongAction,
       const std::function<void(const GlassMaterial&)>& glassAction,
-      const std::function<void(const PBRMaterial&)>& pbrAction
+      const std::function<void(const PBRMaterial&)>& pbrAction,
+      const std::function<void(const PointCloudMaterial&)>& pointCloudAction
     ) const;
 
     virtual void updateTransform(const glm::mat4& transform);

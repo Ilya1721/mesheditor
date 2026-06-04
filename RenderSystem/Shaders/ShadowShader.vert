@@ -1,8 +1,8 @@
 #version 330 core
 
 layout (location = 0) in vec3 pos;
-layout (location = 4) in vec4 weights;
-layout (location = 5) in vec4 jointIndicesFloat;
+layout (location = 5) in vec4 weights;
+layout (location = 6) in vec4 jointIndicesFloat;
 
 const int MAX_JOINTS = 100;
 

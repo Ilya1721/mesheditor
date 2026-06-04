@@ -72,9 +72,15 @@ namespace RenderSystem
     mColorShaderProgram = std::make_unique<ColorShaderProgram>(
       COLOR_VERTEX_SHADER_PATH, COLOR_FRAGMENT_SHADER_PATH
     );
+    mPointCloudShaderProgram = std::make_unique<PointCloudShaderProgram>(
+      POINT_CLOUD_VERTEX_SHADER_PATH, POINT_CLOUD_FRAGMENT_SHADER_PATH
+    );
     mBlinnPhongShaderProgram->setDirLightParams(DIR_LIGHT_PARAMS);
     mPBRShaderProgram->setLightColor(PBR_LIGHT_COLOR);
     mShadowShaderProgram->setShadowBias(SHADOW_BIAS);
+    mPointCloudShaderProgram->setPointScale(CLOUD_POINT_SCALE);
+    mPointCloudShaderProgram->setMinPointSize(CLOUD_POINT_MIN_SIZE);
+    mPointCloudShaderProgram->setMaxPointSize(CLOUD_POINT_MAX_SIZE);
   }
 
   void Scene::initControllers()
@@ -135,7 +141,7 @@ namespace RenderSystem
         mBlinnPhongShaderProgram.get(), mPBRShaderProgram.get(), mSkyboxController.get(),
         mGlassShaderProgram.get(), mShadowShaderProgram.get(),
         mParticlesShaderProgram.get(), mWaterShaderProgram.get(),
-        mColorShaderProgram.get()
+        mColorShaderProgram.get(), mPointCloudShaderProgram.get()
       }
     );
   }
@@ -158,6 +164,7 @@ namespace RenderSystem
   {
     mBlinnPhongShaderProgram->setDirLightSourcePos(DIR_LIGHT_POS);
     mPBRShaderProgram->setLightPos(DIR_LIGHT_POS);
+    mPointCloudShaderProgram->setLightPos(DIR_LIGHT_POS);
     const auto& lightViewMatrix = glm::lookAt(
       DIR_LIGHT_POS, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)
     );
@@ -344,18 +351,24 @@ namespace RenderSystem
     mGlassShaderProgram->setProjection(projection);
     mShadowShaderProgram->setProjection(projection);
     mColorShaderProgram->setProjection(projection);
+    mPointCloudShaderProgram->setProjection(projection);
   }
 
   void Scene::addModelObject(const std::string& meshFilePath)
   {
-    auto modelObject = loadModelFromFile(meshFilePath);
+    //auto modelObject = loadModel(meshFilePath);
+    //
+    auto vertices = loadVertices(meshFilePath);
+    auto mesh = std::make_unique<Mesh>(vertices, false);
+    auto modelObject = std::make_unique<Object3D>(std::move(mesh), POINT_CLOUD_MATERIAL);
+    //
     mModelObject = modelObject.get();
     mRootObject.addChild(std::move(modelObject));
   }
 
   void Scene::addFloorAsObject()
   {
-    auto floorObject = loadModelFromFile(FLOOR_MESH_PATH);
+    auto floorObject = loadModel(FLOOR_MESH_PATH);
     adjustFloor(floorObject.get());
     mRootObject.addChild(std::move(floorObject));
   }
@@ -420,6 +433,7 @@ namespace RenderSystem
     auto renderBlinnPhong = std::function<void(const Object3D&, int)> {};
     auto renderGlass = std::function<void(const Object3D&, int)> {};
     auto renderPBR = std::function<void(const Object3D&, int)> {};
+    auto renderPointCloud = std::function<void(const Object3D&, int)> {};
 
     if (invokeModelShaders)
     {
@@ -430,7 +444,6 @@ namespace RenderSystem
           { mRenderer->renderBlinnPhongObject3D(object, vertexOffset); }
         );
       };
-
       renderGlass = [this](const Object3D& object, int vertexOffset)
       {
         mGlassShaderProgram->invoke(
@@ -438,11 +451,17 @@ namespace RenderSystem
           { mRenderer->renderGlassObject3D(object, vertexOffset); }
         );
       };
-
       renderPBR = [this](const Object3D& object, int vertexOffset)
       {
         mPBRShaderProgram->invoke([this, &object, vertexOffset]()
                                   { mRenderer->renderPBRObject3D(object, vertexOffset); }
+        );
+      };
+      renderPointCloud = [this](const Object3D& object, int vertexOffset)
+      {
+        mPointCloudShaderProgram->invoke(
+          [this, &object, vertexOffset]()
+          { mRenderer->renderPointCloud(object, vertexOffset); }
         );
       };
     }
@@ -454,6 +473,8 @@ namespace RenderSystem
       { mRenderer->renderGlassObject3D(object, vertexOffset); };
       renderPBR = [this](const Object3D& object, int vertexOffset)
       { mRenderer->renderPBRObject3D(object, vertexOffset); };
+      renderPointCloud = [this](const Object3D& object, int vertexOffset)
+      { mRenderer->renderPointCloud(object, vertexOffset); };
     }
 
     for (auto& [object, vertexOffset] : mSceneObjectVertexOffsetMap)
@@ -465,7 +486,9 @@ namespace RenderSystem
         [this, &object, vertexOffset, &renderGlass](const GlassMaterial&)
         { renderGlass(*object, vertexOffset); },
         [this, &object, vertexOffset, &renderPBR](const PBRMaterial&)
-        { renderPBR(*object, vertexOffset); }
+        { renderPBR(*object, vertexOffset); },
+        [this, &object, vertexOffset, &renderPointCloud](const PointCloudMaterial&)
+        { renderPointCloud(*object, vertexOffset); }
       );
     }
   }
@@ -589,7 +612,9 @@ namespace RenderSystem
         mPBRShaderProgram->setModel(objectModel);
         mPBRShaderProgram->setUVScale(object->getUVScale());
         setPBRMaterial(material);
-      }
+      },
+      [this, &objectModel](const PointCloudMaterial& material)
+      { mPointCloudShaderProgram->setModel(objectModel); }
     );
   }
 

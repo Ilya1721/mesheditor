@@ -51,17 +51,15 @@ namespace MeshCore
   {
   }
 
-  Mesh::Mesh(const std::vector<Vertex>& vertices) : mVertices(vertices)
+  Mesh::Mesh(const std::vector<Vertex>& vertices, bool buildHalfEdges) : mVertices(vertices)
   {
-    init();
+    if (buildHalfEdges)
+    {
+      prepareHalfEdgeDataStructure();
+    }
   }
 
   Mesh::~Mesh() = default;
-
-  void Mesh::init()
-  {
-    prepareHalfEdgeDataStructure();
-  }
 
   void Mesh::prepareHalfEdgeDataStructure()
   {

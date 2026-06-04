@@ -13,11 +13,11 @@ namespace RenderSystem
 
   void Pan::onMouseMove(const glm::vec2& startCursorPos, const glm::vec2& endCursorPos)
   {
-    auto middleMouseButtonPressed =
-      mWindow->isMouseButtonPressed(GLFW_MOUSE_BUTTON_MIDDLE);
+    auto rightMouseButtonPressed =
+      mWindow->isMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT);
     auto shiftKeyPressed = mWindow->isKeyPressed(GLFW_KEY_LEFT_SHIFT);
 
-    if (mCamera->isMovementEnabled() && middleMouseButtonPressed && shiftKeyPressed)
+    if (mCamera->isMovementEnabled() && rightMouseButtonPressed && shiftKeyPressed)
     {
       mCamera->pan(
         mWindow->unProject(startCursorPos), mWindow->unProject(endCursorPos),

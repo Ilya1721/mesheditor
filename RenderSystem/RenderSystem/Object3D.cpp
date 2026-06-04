@@ -223,7 +223,8 @@ namespace RenderSystem
   void Object3D::materialVisitor(
     const std::function<void(const BlinnPhongMaterial&)>& blinnPhongAction,
     const std::function<void(const GlassMaterial&)>& glassAction,
-    const std::function<void(const PBRMaterial&)>& pbrAction
+    const std::function<void(const PBRMaterial&)>& pbrAction,
+    const std::function<void(const PointCloudMaterial&)>& pointCloudAction
   ) const
   {
     std::visit(
@@ -241,6 +242,10 @@ namespace RenderSystem
         else if constexpr (std::is_same_v<MaterialType, PBRMaterial>)
         {
           pbrAction(material);
+        }
+        else if constexpr (std::is_same_v<MaterialType, PointCloudMaterial>)
+        {
+          pointCloudAction(material);
         }
       },
       mMaterial

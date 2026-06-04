@@ -19,8 +19,8 @@ namespace MeshCore
 
     glm::vec3 pos {};
     glm::vec3 normal {};
-    glm::vec3 color {};
     glm::vec2 texture {};
+    glm::vec3 color{};
     glm::vec4 tangent {1.0f, 0.0f, 0.0f, 1.0f};
     glm::vec4 weights = {1.0f, 0.0f, 0.0f, 0.0f};
     glm::ivec4 jointIndices {0, 0, 0, 0};

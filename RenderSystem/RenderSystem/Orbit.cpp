@@ -11,11 +11,11 @@ namespace RenderSystem
 
   void Orbit::onMouseMove(const glm::vec2& startCursorPos, const glm::vec2& endCursorPos)
   {
-    auto middleMouseButtonPressed =
-      mWindow->isMouseButtonPressed(GLFW_MOUSE_BUTTON_MIDDLE);
+    auto rightMouseButtonPressed =
+      mWindow->isMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT);
     auto shiftKeyPressed = mWindow->isKeyPressed(GLFW_KEY_LEFT_SHIFT);
 
-    if (mCamera->isMovementEnabled() && middleMouseButtonPressed && !shiftKeyPressed)
+    if (mCamera->isMovementEnabled() && rightMouseButtonPressed && !shiftKeyPressed)
     {
       const auto offsetX = endCursorPos.x - startCursorPos.x;
       const auto offsetY = startCursorPos.y - endCursorPos.y;

@@ -10,61 +10,63 @@
 
 namespace RenderSystem
 {
-  const BlinnPhongMaterial RUBY_MATERIAL {
+  inline const BlinnPhongMaterial RUBY_MATERIAL {
     glm::vec3(0.1745f, 0.01175f, 0.01175f),
     RGBOrTexture {glm::vec3(0.61424f, 0.04136f, 0.04136f), nullptr},
     glm::vec3(0.727811f, 0.626959f, 0.626959f), 2.0f
   };
 
-  const BlinnPhongMaterial EMERALD_MATERIAL {
+  inline const BlinnPhongMaterial EMERALD_MATERIAL {
     glm::vec3(0.0215f, 0.1745f, 0.0215f),
     RGBOrTexture {glm::vec3(0.07568f, 0.61424f, 0.07568f), nullptr},
     glm::vec3(0.633f, 0.727811f, 0.633f), 0.6f
   };
 
-  const BlinnPhongMaterial RED_MATERIAL {
+  inline const BlinnPhongMaterial RED_MATERIAL {
     glm::vec3(1.0f, 0.0f, 0.0f), RGBOrTexture {glm::vec3(0.0f, 0.0f, 0.0f), nullptr},
     glm::vec3(0.0f, 0.0f, 0.0f), 0.6f
   };
 
-  const BlinnPhongMaterial GREEN_MATERIAL {
+  inline const BlinnPhongMaterial GREEN_MATERIAL {
     glm::vec3(0.0f, 1.0f, 0.0f), RGBOrTexture {glm::vec3(0.0f, 0.0f, 0.0f), nullptr},
     glm::vec3(0.0f, 0.0f, 0.0f), 0.6f
   };
 
-  const BlinnPhongMaterial BLUE_MATERIAL {
+  inline const BlinnPhongMaterial BLUE_MATERIAL {
     glm::vec3(0.0f, 0.0f, 1.0f), RGBOrTexture {glm::vec3(0.0f, 0.0f, 0.0f), nullptr},
     glm::vec3(0.0f, 0.0f, 0.0f), 0.6f
   };
 
-  const BlinnPhongMaterial BLACK_MATERIAL {
+  inline const BlinnPhongMaterial BLACK_MATERIAL {
     glm::vec3(0.0f, 0.0f, 0.0f), RGBOrTexture {glm::vec3(0.0f, 0.0f, 0.0f), nullptr},
     glm::vec3(0.0f, 0.0f, 0.0f), 0.6f
   };
 
-  const BlinnPhongMaterial PEARL_MATERIAL {
+  inline const BlinnPhongMaterial PEARL_MATERIAL {
     glm::vec3(0.25f, 0.20725f, 0.20725f),
     RGBOrTexture {glm::vec3(1.0f, 0.829f, 0.829f), nullptr},
     glm::vec3(0.296648f, 0.296648f, 0.296648f), 11.264f
   };
 
-  const BlinnPhongMaterial GOLD_MATERIAL {
+  inline const BlinnPhongMaterial GOLD_MATERIAL {
     glm::vec3(0.24725f, 0.1995f, 0.0745f),
     RGBOrTexture {glm::vec3(0.75164f, 0.60648f, 0.22648f), nullptr},
     glm::vec3(0.628281f, 0.555802f, 0.366065f), 2.0f
   };
 
-  static inline constexpr GlassMaterial GLASS_MATERIAL {
+  inline constexpr GlassMaterial GLASS_MATERIAL {
     1.52f, 0.2f, 0.5f, 0.1f, glm::vec3(0.8f, 0.9f, 1.0f)
   };
 
-  static inline constexpr DirectionalLightParams DIR_LIGHT_PARAMS {
+  inline constexpr PointCloudMaterial POINT_CLOUD_MATERIAL {};
+
+  inline constexpr DirectionalLightParams DIR_LIGHT_PARAMS {
     glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.1f, 0.1f, 0.1f)
   };
 
-  static inline constexpr glm::vec3 PBR_LIGHT_COLOR(1.0f, 1.0f, 1.0f);
+  inline constexpr glm::vec3 PBR_LIGHT_COLOR(1.0f, 1.0f, 1.0f);
 
-  static inline constexpr PointLightParams POINT_LIGHT_PARAMS {
+  inline constexpr PointLightParams POINT_LIGHT_PARAMS {
     glm::vec3(1.0f, 1.0f, 1.0f),
     glm::vec3(1.0f, 1.0f, 1.0f),
     glm::vec3(0.1f, 0.1f, 0.1f),
@@ -73,86 +75,94 @@ namespace RenderSystem
     0.003f
   };
 
-  constexpr glm::vec4 BACKGROUND_COLOR = glm::vec4(0.725f, 0.9f, 1.0f, 1.0f);
-  constexpr glm::vec3 DEFAULT_CAMERA_POSITION = glm::vec3(0.0f, 0.0f, 5.0f);
-  constexpr glm::vec3 DEFAULT_CAMERA_TARGET = glm::vec3(0.0f, 0.0f, 0.0f);
-  constexpr glm::vec3 DEFAULT_CAMERA_UP = glm::vec3(0.0f, 1.0f, 0.0f);
-  constexpr glm::vec3 DEFAULT_CAMERA_RIGHT = glm::vec3(1.0f, 0.0f, 0.0f);
-  constexpr glm::vec2 VIEWPORT_POSITION = glm::vec2(0.0f, 0.0f);
+  inline constexpr glm::vec4 BACKGROUND_COLOR = glm::vec4(0.725f, 0.9f, 1.0f, 1.0f);
+  inline constexpr glm::vec3 DEFAULT_CAMERA_POSITION = glm::vec3(0.0f, 0.0f, 5.0f);
+  inline constexpr glm::vec3 DEFAULT_CAMERA_TARGET = glm::vec3(0.0f, 0.0f, 0.0f);
+  inline constexpr glm::vec3 DEFAULT_CAMERA_UP = glm::vec3(0.0f, 1.0f, 0.0f);
+  inline constexpr glm::vec3 DEFAULT_CAMERA_RIGHT = glm::vec3(1.0f, 0.0f, 0.0f);
+  inline constexpr glm::vec2 VIEWPORT_POSITION = glm::vec2(0.0f, 0.0f);
 
-  constexpr float FOV = 45.0f;
-  constexpr float NEAR_PLANE_DISTANCE = 0.01f;
-  constexpr float FAR_PLANE_DISTANCE = 1000.0f;
-  constexpr float LIGHT_SOURCE_TO_CAMERA_DISTANCE = 25.0f;
-  constexpr float ZOOM_STEP_COEF = 0.5f;
-  constexpr float ORBIT_SPEED_COEF = 4.0f;
-  constexpr float SURFACE_EXTRUCTION_SPEED_COEF = 1.0f;
-  constexpr float CAMERA_DIST_TO_BBOX_COEF = 3.75f;
-  constexpr float DEFAULT_Z_VALUE = 1.0f;
-  constexpr float BBOX_VIEWPORT_GAP_COEF = 2.0f;
-  constexpr float ORTHO_ZOOM_STEP = 0.25f;
-  constexpr float FLOOR_BBOX_HEIGHT_COEF = 1.0f;
-  constexpr float LIGHT_SOURCE_POS_X = FAR_PLANE_DISTANCE * -0.3f;
-  constexpr float LIGHT_SOURCE_POS_Y = FAR_PLANE_DISTANCE * 0.4f;
-  constexpr float LIGHT_SOURCE_POS_Z = FAR_PLANE_DISTANCE * 0.6f;
-  constexpr float ARCBALL_SENSITIVITY = 0.01f;
-  constexpr float SHADOW_BIAS = 0.00025f;
-  constexpr float POINT_LIGHT_BBOX_Y_COEF = 0.2f;
-  constexpr float POINT_LIGHT_RADIUS = 1.0f;
-  constexpr float ANISOTROPIC_FILTERING_LEVEL = 8.0f;
+  inline constexpr float FOV = 45.0f;
+  inline constexpr float NEAR_PLANE_DISTANCE = 0.01f;
+  inline constexpr float FAR_PLANE_DISTANCE = 1000.0f;
+  inline constexpr float LIGHT_SOURCE_TO_CAMERA_DISTANCE = 25.0f;
+  inline constexpr float ZOOM_STEP_COEF = 0.5f;
+  inline constexpr float ORBIT_SPEED_COEF = 4.0f;
+  inline constexpr float SURFACE_EXTRUCTION_SPEED_COEF = 1.0f;
+  inline constexpr float CAMERA_DIST_TO_BBOX_COEF = 3.75f;
+  inline constexpr float DEFAULT_Z_VALUE = 1.0f;
+  inline constexpr float BBOX_VIEWPORT_GAP_COEF = 2.0f;
+  inline constexpr float ORTHO_ZOOM_STEP = 0.25f;
+  inline constexpr float FLOOR_BBOX_HEIGHT_COEF = 1.0f;
+  inline constexpr float LIGHT_SOURCE_POS_X = FAR_PLANE_DISTANCE * -0.3f;
+  inline constexpr float LIGHT_SOURCE_POS_Y = FAR_PLANE_DISTANCE * 0.4f;
+  inline constexpr float LIGHT_SOURCE_POS_Z = FAR_PLANE_DISTANCE * 0.6f;
+  inline constexpr float ARCBALL_SENSITIVITY = 0.01f;
+  inline constexpr float SHADOW_BIAS = 0.00025f;
+  inline constexpr float POINT_LIGHT_BBOX_Y_COEF = 0.2f;
+  inline constexpr float POINT_LIGHT_RADIUS = 1.0f;
+  inline constexpr float ANISOTROPIC_FILTERING_LEVEL = 8.0f;
   inline const std::string WINDOW_TITLE = "Mesh Editor";
 
-  constexpr bool DEBUG_RENDER = true;
+  inline constexpr bool DEBUG_RENDER = true;
 
-  const std::string SHADOW_MAP_VERTEX_SHADER_PATH =
+  inline const std::string SHADOW_MAP_VERTEX_SHADER_PATH =
     R"(./RenderSystem/Shaders/ShadowMapShader.vert)";
-  const std::string SHADOW_MAP_FRAGMENT_SHADER_PATH =
+  inline const std::string SHADOW_MAP_FRAGMENT_SHADER_PATH =
     R"(./RenderSystem/Shaders/ShadowMapShader.frag)";
-  const std::string TAA_DEPTH_MAP_VERTEX_SHADER_PATH =
+  inline const std::string TAA_DEPTH_MAP_VERTEX_SHADER_PATH =
     R"(./RenderSystem/Shaders/TAADepthMapShader.vert)";
-  const std::string TAA_DEPTH_MAP_FRAGMENT_SHADER_PATH =
+  inline const std::string TAA_DEPTH_MAP_FRAGMENT_SHADER_PATH =
     R"(./RenderSystem/Shaders/TAADepthMapShader.frag)";
-  const std::string TAA_MOTION_VECTORS_VERTEX_SHADER_PATH =
+  inline const std::string TAA_MOTION_VECTORS_VERTEX_SHADER_PATH =
     R"(./RenderSystem/Shaders/TAAMotionVectorsShader.vert)";
-  const std::string TAA_MOTION_VECTORS_FRAGMENT_SHADER_PATH =
+  inline const std::string TAA_MOTION_VECTORS_FRAGMENT_SHADER_PATH =
     R"(./RenderSystem/Shaders/TAAMotionVectorsShader.frag)";
-  const std::string TAA_RESOLVE_VERTEX_SHADER_PATH =
+  inline const std::string TAA_RESOLVE_VERTEX_SHADER_PATH =
     R"(./RenderSystem/Shaders/TAAResolveShader.vert)";
-  const std::string TAA_RESOLVE_FRAGMENT_SHADER_PATH =
+  inline const std::string TAA_RESOLVE_FRAGMENT_SHADER_PATH =
     R"(./RenderSystem/Shaders/TAAResolveShader.frag)";
-  const std::string BLINN_PHONG_VERTEX_SHADER_PATH =
+  inline const std::string BLINN_PHONG_VERTEX_SHADER_PATH =
     R"(./RenderSystem/Shaders/BlinnPhongShader.vert)";
-  const std::string BLINN_PHONG_FRAGMENT_SHADER_PATH =
+  inline const std::string BLINN_PHONG_FRAGMENT_SHADER_PATH =
     R"(./RenderSystem/Shaders/BlinnPhongShader.frag)";
-  const std::string PBR_VERTEX_SHADER_PATH = R"(./RenderSystem/Shaders/PBRShader.vert)";
-  const std::string PBR_FRAGMENT_SHADER_PATH = R"(./RenderSystem/Shaders/PBRShader.frag)";
-  const std::string COLOR_VERTEX_SHADER_PATH = R"(./RenderSystem/Shaders/ColorShader.vert)";
-  const std::string COLOR_FRAGMENT_SHADER_PATH = R"(./RenderSystem/Shaders/ColorShader.frag)";
-  const std::string GLASS_VERTEX_SHADER_PATH =
+  inline const std::string PBR_VERTEX_SHADER_PATH =
+    R"(./RenderSystem/Shaders/PBRShader.vert)";
+  inline const std::string PBR_FRAGMENT_SHADER_PATH =
+    R"(./RenderSystem/Shaders/PBRShader.frag)";
+  inline const std::string POINT_CLOUD_VERTEX_SHADER_PATH =
+    R"(./RenderSystem/Shaders/PointCloudShader.vert)";
+  inline const std::string POINT_CLOUD_FRAGMENT_SHADER_PATH =
+    R"(./RenderSystem/Shaders/PointCloudShader.frag)";
+  inline const std::string COLOR_VERTEX_SHADER_PATH =
+    R"(./RenderSystem/Shaders/ColorShader.vert)";
+  inline const std::string COLOR_FRAGMENT_SHADER_PATH =
+    R"(./RenderSystem/Shaders/ColorShader.frag)";
+  inline const std::string GLASS_VERTEX_SHADER_PATH =
     R"(./RenderSystem/Shaders/GlassShader.vert)";
-  const std::string GLASS_FRAGMENT_SHADER_PATH =
+  inline const std::string GLASS_FRAGMENT_SHADER_PATH =
     R"(./RenderSystem/Shaders/GlassShader.frag)";
-  const std::string SHADOW_VERTEX_SHADER_PATH =
+  inline const std::string SHADOW_VERTEX_SHADER_PATH =
     R"(./RenderSystem/Shaders/ShadowShader.vert)";
-  const std::string SHADOW_FRAGMENT_SHADER_PATH =
+  inline const std::string SHADOW_FRAGMENT_SHADER_PATH =
     R"(./RenderSystem/Shaders/ShadowShader.frag)";
-  const std::string SCREEN_VERTEX_SHADER_PATH =
+  inline const std::string SCREEN_VERTEX_SHADER_PATH =
     R"(./RenderSystem/Shaders/ScreenShader.vert)";
-  const std::string SCREEN_FRAGMENT_SHADER_PATH =
+  inline const std::string SCREEN_FRAGMENT_SHADER_PATH =
     R"(./RenderSystem/Shaders/ScreenShader.frag)";
-  const std::filesystem::path SKYBOX_VERTEX_SHADER_PATH =
+  inline const std::filesystem::path SKYBOX_VERTEX_SHADER_PATH =
     R"(./RenderSystem/Shaders/SkyboxShader.vert)";
-  const std::filesystem::path SKYBOX_FRAGMENT_SHADER_PATH =
+  inline const std::filesystem::path SKYBOX_FRAGMENT_SHADER_PATH =
     R"(./RenderSystem/Shaders/SkyboxShader.frag)";
-  const std::filesystem::path PARTICLES_VERTEX_SHADER_PATH =
+  inline const std::filesystem::path PARTICLES_VERTEX_SHADER_PATH =
     R"(./RenderSystem/Shaders/ParticlesShader.vert)";
-  const std::filesystem::path PARTICLES_FRAGMENT_SHADER_PATH =
+  inline const std::filesystem::path PARTICLES_FRAGMENT_SHADER_PATH =
     R"(./RenderSystem/Shaders/ParticlesShader.frag)";
-  const std::filesystem::path WATER_VERTEX_SHADER_PATH =
+  inline const std::filesystem::path WATER_VERTEX_SHADER_PATH =
     R"(./RenderSystem/Shaders/WaterShader.vert)";
-  const std::filesystem::path WATER_FRAGMENT_SHADER_PATH =
+  inline const std::filesystem::path WATER_FRAGMENT_SHADER_PATH =
     R"(./RenderSystem/Shaders/WaterShader.frag)";
-  const std::array<std::filesystem::path, 6> SKYBOX_CUBEMAP_TEXTURES = {
+  inline const std::array<std::filesystem::path, 6> SKYBOX_CUBEMAP_TEXTURES = {
     R"(./ThirdParty/resources/textures/skybox/right.png)",
     R"(./ThirdParty/resources/textures/skybox/left.png)",
     R"(./ThirdParty/resources/textures/skybox/top.png)",
@@ -160,35 +170,39 @@ namespace RenderSystem
     R"(./ThirdParty/resources/textures/skybox/front.png)",
     R"(./ThirdParty/resources/textures/skybox/back.png)",
   };
-  const std::string FLOOR_MESH_PATH = R"(./ThirdParty/Models/Floor/Obj/Floor.obj)";
-  const std::string FIRE_FLIPBOOK_PATH =
+  inline const std::string FLOOR_MESH_PATH = R"(./ThirdParty/Models/Floor/Obj/Floor.obj)";
+  inline const std::string FIRE_FLIPBOOK_PATH =
     R"(./ThirdParty/resources/textures/fire/FireFlipbook.png)";
-  const std::string WATER_NORMAL_MAP_PATH =
+  inline const std::string WATER_NORMAL_MAP_PATH =
     R"(./ThirdParty/resources/textures/water/NormalMap.jpg)";
 
-  constexpr int SAMPLE_COUNT_TAA = 8;
+  inline constexpr int SAMPLE_COUNT_TAA = 8;
 
-  const auto DIR_LIGHT_POS =
+  inline constexpr auto DIR_LIGHT_POS =
     glm::vec3(LIGHT_SOURCE_POS_X, LIGHT_SOURCE_POS_Y, LIGHT_SOURCE_POS_Z);
 
-  const std::vector<float> SCREEN_QUAD_VERTICES = {-1.0f, -1.0f, 0.0f,  0.0f, 1.0f, -1.0f,
-                                                   1.0f,  0.0f,  -1.0f, 1.0f, 0.0f, 1.0f,
-                                                   -1.0f, 1.0f,  0.0f,  1.0f, 1.0f, -1.0f,
-                                                   1.0f,  0.0f,  1.0f,  1.0f, 1.0f, 1.0f};
+  inline const std::vector<float> SCREEN_QUAD_VERTICES = {
+    -1.0f, -1.0f, 0.0f, 0.0f, 1.0f, -1.0f, 1.0f, 0.0f, -1.0f, 1.0f, 0.0f, 1.0f,
+    -1.0f, 1.0f,  0.0f, 1.0f, 1.0f, -1.0f, 1.0f, 0.0f, 1.0f,  1.0f, 1.0f, 1.0f
+  };
 
-  const std::vector<float> PARTICLE_QUAD_VERTICES = {
+  inline const std::vector<float> PARTICLE_QUAD_VERTICES = {
     -0.5f, -0.5f, 0.0f, 0.0f, 0.5f,  -0.5f, 1.0f, 0.0f, 0.5f,  0.5f,  1.0f, 1.0f,
     0.5f,  0.5f,  1.0f, 1.0f, -0.5f, 0.5f,  0.0f, 1.0f, -0.5f, -0.5f, 0.0f, 0.0f
   };
 
-  constexpr int STL_HEADER_SIZE = 80;
-  const inline std::string DELIMITERS = " ,\t\n/";
-  const std::unordered_set<std::string> SUPPORTED_TEXTURE_EXTENSIONS = {
+  inline constexpr int STL_HEADER_SIZE = 80;
+  inline const std::string DELIMITERS = " ,\t\n/";
+  inline const std::unordered_set<std::string> SUPPORTED_TEXTURE_EXTENSIONS = {
     ".png", ".jpg", ".jpeg", ".bmp", ".tga"
   };
-  constexpr size_t MAX_PARTICLES = 1000;
-  constexpr size_t MIN_PARTICLES = 1;
-  constexpr float PARTICLES_PER_SECOND = 200.0f;
+  inline constexpr size_t MAX_PARTICLES = 1000;
+  inline constexpr size_t MIN_PARTICLES = 1;
+  inline constexpr float PARTICLES_PER_SECOND = 200.0f;
 
-  const glm::vec3 WATER_COLOR = {0.0f, 0.0f, 1.0f};
+  inline constexpr glm::vec3 WATER_COLOR = {0.0f, 0.0f, 1.0f};
+
+  inline constexpr float CLOUD_POINT_SCALE = 2000.0f;
+  inline constexpr float CLOUD_POINT_MIN_SIZE = 1.0f;
+  inline constexpr float CLOUD_POINT_MAX_SIZE = 5.0f;
 }  // namespace RenderSystem

@@ -136,6 +136,8 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <None Include="Shaders\ParticlesShader.vert" />
     <None Include="Shaders\PBRShader.frag" />
     <None Include="Shaders\PBRShader.vert" />
+    <None Include="Shaders\PointCloudShader.frag" />
+    <None Include="Shaders\PointCloudShader.vert" />
     <None Include="Shaders\ScreenShader.frag" />
     <None Include="Shaders\ScreenShader.vert" />
     <None Include="Shaders\ShadowShader.frag" />
@@ -182,6 +184,7 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <ClCompile Include="RenderSystem\ParticlesShaderProgram.cpp" />
     <ClCompile Include="RenderSystem\PBRShaderProgram.cpp" />
     <ClCompile Include="RenderSystem\PLYModelLoader.cpp" />
+    <ClCompile Include="RenderSystem\PointCloudShaderProgram.cpp" />
     <ClCompile Include="RenderSystem\SceneDecorationsController.cpp" />
     <ClCompile Include="RenderSystem\StaticQuadRenderBuffer.cpp" />
     <ClCompile Include="RenderSystem\ScreenShaderProgram.cpp" />
@@ -269,6 +272,7 @@ xcopy /E /I /Y "$(SolutionDir)ThirdParty\resources" "$(OutDir)ThirdParty\resourc
     <ClInclude Include="RenderSystem\ParticlesShaderProgram.h" />
     <ClInclude Include="RenderSystem\PBRShaderProgram.h" />
     <ClInclude Include="RenderSystem\PLYModelLoader.h" />
+    <ClInclude Include="RenderSystem\PointCloudShaderProgram.h" />
     <ClInclude Include="RenderSystem\SceneDecorationsController.h" />
     <ClInclude Include="RenderSystem\StaticQuadRenderBuffer.h" />
     <ClInclude Include="RenderSystem\ScreenShaderProgram.h" />
