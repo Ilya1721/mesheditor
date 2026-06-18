@@ -58,7 +58,7 @@ namespace RenderSystem
     glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.1f, 0.1f, 0.1f)
   };
 
-  inline constexpr glm::vec3 PBR_LIGHT_COLOR(1.0f, 1.0f, 1.0f);
+  inline constexpr glm::vec3 LIGHT_COLOR(1.0f, 1.0f, 1.0f);
 
   inline constexpr PointLightParams POINT_LIGHT_PARAMS {
     glm::vec3(1.0f, 1.0f, 1.0f),

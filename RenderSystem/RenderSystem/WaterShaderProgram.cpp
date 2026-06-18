@@ -56,8 +56,12 @@ namespace RenderSystem
     mFresnelPower = getUniformLocation("fresnelPower");
     mReflectionIntensity = getUniformLocation("reflectionIntensity");
     mCameraPos = getUniformLocation("cameraPos");
+    mLightPos = getUniformLocation("lightPos");
+    mLightColor = getUniformLocation("lightColor");
     mDeepColor = getUniformLocation("deepColor");
     mShallowColor = getUniformLocation("shallowColor");
+    mMinFresnel = getUniformLocation("minFresnel");
+    mShininess = getUniformLocation("shininess");
   }
 
   void WaterShaderProgram::setModel(const glm::mat4& model) const
@@ -80,6 +84,8 @@ namespace RenderSystem
     glUniform1f(mDepthFalloff, waterMaterial.depthFalloff);
     glUniform1f(mFresnelPower, waterMaterial.fresnelPower);
     glUniform1f(mReflectionIntensity, waterMaterial.reflectionIntensity);
+    glUniform1f(mMinFresnel, waterMaterial.minFresnel);
+    glUniform1f(mShininess, waterMaterial.shininess);
     glUniform3fv(mDeepColor, 1, glm::value_ptr(waterMaterial.deepColor));
     glUniform3fv(mShallowColor, 1, glm::value_ptr(waterMaterial.shallowColor));
   }
@@ -143,5 +149,17 @@ namespace RenderSystem
     bind();
     mNormalMapId = texture.getId();
     glUniform1i(mNormalMapLocation, NORMAL_MAP_UNIT);
+  }
+
+  void WaterShaderProgram::setLightPos(const glm::vec3& pos) const
+  {
+    bind();
+    glUniform3fv(mLightPos, 1, glm::value_ptr(pos));
+  }
+
+  void WaterShaderProgram::setLightColor(const glm::vec3& color) const
+  {
+    bind();
+    glUniform3fv(mLightColor, 1, glm::value_ptr(color));
   }
 }

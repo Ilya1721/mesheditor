@@ -63,11 +63,11 @@ namespace RenderSystem
     setDiffuseTexture(blinnPhongMaterial.diffuseTexture.get());
   }
 
-  void BlinnPhongShaderProgram::setDirLightSourcePos(const glm::vec3& lightSourcePos
+  void BlinnPhongShaderProgram::setDirLightPos(const glm::vec3& lightPos
   ) const
   {
     bind();
-    mDirectionalLight.setLightSourcePos(glm::value_ptr(lightSourcePos));
+    mDirectionalLight.setLightSourcePos(glm::value_ptr(lightPos));
   }
 
   void BlinnPhongShaderProgram::setCameraPos(const glm::vec3& cameraPos) const
@@ -110,10 +110,10 @@ namespace RenderSystem
   }
 
   PointLight* BlinnPhongShaderProgram::addPointLight(
-    const PointLightParams& params, const glm::vec3& lightSourcePos
+    const PointLightParams& params, const glm::vec3& lightPos
   )
   {
-    return mPointLights.addLight(params, lightSourcePos);
+    return mPointLights.addLight(params, lightPos);
   }
 
   void BlinnPhongShaderProgram::removePointLight(unsigned int index)

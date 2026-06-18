@@ -137,6 +137,8 @@ namespace RenderSystem
     float depthFalloff {};
     float reflectionIntensity {};
     float normalStrength {};
+    float minFresnel {};
+    float shininess {};
     glm::vec3 shallowColor;
     glm::vec3 deepColor;
     std::vector<glm::vec2> normalMapMoves;

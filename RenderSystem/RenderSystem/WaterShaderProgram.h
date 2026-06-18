@@ -28,6 +28,8 @@ namespace RenderSystem
     void setFTime(float time) const;
     void setSkyboxCubemap(const CubemapTexture& texture) const;
     void setNormalMap(const Texture2D& texture) const;
+    void setLightPos(const glm::vec3& pos) const;
+    void setLightColor(const glm::vec3& color) const;
 
    private:
     void initUniformLocations();
@@ -54,7 +56,11 @@ namespace RenderSystem
     int mFresnelPower;
     int mReflectionIntensity;
     int mCameraPos;
+    int mLightPos;
+    int mLightColor;
     int mDeepColor;
     int mShallowColor;
+    int mMinFresnel;
+    int mShininess;
   };
 }

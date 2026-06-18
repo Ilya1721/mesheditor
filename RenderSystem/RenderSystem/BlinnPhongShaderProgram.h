@@ -25,9 +25,9 @@ namespace RenderSystem
 
     void setProjection(const glm::mat4& projection) const;
     void setDirLightParams(const DirectionalLightParams& light) const;
-    void setDirLightSourcePos(const glm::vec3& pos) const;
+    void setDirLightPos(const glm::vec3& pos) const;
     PointLight* addPointLight(
-      const PointLightParams& params, const glm::vec3& lightSourcePos
+      const PointLightParams& params, const glm::vec3& lightPos
     );
     void removePointLight(unsigned int index);
 

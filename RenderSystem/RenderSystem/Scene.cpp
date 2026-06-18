@@ -89,7 +89,8 @@ namespace RenderSystem
     mSkyboxShaderProgram->setSkyboxCubemap(*mSkyboxTexture);
     mWaterShaderProgram->setNormalMap(*mWaterNormalMap);
     mBlinnPhongShaderProgram->setDirLightParams(DIR_LIGHT_PARAMS);
-    mPBRShaderProgram->setLightColor(PBR_LIGHT_COLOR);
+    mPBRShaderProgram->setLightColor(LIGHT_COLOR);
+    mWaterShaderProgram->setLightColor(LIGHT_COLOR);
     mShadowShaderProgram->setShadowBias(SHADOW_BIAS);
     mPointCloudShaderProgram->setPointScale(CLOUD_POINT_SCALE);
     mPointCloudShaderProgram->setMinPointSize(CLOUD_POINT_MIN_SIZE);
@@ -300,9 +301,10 @@ namespace RenderSystem
 
   void Scene::initDirLight()
   {
-    mBlinnPhongShaderProgram->setDirLightSourcePos(DIR_LIGHT_POS);
+    mBlinnPhongShaderProgram->setDirLightPos(DIR_LIGHT_POS);
     mPBRShaderProgram->setLightPos(DIR_LIGHT_POS);
     mPointCloudShaderProgram->setLightPos(DIR_LIGHT_POS);
+    mWaterShaderProgram->setLightPos(DIR_LIGHT_POS);
     const auto& lightViewMatrix = glm::lookAt(
       DIR_LIGHT_POS, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)
     );

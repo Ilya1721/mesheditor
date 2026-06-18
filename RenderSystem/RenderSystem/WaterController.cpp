@@ -56,6 +56,8 @@ namespace RenderSystem
     mWaterMaterial.depthFalloff = 0.05f;
     mWaterMaterial.reflectionIntensity = 0.75f;
     mWaterMaterial.normalStrength = 0.75f;
+    mWaterMaterial.minFresnel = 0.3f;
+    mWaterMaterial.shininess = 256.0f;
     mWaterMaterial.shallowColor = glm::vec3(0.0f, 0.8f, 0.7f);
     mWaterMaterial.deepColor = glm::vec3(0.0f, 0.2f, 0.5f);
     mWaterMaterial.normalMapMoves.emplace_back(0.05f, 0.02f);
