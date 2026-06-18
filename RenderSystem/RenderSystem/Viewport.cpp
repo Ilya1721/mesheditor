@@ -11,7 +11,7 @@
 
 namespace RenderSystem
 {
-  Viewport::Viewport(int width, int height, const MeshCore::AABBox* rootBBox)
+  Viewport::Viewport(int width, int height)
     : mFov(FOV),
       mNearPlaneDistance(NEAR_PLANE_DISTANCE),
       mFarPlaneDistance(FAR_PLANE_DISTANCE),
@@ -20,20 +20,19 @@ namespace RenderSystem
       mHeight(height),
       mProjectionType(PROJECTION_TYPE::PERSPECTIVE),
       mProjectionMatrix(1.0f),
-      mRootBBox(rootBBox),
-      mBBoxViewportGapCoef(BBOX_VIEWPORT_GAP_COEF)
+      mRootBBox(nullptr),
+      mOrthoZoomFactor(1.0f)
   {
   }
 
   glm::mat4 Viewport::createProjectionMatrix() const
   {
-    auto aspectRatio = mWidth / mHeight;
+    auto aspectRatio = mWidth / static_cast<float>(mHeight);
 
     if (mProjectionType == PROJECTION_TYPE::ORTHOGRAPHIC)
     {
-      float height = mRootBBox->getHeight();
-      float width = height * aspectRatio;
-
+      float height = mRootBBox->getHeight() * mOrthoZoomFactor;
+      float width = height * aspectRatio * mOrthoZoomFactor;
       return glm::ortho(
         -width, width, -height, height, mNearPlaneDistance, mFarPlaneDistance
       );
@@ -49,6 +48,11 @@ namespace RenderSystem
     action();
     mProjectionMatrix = createProjectionMatrix();
     mViewportChangedCallbacks.invokeCallbacks();
+  }
+
+  void Viewport::setRootBBox(const MeshCore::AABBox* bbox)
+  {
+    mRootBBox = bbox;
   }
 
   void Viewport::setProjectionType(PROJECTION_TYPE projectionType)
@@ -70,7 +74,7 @@ namespace RenderSystem
 
   void Viewport::zoom(float step)
   {
-    invokeEditOperation([this, &step]() { mBBoxViewportGapCoef += step; });
+    invokeEditOperation([this, &step]() { mOrthoZoomFactor += step; });
   }
 
   void Viewport::addOnViewportChangedCallback(
@@ -105,12 +109,17 @@ namespace RenderSystem
     return mFarPlaneDistance;
   }
 
-  float Viewport::getWidth() const
+  int Viewport::getWidth() const
   {
     return mWidth;
   }
 
-  float Viewport::getHeight() const
+  float Viewport::getAspectRatio() const
+  {
+    return mWidth / static_cast<float>(mHeight);
+  }
+
+  int Viewport::getHeight() const
   {
     return mHeight;
   }

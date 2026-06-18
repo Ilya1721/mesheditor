@@ -24,10 +24,11 @@ namespace RenderSystem
   class MeshRenderData : public RenderData
   {
    public:
-    int getVertexCount() const;
+    size_t getVertexCount() const;
 
     void append(const MeshRenderData& renderData);
     void append(const Vertex& vertex);
+    void append(const std::vector<Vertex>& vertices);
     void updateVertex(const OriginalVertexData& vertexData, int startVertexOffset);
 
     static MeshRenderData generateRenderData(

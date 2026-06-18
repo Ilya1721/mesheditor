@@ -7,6 +7,7 @@ in vec2 vertexUV;
 uniform vec3 dirLightPos;
 uniform vec3 cameraPos;
 uniform sampler2D diffuseTexture;
+uniform bool hasDiffuseTexture = false;
 
 struct BlinnPhongMaterial 
 {
@@ -14,7 +15,6 @@ struct BlinnPhongMaterial
   vec3 diffuse;
   vec3 specular;
   float shininess;
-  bool hasDiffuseTexture;
 };
 
 uniform BlinnPhongMaterial material;
@@ -70,7 +70,7 @@ vec3 blinnPhongDirectional()
   vec3 ambient = lightAmbient * material.ambient;
   vec3 pixelColor = ambient + diffuse + specular;
 
-  if (material.hasDiffuseTexture)
+  if (hasDiffuseTexture)
   {
     pixelColor *= texture(diffuseTexture, vertexUV).rgb;
   } 

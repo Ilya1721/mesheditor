@@ -5,45 +5,39 @@
 #include <glm/gtx/transform.hpp>
 
 #include "Constants.h"
-#include "ExtraRenderModesController.h"
 #include "GeometryCore/Ray.h"
 #include "MeshCore/Intersection.h"
 #include "MeshCore/MeshFactory.h"
 #include "ModelLoader.h"
 #include "PointLightObject3D.h"
-#include "Renderer.h"
-#include "SkyboxController.h"
 #include "TAAController.h"
+#include "TextureFactory.h"
 #include "Viewport.h"
 
 using namespace GeometryCore;
 
 namespace RenderSystem
 {
-  const BlinnPhongMaterial& FLOOR_MATERIAL = PEARL_MATERIAL;
-  const BlinnPhongMaterial& HIGHLIGHT_MATERIAL = RUBY_MATERIAL;
-  const BlinnPhongMaterial& WIREFRAME_MATERIAL = BLACK_MATERIAL;
-}  // namespace RenderSystem
-
-namespace RenderSystem
-{
-  Scene::Scene(const std::string& meshFilePath, float aspectRatio)
-    : mPickedObject(nullptr), mModelObject(nullptr), mAspectRatio(aspectRatio)
+  Scene::Scene(const Viewport* viewport, const std::string& meshFilePath)
+    : mPickedObject(nullptr),
+      mModelObject(nullptr),
+      mHighlightedObject(nullptr),
+      mRenderWireframe(false),
+      mViewport(viewport)
   {
-    mRenderer = std::make_unique<Renderer>();
     mCamera = std::make_unique<Camera>();
     init(meshFilePath);
   }
 
   void Scene::init(const std::string& meshFilePath)
   {
+    initTextures();
     initShaders();
     initControllers();
     initListeners();
     initSceneObjects(meshFilePath);
     initDirLight();
-    initParticles();
-    initWater();
+    setupRenderingSettings();
   }
 
   void Scene::initShaders()
@@ -60,6 +54,18 @@ namespace RenderSystem
     mShadowShaderProgram = std::make_unique<ShadowShaderProgram>(
       SHADOW_VERTEX_SHADER_PATH, SHADOW_FRAGMENT_SHADER_PATH
     );
+    mShadowMapShaderProgram = std::make_unique<ShadowMapShaderProgram>(
+      SHADOW_MAP_VERTEX_SHADER_PATH, SHADOW_MAP_FRAGMENT_SHADER_PATH
+    );
+    mTAADepthMapShaderProgram = std::make_unique<TAADepthMapShaderProgram>(
+      TAA_DEPTH_MAP_VERTEX_SHADER_PATH, TAA_DEPTH_MAP_FRAGMENT_SHADER_PATH
+    );
+    mTAAMotionVectorsShaderProgram = std::make_unique<TAAMotionVectorsShaderProgram>(
+      TAA_MOTION_VECTORS_VERTEX_SHADER_PATH, TAA_MOTION_VECTORS_FRAGMENT_SHADER_PATH
+    );
+    mTAAResolveShaderProgram = std::make_unique<TAAResolveShaderProgram>(
+      TAA_RESOLVE_VERTEX_SHADER_PATH, TAA_RESOLVE_FRAGMENT_SHADER_PATH
+    );
     mScreenShaderProgram = std::make_unique<ScreenShaderProgram>(
       SCREEN_VERTEX_SHADER_PATH, SCREEN_FRAGMENT_SHADER_PATH
     );
@@ -75,32 +81,27 @@ namespace RenderSystem
     mPointCloudShaderProgram = std::make_unique<PointCloudShaderProgram>(
       POINT_CLOUD_VERTEX_SHADER_PATH, POINT_CLOUD_FRAGMENT_SHADER_PATH
     );
+    mSkyboxShaderProgram = std::make_unique<SkyboxShaderProgram>(
+      SKYBOX_VERTEX_SHADER_PATH, SKYBOX_FRAGMENT_SHADER_PATH
+    );
+    mGlassShaderProgram->setSkyboxCubemap(*mSkyboxTexture);
+    mWaterShaderProgram->setSkyboxCubemap(*mSkyboxTexture);
+    mSkyboxShaderProgram->setSkyboxCubemap(*mSkyboxTexture);
+    mWaterShaderProgram->setNormalMap(*mWaterNormalMap);
     mBlinnPhongShaderProgram->setDirLightParams(DIR_LIGHT_PARAMS);
     mPBRShaderProgram->setLightColor(PBR_LIGHT_COLOR);
     mShadowShaderProgram->setShadowBias(SHADOW_BIAS);
     mPointCloudShaderProgram->setPointScale(CLOUD_POINT_SCALE);
     mPointCloudShaderProgram->setMinPointSize(CLOUD_POINT_MIN_SIZE);
     mPointCloudShaderProgram->setMaxPointSize(CLOUD_POINT_MAX_SIZE);
+    mParticlesShaderProgram->setFlipbookTexture(*mParticlesFlipbook);
+    mParticlesShaderProgram->setFlipbookRows(FLIPBOOK_ROWS);
+    mParticlesShaderProgram->setFlipbookCols(FLIPBOOK_COLS);
   }
 
   void Scene::initControllers()
   {
-    mShadowMapController = std::make_unique<ShadowMapController>(
-      SHADOW_MAP_VERTEX_SHADER_PATH, SHADOW_MAP_FRAGMENT_SHADER_PATH
-    );
-    mSkyboxController = std::make_unique<SkyboxController>(
-      SKYBOX_VERTEX_SHADER_PATH, SKYBOX_FRAGMENT_SHADER_PATH, SKYBOX_CUBEMAP_TEXTURES
-    );
-    mTAAController = std::make_unique<TAAController>(
-      TAA_DEPTH_MAP_VERTEX_SHADER_PATH, TAA_DEPTH_MAP_FRAGMENT_SHADER_PATH,
-      TAA_MOTION_VECTORS_VERTEX_SHADER_PATH, TAA_MOTION_VECTORS_FRAGMENT_SHADER_PATH,
-      TAA_RESOLVE_VERTEX_SHADER_PATH, TAA_RESOLVE_FRAGMENT_SHADER_PATH
-    );
-    mDecorationsController =
-      std::make_unique<SceneDecorationsController>(mRenderer.get());
-    mExtraRenderModesController = std::make_unique<ExtraRenderModesController>(
-      mRenderer.get(), &mSceneObjectVertexOffsetMap
-    );
+    mTAAController = std::make_unique<TAAController>();
     mAnimationController = std::make_unique<AnimationController>();
     mParticlesController = std::make_unique<ParticlesController>();
     mWaterController = std::make_unique<WaterController>();
@@ -111,7 +112,8 @@ namespace RenderSystem
     registerRootObjectCallbacks();
     addModelObject(meshFilePath);
     addFloorAsObject();
-    initRenderer();
+    initRenderBuffers();
+    initRenderers();
   }
 
   void Scene::initListeners()
@@ -120,17 +122,17 @@ namespace RenderSystem
     registerListenersCallbacks();
   }
 
-  void Scene::onCameraPosChanged()
+  void Scene::onCameraChanged()
   {
     for (auto& listener : mCameraListeners)
     {
-      listener->onCameraPosChanged(mCamera.get());
+      listener->onCameraChanged(mCamera.get());
     }
   }
 
   void Scene::registerListenersCallbacks()
   {
-    mCamera->addOnCameraPosChangedCallback([this]() { onCameraPosChanged(); });
+    mCamera->addOnCameraChangedCallback([this]() { onCameraChanged(); });
   }
 
   void Scene::addCameraListeners()
@@ -138,18 +140,154 @@ namespace RenderSystem
     mCameraListeners.insert(
       mCameraListeners.end(),
       std::initializer_list<CameraListener*> {
-        mBlinnPhongShaderProgram.get(), mPBRShaderProgram.get(), mSkyboxController.get(),
+        mBlinnPhongShaderProgram.get(), mPBRShaderProgram.get(),
         mGlassShaderProgram.get(), mShadowShaderProgram.get(),
         mParticlesShaderProgram.get(), mWaterShaderProgram.get(),
-        mColorShaderProgram.get(), mPointCloudShaderProgram.get()
+        mColorShaderProgram.get(), mPointCloudShaderProgram.get(),
+        mSkyboxShaderProgram.get(), mTAADepthMapShaderProgram.get()
       }
     );
   }
 
-  void Scene::renderFinalScreenTexture(const Texture2D& texture)
+  void Scene::addObjectRenderers(const Object3D* object)
   {
-    mScreenShaderProgram->setTexture(texture);
-    mScreenShaderProgram->invoke([this]() { mRenderer->renderScreenQuad(); });
+    addObjectMaterialRenderers(object);
+    addObjectShadowRenderers(object);
+    addObjectTAARenderers(object);
+    addObjectMiscRenderers(object);
+  }
+
+  void Scene::addObjectMaterialRenderers(const Object3D* object)
+  {
+    const auto createMaterialRenderer =
+      [this, object]<typename RendererType>(const ShaderProgram* shaderProgram)
+    {
+      return std::make_unique<RendererType>(
+        &mModelRenderBuffer, &mOffScreenFrameBufferObject, shaderProgram, object,
+        mModelRenderData.getVertexCount()
+      );
+    };
+
+    std::unique_ptr<Object3DRenderer> objectRenderer;
+    const auto& material = object->getMaterial();
+    if (dynamic_cast<const BlinnPhongMaterial*>(&material))
+    {
+      objectRenderer = createMaterialRenderer.operator(
+      )<Object3DRenderer>(mBlinnPhongShaderProgram.get());
+    }
+    else if (dynamic_cast<const PBRMaterial*>(&material))
+    {
+      objectRenderer =
+        createMaterialRenderer.operator()<Object3DRenderer>(mPBRShaderProgram.get());
+    }
+    else if (dynamic_cast<const GlassMaterial*>(&material))
+    {
+      objectRenderer =
+        createMaterialRenderer.operator()<ObjectGlassRenderer>(mGlassShaderProgram.get());
+    }
+    else if (dynamic_cast<const PointCloudMaterial*>(&material))
+    {
+      objectRenderer = createMaterialRenderer.operator(
+      )<Object3DRenderer>(mPointCloudShaderProgram.get());
+    }
+
+    mObjectRendererMap.insert({object, objectRenderer.get()});
+    mObjectRenderers.push_back(std::move(objectRenderer));
+  }
+
+  void Scene::addObjectShadowRenderers(const Object3D* object)
+  {
+    const auto& material = object->getMaterial();
+    if (dynamic_cast<const PointCloudMaterial*>(&material))
+    {
+      return;
+    }
+
+    const auto createShadowRenderer =
+      [this, object]<typename RendererType>(const ShaderProgram* shaderProgram)
+    {
+      return std::make_unique<RendererType>(
+        &mModelRenderBuffer, &mOffScreenFrameBufferObject, shaderProgram, object,
+        mModelRenderData.getVertexCount()
+      );
+    };
+
+    auto shadowRenderer =
+      createShadowRenderer.operator()<ObjectShadowRenderer>(mShadowShaderProgram.get());
+    mShadowRenderers.push_back(std::move(shadowRenderer));
+    auto shadowMapRenderer =
+      createShadowRenderer.operator()<Object3DRenderer>(mShadowMapShaderProgram.get());
+    mShadowMapRenderers.push_back(std::move(shadowMapRenderer));
+  }
+
+  void Scene::addObjectTAARenderers(const Object3D* object)
+  {
+    const auto createTAARenderer =
+      [this, object]<typename RendererType>(const ShaderProgram* shaderProgram)
+    {
+      return std::make_unique<RendererType>(
+        &mModelRenderBuffer, &mOffScreenFrameBufferObject, shaderProgram, object,
+        mModelRenderData.getVertexCount()
+      );
+    };
+
+    auto motionVectorsRenderer = createTAARenderer.operator(
+    )<ObjectMotionVectorsRenderer>(mTAAMotionVectorsShaderProgram.get());
+    mMotionVectorsRenderers.push_back(std::move(motionVectorsRenderer));
+    auto depthMapRenderer =
+      createTAARenderer.operator()<Object3DRenderer>(mTAADepthMapShaderProgram.get());
+    mTAADepthMapRenderers.push_back(std::move(depthMapRenderer));
+  }
+
+  void Scene::addObjectMiscRenderers(const Object3D* object)
+  {
+    const auto createMiscRenderer =
+      [this, object]<typename RendererType>(const ShaderProgram* shaderProgram)
+    {
+      return std::make_unique<RendererType>(
+        &mModelRenderBuffer, &mOffScreenFrameBufferObject, shaderProgram, object,
+        mModelRenderData.getVertexCount()
+      );
+    };
+
+    auto wireframeRenderer = createMiscRenderer.operator(
+    )<ObjectWireframeRenderer>(mBlinnPhongShaderProgram.get());
+    mWireframeRenderers.push_back(std::move(wireframeRenderer));
+    auto highlightRenderer = createMiscRenderer.operator(
+    )<ObjectHighlightRenderer>(mBlinnPhongShaderProgram.get());
+    mObjectHighlightRendererMap.insert({object, std::move(highlightRenderer)});
+    auto faceHighlightRenderer = createMiscRenderer.operator(
+    )<ObjectHighlightRenderer>(mBlinnPhongShaderProgram.get());
+    mFaceHighlightRendererMap.insert({object, std::move(faceHighlightRenderer)});
+  }
+
+  void Scene::addSceneDecoration(std::unique_ptr<Object3D> decoration)
+  {
+    auto object = decoration.get();
+    auto vertexOffset = mDecorationsRenderData.getVertexCount();
+    const auto createObjectRenderer =
+      [this, object, vertexOffset](const ShaderProgram* shaderProgram)
+    {
+      return std::make_unique<Object3DRenderer>(
+        &mDecorationsRenderBuffer, &mOffScreenFrameBufferObject, shaderProgram, object,
+        vertexOffset
+      );
+    };
+
+    const auto& material = decoration->getMaterial();
+    std::unique_ptr<Object3DRenderer> renderer;
+    if (dynamic_cast<const BlinnPhongMaterial*>(&material))
+    {
+      renderer = createObjectRenderer(mBlinnPhongShaderProgram.get());
+    }
+    else if (dynamic_cast<const ColorMaterial*>(&material))
+    {
+      renderer = createObjectRenderer(mColorShaderProgram.get());
+    }
+    mDecorationRenderers.push_back(std::move(renderer));
+    mDecorationsRenderData.append(decoration->getVertices());
+    mDecorationsRenderBuffer.loadRenderData(mDecorationsRenderData);
+    mDecorations.push_back(std::move(decoration));
   }
 
   void Scene::adjustFloor(Object3D* floor)
@@ -168,57 +306,58 @@ namespace RenderSystem
     const auto& lightViewMatrix = glm::lookAt(
       DIR_LIGHT_POS, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)
     );
-    mShadowMapController->setLightView(lightViewMatrix);
+    mShadowMapShaderProgram->setLightView(lightViewMatrix);
     mShadowShaderProgram->setLightView(lightViewMatrix);
   }
 
-  void Scene::initParticles()
+  MeshRenderData Scene::getSkyboxRenderData() const
   {
-    const auto& flipbook = mParticlesController->getFlipbook();
-    mParticlesShaderProgram->setFlipbookCols(flipbook.cols);
-    mParticlesShaderProgram->setFlipbookRows(flipbook.rows);
+    const auto& vertices = MeshCore::createUnitCubeAtOrigin();
+    return MeshRenderData::generateRenderData(vertices);
   }
 
-  void Scene::initWater()
+  MeshRenderData Scene::getWaterRenderData() const
   {
-    const auto& waterBlock = mWaterController->getWaterBlock();
-    mWaterShaderProgram->setWaves(waterBlock.waves);
-    mWaterShaderProgram->setNormalMapMoves(waterBlock.normalMapMoves);
-    mWaterShaderProgram->setNormalStrength(waterBlock.normalStrength);
-    mWaterShaderProgram->setDepthFalloff(waterBlock.depthFalloff);
-    mWaterShaderProgram->setFresnelPower(waterBlock.fresnelPower);
-    mWaterShaderProgram->setReflectionIntensity(waterBlock.reflectionIntensity);
-    mWaterShaderProgram->setDeepColor(waterBlock.deepColor);
-    mWaterShaderProgram->setShallowColor(waterBlock.shallowColor);
+    const auto& vertices = mWaterController->getWaterPlane()->getVertices();
+    return MeshRenderData::generateRenderData(vertices);
   }
 
-  MeshRenderData Scene::getSkyboxRenderData()
+  void Scene::initRenderBuffers()
   {
-    auto skyboxVertices = MeshCore::createUnitCubeAtOrigin();
-    auto renderData = MeshRenderData::generateRenderData(skyboxVertices);
-    return renderData;
+    mSkyboxRenderBuffer.loadRenderData(getSkyboxRenderData());
+    mScreenQuadRenderBuffer.loadRenderData(SCREEN_QUAD_VERTICES);
+    mParticlesRenderBuffer.loadQuadRenderData(PARTICLE_QUAD_VERTICES);
+    mParticlesRenderBuffer.loadParticlesRenderData();
+    mWaterRenderBuffer.loadRenderData(getWaterRenderData());
   }
 
-  ShaderProgram* Scene::getSceneDecorationShader(const SceneDecoration& decoration) const
+  void Scene::initTextures()
   {
-    ShaderProgram* shaderProgram = nullptr;
-    decoration.materialVisitor(
-      [this, &shaderProgram](const BlinnPhongMaterial& material)
-      { shaderProgram = mBlinnPhongShaderProgram.get(); },
-      [this, &shaderProgram](const ColorMaterial& material)
-      { shaderProgram = mColorShaderProgram.get(); }
+    mSkyboxTexture = std::make_shared<CubemapTexture>(SKYBOX_CUBEMAP_TEXTURES);
+    mWaterNormalMap = createImageTexture(WATER_NORMAL_MAP_PATH);
+    mParticlesFlipbook = createImageTexture(FIRE_FLIPBOOK_PATH);
+  }
+
+  void Scene::initRenderers()
+  {
+    mTAAResolveRenderer = std::make_unique<QuadRenderer>(
+      &mScreenQuadRenderBuffer, &mOffScreenFrameBufferObject,
+      mTAAResolveShaderProgram.get()
     );
-
-    return shaderProgram;
-  }
-
-  void Scene::initRenderer()
-  {
-    mRenderer->loadSkyboxRenderData(getSkyboxRenderData());
-    mRenderer->loadScreenQuadRenderData(SCREEN_QUAD_VERTICES);
-    mRenderer->loadParticleQuadRenderData(PARTICLE_QUAD_VERTICES);
-    mRenderer->loadParticlesRenderData();
-    mRenderer->loadWaterRenderData(mWaterController->getPlaneRenderData());
+    mScreenRenderer = std::make_unique<QuadRenderer>(
+      &mScreenQuadRenderBuffer, &mScreenFrameBufferObject, mScreenShaderProgram.get()
+    );
+    mSkyboxRenderer = std::make_unique<SkyboxRenderer>(
+      &mSkyboxRenderBuffer, &mOffScreenFrameBufferObject, mSkyboxShaderProgram.get()
+    );
+    mWaterRenderer = std::make_unique<Object3DRenderer>(
+      &mWaterRenderBuffer, &mOffScreenFrameBufferObject, mWaterShaderProgram.get(),
+      mWaterController->getWaterPlane(), 0
+    );
+    mParticlesRenderer = std::make_unique<ParticlesRenderer>(
+      &mParticlesRenderBuffer, &mOffScreenFrameBufferObject,
+      mParticlesShaderProgram.get(), &mParticlesController->getActiveParticlesIndices()
+    );
   }
 
   void Scene::updateSkinningTransforms(float lastFrameTime)
@@ -226,7 +365,7 @@ namespace RenderSystem
     mAnimationController->updateSkinningTransforms(lastFrameTime);
     const auto& skinningTransforms = mAnimationController->getSkinningTransforms();
     mPBRShaderProgram->setSkinningTransforms(skinningTransforms);
-    mShadowMapController->setSkinningTransforms(skinningTransforms);
+    mShadowMapShaderProgram->setSkinningTransforms(skinningTransforms);
     mShadowShaderProgram->setSkinningTransforms(skinningTransforms);
   }
 
@@ -250,15 +389,18 @@ namespace RenderSystem
     mAnimationController->setObjectToAnimate(object);
     auto useSkinningTransforms = mAnimationController->useSkinningTransforms();
     mPBRShaderProgram->setUseSkinningTransform(useSkinningTransforms);
-    mShadowMapController->setUseSkinningTransform(useSkinningTransforms);
+    mShadowMapShaderProgram->setUseSkinningTransform(useSkinningTransforms);
     mShadowShaderProgram->setUseSkinningTransform(useSkinningTransforms);
   }
 
   void Scene::updateParticles(float lastFrameTime)
   {
-    mParticlesController->update(lastFrameTime);
-    auto renderData = getParticlesRenderData();
-    mRenderer->updateParticlesRenderData(renderData);
+    if (mParticlesController->isGeneratingParticles())
+    {
+      mParticlesController->update(lastFrameTime);
+      auto renderData = getParticlesRenderData();
+      mParticlesRenderBuffer.updateParticlesRenderData(renderData);
+    }
   }
 
   void Scene::startGeneratingParticles(const glm::vec3& point)
@@ -283,17 +425,20 @@ namespace RenderSystem
 
   void Scene::updateWater(float lastFrameTime)
   {
-    mWaterController->updateWater(lastFrameTime);
-    auto currentTime = mWaterController->getCurrentTime();
-    mWaterShaderProgram->setVTime(currentTime);
-    mWaterShaderProgram->setFTime(currentTime);
+    if (mWaterController->isGeneratingWater())
+    {
+      mWaterController->updateWater(lastFrameTime);
+      auto currentTime = mWaterController->getCurrentTime();
+      mWaterShaderProgram->setVTime(currentTime);
+      mWaterShaderProgram->setFTime(currentTime);
+    }
   }
 
   void Scene::startGeneratingWater(const glm::vec3& pos)
   {
     mWaterController->startGeneratingWater();
     auto model = glm::translate(glm::mat4(1.0f), pos);
-    mWaterShaderProgram->setModel(model);
+    mWaterController->updateWaterPlaneTransform(model);
   }
 
   void Scene::stopGeneratingWater()
@@ -301,67 +446,30 @@ namespace RenderSystem
     mWaterController->stopGeneratingWater();
   }
 
-  void Scene::setBlinnPhongMaterial(const BlinnPhongMaterial& material)
+  void Scene::setJitteredProjectionToShaders()
   {
-    mBlinnPhongShaderProgram->setAmbient(material.ambient);
-    mBlinnPhongShaderProgram->setDiffuse(material.diffuse.rgb);
-    mBlinnPhongShaderProgram->setDiffuseTexture(material.diffuse.texture.get());
-    mBlinnPhongShaderProgram->setSpecular(material.specular);
-    mBlinnPhongShaderProgram->setShininess(material.shininess);
-  }
-
-  void Scene::setGlassMaterial(const GlassMaterial& material)
-  {
-    mGlassShaderProgram->setColor(material.color);
-    mGlassShaderProgram->setInterpolationFactor(material.interpolationFactor);
-    mGlassShaderProgram->setReflectionStrength(material.reflectionStrength);
-    mGlassShaderProgram->setRefractiveIndex(material.refractiveIndex);
-    mGlassShaderProgram->setTransparency(material.transparency);
-    mGlassShaderProgram->setSkyboxCubemap(mSkyboxController->getCubemapTexture());
-  }
-
-  void Scene::setPBRMaterial(const PBRMaterial& material)
-  {
-    if (material.baseColorTexture)
-    {
-      mPBRShaderProgram->setBaseColorTexture(*material.baseColorTexture);
-    }
-    if (material.normalMap)
-    {
-      mPBRShaderProgram->setNormalTexture(*material.normalMap);
-    }
-    if (material.metallicRougnessTexture)
-    {
-      mPBRShaderProgram->setMetallicRoughnessTexture(*material.metallicRougnessTexture);
-    }
-    mPBRShaderProgram->setBaseColor(material.baseColor);
-    mPBRShaderProgram->setMetallic(material.metallic);
-    mPBRShaderProgram->setRougness(material.rougness);
-  }
-
-  void Scene::setColorMaterial(const ColorMaterial& material)
-  {
-    mColorShaderProgram->setColor(material.color);
-  }
-
-  void Scene::setProjectionToShaders(const glm::mat4& projection)
-  {
+    auto projection = mTAAController->getJitteredProjection();
     mBlinnPhongShaderProgram->setProjection(projection);
     mPBRShaderProgram->setProjection(projection);
     mGlassShaderProgram->setProjection(projection);
     mShadowShaderProgram->setProjection(projection);
     mColorShaderProgram->setProjection(projection);
     mPointCloudShaderProgram->setProjection(projection);
+    mTAADepthMapShaderProgram->setProjection(projection);
+    mTAAMotionVectorsShaderProgram->setProjection(projection);
+    mParticlesShaderProgram->setProjection(projection);
+    mSkyboxShaderProgram->setProjection(projection);
+    mWaterShaderProgram->setProjection(projection);
+  }
+
+  void Scene::setViewToShaders()
+  {
+    mTAAMotionVectorsShaderProgram->setView(mCamera->getViewMatrix());
   }
 
   void Scene::addModelObject(const std::string& meshFilePath)
   {
-    //auto modelObject = loadModel(meshFilePath);
-    //
-    auto vertices = loadVertices(meshFilePath);
-    auto mesh = std::make_unique<Mesh>(vertices, false);
-    auto modelObject = std::make_unique<Object3D>(std::move(mesh), POINT_CLOUD_MATERIAL);
-    //
+    auto modelObject = loadModel(meshFilePath);
     mModelObject = modelObject.get();
     mRootObject.addChild(std::move(modelObject));
   }
@@ -393,15 +501,12 @@ namespace RenderSystem
         const auto& vertices = obj->getVertices();
         if (!vertices.empty())
         {
-          mSceneObjectVertexOffsetMap.insert({obj, mSceneRenderData.getVertexCount()});
-          for (const auto& vertex : vertices)
-          {
-            mSceneRenderData.append(vertex);
-          }
+          addObjectRenderers(obj);
+          mModelRenderData.append(vertices);
         }
       }
     );
-    mRenderer->loadModelRenderData(mSceneRenderData);
+    mModelRenderBuffer.loadRenderData(mModelRenderData);
   }
 
   void Scene::onSceneObjectUpdated(
@@ -412,13 +517,12 @@ namespace RenderSystem
     {
       for (auto& originalVertexData : vertex->originalVertices)
       {
-        mSceneRenderData.updateVertex(
-          originalVertexData, mSceneObjectVertexOffsetMap.at(object)
+        mModelRenderData.updateVertex(
+          originalVertexData, mObjectRendererMap.at(object)->getVertexOffset()
         );
       }
     }
-
-    mRenderer->loadModelRenderData(mSceneRenderData);
+    mModelRenderBuffer.loadRenderData(mModelRenderData);
   }
 
   void Scene::onSceneObjectBBoxUpdated()
@@ -426,217 +530,105 @@ namespace RenderSystem
     updateDirLightProjection();
   }
 
-  void Scene::renderSceneObjects(
-    const std::function<void(const Object3D*)>& prerenderSetup, bool invokeModelShaders
-  )
+  void Scene::renderIntoTAAColorTexture() const
   {
-    auto renderBlinnPhong = std::function<void(const Object3D&, int)> {};
-    auto renderGlass = std::function<void(const Object3D&, int)> {};
-    auto renderPBR = std::function<void(const Object3D&, int)> {};
-    auto renderPointCloud = std::function<void(const Object3D&, int)> {};
-
-    if (invokeModelShaders)
+    auto colorTexture = mTAAController->getCurrColorTexture();
+    mOffScreenFrameBufferObject.attachTexture(
+      *colorTexture, GL_COLOR_ATTACHMENT0, GL_NONE, GL_COLOR_ATTACHMENT0, true
+    );
+    mSkyboxRenderer->render();
+    for (const auto& renderer : mObjectRenderers)
     {
-      renderBlinnPhong = [this](const Object3D& object, int vertexOffset)
-      {
-        mBlinnPhongShaderProgram->invoke(
-          [this, &object, vertexOffset]()
-          { mRenderer->renderBlinnPhongObject3D(object, vertexOffset); }
-        );
-      };
-      renderGlass = [this](const Object3D& object, int vertexOffset)
-      {
-        mGlassShaderProgram->invoke(
-          [this, &object, vertexOffset]()
-          { mRenderer->renderGlassObject3D(object, vertexOffset); }
-        );
-      };
-      renderPBR = [this](const Object3D& object, int vertexOffset)
-      {
-        mPBRShaderProgram->invoke([this, &object, vertexOffset]()
-                                  { mRenderer->renderPBRObject3D(object, vertexOffset); }
-        );
-      };
-      renderPointCloud = [this](const Object3D& object, int vertexOffset)
-      {
-        mPointCloudShaderProgram->invoke(
-          [this, &object, vertexOffset]()
-          { mRenderer->renderPointCloud(object, vertexOffset); }
-        );
-      };
+      renderer->render();
     }
-    else
+    for (const auto& renderer : mDecorationRenderers)
     {
-      renderBlinnPhong = [this](const Object3D& object, int vertexOffset)
-      { mRenderer->renderBlinnPhongObject3D(object, vertexOffset); };
-      renderGlass = [this](const Object3D& object, int vertexOffset)
-      { mRenderer->renderGlassObject3D(object, vertexOffset); };
-      renderPBR = [this](const Object3D& object, int vertexOffset)
-      { mRenderer->renderPBRObject3D(object, vertexOffset); };
-      renderPointCloud = [this](const Object3D& object, int vertexOffset)
-      { mRenderer->renderPointCloud(object, vertexOffset); };
+      renderer->render();
+    }
+    for (const auto& shadowRenderer : mShadowRenderers)
+    {
+      shadowRenderer->render();
     }
 
-    for (auto& [object, vertexOffset] : mSceneObjectVertexOffsetMap)
+    if (mWaterController->isGeneratingWater())
     {
-      prerenderSetup(object);
-      object->materialVisitor(
-        [this, &object, vertexOffset, &renderBlinnPhong](const BlinnPhongMaterial&)
-        { renderBlinnPhong(*object, vertexOffset); },
-        [this, &object, vertexOffset, &renderGlass](const GlassMaterial&)
-        { renderGlass(*object, vertexOffset); },
-        [this, &object, vertexOffset, &renderPBR](const PBRMaterial&)
-        { renderPBR(*object, vertexOffset); },
-        [this, &object, vertexOffset, &renderPointCloud](const PointCloudMaterial&)
-        { renderPointCloud(*object, vertexOffset); }
-      );
+      mWaterRenderer->render();
     }
-  }
-
-  void Scene::renderShadows()
-  {
-    mShadowShaderProgram->setShadowMap(mShadowMapController->getDepthMap());
-    for (auto& [object, vertexOffset] : mSceneObjectVertexOffsetMap)
+    if (mParticlesController->isGeneratingParticles())
     {
-      mShadowShaderProgram->setModel(object->getTransform());
-      mShadowShaderProgram->invoke(
-        [this, &object, vertexOffset]()
-        { mRenderer->renderObject3DShadow(*object, vertexOffset); }
-      );
+      mParticlesRenderer->render();
     }
-  }
 
-  void Scene::renderParticles()
-  {
-    const auto& flipbook = mParticlesController->getFlipbook();
-    mParticlesShaderProgram->setFlipbookTexture(*flipbook.texture);
-    mParticlesShaderProgram->invoke(
-      [this]()
+    if (mRenderWireframe)
+    {
+      for (const auto& renderer : mWireframeRenderers)
       {
-        const auto& activeParticlesIndices =
-          mParticlesController->getActiveParticlesIndices();
-        mRenderer->renderParticles(activeParticlesIndices.size());
+        renderer->render();
       }
-    );
-  }
-
-  void Scene::renderWater()
-  {
-    if (!mWaterController->isGeneratingWater())
-    {
-      return;
     }
-
-    mWaterShaderProgram->setSkyboxCubemap(mSkyboxController->getCubemapTexture());
-    mWaterShaderProgram->setNormalMap(mWaterController->getNormalMap());
-    mWaterShaderProgram->invoke(
-      [this]()
+    if (mHighlightedObject)
+    {
+      mObjectHighlightRendererMap.at(mHighlightedObject)->render();
+    }
+    if (mHighlightedFacesData.parentObject)
+    {
+      auto object = mHighlightedFacesData.parentObject;
+      for (const auto& faceIdx : mHighlightedFacesData.facesIndices)
       {
-        auto vertexCount = mWaterController->getPlaneRenderData().getVertexCount();
-        mRenderer->renderWater(vertexCount);
+        mFaceHighlightRendererMap.at(object)->renderFace(faceIdx);
       }
-    );
+    }
   }
 
-  void Scene::renderRawScene(
-    const std::function<void(const Object3D*)>& prerenderSetup, bool invokeModelShaders
-  )
+  void Scene::renderIntoTAADepthTexture() const
   {
-    renderSceneObjects(prerenderSetup, invokeModelShaders);
-    renderDecorations();
+    auto depthTexture = mTAAController->getCurrDepthTexture();
+    mOffScreenFrameBufferObject.attachTexture(
+      *depthTexture, GL_DEPTH_ATTACHMENT, GL_NONE, GL_NONE, false
+    );
+    for (const auto& renderer : mTAADepthMapRenderers)
+    {
+      renderer->render();
+    }
   }
 
-  void Scene::renderFullScene(
-    const std::function<void(const Object3D*)>& prerenderSetup, bool invokeModelShaders
-  )
+  void Scene::renderIntoTAAMotionVectorsTexture() const
   {
-    renderSkybox();
-    renderRawScene(prerenderSetup, invokeModelShaders);
-    renderShadows();
-    renderParticles();
-    renderWater();
-    mBlinnPhongShaderProgram->invoke(
-      [this]()
-      {
-        renderHighlightedFaces();
-        renderWireframe();
-        renderObjectHighlighted();
-      }
+    auto motionVectorsTexture = mTAAController->getMotionVectorsTexture();
+    mOffScreenFrameBufferObject.attachTexture(
+      *motionVectorsTexture, GL_COLOR_ATTACHMENT0, GL_NONE, GL_COLOR_ATTACHMENT0, true
     );
+    for (const auto& renderer : mMotionVectorsRenderers)
+    {
+      renderer->render();
+    }
   }
 
-  void Scene::writeSceneToShadowMap()
+  void Scene::renderIntoShadowMapTexture() const
   {
-    auto shadowMapPrerenderSetup = [this](const Object3D* obj)
-    { mShadowMapController->setModel(obj->getTransform()); };
-    mShadowMapController->renderSceneToDepthMap(
-      [this, &shadowMapPrerenderSetup]()
-      { renderRawScene(shadowMapPrerenderSetup, false); }
+    mOffScreenFrameBufferObject.attachTexture(
+      *mShadowMap, GL_DEPTH_ATTACHMENT, GL_NONE, GL_NONE, false
     );
+    for (const auto& renderer : mShadowMapRenderers)
+    {
+      renderer->render();
+    }
   }
 
-  void Scene::writeSceneToTAATextures()
+  void Scene::renderIntoTAAResolvedColorTexture()
   {
-    auto taaPrerenderSetup = [this](const Object3D* obj)
-    { mTAAController->setModel(obj, obj->getTransform()); };
-    mTAAController->renderSceneToDepthMap([this, &taaPrerenderSetup]()
-                                          { renderRawScene(taaPrerenderSetup, false); });
-    mTAAController->renderSceneToMotionVectorsTexture(
-      [this, &taaPrerenderSetup]() { renderRawScene(taaPrerenderSetup, false); }
+    auto resolvedColorTexture = mTAAController->getResolvedColorTexture();
+    mOffScreenFrameBufferObject.attachTexture(
+      *resolvedColorTexture, GL_COLOR_ATTACHMENT0, GL_NONE, GL_COLOR_ATTACHMENT0, true
     );
-    auto scenePrerenderSetupFunc = [this](const Object3D* obj)
-    { scenePrerenderSetup(obj); };
-    mTAAController->renderSceneToColorBuffer(
-      [this, &scenePrerenderSetupFunc]()
-      { renderFullScene(scenePrerenderSetupFunc, true); }
-    );
+    mTAAResolveRenderer->render();
+    mTAAController->swapTextures();
+    mTAAResolveShaderProgram->setIsFirstFrame(false);
   }
 
-  void Scene::scenePrerenderSetup(const Object3D* object)
+  void Scene::renderToScreen() const
   {
-    const auto& objectModel = object->getTransform();
-    object->materialVisitor(
-      [this, &object, &objectModel](const BlinnPhongMaterial& material)
-      {
-        mBlinnPhongShaderProgram->setModel(objectModel);
-        mBlinnPhongShaderProgram->setUVScale(object->getUVScale());
-        setBlinnPhongMaterial(material);
-      },
-      [this, &object, &objectModel](const GlassMaterial& material)
-      {
-        mGlassShaderProgram->setModel(objectModel);
-        setGlassMaterial(material);
-      },
-      [this, &object, &objectModel](const PBRMaterial& material)
-      {
-        mPBRShaderProgram->setModel(objectModel);
-        mPBRShaderProgram->setUVScale(object->getUVScale());
-        setPBRMaterial(material);
-      },
-      [this, &objectModel](const PointCloudMaterial& material)
-      { mPointCloudShaderProgram->setModel(objectModel); }
-    );
-  }
-
-  void Scene::decorationPrerenderSetup(const SceneDecoration& decoration)
-  {
-    decoration.materialVisitor(
-      [this](const BlinnPhongMaterial& material)
-      {
-        setBlinnPhongMaterial(material);
-        mBlinnPhongShaderProgram->setModel(glm::mat4(1.0f));
-      },
-      [this](const ColorMaterial& material)
-      {
-        setColorMaterial(material);
-        mColorShaderProgram->setModel(glm::mat4(1.0f));
-      }
-    );
-  }
-
-  const TAAColorTexture& Scene::resolveTAA()
-  {
-    return mTAAController->resolveTAA([this]() { mRenderer->renderScreenQuad(); });
+    mScreenRenderer->render();
   }
 
   ParticlesRenderData Scene::getParticlesRenderData() const
@@ -653,66 +645,34 @@ namespace RenderSystem
     return renderData;
   }
 
-  void Scene::renderDecorations()
-  {
-    auto prerenderSetup = [this](const SceneDecoration& decoration)
-    { decorationPrerenderSetup(decoration); };
-    auto getShader = [this](const SceneDecoration& decoration)
-    { return getSceneDecorationShader(decoration); };
-    mDecorationsController->render(prerenderSetup, getShader);
-  }
-
-  void Scene::renderHighlightedFaces()
-  {
-    setBlinnPhongMaterial(HIGHLIGHT_MATERIAL);
-    mExtraRenderModesController->renderHighlightedFaces(
-      [this](const Object3D* object)
-      { mBlinnPhongShaderProgram->setModel(object->getTransform()); }
-    );
-  }
-
-  void Scene::renderWireframe()
-  {
-    setBlinnPhongMaterial(WIREFRAME_MATERIAL);
-    mExtraRenderModesController->renderWireframe(
-      [this](const Object3D* object)
-      { mBlinnPhongShaderProgram->setModel(object->getTransform()); }
-    );
-  }
-
-  void Scene::renderObjectHighlighted()
-  {
-    setBlinnPhongMaterial(HIGHLIGHT_MATERIAL);
-    mExtraRenderModesController->renderObjectHighlighted(
-      [this](const Object3D* object)
-      { mBlinnPhongShaderProgram->setModel(object->getTransform()); }
-    );
-  }
-
-  void Scene::renderSkybox()
-  {
-    mSkyboxController->render([this]() { mRenderer->renderSkybox(); });
-  }
-
   void Scene::updateDirLightProjection()
   {
     const auto& bbox = mModelObject->getBBox();
     const auto orthoSize = std::max(bbox.getWidth(), bbox.getHeight());
-    const auto width = orthoSize * mAspectRatio;
+    const auto width = orthoSize * mViewport->getAspectRatio();
 
     glm::mat4 lightProjectionMatrix = glm::ortho(
       -width, width, -orthoSize, orthoSize, NEAR_PLANE_DISTANCE, FAR_PLANE_DISTANCE
     );
+    mShadowMapShaderProgram->setLightProjection(lightProjectionMatrix);
     mShadowShaderProgram->setLightProjection(lightProjectionMatrix);
-    mShadowMapController->setLightProjection(lightProjectionMatrix);
   }
 
-  void Scene::addSceneDecorations(const std::vector<SceneDecoration>& decorations)
+  void Scene::setupRenderingSettings()
   {
-    for (const auto& decoration : decorations)
-    {
-      mDecorationsController->addDecoration(decoration);
-    }
+    glClearColor(0, 0, 0, 0);
+    glEnable(GL_DEPTH_TEST);
+  }
+
+  void Scene::setResolveShaderTextures()
+  {
+    mTAAResolveShaderProgram->setPrevDepthMap(*mTAAController->getPrevDepthTexture());
+    mTAAResolveShaderProgram->setCurrDepthMap(*mTAAController->getCurrDepthTexture());
+    mTAAResolveShaderProgram->setPrevColorTexture(*mTAAController->getPrevColorTexture());
+    mTAAResolveShaderProgram->setCurrColorTexture(*mTAAController->getCurrColorTexture());
+    mTAAResolveShaderProgram->setMotionVectorsTexture(
+      *mTAAController->getMotionVectorsTexture()
+    );
   }
 
   void Scene::setPickedObject(Object3D* pickedObject)
@@ -722,17 +682,17 @@ namespace RenderSystem
 
   void Scene::toggleWireframe()
   {
-    mExtraRenderModesController->toggleWireframe();
+    mRenderWireframe = !mRenderWireframe;
   }
 
   void Scene::setHighlightedObject(const Object3D* object)
   {
-    mExtraRenderModesController->setHighlightedObject(object);
+    mHighlightedObject = object;
   }
 
   void Scene::setHighlightedFacesData(const HighlightedFacesData& data)
   {
-    mExtraRenderModesController->setHighlightedFacesData(data);
+    mHighlightedFacesData = data;
   }
 
   void Scene::addPointLight(
@@ -759,14 +719,15 @@ namespace RenderSystem
     updateSkinningTransforms(lastFrameTime);
     updateParticles(lastFrameTime);
     updateWater(lastFrameTime);
-    mRenderer->cleanScreen();
-    mTAAController->setView(mCamera->getViewMatrix());
-    auto projection = mTAAController->makeJitteredProjection();
-    setProjectionToShaders(projection);
-    writeSceneToShadowMap();
-    writeSceneToTAATextures();
-    const auto& taaOutputTexture = resolveTAA();
-    renderFinalScreenTexture(taaOutputTexture);
+    setJitteredProjectionToShaders();
+    setViewToShaders();
+    setResolveShaderTextures();
+    renderIntoShadowMapTexture();
+    renderIntoTAADepthTexture();
+    renderIntoTAAMotionVectorsTexture();
+    renderIntoTAAColorTexture();
+    renderIntoTAAResolvedColorTexture();
+    renderToScreen();
   }
 
   Object3DIntersection Scene::getRayIntersection(
@@ -812,18 +773,6 @@ namespace RenderSystem
     return mRootObject;
   }
 
-  std::vector<ViewportListener*> Scene::getViewportListeners()
-  {
-    return {
-      this,
-      mShadowMapController.get(),
-      mTAAController.get(),
-      mSkyboxController.get(),
-      mParticlesShaderProgram.get(),
-      mWaterShaderProgram.get()
-    };
-  }
-
   glm::vec3 Scene::unProject(
     const glm::vec3& posGL3D, const glm::mat4& projection, const glm::vec4& viewportData
   )
@@ -836,13 +785,17 @@ namespace RenderSystem
     return mCamera.get();
   }
 
-  void Scene::onViewportChanged(Viewport* viewport)
+  void Scene::onViewportChanged()
   {
-    float width = viewport->getWidth();
-    float height = viewport->getHeight();
-    mAspectRatio = width / height;
+    auto width = mViewport->getWidth();
+    auto height = mViewport->getHeight();
     mCamera->adjust(
-      viewport->getProjectionType(), mModelObject->getBBox(), viewport->getFov()
+      mViewport->getProjectionType(), mModelObject->getBBox(), mViewport->getFov()
     );
+    mShadowMap = createDepthTexture(width, height);
+    mShadowShaderProgram->setShadowMap(*mShadowMap);
+    mTAAController->update(mViewport->getProjectionMatrix(), width, height);
+    mScreenShaderProgram->setScreenTexture(*mTAAController->getResolvedColorTexture());
+    mTAAResolveShaderProgram->setScreenSize(glm::vec2(width, height));
   }
 }  // namespace RenderSystem

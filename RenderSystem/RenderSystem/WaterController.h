@@ -3,9 +3,9 @@
 #include <memory>
 
 #include "CubemapTexture.h"
-#include "ImageTexture.h"
+#include "Material.h"
 #include "MeshRenderData.h"
-#include "Water.h"
+#include "Object3D.h"
 
 namespace RenderSystem
 {
@@ -14,26 +14,25 @@ namespace RenderSystem
    public:
     WaterController();
 
-    const ImageTexture& getNormalMap() const;
-    const MeshRenderData& getPlaneRenderData() const;
-    const WaterBlock& getWaterBlock() const;
+    const Object3D* getWaterPlane() const;
     float getCurrentTime() const;
     bool isGeneratingWater() const;
 
+    void updateWaterPlaneTransform(const glm::mat4& transform);
     void updateWater(float lastFrameTime);
     void startGeneratingWater();
     void stopGeneratingWater();
 
    private:
-    MeshRenderData createWaterPlane(float width, float length, int gridX, int gridZ)
-      const;
-    void initWaterBlock();
+    std::unique_ptr<Object3D> createWaterPlane(
+      float width, float length, int gridX, int gridZ
+    ) const;
+    void initMaterial();
     void initPlane();
 
    private:
-    WaterBlock mWaterBlock;
-    MeshRenderData mPlaneRenderData;
-    std::unique_ptr<ImageTexture> mNormalMap;
+    std::unique_ptr<Object3D> mPlane;
+    WaterMaterial mWaterMaterial;
     bool mGenerateWater;
     float mCurrentTime;
   };

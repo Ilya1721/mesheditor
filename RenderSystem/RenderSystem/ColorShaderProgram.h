@@ -7,21 +7,25 @@
 
 namespace RenderSystem
 {
-  class ColorShaderProgram : public ShaderProgram, public CameraListener
+  class ColorShaderProgram :
+    public Object3DShaderProgram,
+    public CameraListener
   {
    public:
     ColorShaderProgram(
       const std::filesystem::path& vertexShaderPath,
       const std::filesystem::path& fragmentShaderPath
     );
-    void onCameraPosChanged(Camera* camera) override;
-    void setModel(const glm::mat4& model);
-    void setProjection(const glm::mat4& projection);
-    void setColor(const glm::vec3& color);
+
+    void onCameraChanged(const Camera* camera) const override;
+    void setModel(const glm::mat4& model) const override;
+    void setMaterial(const Material& material) const override;
+
+    void setProjection(const glm::mat4& projection) const;
 
    private:
     void initUniformLocations();
-    void setView(const glm::mat4& view);
+    void setView(const glm::mat4& view) const;
 
    private:
     int mModel;

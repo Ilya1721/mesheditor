@@ -22,7 +22,7 @@ namespace RenderSystem
   using namespace GeometryCore;
   using namespace Utility;
 
-  using cameraPosChangedCallback = void();
+  using CameraChangedCallback = void();
 
   class Camera
   {
@@ -45,8 +45,8 @@ namespace RenderSystem
     void adjust(
       PROJECTION_TYPE projectionType, const MeshCore::AABBox& sceneBBox, float fov
     );
-    void addOnCameraPosChangedCallback(
-      const std::function<cameraPosChangedCallback>& callback
+    void addOnCameraChangedCallback(
+      const std::function<CameraChangedCallback>& callback
     );
 
    private:
@@ -85,6 +85,6 @@ namespace RenderSystem
     glm::vec3 mRight;
     glm::mat4 mViewMatrix;
     bool mIsMovementEnabled;
-    CallbackMechanism<cameraPosChangedCallback> mCameraPosChangedCallbacks;
+    CallbackMechanism<CameraChangedCallback> mCameraChangedCallbacks;
   };
 }  // namespace RenderSystem

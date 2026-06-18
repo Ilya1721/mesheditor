@@ -11,7 +11,9 @@ namespace RenderSystem
   {
    public:
     void init(int shaderProgram);
-    PointLight* addLight(const PointLightParams& params, const glm::vec3& lightSourcePos);
+    PointLight* addLight(
+      const PointLightParams& params, const glm::vec3& lightSourcePos
+    );
     void removeLight(unsigned int index);
     PointLight* getLight(unsigned int index);
 

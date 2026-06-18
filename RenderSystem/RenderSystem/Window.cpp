@@ -120,18 +120,14 @@ namespace RenderSystem
 
   void Window::init(const std::string& meshFilePath, int windowWidth, int windowHeight)
   {
-    mScene = std::make_unique<Scene>(
-      meshFilePath, static_cast<float>(windowWidth) / windowHeight
-    );
-    mViewport = std::make_unique<Viewport>(
-      windowWidth, windowHeight, &mScene->getRootObject().getBBox()
-    );
+    mViewport = std::make_unique<Viewport>(windowWidth, windowHeight);
+    mScene = std::make_unique<Scene>(mViewport.get(), meshFilePath);
     mOperationsDispatcher = std::make_unique<OperationsDispatcher>(
       this, mViewport.get(), mScene.get(), mScene->getCamera()
     );
-    addViewportListeners();
+    mViewport->setRootBBox(&mScene->getRootObject().getBBox());
     setCallbacks();
-    resizeViewport(windowWidth, windowHeight);
+    mViewport->resize(windowWidth, windowHeight);
   }
 
   void Window::setCallbacks()
@@ -141,23 +137,7 @@ namespace RenderSystem
     glfwSetScrollCallback(mWindow, ::onMouseScroll);
     glfwSetFramebufferSizeCallback(mWindow, ::onFramebufferSizeChanged);
     glfwSetKeyCallback(mWindow, ::onKey);
-    mViewport->addOnViewportChangedCallback([this]() { onViewportChanged(); });
-  }
-
-  void Window::onViewportChanged()
-  {
-    for (auto& listener : mViewportListeners)
-    {
-      listener->onViewportChanged(mViewport.get());
-    }
-  }
-
-  void Window::addViewportListeners()
-  {
-    auto sceneListeners = mScene->getViewportListeners();
-    mViewportListeners.insert(
-      mViewportListeners.end(), sceneListeners.begin(), sceneListeners.end()
-    );
+    mViewport->addOnViewportChangedCallback([this]() { mScene->onViewportChanged(); });
   }
 
   void Window::render()
@@ -177,14 +157,6 @@ namespace RenderSystem
     double x, y;
     glfwGetCursorPos(mWindow, &x, &y);
     return {x, y};
-  }
-
-  void Window::resizeViewport(int width, int height)
-  {
-    if (width > 0 && height > 0)
-    {
-      mViewport->resize(width, height);
-    }
   }
 
   glm::vec3 Window::unProject(const glm::vec2& cursorPos, float depth) const
@@ -253,7 +225,7 @@ namespace RenderSystem
 
   void Window::onFramebufferSizeChanged(int width, int height)
   {
-    resizeViewport(width, height);
+    mViewport->resize(width, height);
   }
 
   void Window::onKey(

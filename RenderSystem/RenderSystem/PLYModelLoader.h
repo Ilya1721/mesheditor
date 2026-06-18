@@ -2,8 +2,8 @@
 
 #include <filesystem>
 
-#include "MeshCore/PointCloud.h"
 #include "ModelLoaderUtils.h"
+#include "Object3D.h"
 
 namespace RenderSystem
 {
@@ -25,10 +25,13 @@ namespace RenderSystem
     };
 
    public:
-    PointCloud loadPointCloud(const std::filesystem::path& filePath);
+    std::unique_ptr<Object3D> loadPointCloud(const std::filesystem::path& filePath);
+    std::unique_ptr<Object3D> loadMultiplePointClouds(
+      const std::filesystem::path& folderPath
+    );
 
    private:
-    PointCloud parseVertices();
+    std::vector<Vertex> parseVertices();
     std::string readNextTokenAsString();
     float parseValue(const PropertyType& propertyType);
     float parseTextValue(const PropertyType& propertyType);

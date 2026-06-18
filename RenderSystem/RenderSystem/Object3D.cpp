@@ -1,26 +1,34 @@
 #include "Object3D.h"
 
-#include <MeshCore/TreeWalker.h>
-
 #include <glm/gtx/transform.hpp>
 
 #include "GeometryCore/Ray.h"
 #include "MeshCore/Mesh.h"
+#include "MeshCore/TreeWalker.h"
 
 using namespace GeometryCore;
 
 namespace RenderSystem
 {
-  Object3D::Object3D() : mParent(nullptr), mTransform(1.0f), mUVScale(1.0f, 1.0f)
+  Object3D::Object3D()
+    : mParent(nullptr),
+      mTransform(1.0f),
+      mRenderMode(GL_TRIANGLES),
+      mMaterial(std::make_shared<Material>())
   {
   }
 
-  Object3D::Object3D(std::unique_ptr<Mesh> mesh, const Material& material)
+  Object3D::Object3D(
+    std::unique_ptr<Mesh> mesh,
+    const Material& material,
+    const glm::mat4& transform,
+    int renderMode
+  )
     : mParent(nullptr),
       mMesh(std::move(mesh)),
-      mMaterial(material),
-      mTransform(1.0f),
-      mUVScale(1.0f, 1.0f)
+      mMaterial(material.clone()),
+      mTransform(transform),
+      mRenderMode(renderMode)
   {
     init();
   }
@@ -29,15 +37,17 @@ namespace RenderSystem
     std::unique_ptr<Mesh> mesh,
     const Material& material,
     Skeleton&& skeleton,
-    std::vector<Animation>&& animations
+    std::vector<Animation>&& animations,
+    const glm::mat4& transform,
+    int renderMode
   )
     : mParent(nullptr),
       mMesh(std::move(mesh)),
-      mMaterial(material),
-      mTransform(1.0f),
-      mUVScale(1.0f, 1.0f),
+      mMaterial(material.clone()),
+      mTransform(transform),
       mSkeleton(std::move(skeleton)),
-      mAnimations(std::move(animations))
+      mAnimations(std::move(animations)),
+      mRenderMode(renderMode)
   {
     init();
   }
@@ -67,9 +77,9 @@ namespace RenderSystem
 
   void Object3D::updateTransform(const glm::mat4& transform)
   {
-    invokeTransformAction(
-      [this, &transform]() { mTransform = transform * mTransform; }, transform
-    );
+    mTransform = transform * mTransform;
+    mBBox.applyTransform(transform);
+    propagateBBoxToRoot();
   }
 
   const AABBox& Object3D::getBBox() const
@@ -125,8 +135,7 @@ namespace RenderSystem
     newObject->mBBox = mBBox;
     newObject->mTransform = mTransform;
     newObject->mParent = mParent;
-    newObject->mMaterial = mMaterial;
-    newObject->mUVScale = mUVScale;
+    newObject->mMaterial = mMaterial->clone();
     newObject->mSkeleton = mSkeleton;
     newObject->mAnimations = mAnimations;
 
@@ -138,7 +147,7 @@ namespace RenderSystem
     return newObject;
   }
 
-  int Object3D::getVertexCount() const
+  size_t Object3D::getVertexCount() const
   {
     return mMesh->getVertices().size();
   }
@@ -148,14 +157,9 @@ namespace RenderSystem
     return mMesh->getVertices();
   }
 
-  const glm::vec2& Object3D::getUVScale() const
-  {
-    return mUVScale;
-  }
-
   const Material& Object3D::getMaterial() const
   {
-    return mMaterial;
+    return *mMaterial;
   }
 
   const Skeleton& Object3D::getSkeleton() const
@@ -166,6 +170,11 @@ namespace RenderSystem
   const std::vector<Animation>& Object3D::getAnimations() const
   {
     return mAnimations;
+  }
+
+  int Object3D::getRenderMode() const
+  {
+    return mRenderMode;
   }
 
   void Object3D::addChild(std::unique_ptr<Object3D>&& child)
@@ -210,55 +219,19 @@ namespace RenderSystem
     updateTransform(glm::translate(-mBBox.getCenter()));
   }
 
-  void Object3D::setUVScale(const glm::vec2& uvScale)
-  {
-    mUVScale = uvScale;
-  }
-
   void Object3D::setMaterial(const Material& material)
   {
-    mMaterial = material;
+    mMaterial = std::make_shared<Material>(material);
   }
 
-  void Object3D::materialVisitor(
-    const std::function<void(const BlinnPhongMaterial&)>& blinnPhongAction,
-    const std::function<void(const GlassMaterial&)>& glassAction,
-    const std::function<void(const PBRMaterial&)>& pbrAction,
-    const std::function<void(const PointCloudMaterial&)>& pointCloudAction
-  ) const
+  void Object3D::setUVScale(const glm::vec2& uvScale)
   {
-    std::visit(
-      [&](auto&& material)
-      {
-        using MaterialType = std::decay_t<decltype(material)>;
-        if constexpr (std::is_same_v<MaterialType, BlinnPhongMaterial>)
-        {
-          blinnPhongAction(material);
-        }
-        else if constexpr (std::is_same_v<MaterialType, GlassMaterial>)
-        {
-          glassAction(material);
-        }
-        else if constexpr (std::is_same_v<MaterialType, PBRMaterial>)
-        {
-          pbrAction(material);
-        }
-        else if constexpr (std::is_same_v<MaterialType, PointCloudMaterial>)
-        {
-          pointCloudAction(material);
-        }
-      },
-      mMaterial
-    );
+    mMaterial->setUVScale(uvScale);
   }
 
-  void Object3D::invokeTransformAction(
-    const std::function<void()>& action, const glm::mat4& transform
-  )
+  void Object3D::setRenderMode(int renderMode)
   {
-    action();
-    mBBox.applyTransform(transform);
-    propagateBBoxToRoot();
+    mRenderMode = renderMode;
   }
 
   void Object3D::propagateBBoxToRoot()

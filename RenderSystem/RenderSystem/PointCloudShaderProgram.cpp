@@ -8,6 +8,7 @@
 #include <glad/glad.h>
 
 #include "Camera.h"
+#include "Material.h"
 
 namespace RenderSystem
 {
@@ -15,46 +16,56 @@ namespace RenderSystem
     const std::filesystem::path& vertexShaderPath,
     const std::filesystem::path& fragmentShaderPath
   )
-    : ShaderProgram(vertexShaderPath, fragmentShaderPath)
+    : Object3DShaderProgram(vertexShaderPath, fragmentShaderPath)
   {
     initUniformLocations();
   }
 
-  void PointCloudShaderProgram::onCameraPosChanged(Camera* camera)
+  void PointCloudShaderProgram::onCameraChanged(const Camera* camera) const
   {
-    setView(camera->getViewMatrix());
+    bind();
+    const auto& view = camera->getViewMatrix();
+    glUniformMatrix4fv(mView, 1, false, glm::value_ptr(view));
   }
 
-  void PointCloudShaderProgram::setModel(const glm::mat4& model)
+  void PointCloudShaderProgram::setModel(const glm::mat4& model) const
   {
-    invoke([this, &model]()
-           { glUniformMatrix4fv(mModel, 1, false, glm::value_ptr(model)); });
+    bind();
+    glUniformMatrix4fv(mModel, 1, false, glm::value_ptr(model));
   }
 
-  void PointCloudShaderProgram::setProjection(const glm::mat4& projection)
+  void PointCloudShaderProgram::setMaterial(const Material& material) const
   {
-    invoke([this, &projection]()
-           { glUniformMatrix4fv(mProjection, 1, false, glm::value_ptr(projection)); });
   }
 
-  void PointCloudShaderProgram::setPointScale(float pointScale)
+  void PointCloudShaderProgram::setProjection(const glm::mat4& projection) const
   {
-    invoke([this, &pointScale]() { glUniform1f(mPointScale, pointScale); });
+    bind();
+    glUniformMatrix4fv(mProjection, 1, false, glm::value_ptr(projection));
   }
 
-  void PointCloudShaderProgram::setMinPointSize(float minPointSize)
+  void PointCloudShaderProgram::setPointScale(float pointScale) const
   {
-    invoke([this, &minPointSize]() { glUniform1f(mMinPointSize, minPointSize); });
+    bind();
+    glUniform1f(mPointScale, pointScale);
   }
 
-  void PointCloudShaderProgram::setMaxPointSize(float maxPointSize)
+  void PointCloudShaderProgram::setMinPointSize(float minPointSize) const
   {
-    invoke([this, &maxPointSize]() { glUniform1f(mMaxPointSize, maxPointSize); });
+    bind();
+    glUniform1f(mMinPointSize, minPointSize);
   }
 
-  void PointCloudShaderProgram::setLightPos(const glm::vec3& pos)
+  void PointCloudShaderProgram::setMaxPointSize(float maxPointSize) const
   {
-    invoke([this, &pos]() { glUniform3fv(mLightPos, 1, glm::value_ptr(pos)); });
+    bind();
+    glUniform1f(mMaxPointSize, maxPointSize);
+  }
+
+  void PointCloudShaderProgram::setLightPos(const glm::vec3& pos) const
+  {
+    bind();
+    glUniform3fv(mLightPos, 1, glm::value_ptr(pos));
   }
 
   void PointCloudShaderProgram::initUniformLocations()
@@ -66,11 +77,5 @@ namespace RenderSystem
     mMinPointSize = getUniformLocation("minPointSize");
     mMaxPointSize = getUniformLocation("maxPointSize");
     mLightPos = getUniformLocation("lightPos");
-  }
-
-  void PointCloudShaderProgram::setView(const glm::mat4& view)
-  {
-    invoke([this, &view]() { glUniformMatrix4fv(mView, 1, false, glm::value_ptr(view)); }
-    );
   }
 }

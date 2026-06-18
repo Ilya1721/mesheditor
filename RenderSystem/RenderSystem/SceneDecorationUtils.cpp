@@ -1,4 +1,4 @@
-#include "SceneDecoration.h"
+#include "SceneDecorationUtils.h"
 
 #ifdef __gl_h_
 #undef __gl_h_
@@ -12,48 +12,9 @@
 #include "MeshCore/TransformUtils.h"
 #include "MeshCore/Vertex.h"
 
-namespace
-{
-  using namespace RenderSystem;
-
-  SceneDecoration createBaseSceneDecoration(
-    const Material& material, int renderMode, const MeshRenderData& renderData
-  )
-  {
-    SceneDecoration primitive;
-    primitive.material = material;
-    primitive.renderMode = renderMode;
-    primitive.renderData = renderData;
-
-    return primitive;
-  }
-}  // namespace
-
 namespace RenderSystem
 {
-  void SceneDecoration::materialVisitor(
-    const std::function<void(const BlinnPhongMaterial&)>& blinnPhongAction,
-    const std::function<void(const ColorMaterial&)>& colorAction
-  ) const
-  {
-    std::visit(
-      [&](auto&& material)
-      {
-        using MaterialType = std::decay_t<decltype(material)>;
-        if constexpr (std::is_same_v<MaterialType, BlinnPhongMaterial>)
-        {
-          blinnPhongAction(material);
-        }
-        else if constexpr (std::is_same_v<MaterialType, ColorMaterial>)
-        {
-          colorAction(material);
-        }
-      },
-      material
-    );
-  }
-
-  SceneDecoration SceneDecoration::createSceneFloor(
+  std::unique_ptr<Object3D> createSceneFloor(
     float sceneBBoxHeight, const Material& floorMaterial
   )
   {
@@ -67,7 +28,7 @@ namespace RenderSystem
     );
   }
 
-  SceneDecoration SceneDecoration::createPlane(
+  std::unique_ptr<Object3D> createPlane(
     const glm::vec3& origin,
     const glm::vec3& normal,
     float width,
@@ -77,12 +38,12 @@ namespace RenderSystem
   {
     auto planeVertices = MeshCore::createUnitXYPlane();
     auto transform = MeshCore::getUnitXYPlaneTransform(origin, normal, width, height);
-    auto renderData = MeshRenderData::generateRenderData(planeVertices, transform);
+    auto mesh = std::make_unique<Mesh>(planeVertices);
 
-    return createBaseSceneDecoration(material, GL_TRIANGLES, renderData);
+    return std::make_unique<Object3D>(std::move(mesh), material, transform, GL_TRIANGLES);
   }
 
-  SceneDecoration SceneDecoration::createBRepPlane(
+  std::unique_ptr<Object3D> createBRepPlane(
     const glm::vec3& origin,
     const glm::vec3& normal,
     float width,
@@ -93,12 +54,12 @@ namespace RenderSystem
     auto brepPlane = MeshCore::createUnitXYBRepPlane();
     auto planeVertices = MeshCore::getBRepSurfaceVertices(brepPlane, 16, 16);
     auto transform = MeshCore::getUnitXYPlaneTransform(origin, normal, width, height);
-    auto renderData = MeshRenderData::generateRenderData(planeVertices, transform);
+    auto mesh = std::make_unique<Mesh>(planeVertices);
 
-    return createBaseSceneDecoration(material, GL_TRIANGLES, renderData);
+    return std::make_unique<Object3D>(std::move(mesh), material, transform, GL_TRIANGLES);
   }
 
-  SceneDecoration SceneDecoration::createLine(
+  std::unique_ptr<Object3D> createLine(
     const glm::vec3& start,
     const glm::vec3& end,
     bool withArrowHead,
@@ -107,14 +68,14 @@ namespace RenderSystem
   {
     auto unitXLineVertices = MeshCore::createUnitXLine(withArrowHead);
     auto transform = MeshCore::getUnitXLineTransform(start, end);
-    auto renderData = MeshRenderData::generateRenderData(unitXLineVertices, transform);
+    auto mesh = std::make_unique<Mesh>(unitXLineVertices, false);
 
-    return createBaseSceneDecoration(material, GL_LINES, renderData);
+    return std::make_unique<Object3D>(std::move(mesh), material, transform, GL_LINES);
   }
 
-  std::vector<SceneDecoration> SceneDecoration::createGlobalAxes(float length)
+  std::vector<std::unique_ptr<Object3D>> createGlobalAxes(float length)
   {
-    std::vector<SceneDecoration> globalAxes;
+    std::vector<std::unique_ptr<Object3D>> globalAxes;
     globalAxes.emplace_back(createLine(
       glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(length, 0.0f, 0.0f), true, BLUE_MATERIAL
     ));
@@ -128,11 +89,11 @@ namespace RenderSystem
     return globalAxes;
   }
 
-  std::vector<SceneDecoration> SceneDecoration::createVerticesNormals(
+  std::vector<std::unique_ptr<Object3D>> createVerticesNormals(
     const std::vector<MeshCore::Vertex>& vertices
   )
   {
-    std::vector<SceneDecoration> verticesNormals;
+    std::vector<std::unique_ptr<Object3D>> verticesNormals;
     for (const auto& vertex : vertices)
     {
       verticesNormals.emplace_back(
@@ -143,7 +104,7 @@ namespace RenderSystem
     return verticesNormals;
   }
 
-  std::vector<SceneDecoration> SceneDecoration::createBoundingBox(
+  std::vector<std::unique_ptr<Object3D>> createBoundingBox(
     const MeshCore::AABBox& bbox, const Material& material
   )
   {
@@ -170,7 +131,7 @@ namespace RenderSystem
       rightMaxLowerCorner.x, bbox.getMax().y, rightMaxLowerCorner.z
     };
 
-    std::vector<SceneDecoration> bboxLines;
+    std::vector<std::unique_ptr<Object3D>> bboxLines;
     bboxLines.push_back(
       createLine(leftMinLowerCorner, rightMinLowerCorner, false, material)
     );
@@ -211,24 +172,22 @@ namespace RenderSystem
     return bboxLines;
   }
 
-  std::vector<SceneDecoration> SceneDecoration::createPoints(
+  std::vector<std::unique_ptr<Object3D>> createPoints(
     const std::vector<glm::vec3>& points, const Material& material
   )
   {
-    std::vector<SceneDecoration> pointDecorations;
+    std::vector<std::unique_ptr<Object3D>> pointDecorations;
     for (const auto& point : points)
     {
       Vertex vertex(point, glm::vec3(0.0f));
-      auto renderData = MeshRenderData::generateRenderData({vertex});
-      pointDecorations.emplace_back(
-        createBaseSceneDecoration(material, GL_POINTS, renderData)
-      );
+      auto mesh = std::make_unique<Mesh>(std::vector<Vertex> {vertex});
+      pointDecorations.push_back(std::make_unique<Object3D>(std::move(mesh), material));
     }
 
     return pointDecorations;
   }
 
-  SceneDecoration SceneDecoration::createBRepCircle(
+  std::unique_ptr<Object3D> createBRepCircle(
     const glm::vec3& center,
     const glm::vec3& normal,
     float radius,
@@ -238,12 +197,14 @@ namespace RenderSystem
     auto brepCircle = MeshCore::createUnitXYBRepCircle();
     auto circleVertices = MeshCore::getBRepCurveVertices(brepCircle, 32);
     auto transform = MeshCore::getUnitXYCircleTransform(center, normal, radius);
-    auto renderData = MeshRenderData::generateRenderData(circleVertices, transform);
+    auto mesh = std::make_unique<Mesh>(circleVertices, false);
 
-    return createBaseSceneDecoration(material, GL_LINE_STRIP, renderData);
+    return std::make_unique<Object3D>(
+      std::move(mesh), material, transform, GL_LINE_STRIP
+    );
   }
 
-  SceneDecoration SceneDecoration::createCircle(
+  std::unique_ptr<Object3D> createCircle(
     const glm::vec3& center,
     const glm::vec3& normal,
     float radius,
@@ -252,12 +213,14 @@ namespace RenderSystem
   {
     auto circleVertices = MeshCore::createUnitXYCircle(32);
     auto transform = MeshCore::getUnitXYCircleTransform(center, normal, radius);
-    auto renderData = MeshRenderData::generateRenderData(circleVertices, transform);
+    auto mesh = std::make_unique<Mesh>(circleVertices, false);
 
-    return createBaseSceneDecoration(material, GL_LINE_STRIP, renderData);
+    return std::make_unique<Object3D>(
+      std::move(mesh), material, transform, GL_LINE_STRIP
+    );
   }
 
-  SceneDecoration SceneDecoration::createBRepCylinder(
+  std::unique_ptr<Object3D> createBRepCylinder(
     const glm::vec3& origin,
     const glm::vec3& normal,
     float radius,
@@ -268,18 +231,17 @@ namespace RenderSystem
     auto brepCylinder = MeshCore::createUnitBRepCylinder();
     auto cylinderVertices = MeshCore::getBRepSurfaceVertices(brepCylinder, 32, 32);
     auto transform = MeshCore::getUnitCylinderTransform(origin, normal, radius, height);
-    auto renderData = MeshRenderData::generateRenderData(cylinderVertices, transform);
+    auto mesh = std::make_unique<Mesh>(cylinderVertices, false);
 
-    return createBaseSceneDecoration(material, GL_TRIANGLES, renderData);
+    return std::make_unique<Object3D>(std::move(mesh), material, transform, GL_TRIANGLES);
   }
 
-  SceneDecoration SceneDecoration::createBRepModel(
+  std::unique_ptr<Object3D> createBRepModel(
     const MeshCore::BRepModel& model, const Material& material
   )
   {
     auto vertices = MeshCore::getBRepModelVertices(model);
-    auto renderData = MeshRenderData::generateRenderData(vertices);
-
-    return createBaseSceneDecoration(material, GL_TRIANGLES, renderData);
+    auto mesh = std::make_unique<Mesh>(vertices, false);
+    return std::make_unique<Object3D>(std::move(mesh), material);
   }
 }  // namespace RenderSystem

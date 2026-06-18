@@ -10,10 +10,10 @@ uniform sampler2D prevDepthMap;
 uniform sampler2D currDepthMap;
 uniform sampler2D motionVectorsTexture;
 
-uniform bool isFirstFrame;
+uniform bool isFirstFrame = true;
 uniform vec2 screenSize;
 
-float maxWeight = 0.95;
+float maxWeight = 0.85;
 float minWeight = 0.05;
 float maxSpeedPixels = 64.0;
 
@@ -51,8 +51,8 @@ void main()
     vec2 prevUV = currentUV - motionUV;
     float currentDepth = texture(currDepthMap, currentUV).r;
     float prevDepth = texture(prevDepthMap, prevUV).r;
-    bool depthNotChanged = abs(prevDepth - currentDepth) < currentDepth * 0.02;
-    bool acceptHistory = depthNotChanged && !isFirstFrame;
+    bool sameDepth = abs(currentDepth - prevDepth) < currentDepth * 0.02;
+    bool acceptHistory = sameDepth && !isFirstFrame;
     float historyWeight = acceptHistory ? blendFactor : 0.0;
 
     vec4 currentColor = texture(currColorTexture, currentUV);

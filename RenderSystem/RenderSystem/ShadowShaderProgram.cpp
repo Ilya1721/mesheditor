@@ -8,87 +8,90 @@
 
 #include "Camera.h"
 
+namespace
+{
+  constexpr int SHADOW_MAP_UNIT = 0;
+}
+
 namespace RenderSystem
 {
   ShadowShaderProgram::ShadowShaderProgram(
     const std::filesystem::path& vertexShaderPath,
     const std::filesystem::path& fragmentShaderPath
   )
-    : ShaderProgram(vertexShaderPath, fragmentShaderPath)
+    : Object3DShaderProgram(vertexShaderPath, fragmentShaderPath)
   {
     initUniformLocations();
   }
 
-  void ShadowShaderProgram::onCameraPosChanged(Camera* camera)
+  void ShadowShaderProgram::preRenderSetup() const
   {
-    invoke(
-      [this, camera]()
-      { glUniformMatrix4fv(mView, 1, false, glm::value_ptr(camera->getViewMatrix())); }
-    );
+    glBindTextureUnit(SHADOW_MAP_UNIT, mShadowMapId);
   }
 
-  void ShadowShaderProgram::setModel(const glm::mat4& model)
+  void ShadowShaderProgram::onCameraChanged(const Camera* camera) const
   {
-    invoke([this, &model]()
-           { glUniformMatrix4fv(mModel, 1, false, glm::value_ptr(model)); });
+    bind();
+    glUniformMatrix4fv(mView, 1, false, glm::value_ptr(camera->getViewMatrix()));
   }
 
-  void ShadowShaderProgram::setShadowMap(const DepthTexture& texture) const
+  void ShadowShaderProgram::setModel(const glm::mat4& model) const
   {
-    invoke([this, &texture]() { texture.passToFragmentShader(mShadowMap, 0); });
+    bind();
+    glUniformMatrix4fv(mModel, 1, false, glm::value_ptr(model));
   }
 
-  void ShadowShaderProgram::setLightView(const glm::mat4& lightView)
+  void ShadowShaderProgram::setShadowMap(const Texture2D& texture) const
   {
-    invoke([this, &lightView]()
-           { glUniformMatrix4fv(mLightView, 1, false, glm::value_ptr(lightView)); });
+    bind();
+    mShadowMapId = texture.getId();
+    glUniform1i(mShadowMapLocation, SHADOW_MAP_UNIT);
   }
 
-  void ShadowShaderProgram::setLightProjection(const glm::mat4& lightProjection)
+  void ShadowShaderProgram::setLightView(const glm::mat4& lightView) const
   {
-    invoke(
-      [this, &lightProjection]()
-      { glUniformMatrix4fv(mLightProjection, 1, false, glm::value_ptr(lightProjection)); }
-    );
+    bind();
+    glUniformMatrix4fv(mLightView, 1, false, glm::value_ptr(lightView));
   }
 
-  void ShadowShaderProgram::setShadowBias(float shadowBias)
+  void ShadowShaderProgram::setLightProjection(const glm::mat4& lightProjection) const
   {
-    invoke([this, &shadowBias]() { glUniform1f(mShadowBias, shadowBias); });
+    bind();
+    glUniformMatrix4fv(mLightProjection, 1, false, glm::value_ptr(lightProjection));
   }
 
-  void ShadowShaderProgram::setProjection(const glm::mat4& projection)
+  void ShadowShaderProgram::setShadowBias(float shadowBias) const
   {
-    invoke([this, &projection]()
-           { glUniformMatrix4fv(mProjection, 1, false, glm::value_ptr(projection)); });
+    bind();
+    glUniform1f(mShadowBias, shadowBias);
   }
 
-  void ShadowShaderProgram::setUseSkinningTransform(bool useSkinningTransform)
+  void ShadowShaderProgram::setProjection(const glm::mat4& projection) const
   {
-    invoke([this, useSkinningTransform]()
-           { glUniform1i(mUseSkinningTransform, useSkinningTransform); });
+    bind();
+    glUniformMatrix4fv(mProjection, 1, false, glm::value_ptr(projection));
+  }
+
+  void ShadowShaderProgram::setUseSkinningTransform(bool useSkinningTransform) const
+  {
+    bind();
+    glUniform1i(mUseSkinningTransform, useSkinningTransform);
   }
 
   void ShadowShaderProgram::setSkinningTransforms(
     const std::vector<glm::mat4>& skinningTransforms
-  )
+  ) const
   {
-    if (skinningTransforms.empty())
+    if (!skinningTransforms.empty())
     {
-      return;
+      bind();
+      glUniformMatrix4fv(
+        mSkinningTransforms,
+        skinningTransforms.size(),
+        GL_FALSE,
+        glm::value_ptr(skinningTransforms[0])
+      );
     }
-
-    invoke(
-      [this, &skinningTransforms]()
-      {
-        glUniformMatrix4fv(
-          mSkinningTransforms,
-          skinningTransforms.size(),
-          GL_FALSE,
-          glm::value_ptr(skinningTransforms[0])
-        );
-      }
-    );
   }
 
   void ShadowShaderProgram::initUniformLocations()
@@ -99,7 +102,7 @@ namespace RenderSystem
     mLightView = getUniformLocation("lightView");
     mLightProjection = getUniformLocation("lightProjection");
     mShadowBias = getUniformLocation("shadowBias");
-    mShadowMap = getUniformLocation("shadowMap");
+    mShadowMapLocation = getUniformLocation("shadowMap");
     mUseSkinningTransform = getUniformLocation("useSkinningTransform");
     mSkinningTransforms = getUniformLocation("skinningTransforms");
   }

@@ -4,6 +4,7 @@
 
 #include "Constants.h"
 #include "Object3D.h"
+#include "TextureFactory.h"
 #include "Viewport.h"
 
 namespace
@@ -37,145 +38,59 @@ namespace
 
 namespace RenderSystem
 {
-  TAAController::TAAController(
-    const path& depthMapVertexShaderPath,
-    const path& depthMapFragmentShaderPath,
-    const path& motionVectorsVertexShaderPath,
-    const path& motionVectorsFragmentShaderPath,
-    const path& resolveVertexShaderPath,
-    const path& resolveFragmentShaderPath
+  const Texture2D* TAAController::getPrevColorTexture() const
+  {
+    return mPrevColorTexture.get();
+  }
+
+  const Texture2D* TAAController::getCurrColorTexture() const
+  {
+    return mCurrColorTexture.get();
+  }
+
+  const Texture2D* TAAController::getPrevDepthTexture() const
+  {
+    return mPrevDepthMap.get();
+  }
+
+  const Texture2D* TAAController::getCurrDepthTexture() const
+  {
+    return mCurrDepthMap.get();
+  }
+
+  const Texture2D* TAAController::getMotionVectorsTexture() const
+  {
+    return mMotionVectorsTexture.get();
+  }
+
+  const Texture2D* TAAController::getResolvedColorTexture() const
+  {
+    return mResolvedColorTexture.get();
+  }
+
+  void TAAController::update(
+    const glm::mat4& projection, unsigned int viewportWidth, unsigned int viewportHeight
   )
-    : mProjection(1.0f),
-      mView(1.0f),
-      mObjectModelMap(),
-      mScreenWidth(0),
-      mScreenHeight(0),
-      mFrameIndex(0),
-      mIsFirstFrame(true),
-      mDepthMapController(depthMapVertexShaderPath, depthMapFragmentShaderPath),
-      mMotionVectorsController(
-        motionVectorsVertexShaderPath, motionVectorsFragmentShaderPath
-      ),
-      mColorBufferController(),
-      mResolveController(resolveVertexShaderPath, resolveFragmentShaderPath)
-  {
-  }
-
-  void TAAController::onViewportChanged(Viewport* viewport)
-  {
-    updateViewportParams(
-      viewport->getProjectionMatrix(), viewport->getWidth(), viewport->getHeight()
-    );
-  }
-
-  void TAAController::setModel(const Object3D* object, const glm::mat4& model)
-  {
-    auto objectModelIt = mObjectModelMap.find(object);
-    ObjectModel* objectModel = nullptr;
-    if (objectModelIt == mObjectModelMap.end())
-    {
-      const auto& [newObjectModelIt, _] =
-        mObjectModelMap.insert({object, {model, model}});
-      objectModel = &newObjectModelIt->second;
-    }
-    else
-    {
-      objectModel = &objectModelIt->second;
-      objectModel->prevModel = objectModel->currentModel;
-      objectModel->currentModel = model;
-    }
-
-    mDepthMapController.setModel(objectModel->currentModel);
-    mMotionVectorsController.setPrevModel(objectModel->prevModel);
-    mMotionVectorsController.setCurrentModel(objectModel->currentModel);
-  }
-
-  void TAAController::setView(const glm::mat4& view)
-  {
-    if (mIsFirstFrame)
-    {
-      mView = view;
-    }
-    mDepthMapController.setView(view);
-    mMotionVectorsController.setPrevView(mView);
-    mMotionVectorsController.setCurrentView(view);
-    mView = view;
-  }
-
-  void TAAController::renderSceneToDepthMap(const std::function<void()>& renderSceneFunc)
-  {
-    mDepthMapController.renderSceneToDepthMap(renderSceneFunc);
-  }
-
-  void TAAController::renderSceneToMotionVectorsTexture(
-    const std::function<void()>& renderSceneFunc
-  )
-  {
-    mMotionVectorsController.renderSceneToTexture(renderSceneFunc);
-  }
-
-  void TAAController::renderSceneToColorBuffer(
-    const std::function<void()>& renderSceneFunc
-  )
-  {
-    mColorBufferController.renderSceneToColorBuffer(renderSceneFunc);
-  }
-
-  const TAAColorTexture& TAAController::resolveTAA(const std::function<void()>& renderFunc
-  )
-  {
-    mResolveController.setCurrentColorTexture(
-      mColorBufferController.getCurrentColorBuffer()
-    );
-    mResolveController.setPreviousColorTexture(
-      mColorBufferController.getPreviousColorBuffer()
-    );
-    mResolveController.setPrevDepthMap(mDepthMapController.getPrevDepthMap());
-    mResolveController.setCurrDepthMap(mDepthMapController.getCurrDepthMap());
-    mResolveController.setMotionVectorsTexture(
-      mMotionVectorsController.getMotionVectorsTexture()
-    );
-    mResolveController.setIsFirstFrame(mIsFirstFrame);
-    auto& resolvedTexture = mResolveController.render(renderFunc);
-    mColorBufferController.swapPrevWithResolvedTexture(resolvedTexture);
-    mDepthMapController.swapDepthMaps();
-    mIsFirstFrame = false;
-
-    return mColorBufferController.getPreviousColorBuffer();
-  }
-
-  void TAAController::setProjection(const glm::mat4& projection)
-  {
-    mProjection = projection;
-    mDepthMapController.setProjection(projection);
-    mMotionVectorsController.setProjection(projection);
-  }
-
-  void TAAController::setScreenSize(int screenWidth, int screenHeight)
-  {
-    mScreenWidth = screenWidth;
-    mScreenHeight = screenHeight;
-  }
-
-  void TAAController::updateViewportParams(
-    const glm::mat4& stableProjection, int screenWidth, int screenHeight
-  )
-  {
-    resetFrameIndex();
-    setProjection(stableProjection);
-    setScreenSize(screenWidth, screenHeight);
-    mDepthMapController.setScreenSize(screenWidth, screenHeight);
-    mMotionVectorsController.setScreenSize(screenWidth, screenHeight);
-    mColorBufferController.setScreenSize(screenWidth, screenHeight);
-    mResolveController.setScreenSize(screenWidth, screenHeight);
-  }
-
-  void TAAController::resetFrameIndex()
   {
     mFrameIndex = 0;
+    mScreenWidth = viewportWidth;
+    mScreenHeight = viewportHeight;
+    mProjection = projection;
+    mPrevColorTexture = createColorTexture(viewportWidth, viewportHeight);
+    mCurrColorTexture = createColorTexture(viewportWidth, viewportHeight);
+    mPrevDepthMap = createDepthTexture(viewportWidth, viewportHeight);
+    mCurrDepthMap = createDepthTexture(viewportWidth, viewportHeight);
+    mMotionVectorsTexture = createMotionVectorsTexture(viewportWidth, viewportHeight);
+    mResolvedColorTexture = createColorTexture(viewportWidth, viewportHeight);
   }
 
-  glm::mat4 TAAController::makeJitteredProjection()
+  void TAAController::swapTextures()
+  {
+    std::swap(mPrevDepthMap, mCurrDepthMap);
+    std::swap(mPrevColorTexture, mResolvedColorTexture);
+  }
+
+  glm::mat4 TAAController::getJitteredProjection() const
   {
     auto jitter = getJitter(mFrameIndex + 1);
     auto jitterNDC = convertJitterToNDC(jitter, mScreenWidth, mScreenHeight);

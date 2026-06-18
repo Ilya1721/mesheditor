@@ -8,6 +8,14 @@
 #include <glad/glad.h>
 
 #include "Camera.h"
+#include "Material.h"
+
+namespace
+{
+  constexpr int BASE_COLOR_TEXTURE_UNIT = 0;
+  constexpr int NORMAL_MAP_TEXTURE_UNIT = 1;
+  constexpr int METALLIC_ROUGHNESS_TEXTURE_UNIT = 2;
+}
 
 namespace RenderSystem
 {
@@ -15,131 +23,144 @@ namespace RenderSystem
     const std::filesystem::path& vertexShaderPath,
     const std::filesystem::path& fragmentShaderPath
   )
-    : ShaderProgram(vertexShaderPath, fragmentShaderPath)
+    : Object3DShaderProgram(vertexShaderPath, fragmentShaderPath)
   {
     initUniformLocations();
   }
 
-  void PBRShaderProgram::onCameraPosChanged(Camera* camera)
+  void PBRShaderProgram::setMaterial(const Material& material) const
+  {
+    bind();
+    const auto& pbrMaterial = static_cast<const PBRMaterial&>(material);
+    glUniform1f(mMetallic, pbrMaterial.metallic);
+    glUniform1f(mRoughness, pbrMaterial.rougness);
+    glUniform3fv(mBaseColor, 1, glm::value_ptr(pbrMaterial.baseColor));
+    glUniform2fv(mUVScale, 1, glm::value_ptr(pbrMaterial.uvScale));
+    setBaseColorTexture(pbrMaterial.baseColorTexture.get());
+    setNormalTexture(pbrMaterial.normalMap.get());
+    setMetallicRoughnessTexture(pbrMaterial.metallicRougnessTexture.get());
+  }
+
+  void PBRShaderProgram::preRenderSetup() const
+  {
+    if (getFlagFromShader(mHasBaseColorTexture))
+    {
+      glBindTextureUnit(BASE_COLOR_TEXTURE_UNIT, mBaseColorTextureId);
+    }
+    if (getFlagFromShader(mHasNormalMapTexture))
+    {
+      glBindTextureUnit(NORMAL_MAP_TEXTURE_UNIT, mNormalMapTextureId);
+    }
+    if (getFlagFromShader(mHasMetallicRoughnessTexture))
+    {
+      glBindTextureUnit(METALLIC_ROUGHNESS_TEXTURE_UNIT, mMetallicRoughnessTextureId);
+    }
+  }
+
+  void PBRShaderProgram::onCameraChanged(const Camera* camera) const
   {
     setView(camera->getViewMatrix());
     setCameraPos(camera->getEye());
   }
 
-  void PBRShaderProgram::setModel(const glm::mat4& model)
+  void PBRShaderProgram::setModel(const glm::mat4& model) const
   {
-    invoke([this, &model]()
-           { glUniformMatrix4fv(mModel, 1, false, glm::value_ptr(model)); });
+    bind();
+    glUniformMatrix4fv(mModel, 1, false, glm::value_ptr(model));
   }
 
-  void PBRShaderProgram::setView(const glm::mat4& view)
+  void PBRShaderProgram::setView(const glm::mat4& view) const
   {
-    invoke([this, &view]() { glUniformMatrix4fv(mView, 1, false, glm::value_ptr(view)); }
-    );
+    bind();
+    glUniformMatrix4fv(mView, 1, false, glm::value_ptr(view));
   }
 
-  void PBRShaderProgram::setProjection(const glm::mat4& projection)
+  void PBRShaderProgram::setProjection(const glm::mat4& projection) const
   {
-    invoke([this, &projection]()
-           { glUniformMatrix4fv(mProjection, 1, false, glm::value_ptr(projection)); });
+    bind();
+    glUniformMatrix4fv(mProjection, 1, false, glm::value_ptr(projection));
   }
 
-  void PBRShaderProgram::setUVScale(const glm::vec2& scale)
+  void PBRShaderProgram::setCameraPos(const glm::vec3& cameraPos) const
   {
-    invoke([this, &scale]() { glUniform2fv(mUVScale, 1, glm::value_ptr(scale)); });
+    bind();
+    glUniform3fv(mCameraPos, 1, glm::value_ptr(cameraPos));
   }
 
-  void PBRShaderProgram::setCameraPos(const glm::vec3& cameraPos)
+  void PBRShaderProgram::setLightPos(const glm::vec3& lightPos) const
   {
-    invoke([this, &cameraPos]()
-           { glUniform3fv(mCameraPos, 1, glm::value_ptr(cameraPos)); });
+    bind();
+    glUniform3fv(mLightPos, 1, glm::value_ptr(lightPos));
   }
 
-  void PBRShaderProgram::setLightPos(const glm::vec3& lightPos)
+  void PBRShaderProgram::setLightColor(const glm::vec3& lightColor) const
   {
-    invoke([this, &lightPos]() { glUniform3fv(mLightPos, 1, glm::value_ptr(lightPos)); });
+    bind();
+    glUniform3fv(mLightColor, 1, glm::value_ptr(lightColor));
   }
 
-  void PBRShaderProgram::setLightColor(const glm::vec3& lightColor)
+  void PBRShaderProgram::setBaseColorTexture(const Texture2D* texture) const
   {
-    invoke([this, &lightColor]()
-           { glUniform3fv(mLightColor, 1, glm::value_ptr(lightColor)); });
+    if (texture)
+    {
+      mBaseColorTextureId = texture->getId();
+      glUniform1i(mHasBaseColorTexture, true);
+      glUniform1i(mBaseColorTextureLocation, BASE_COLOR_TEXTURE_UNIT);
+    }
+    else
+    {
+      glUniform1i(mHasBaseColorTexture, false);
+    }
   }
 
-  void PBRShaderProgram::setBaseColorTexture(const ImageTexture& texture)
+  void PBRShaderProgram::setNormalTexture(const Texture2D* texture) const
   {
-    invoke(
-      [this, &texture]()
-      {
-        texture.passToFragmentShader(mBaseColorTexture, 0);
-        glUniform1i(mHasBaseColorTexture, 1);
-      }
-    );
+    if (texture)
+    {
+      mNormalMapTextureId = texture->getId();
+      glUniform1i(mHasNormalMapTexture, true);
+      glUniform1i(mNormalMapTextureLocation, NORMAL_MAP_TEXTURE_UNIT);
+    }
+    else
+    {
+      glUniform1i(mHasNormalMapTexture, false);
+    }
   }
 
-  void PBRShaderProgram::setNormalTexture(const ImageTexture& texture)
+  void PBRShaderProgram::setMetallicRoughnessTexture(const Texture2D* texture) const
   {
-    invoke(
-      [this, &texture]()
-      {
-        texture.passToFragmentShader(mNormalTexture, 1);
-        glUniform1i(mHasNormalTexture, 1);
-      }
-    );
+    if (texture)
+    {
+      mMetallicRoughnessTextureId = texture->getId();
+      glUniform1i(mHasMetallicRoughnessTexture, true);
+      glUniform1i(mMetallicRoughnessTextureLocation, METALLIC_ROUGHNESS_TEXTURE_UNIT);
+    }
+    else
+    {
+      glUniform1i(mHasMetallicRoughnessTexture, false);
+    }
   }
 
-  void PBRShaderProgram::setMetallicRoughnessTexture(const ImageTexture& texture)
+  void PBRShaderProgram::setUseSkinningTransform(bool useSkinningTransform) const
   {
-    invoke(
-      [this, &texture]()
-      {
-        texture.passToFragmentShader(mMetallicRoughnessTexture, 2);
-        glUniform1i(mHasMetallicRoughnessTexture, 1);
-      }
-    );
-  }
-
-  void PBRShaderProgram::setMetallic(float metallic)
-  {
-    invoke([this, metallic]() { glUniform1f(mMetallic, metallic); });
-  }
-
-  void PBRShaderProgram::setRougness(float roughness)
-  {
-    invoke([this, roughness]() { glUniform1f(mRoughness, roughness); });
-  }
-
-  void PBRShaderProgram::setUseSkinningTransform(bool useSkinningTransform)
-  {
-    invoke([this, useSkinningTransform]()
-           { glUniform1i(mUseSkinningTransform, useSkinningTransform); });
+    bind();
+    glUniform1i(mUseSkinningTransform, useSkinningTransform);
   }
 
   void PBRShaderProgram::setSkinningTransforms(
     const std::vector<glm::mat4>& skinningTransforms
-  )
+  ) const
   {
-    if (skinningTransforms.empty())
+    if (!skinningTransforms.empty())
     {
-      return;
+      bind();
+      glUniformMatrix4fv(
+        mSkinningTransforms,
+        skinningTransforms.size(),
+        GL_FALSE,
+        glm::value_ptr(skinningTransforms[0])
+      );
     }
-
-    invoke(
-      [this, &skinningTransforms]()
-      {
-        glUniformMatrix4fv(
-          mSkinningTransforms,
-          skinningTransforms.size(),
-          GL_FALSE,
-          glm::value_ptr(skinningTransforms[0])
-        );
-      }
-    );
-  }
-
-  void PBRShaderProgram::setBaseColor(const glm::vec3& color)
-  {
-    invoke([this, &color]() { glUniform3fv(mBaseColor, 1, glm::value_ptr(color)); });
   }
 
   void PBRShaderProgram::initUniformLocations()
@@ -151,12 +172,12 @@ namespace RenderSystem
     mCameraPos = getUniformLocation("cameraPos");
     mLightPos = getUniformLocation("lightPos");
     mLightColor = getUniformLocation("lightColor");
-    mBaseColorTexture = getUniformLocation("baseColorTexture");
+    mBaseColorTextureLocation = getUniformLocation("baseColorTexture");
     mBaseColor = getUniformLocation("baseColor");
     mHasBaseColorTexture = getUniformLocation("hasBaseColorTexture");
-    mNormalTexture = getUniformLocation("normalTexture");
-    mHasNormalTexture = getUniformLocation("hasNormalTexture");
-    mMetallicRoughnessTexture = getUniformLocation("metallicRoughnessTexture");
+    mNormalMapTextureLocation = getUniformLocation("normalTexture");
+    mHasNormalMapTexture = getUniformLocation("hasNormalTexture");
+    mMetallicRoughnessTextureLocation = getUniformLocation("metallicRoughnessTexture");
     mHasMetallicRoughnessTexture = getUniformLocation("hasMetallicRoughnessTexture");
     mUseSkinningTransform = getUniformLocation("useSkinningTransform");
     mSkinningTransforms = getUniformLocation("skinningTransforms");

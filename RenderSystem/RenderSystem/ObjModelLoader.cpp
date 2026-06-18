@@ -5,6 +5,7 @@
 #include "Constants.h"
 #include "Utility/FileHelper.h"
 #include "Utility/StringHelper.h"
+#include "TextureFactory.h"
 
 using namespace Utility;
 
@@ -55,7 +56,7 @@ namespace RenderSystem
       }
       else if (Utility::isEqual(mCurrentToken, "Kd"))
       {
-        material.diffuse.rgb = readXYZ();
+        material.diffuse = readXYZ();
       }
       else if (Utility::isEqual(mCurrentToken, "Ks"))
       {
@@ -63,7 +64,7 @@ namespace RenderSystem
       }
       else if (Utility::isEqual(mCurrentToken, "map_Kd"))
       {
-        material.diffuse.texture = parseTexture(filePath);
+        material.diffuseTexture = parseTexture(filePath);
       }
       mCurrentToken = strtok_s(nullptr, DELIMITERS.c_str(), &mContext);
     }
@@ -71,7 +72,7 @@ namespace RenderSystem
     return material;
   }
 
-  std::shared_ptr<ImageTexture> ObjMaterialLoader::parseTexture(
+  std::shared_ptr<Texture2D> ObjMaterialLoader::parseTexture(
     const std::filesystem::path& filePath
   )
   {
@@ -86,7 +87,7 @@ namespace RenderSystem
       fullTexturePath = filePath.parent_path() / std::filesystem::path(texturePath);
     }
 
-    return std::make_shared<ImageTexture>(fullTexturePath.string());
+    return createImageTexture(fullTexturePath.string());
   }
 
   std::string ObjMaterialLoader::parseTexturePath()

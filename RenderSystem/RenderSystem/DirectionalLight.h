@@ -10,7 +10,7 @@ namespace RenderSystem
     void init(int shaderProgram);
     void setLightSourcePos(const float* lightSourcePos) const;
     void setCameraPos(const float* cameraPos) const;
-    void setParams(const DirectionalLightParams& light);
+    void setParams(const DirectionalLightParams& light) const;
 
    private:
     void setAmbient(const float* ambient) const;
@@ -18,8 +18,7 @@ namespace RenderSystem
     void setSpecular(const float* specular) const;
 
     void initUniformLocations();
-    void setupSettings();
-
+    void setupSettings() const;
     int getUniformLocation(const char* name) const;
 
    private:

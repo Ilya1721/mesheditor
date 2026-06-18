@@ -14,22 +14,22 @@ namespace RenderSystem
     TAAMotionVectorsShaderProgram(
       const path& vertexShaderPath, const path& fragmentShaderPath
     );
-    virtual ~TAAMotionVectorsShaderProgram() = default;
 
-    void setPrevModel(const glm::mat4& model);
-    void setCurrentModel(const glm::mat4& model);
-    void setPrevView(const glm::mat4& view);
-    void setCurrentView(const glm::mat4& view);
-    void setProjection(const glm::mat4& projection);
+    void setView(const glm::mat4& view) const;
+    void setProjection(const glm::mat4& projection) const;
+    void setPrevModel(const glm::mat4& model) const;
+    void setCurrModel(const glm::mat4& model) const;
 
    private:
     void initUniformLocations();
 
-   protected:
+   private:
     int mPrevModel;
-    int mCurrentModel;
+    int mCurrModel;
     int mPrevView;
-    int mCurrentView;
+    int mCurrView;
     int mProjection;
+
+    mutable glm::mat4 mPrevViewMatrix;
   };
 }  // namespace RenderSystem

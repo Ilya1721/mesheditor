@@ -10,26 +10,33 @@
 #include "Camera.h"
 #include "Viewport.h"
 
+namespace
+{
+  constexpr int SKYBOX_UNIT = 0;
+  constexpr int NORMAL_MAP_UNIT = 1;
+}
+
 namespace RenderSystem
 {
   WaterShaderProgram::WaterShaderProgram(
     const std::filesystem::path& vertexShaderPath,
     const std::filesystem::path& fragmentShaderPath
   )
-    : ShaderProgram(vertexShaderPath, fragmentShaderPath)
+    : Object3DShaderProgram(vertexShaderPath, fragmentShaderPath)
   {
     initUniformLocations();
   }
 
-  void WaterShaderProgram::onCameraPosChanged(Camera* camera)
+  void WaterShaderProgram::preRenderSetup() const
+  {
+    glBindTextureUnit(SKYBOX_UNIT, mSkyboxId);
+    glBindTextureUnit(NORMAL_MAP_UNIT, mNormalMapId);
+  }
+
+  void WaterShaderProgram::onCameraChanged(const Camera* camera) const
   {
     setCameraPos(camera->getEye());
     setView(camera->getViewMatrix());
-  }
-
-  void WaterShaderProgram::onViewportChanged(Viewport* viewport)
-  {
-    setProjection(viewport->getProjectionMatrix());
   }
 
   void WaterShaderProgram::initUniformLocations()
@@ -40,8 +47,8 @@ namespace RenderSystem
     mVTime = getUniformLocation("vTime");
     mFTime = getUniformLocation("fTime");
     mWaveCount = getUniformLocation("waveCount");
-    mSkybox = getUniformLocation("skybox");
-    mNormalMap = getUniformLocation("normalMap");
+    mSkyboxLocation = getUniformLocation("skybox");
+    mNormalMapLocation = getUniformLocation("normalMap");
     mNormalMapMoves = getUniformLocation("normalMapMoves");
     mNormalMapMoveCount = getUniformLocation("normalMapMoveCount");
     mNormalStrength = getUniformLocation("normalStrength");
@@ -53,115 +60,88 @@ namespace RenderSystem
     mShallowColor = getUniformLocation("shallowColor");
   }
 
-  void WaterShaderProgram::setModel(const glm::mat4& model)
+  void WaterShaderProgram::setModel(const glm::mat4& model) const
   {
-    invoke([this, &model]()
-           { glUniformMatrix4fv(mModel, 1, false, glm::value_ptr(model)); });
+    bind();
+    glUniformMatrix4fv(mModel, 1, false, glm::value_ptr(model));
   }
 
-  void WaterShaderProgram::setCameraPos(const glm::vec3& cameraPos)
+  void WaterShaderProgram::setMaterial(const Material& material) const
   {
-    invoke([this, &cameraPos]()
-           { glUniform3fv(mCameraPos, 1, glm::value_ptr(cameraPos)); });
-  }
-
-  void WaterShaderProgram::setView(const glm::mat4& view)
-  {
-    invoke([this, &view]() { glUniformMatrix4fv(mView, 1, false, glm::value_ptr(view)); }
+    bind();
+    const auto& waterMaterial = static_cast<const WaterMaterial&>(material);
+    setWaves(waterMaterial.waves);
+    glUniform1i(mNormalMapMoveCount, waterMaterial.normalMapMoves.size());
+    glUniform2fv(
+      mNormalMapMoves, waterMaterial.normalMapMoves.size(),
+      glm::value_ptr(waterMaterial.normalMapMoves[0])
     );
+    glUniform1f(mNormalStrength, waterMaterial.normalStrength);
+    glUniform1f(mDepthFalloff, waterMaterial.depthFalloff);
+    glUniform1f(mFresnelPower, waterMaterial.fresnelPower);
+    glUniform1f(mReflectionIntensity, waterMaterial.reflectionIntensity);
+    glUniform3fv(mDeepColor, 1, glm::value_ptr(waterMaterial.deepColor));
+    glUniform3fv(mShallowColor, 1, glm::value_ptr(waterMaterial.shallowColor));
   }
 
-  void WaterShaderProgram::setProjection(const glm::mat4& projection)
+  void WaterShaderProgram::setCameraPos(const glm::vec3& cameraPos) const
   {
-    invoke([this, &projection]()
-           { glUniformMatrix4fv(mProjection, 1, false, glm::value_ptr(projection)); });
+    bind();
+    glUniform3fv(mCameraPos, 1, glm::value_ptr(cameraPos));
   }
 
-  void WaterShaderProgram::setVTime(float time)
+  void WaterShaderProgram::setView(const glm::mat4& view) const
   {
-    invoke([this, time]() { glUniform1f(mVTime, time); });
+    bind();
+    glUniformMatrix4fv(mView, 1, false, glm::value_ptr(view));
   }
 
-  void WaterShaderProgram::setFTime(float time)
+  void WaterShaderProgram::setProjection(const glm::mat4& projection) const
   {
-    invoke([this, time]() { glUniform1f(mFTime, time); });
+    bind();
+    glUniformMatrix4fv(mProjection, 1, false, glm::value_ptr(projection));
   }
 
-  void WaterShaderProgram::setWaves(const std::vector<Wave>& waves)
+  void WaterShaderProgram::setVTime(float time) const
   {
-    invoke(
-      [this, &waves]()
-      {
-        glUniform1i(mWaveCount, waves.size());
-        for (int waveIdx = 0; waveIdx < waves.size(); waveIdx++)
-        {
-          std::string waveName = "waves[" + std::to_string(waveIdx) + "]";
-          auto amplitude = getUniformLocation((waveName + ".amplitude").c_str());
-          glUniform1f(amplitude, waves[waveIdx].amplitude);
-          auto waveLength = getUniformLocation((waveName + ".waveLength").c_str());
-          glUniform1f(waveLength, waves[waveIdx].length);
-          auto speed = getUniformLocation((waveName + ".speed").c_str());
-          glUniform1f(speed, waves[waveIdx].speed);
-          auto direction = getUniformLocation((waveName + ".direction").c_str());
-          glUniform2fv(direction, 1, glm::value_ptr(waves[waveIdx].direction));
-        }
-      }
-    );
+    bind();
+    glUniform1f(mVTime, time);
   }
 
-  void WaterShaderProgram::setNormalMapMoves(const std::vector<glm::vec2>& normalMapMoves)
+  void WaterShaderProgram::setFTime(float time) const
   {
-    invoke(
-      [this, &normalMapMoves]()
-      {
-        glUniform1i(mNormalMapMoveCount, normalMapMoves.size());
-        glUniform2fv(
-          mNormalMapMoves, normalMapMoves.size(), glm::value_ptr(normalMapMoves[0])
-        );
-      }
-    );
+    bind();
+    glUniform1f(mFTime, time);
+  }
+
+  void WaterShaderProgram::setWaves(const std::vector<Wave>& waves) const
+  {
+    glUniform1i(mWaveCount, waves.size());
+    for (int waveIdx = 0; waveIdx < waves.size(); waveIdx++)
+    {
+      std::string waveName = "waves[" + std::to_string(waveIdx) + "]";
+      auto amplitude = getUniformLocation((waveName + ".amplitude").c_str());
+      glUniform1f(amplitude, waves[waveIdx].amplitude);
+      auto waveLength = getUniformLocation((waveName + ".waveLength").c_str());
+      glUniform1f(waveLength, waves[waveIdx].length);
+      auto speed = getUniformLocation((waveName + ".speed").c_str());
+      glUniform1f(speed, waves[waveIdx].speed);
+      auto direction = getUniformLocation((waveName + ".direction").c_str());
+      glUniform2fv(direction, 1, glm::value_ptr(waves[waveIdx].direction));
+    }
   }
 
   void WaterShaderProgram::setSkyboxCubemap(const CubemapTexture& texture) const
   {
-    invoke([this, &texture]() { texture.passToFragmentShader(mSkybox, 0); });
+    bind();
+    mSkyboxId = texture.getId();
+    glUniform1i(mSkyboxLocation, SKYBOX_UNIT);
   }
 
-  void WaterShaderProgram::setNormalMap(const ImageTexture& texture)
+  void WaterShaderProgram::setNormalMap(const Texture2D& texture) const
   {
-    invoke([this, &texture]() { texture.passToFragmentShader(mNormalMap, 1); });
-  }
-
-  void WaterShaderProgram::setNormalStrength(float normalStrength)
-  {
-    invoke([this, normalStrength]() { glUniform1f(mNormalStrength, normalStrength); });
-  }
-
-  void WaterShaderProgram::setDepthFalloff(float depthFalloff)
-  {
-    invoke([this, depthFalloff]() { glUniform1f(mDepthFalloff, depthFalloff); });
-  }
-
-  void WaterShaderProgram::setFresnelPower(float fresnelPower)
-  {
-    invoke([this, fresnelPower]() { glUniform1f(mFresnelPower, fresnelPower); });
-  }
-
-  void WaterShaderProgram::setReflectionIntensity(float reflectionIntensity)
-  {
-    invoke([this, reflectionIntensity]()
-           { glUniform1f(mReflectionIntensity, reflectionIntensity); });
-  }
-
-  void WaterShaderProgram::setDeepColor(const glm::vec3& deepColor)
-  {
-    invoke([this, &deepColor]()
-           { glUniform3fv(mDeepColor, 1, glm::value_ptr(deepColor)); });
-  }
-
-  void WaterShaderProgram::setShallowColor(const glm::vec3& shallowColor)
-  {
-    invoke([this, &shallowColor]()
-           { glUniform3fv(mShallowColor, 1, glm::value_ptr(shallowColor)); });
+    bind();
+    mNormalMapId = texture.getId();
+    glUniform1i(mNormalMapLocation, NORMAL_MAP_UNIT);
   }
 }

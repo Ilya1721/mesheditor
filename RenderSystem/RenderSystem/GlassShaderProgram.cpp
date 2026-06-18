@@ -8,6 +8,12 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Camera.h"
+#include "Material.h"
+
+namespace
+{
+  constexpr int SKYBOX_TEXTURE_UNIT = 0;
+}
 
 namespace RenderSystem
 {
@@ -15,62 +21,50 @@ namespace RenderSystem
     const std::filesystem::path& vertexShaderPath,
     const std::filesystem::path& fragmentShaderPath
   )
-    : ShaderProgram(vertexShaderPath, fragmentShaderPath)
+    : Object3DShaderProgram(vertexShaderPath, fragmentShaderPath)
   {
     initUniformLocations();
   }
 
-  void GlassShaderProgram::onCameraPosChanged(Camera* camera)
+  void GlassShaderProgram::preRenderSetup() const
   {
-    invoke(
-      [this, &camera]()
-      { glUniformMatrix4fv(mView, 1, false, glm::value_ptr(camera->getViewMatrix())); }
-    );
+    glBindTextureUnit(SKYBOX_TEXTURE_UNIT, mSkyboxTextureId);
   }
 
-  void GlassShaderProgram::setModel(const glm::mat4& model)
+  void GlassShaderProgram::onCameraChanged(const Camera* camera) const
   {
-    invoke([this, &model]()
-           { glUniformMatrix4fv(mModel, 1, false, glm::value_ptr(model)); });
+    bind();
+    glUniformMatrix4fv(mView, 1, false, glm::value_ptr(camera->getViewMatrix()));
   }
 
-  void GlassShaderProgram::setRefractiveIndex(float refractiveIndex)
+  void GlassShaderProgram::setModel(const glm::mat4& model) const
   {
-    invoke([this, &refractiveIndex]() { glUniform1f(mRefractiveIndex, refractiveIndex); }
-    );
+    bind();
+    glUniformMatrix4fv(mModel, 1, false, glm::value_ptr(model));
   }
 
-  void GlassShaderProgram::setReflectionStrength(float reflectionStrength)
+  void GlassShaderProgram::setMaterial(const Material& material) const
   {
-    invoke([this, &reflectionStrength]()
-           { glUniform1f(mReflectionStrength, reflectionStrength); });
+    bind();
+    const auto& glassMaterial = static_cast<const GlassMaterial&>(material);
+    glUniform1f(mRefractiveIndex, glassMaterial.refractiveIndex);
+    glUniform1f(mReflectionStrength, glassMaterial.reflectionStrength);
+    glUniform1f(mTransparency, glassMaterial.transparency);
+    glUniform1f(mInterpolationFactor, glassMaterial.interpolationFactor);
+    glUniform3fv(mColor, 1, glm::value_ptr(glassMaterial.color));
   }
 
-  void GlassShaderProgram::setTransparency(float transparency) const
+  void GlassShaderProgram::setProjection(const glm::mat4& projection) const
   {
-    invoke([this, &transparency]() { glUniform1f(mTransparency, transparency); });
+    bind();
+    glUniformMatrix4fv(mProjection, 1, false, glm::value_ptr(projection));
   }
 
-  void GlassShaderProgram::setInterpolationFactor(float interpolationFactor)
+  void GlassShaderProgram::setSkyboxCubemap(const CubemapTexture& texture) const
   {
-    invoke([this, &interpolationFactor]()
-           { glUniform1f(mInterpolationFactor, interpolationFactor); });
-  }
-
-  void GlassShaderProgram::setColor(const glm::vec3& color)
-  {
-    invoke([this, &color]() { glUniform3fv(mColor, 1, glm::value_ptr(color)); });
-  }
-
-  void GlassShaderProgram::setSkyboxCubemap(const CubemapTexture& texture)
-  {
-    invoke([this, &texture]() { texture.passToFragmentShader(mSkybox, 0); });
-  }
-
-  void GlassShaderProgram::setProjection(const glm::mat4& projection)
-  {
-    invoke([this, &projection]()
-           { glUniformMatrix4fv(mProjection, 1, false, glm::value_ptr(projection)); });
+    bind();
+    mSkyboxTextureId = texture.getId();
+    glUniform1i(mSkyboxTextureLocation, SKYBOX_TEXTURE_UNIT);
   }
 
   void GlassShaderProgram::initUniformLocations()
@@ -78,7 +72,7 @@ namespace RenderSystem
     mModel = getUniformLocation("model");
     mView = getUniformLocation("view");
     mProjection = getUniformLocation("projection");
-    mSkybox = getUniformLocation("skybox");
+    mSkyboxTextureLocation = getUniformLocation("skybox");
     mRefractiveIndex = getUniformLocation("material.refractiveIndex");
     mReflectionStrength = getUniformLocation("material.reflectionStrength");
     mTransparency = getUniformLocation("material.transparency");

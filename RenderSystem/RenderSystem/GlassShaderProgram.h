@@ -8,7 +8,7 @@
 
 namespace RenderSystem
 {
-  class GlassShaderProgram : public ShaderProgram, public CameraListener
+  class GlassShaderProgram : public Object3DShaderProgram, public CameraListener
   {
    public:
     GlassShaderProgram(
@@ -16,24 +16,24 @@ namespace RenderSystem
       const std::filesystem::path& fragmentShaderPath
     );
 
-    void onCameraPosChanged(Camera* camera) override;
-    void setModel(const glm::mat4& model);
-    void setProjection(const glm::mat4& projection);
-    void setRefractiveIndex(float refractiveIndex);
-    void setReflectionStrength(float reflectionStrength);
-    void setTransparency(float transparency) const;
-    void setInterpolationFactor(float interpolationFactor);
-    void setColor(const glm::vec3& color);
-    void setSkyboxCubemap(const CubemapTexture& texture);
+    void preRenderSetup() const override;
+    void onCameraChanged(const Camera* camera) const override;
+    void setModel(const glm::mat4& model) const override;
+    void setMaterial(const Material& material) const override;
+
+    void setProjection(const glm::mat4& projection) const;
+    void setSkyboxCubemap(const CubemapTexture& texture) const;
 
    private:
     void initUniformLocations();
 
    private:
+    mutable int mSkyboxTextureId;
+    int mSkyboxTextureLocation;
+
     int mModel;
     int mView;
     int mProjection;
-    int mSkybox;
     int mRefractiveIndex;
     int mReflectionStrength;
     int mTransparency;

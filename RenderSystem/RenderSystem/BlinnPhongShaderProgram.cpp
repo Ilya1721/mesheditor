@@ -8,6 +8,12 @@
 #include <glad/glad.h>
 
 #include "Camera.h"
+#include "Material.h"
+
+namespace
+{
+  constexpr int DIFFUSE_TEXTURE_UNIT = 0;
+}
 
 namespace RenderSystem
 {
@@ -15,7 +21,7 @@ namespace RenderSystem
     const std::filesystem::path& vertexShaderPath,
     const std::filesystem::path& fragmentShaderPath
   )
-    : ShaderProgram(vertexShaderPath, fragmentShaderPath),
+    : Object3DShaderProgram(vertexShaderPath, fragmentShaderPath),
       mModel(),
       mView(),
       mProjection()
@@ -25,83 +31,82 @@ namespace RenderSystem
     initUniformLocations();
   }
 
-  void BlinnPhongShaderProgram::onCameraPosChanged(Camera* camera)
+  void BlinnPhongShaderProgram::preRenderSetup() const
+  {
+    if (getFlagFromShader(mHasDiffuseTexture))
+    {
+      glBindTextureUnit(DIFFUSE_TEXTURE_UNIT, mDiffuseTextureId);
+    }
+  }
+
+  void BlinnPhongShaderProgram::onCameraChanged(const Camera* camera) const
   {
     setCameraPos(camera->getEye());
     setView(camera->getViewMatrix());
   }
 
-  void BlinnPhongShaderProgram::setModel(const glm::mat4& model)
+  void BlinnPhongShaderProgram::setModel(const glm::mat4& model) const
   {
-    invoke([this, &model]()
-           { glUniformMatrix4fv(mModel, 1, false, glm::value_ptr(model)); });
+    bind();
+    glUniformMatrix4fv(mModel, 1, false, glm::value_ptr(model));
   }
 
-  void BlinnPhongShaderProgram::setDirLightSourcePos(const glm::vec3& lightSourcePos)
+  void BlinnPhongShaderProgram::setMaterial(const Material& material) const
   {
-    invoke([this, &lightSourcePos]()
-           { mDirectionalLight.setLightSourcePos(glm::value_ptr(lightSourcePos)); });
+    bind();
+    const auto& blinnPhongMaterial = static_cast<const BlinnPhongMaterial&>(material);
+    glUniform3fv(mAmbient, 1, glm::value_ptr(blinnPhongMaterial.ambient));
+    glUniform3fv(mDiffuse, 1, glm::value_ptr(blinnPhongMaterial.diffuse));
+    glUniform3fv(mSpecular, 1, glm::value_ptr(blinnPhongMaterial.specular));
+    glUniform1f(mShininess, blinnPhongMaterial.shininess);
+    glUniform2fv(mUVScale, 1, glm::value_ptr(blinnPhongMaterial.uvScale));
+    setDiffuseTexture(blinnPhongMaterial.diffuseTexture.get());
   }
 
-  void BlinnPhongShaderProgram::setCameraPos(const glm::vec3& cameraPos)
+  void BlinnPhongShaderProgram::setDirLightSourcePos(const glm::vec3& lightSourcePos
+  ) const
   {
-    invoke([this, &cameraPos]()
-           { mDirectionalLight.setCameraPos(glm::value_ptr(cameraPos)); });
+    bind();
+    mDirectionalLight.setLightSourcePos(glm::value_ptr(lightSourcePos));
   }
 
-  void BlinnPhongShaderProgram::setDirLightParams(const DirectionalLightParams& params)
+  void BlinnPhongShaderProgram::setCameraPos(const glm::vec3& cameraPos) const
   {
-    invoke([this, &params]() { mDirectionalLight.setParams(params); });
+    bind();
+    mDirectionalLight.setCameraPos(glm::value_ptr(cameraPos));
   }
 
-  void BlinnPhongShaderProgram::setView(const glm::mat4& view)
+  void BlinnPhongShaderProgram::setDirLightParams(const DirectionalLightParams& params
+  ) const
   {
-    invoke([this, &view]() { glUniformMatrix4fv(mView, 1, false, glm::value_ptr(view)); }
-    );
+    bind();
+    mDirectionalLight.setParams(params);
   }
 
-  void BlinnPhongShaderProgram::setProjection(const glm::mat4& projection)
+  void BlinnPhongShaderProgram::setView(const glm::mat4& view) const
   {
-    invoke([this, &projection]()
-           { glUniformMatrix4fv(mProjection, 1, false, glm::value_ptr(projection)); });
+    bind();
+    glUniformMatrix4fv(mView, 1, false, glm::value_ptr(view));
   }
 
-  void BlinnPhongShaderProgram::setAmbient(const glm::vec3& ambient)
+  void BlinnPhongShaderProgram::setDiffuseTexture(const Texture2D* texture) const
   {
-    invoke([this, &ambient]() { glUniform3fv(mAmbient, 1, glm::value_ptr(ambient)); });
+    if (texture)
+    {
+      mDiffuseTextureId = texture->getId();
+      glUniform1i(mHasDiffuseTexture, true);
+      glUniform1i(mDiffuseTextureLocation, DIFFUSE_TEXTURE_UNIT);
+    }
+    else
+    {
+      glUniform1i(mHasDiffuseTexture, false);
+    }
   }
 
-  void BlinnPhongShaderProgram::setDiffuse(const glm::vec3& diffuse)
+  void BlinnPhongShaderProgram::setProjection(const glm::mat4& projection) const
   {
-    invoke([this, &diffuse]() { glUniform3fv(mDiffuse, 1, glm::value_ptr(diffuse)); });
-  }
-
-  void BlinnPhongShaderProgram::setSpecular(const glm::vec3& specular)
-  {
-    invoke([this, &specular]() { glUniform3fv(mSpecular, 1, glm::value_ptr(specular)); });
-  }
-
-  void BlinnPhongShaderProgram::setShininess(float shininess)
-  {
-    invoke([this, &shininess]() { glUniform1f(mShininess, shininess); });
-  }
-
-  void BlinnPhongShaderProgram::setDiffuseTexture(ImageTexture* texturePtr)
-  {
-    invoke(
-      [this, texturePtr]()
-      {
-        if (!texturePtr)
-        {
-          glUniform1i(mHasDiffuseTexture, false);
-        }
-        else
-        {
-          glUniform1i(mHasDiffuseTexture, true);
-          texturePtr->passToFragmentShader(mDiffuseTexture, 0);
-        }
-      }
-    );
+    bind();
+    glUniformMatrix4fv(mProjection, 1, false, glm::value_ptr(projection));
   }
 
   PointLight* BlinnPhongShaderProgram::addPointLight(
@@ -116,11 +121,6 @@ namespace RenderSystem
     mPointLights.removeLight(index);
   }
 
-  void BlinnPhongShaderProgram::setUVScale(const glm::vec2& scale)
-  {
-    invoke([this, &scale]() { glUniform2fv(mUVScale, 1, glm::value_ptr(scale)); });
-  }
-
   void BlinnPhongShaderProgram::initUniformLocations()
   {
     mModel = getUniformLocation("model");
@@ -131,7 +131,7 @@ namespace RenderSystem
     mDiffuse = getUniformLocation("material.diffuse");
     mSpecular = getUniformLocation("material.specular");
     mShininess = getUniformLocation("material.shininess");
-    mDiffuseTexture = getUniformLocation("diffuseTexture");
-    mHasDiffuseTexture = getUniformLocation("material.hasDiffuseTexture");
+    mDiffuseTextureLocation = getUniformLocation("diffuseTexture");
+    mHasDiffuseTexture = getUniformLocation("hasDiffuseTexture");
   }
 }  // namespace RenderSystem

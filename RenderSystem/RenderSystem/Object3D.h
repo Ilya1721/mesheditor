@@ -1,5 +1,10 @@
 #pragma once
 
+#ifdef __gl_h_
+#undef __gl_h_
+#endif
+#include <glad/glad.h>
+
 #include <functional>
 #include <memory>
 #include <vector>
@@ -26,19 +31,28 @@ namespace RenderSystem
   {
    public:
     Object3D();
-    Object3D(std::unique_ptr<Mesh> mesh, const Material& material);
+    Object3D(
+      std::unique_ptr<Mesh> mesh,
+      const Material& material,
+      const glm::mat4& transform = glm::mat4(1.0f),
+      int renderMode = GL_TRIANGLES
+    );
     Object3D(
       std::unique_ptr<Mesh> mesh,
       const Material& material,
       Skeleton&& skeleton,
-      std::vector<Animation>&& animations
+      std::vector<Animation>&& animations,
+      const glm::mat4& transform = glm::mat4(1.0f),
+      int renderMode = GL_TRIANGLES
     );
     Object3D(Object3D&& other) = delete;
-    ~Object3D();
+    virtual ~Object3D();
+
+    size_t getVertexCount() const;
+    const glm::mat4& getTransform() const;
 
     Object3D* getParent() const;
     const std::vector<std::unique_ptr<Object3D>>& getChildren() const;
-    const glm::mat4& getTransform() const;
     const AABBox& getBBox() const;
     Object3DIntersection getRayIntersection(
       const GeometryCore::Ray& ray,
@@ -46,12 +60,11 @@ namespace RenderSystem
       int facesIndexOffset = 0
     );
     std::unique_ptr<Object3D> clone();
-    int getVertexCount() const;
     const std::vector<Vertex>& getVertices() const;
-    const glm::vec2& getUVScale() const;
     const Material& getMaterial() const;
     const Skeleton& getSkeleton() const;
     const std::vector<Animation>& getAnimations() const;
+    int getRenderMode() const;
 
     void addChild(std::unique_ptr<Object3D>&& child);
     void addOnChildAddedCallback(const std::function<childAddedCallback>& callback);
@@ -59,22 +72,13 @@ namespace RenderSystem
     void addOnBBoxUpdatedCallback(const std::function<bboxUpdatedCallback>& callback);
     void onMeshUpdated(const std::unordered_set<UniqueVertex*>& vertices);
     void moveToOrigin();
-    void setUVScale(const glm::vec2& uvScale);
     void setMaterial(const Material& material);
-    void materialVisitor(
-      const std::function<void(const BlinnPhongMaterial&)>& blinnPhongAction,
-      const std::function<void(const GlassMaterial&)>& glassAction,
-      const std::function<void(const PBRMaterial&)>& pbrAction,
-      const std::function<void(const PointCloudMaterial&)>& pointCloudAction
-    ) const;
-
-    virtual void updateTransform(const glm::mat4& transform);
+    void setUVScale(const glm::vec2& uvScale);
+    void setRenderMode(int renderMode);
+    void updateTransform(const glm::mat4& transform);
 
    protected:
     void init();
-    void invokeTransformAction(
-      const std::function<void()>& action, const glm::mat4& transform
-    );
     void propagateBBoxToRoot();
 
    protected:
@@ -82,11 +86,11 @@ namespace RenderSystem
     std::vector<std::unique_ptr<Object3D>> mChildren;
     std::unique_ptr<Mesh> mMesh;
     glm::mat4 mTransform;
-    glm::vec2 mUVScale;
     AABBox mBBox;
-    Material mMaterial;
+    std::shared_ptr<Material> mMaterial;
     Skeleton mSkeleton;
     std::vector<Animation> mAnimations;
+    int mRenderMode;
     CallbackMechanism<childAddedCallback> mChildAddedCM;
     CallbackMechanism<objectUpdatedCallback> mObjectUpdatedCM;
     CallbackMechanism<bboxUpdatedCallback> mBBoxUpdatedCM;

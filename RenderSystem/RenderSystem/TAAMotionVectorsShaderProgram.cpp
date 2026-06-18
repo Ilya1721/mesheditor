@@ -7,6 +7,8 @@
 #endif
 #include <glad/glad.h>
 
+#include "Camera.h"
+
 namespace RenderSystem
 {
   TAAMotionVectorsShaderProgram::TAAMotionVectorsShaderProgram(
@@ -14,50 +16,47 @@ namespace RenderSystem
   )
     : ShaderProgram(vertexShaderPath, fragmentShaderPath),
       mPrevModel(),
-      mCurrentModel(),
+      mCurrModel(),
       mPrevView(),
-      mCurrentView(),
-      mProjection()
+      mCurrView(),
+      mProjection(),
+      mPrevViewMatrix(1.0f)
   {
     initUniformLocations();
   }
 
-  void TAAMotionVectorsShaderProgram::setPrevModel(const glm::mat4& model)
+  void TAAMotionVectorsShaderProgram::setView(const glm::mat4& view) const
   {
-    invoke([this, &model]()
-           { glUniformMatrix4fv(mPrevModel, 1, false, glm::value_ptr(model)); });
+    bind();
+    glUniformMatrix4fv(mPrevView, 1, false, glm::value_ptr(mPrevViewMatrix));
+    glUniformMatrix4fv(mCurrView, 1, false, glm::value_ptr(view));
+    mPrevViewMatrix = view;
   }
 
-  void TAAMotionVectorsShaderProgram::setCurrentModel(const glm::mat4& model)
+  void TAAMotionVectorsShaderProgram::setPrevModel(const glm::mat4& model) const
   {
-    invoke([this, &model]()
-           { glUniformMatrix4fv(mCurrentModel, 1, false, glm::value_ptr(model)); });
+    bind();
+    glUniformMatrix4fv(mPrevModel, 1, false, glm::value_ptr(model));
   }
 
-  void TAAMotionVectorsShaderProgram::setPrevView(const glm::mat4& view)
+  void TAAMotionVectorsShaderProgram::setCurrModel(const glm::mat4& model) const
   {
-    invoke([this, &view]()
-           { glUniformMatrix4fv(mPrevView, 1, false, glm::value_ptr(view)); });
+    bind();
+    glUniformMatrix4fv(mCurrModel, 1, false, glm::value_ptr(model));
   }
 
-  void TAAMotionVectorsShaderProgram::setCurrentView(const glm::mat4& view)
+  void TAAMotionVectorsShaderProgram::setProjection(const glm::mat4& projection) const
   {
-    invoke([this, &view]()
-           { glUniformMatrix4fv(mCurrentView, 1, false, glm::value_ptr(view)); });
-  }
-
-  void TAAMotionVectorsShaderProgram::setProjection(const glm::mat4& projection)
-  {
-    invoke([this, &projection]()
-           { glUniformMatrix4fv(mProjection, 1, false, glm::value_ptr(projection)); });
+    bind();
+    glUniformMatrix4fv(mProjection, 1, false, glm::value_ptr(projection));
   }
 
   void TAAMotionVectorsShaderProgram::initUniformLocations()
   {
     mPrevModel = getUniformLocation("prevModel");
-    mCurrentModel = getUniformLocation("currentModel");
+    mCurrModel = getUniformLocation("currModel");
     mPrevView = getUniformLocation("prevView");
-    mCurrentView = getUniformLocation("currentView");
+    mCurrView = getUniformLocation("currView");
     mProjection = getUniformLocation("projection");
   }
 }  // namespace RenderSystem

@@ -8,6 +8,7 @@
 #include <glad/glad.h>
 
 #include "Camera.h"
+#include "Material.h"
 
 namespace RenderSystem
 {
@@ -15,7 +16,7 @@ namespace RenderSystem
     const std::filesystem::path& vertexShaderPath,
     const std::filesystem::path& fragmentShaderPath
   )
-    : ShaderProgram(vertexShaderPath, fragmentShaderPath),
+    : Object3DShaderProgram(vertexShaderPath, fragmentShaderPath),
       mModel(),
       mView(),
       mProjection(),
@@ -24,32 +25,34 @@ namespace RenderSystem
     initUniformLocations();
   }
 
-  void ColorShaderProgram::onCameraPosChanged(Camera* camera)
+  void ColorShaderProgram::onCameraChanged(const Camera* camera) const
   {
     setView(camera->getViewMatrix());
   }
 
-  void ColorShaderProgram::setModel(const glm::mat4& model)
+  void ColorShaderProgram::setModel(const glm::mat4& model) const
   {
-    invoke([this, &model]()
-           { glUniformMatrix4fv(mModel, 1, false, glm::value_ptr(model)); });
+    bind();
+    glUniformMatrix4fv(mModel, 1, false, glm::value_ptr(model));
   }
 
-  void ColorShaderProgram::setView(const glm::mat4& view)
+  void ColorShaderProgram::setView(const glm::mat4& view) const
   {
-    invoke([this, &view]() { glUniformMatrix4fv(mView, 1, false, glm::value_ptr(view)); }
-    );
+    bind();
+    glUniformMatrix4fv(mView, 1, false, glm::value_ptr(view));
   }
 
-  void ColorShaderProgram::setProjection(const glm::mat4& projection)
+  void ColorShaderProgram::setProjection(const glm::mat4& projection) const
   {
-    invoke([this, &projection]()
-           { glUniformMatrix4fv(mProjection, 1, false, glm::value_ptr(projection)); });
+    bind();
+    glUniformMatrix4fv(mProjection, 1, false, glm::value_ptr(projection));
   }
 
-  void ColorShaderProgram::setColor(const glm::vec3& color)
+  void ColorShaderProgram::setMaterial(const Material& material) const
   {
-    invoke([this, &color]() { glUniform3fv(mColor, 1, glm::value_ptr(color)); });
+    bind();
+    const auto& colorMaterial = static_cast<const ColorMaterial&>(material);
+    glUniform3fv(mColor, 1, glm::value_ptr(colorMaterial.color));
   }
 
   void ColorShaderProgram::initUniformLocations()

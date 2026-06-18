@@ -7,12 +7,14 @@
 #endif
 #include <glad/glad.h>
 
+#include "Camera.h"
+
 namespace RenderSystem
 {
   TAADepthMapShaderProgram::TAADepthMapShaderProgram(
     const path& vertexShaderPath, const path& fragmentShaderPath
   )
-    : ShaderProgram(vertexShaderPath, fragmentShaderPath),
+    : Object3DShaderProgram(vertexShaderPath, fragmentShaderPath),
       mModel(),
       mView(),
       mProjection()
@@ -20,22 +22,23 @@ namespace RenderSystem
     initUniformLocations();
   }
 
-  void TAADepthMapShaderProgram::setModel(const glm::mat4& model)
+  void TAADepthMapShaderProgram::onCameraChanged(const Camera* camera) const
   {
-    invoke([this, &model]()
-           { glUniformMatrix4fv(mModel, 1, false, glm::value_ptr(model)); });
+    bind();
+    const auto& view = camera->getViewMatrix();
+    glUniformMatrix4fv(mView, 1, false, glm::value_ptr(view));
   }
 
-  void TAADepthMapShaderProgram::setView(const glm::mat4& view)
+  void TAADepthMapShaderProgram::setModel(const glm::mat4& model) const
   {
-    invoke([this, &view]() { glUniformMatrix4fv(mView, 1, false, glm::value_ptr(view)); }
-    );
+    bind();
+    glUniformMatrix4fv(mModel, 1, false, glm::value_ptr(model));
   }
 
-  void TAADepthMapShaderProgram::setProjection(const glm::mat4& projection)
+  void TAADepthMapShaderProgram::setProjection(const glm::mat4& projection) const
   {
-    invoke([this, &projection]()
-           { glUniformMatrix4fv(mProjection, 1, false, glm::value_ptr(projection)); });
+    bind();
+    glUniformMatrix4fv(mProjection, 1, false, glm::value_ptr(projection));
   }
 
   void TAADepthMapShaderProgram::initUniformLocations()

@@ -53,13 +53,9 @@ namespace RenderSystem
     const std::filesystem::path& vertexShaderPath,
     const std::filesystem::path& fragmentShaderPath
   )
-    : mVertexShaderPath(vertexShaderPath),
-      mFragmentShaderPath(fragmentShaderPath),
-      mVertexShader(),
-      mFragmentShader(),
-      mShaderProgram()
+    : mVertexShader(), mFragmentShader(), mShaderProgram()
   {
-    init();
+    init(vertexShaderPath.string(), fragmentShaderPath.string());
   }
 
   ShaderProgram::~ShaderProgram()
@@ -74,10 +70,19 @@ namespace RenderSystem
     return glGetUniformLocation(mShaderProgram, name);
   }
 
-  void ShaderProgram::init()
+  bool ShaderProgram::getFlagFromShader(int flagLocation) const
   {
-    mVertexShader = loadShader(mVertexShaderPath.string(), GL_VERTEX_SHADER);
-    mFragmentShader = loadShader(mFragmentShaderPath.string(), GL_FRAGMENT_SHADER);
+    GLint value;
+    glGetUniformiv(mShaderProgram, flagLocation, &value);
+    return value;
+  }
+
+  void ShaderProgram::init(
+    const std::string& vertexShaderPath, const std::string& fragmentShaderPath
+  )
+  {
+    mVertexShader = loadShader(vertexShaderPath, GL_VERTEX_SHADER);
+    mFragmentShader = loadShader(fragmentShaderPath, GL_FRAGMENT_SHADER);
     initShaderProgram();
   }
 
@@ -96,12 +101,14 @@ namespace RenderSystem
 
   void ShaderProgram::bind() const
   {
-    glGetIntegerv(GL_CURRENT_PROGRAM, &mResourceToRestore);
     glUseProgram(mShaderProgram);
   }
 
-  void ShaderProgram::unbind() const
+  Object3DShaderProgram::Object3DShaderProgram(
+    const std::filesystem::path& vertexShaderPath,
+    const std::filesystem::path& fragmentShaderPath
+  )
+    : ShaderProgram(vertexShaderPath, fragmentShaderPath)
   {
-    glUseProgram(mResourceToRestore);
   }
 }  // namespace RenderSystem

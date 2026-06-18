@@ -7,39 +7,53 @@
 #endif
 #include <glad/glad.h>
 
+#include "Camera.h"
 #include "Constants.h"
+#include "Viewport.h"
+
+namespace
+{
+  constexpr int SKYBOX_UNIT = 0;
+}
 
 namespace RenderSystem
 {
   SkyboxShaderProgram::SkyboxShaderProgram(
     const path& vertexShader, const path& fragmentShader
   )
-    : ShaderProgram(vertexShader, fragmentShader), mView(), mProjection(), mSkybox()
+    : ShaderProgram(vertexShader, fragmentShader)
   {
     initUniformLocations();
   }
 
-  void SkyboxShaderProgram::setView(const glm::mat4& view)
+  void SkyboxShaderProgram::preRenderSetup() const
   {
-    invoke([this, &view]() { glUniformMatrix4fv(mView, 1, false, glm::value_ptr(view)); }
-    );
+    glBindTextureUnit(SKYBOX_UNIT, mSkyboxId);
   }
 
-  void SkyboxShaderProgram::setProjection(const glm::mat4& projection)
+  void SkyboxShaderProgram::onCameraChanged(const Camera* camera) const
   {
-    invoke([this, &projection]()
-           { glUniformMatrix4fv(mProjection, 1, false, glm::value_ptr(projection)); });
+    bind();
+    glUniformMatrix4fv(mView, 1, false, glm::value_ptr(camera->getViewMatrix()));
+  }
+
+  void SkyboxShaderProgram::setProjection(const glm::mat4& projection) const
+  {
+    bind();
+    glUniformMatrix4fv(mProjection, 1, false, glm::value_ptr(projection));
   }
 
   void SkyboxShaderProgram::setSkyboxCubemap(const CubemapTexture& texture) const
   {
-    invoke([this, &texture]() { texture.passToFragmentShader(mSkybox, 0); });
+    bind();
+    mSkyboxId = texture.getId();
+    glUniform1i(mSkyboxLocation, SKYBOX_UNIT);
   }
 
   void SkyboxShaderProgram::initUniformLocations()
   {
     mView = glGetUniformLocation(mShaderProgram, "view");
     mProjection = glGetUniformLocation(mShaderProgram, "projection");
-    mSkybox = glGetUniformLocation(mShaderProgram, "skybox");
+    mSkyboxLocation = glGetUniformLocation(mShaderProgram, "skybox");
   }
 }  // namespace RenderSystem

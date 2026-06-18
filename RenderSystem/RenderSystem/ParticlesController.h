@@ -5,25 +5,17 @@
 #include <unordered_set>
 #include <vector>
 
-#include "FlipbookTexture.h"
+#include "Texture2D.h"
 #include "Particle.h"
 
 namespace RenderSystem
 {
-  struct Flipbook
-  {
-    std::unique_ptr<FlipbookTexture> texture;
-    int rows {};
-    int cols {};
-    int totalFrames {};
-  };
-
   class ParticlesController
   {
    public:
     ParticlesController();
 
-    const Flipbook& getFlipbook() const;
+    bool isGeneratingParticles() const;
     const std::vector<Particle>& getParticles() const;
     const std::unordered_set<size_t>& getActiveParticlesIndices() const;
 
@@ -46,7 +38,6 @@ namespace RenderSystem
     void reset();
 
    private:
-    Flipbook mFlipbook;
     std::vector<Particle> mParticles;
     std::unordered_set<size_t> mActiveParticlesIndices;
     Emitter mEmitter;

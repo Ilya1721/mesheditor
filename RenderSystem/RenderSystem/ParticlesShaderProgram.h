@@ -3,16 +3,12 @@
 #include <glm/glm.hpp>
 
 #include "CameraListener.h"
-#include "FlipbookTexture.h"
 #include "ShaderProgram.h"
-#include "ViewportListener.h"
+#include "Texture2D.h"
 
 namespace RenderSystem
 {
-  class ParticlesShaderProgram :
-    public ShaderProgram,
-    public CameraListener,
-    public ViewportListener
+  class ParticlesShaderProgram : public ShaderProgram, public CameraListener
   {
    public:
     ParticlesShaderProgram(
@@ -20,19 +16,21 @@ namespace RenderSystem
       const std::filesystem::path& fragmentShaderPath
     );
 
-    void onCameraPosChanged(Camera* camera) override;
-    void onViewportChanged(Viewport* viewport) override;
+    void preRenderSetup() const override;
+    void onCameraChanged(const Camera* camera) const override;
 
-    void setFlipbookCols(int cols);
-    void setFlipbookRows(int rows);
-    void setFlipbookTexture(const FlipbookTexture& texture);
+    void setProjection(const glm::mat4& projection) const;
+    void setFlipbookCols(int cols) const;
+    void setFlipbookRows(int rows) const;
+    void setFlipbookTexture(const Texture2D& texture) const;
 
    private:
     void initUniformLocations();
-    void setView(const glm::mat4& view);
-    void setProjection(const glm::mat4& projection);
 
    private:
+    mutable int mFlipbookTextureId;
+    int mFlipbookTextureLocation;
+
     int mView;
     int mProjection;
     int mFlipbookCols;

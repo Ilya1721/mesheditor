@@ -13,8 +13,8 @@ uniform bool hasBaseColorTexture = false;
 uniform sampler2D baseColorTexture;
 uniform vec3 baseColor;
 
-uniform bool hasNormalTexture = false;
-uniform sampler2D normalTexture;
+uniform bool hasNormalMapTexture = false;
+uniform sampler2D normalMapTexture;
 
 uniform bool hasMetallicRoughnessTexture = false;
 uniform sampler2D metallicRoughnessTexture;
@@ -30,7 +30,7 @@ const float PI = 3.14159265359;
 
 vec3 getNormalFromTexture()
 {
-    vec3 tangentNormal = texture(normalTexture, vsOut.textureCoords).xyz * 2.0 - 1.0;
+    vec3 tangentNormal = texture(normalMapTexture, vsOut.textureCoords).xyz * 2.0 - 1.0;
     return normalize(vsOut.TBN * tangentNormal);
 }
 
@@ -87,7 +87,7 @@ vec2 getMetallicRoughness()
 
 vec3 getNormal()
 {
-    if (hasNormalTexture)
+    if (hasNormalMapTexture)
     {
         return getNormalFromTexture();
     }

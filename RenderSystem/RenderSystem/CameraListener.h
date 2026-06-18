@@ -8,7 +8,6 @@ namespace RenderSystem
   {
    public:
     virtual ~CameraListener() = default;
-
-    virtual void onCameraPosChanged(Camera* camera) = 0;
+    virtual void onCameraChanged(const Camera* camera) const = 0;
   };
 }  // namespace RenderSystem

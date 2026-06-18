@@ -1,16 +1,17 @@
 #pragma once
 
 #include "Object3D.h"
-#include "PointLight.h"
 
 namespace RenderSystem
 {
+  class PointLight;
+
   class PointLightObject3D : public Object3D
   {
    public:
     PointLightObject3D(PointLight* pointLight);
 
-    void updateTransform(const glm::mat4& transform) override;
+    void updateTransform(const glm::mat4& transform);
 
    private:
     PointLight* mPointLight;

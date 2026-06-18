@@ -5,15 +5,28 @@
 
 namespace RenderSystem
 {
-  using TextureCreator =
-    void(int width, int height, const unsigned char* decodedData, int colorChannels);
+  class ImageLoader
+  {
+   public:
+    ImageLoader(const std::string& filePath);
+    ImageLoader(const unsigned char* data, int dataLength);
+    ~ImageLoader();
 
-  void loadImage(
-    const std::string& filePath, const std::function<TextureCreator>& textureCreator
-  );
-  void loadImage(
-    const unsigned char* data,
-    int dataLength,
-    const std::function<TextureCreator>& textureCreator
-  );
+    const unsigned char* getData();
+    int getWidth() const;
+    int getHeight() const;
+    int getColorChannels() const;
+
+    void load();
+
+   private:
+    unsigned char* mData;
+    int mWidth;
+    int mHeight;
+    int mColorChannels;
+
+    const unsigned char* mInputData;
+    int mInputDataLength;
+    std::string mFilePath;
+  };
 }

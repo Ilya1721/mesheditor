@@ -1,26 +1,23 @@
 #pragma once
 
-#include "Texture.h"
-
 namespace RenderSystem
 {
-  class Texture2D : public Texture
+  class Texture2D
   {
    public:
-    Texture2D() = default;
     Texture2D(int width, int height);
     Texture2D(const Texture2D& other) = delete;
-    Texture2D(Texture2D&& other) noexcept;
-    Texture2D& operator=(Texture2D&& other) noexcept;
-    virtual ~Texture2D() = default;
+    ~Texture2D();
 
+    unsigned int getId() const;
     int getWidth() const;
     int getHeight() const;
 
-    void swap(Texture2D& other) noexcept;
+    void bind() const;
 
    protected:
-    int mWidth = 0;
-    int mHeight = 0;
+    int mWidth;
+    int mHeight;
+    unsigned int mTexture;
   };
 }  // namespace RenderSystem

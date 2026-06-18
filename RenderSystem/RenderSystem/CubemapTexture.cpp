@@ -6,73 +6,59 @@
 #include <glad/glad.h>
 
 #include "ImageLoader.h"
+#include "TextureUtils.h"
 
 namespace RenderSystem
 {
-  CubemapTexture::CubemapTexture(const std::array<path, 6>& cubemapFaces) : Texture()
+  CubemapTexture::CubemapTexture(const std::array<path, 6>& cubemapFaces) : mTexture(0)
   {
+    glGenTextures(1, &mTexture);
     loadCubemapFaces(cubemapFaces);
     initParameters();
   }
 
-  void CubemapTexture::initParameters()
+  unsigned int CubemapTexture::getId() const
   {
-    invoke(
-      []()
-      {
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-      }
-    );
+    return mTexture;
+  }
+
+  void CubemapTexture::bind() const
+  {
+    glBindTexture(GL_TEXTURE_CUBE_MAP, mTexture);
+  }
+
+  void CubemapTexture::initParameters() const
+  {
+    bind();
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
   }
 
   void CubemapTexture::loadCubemapFaces(const std::array<path, 6>& faces)
   {
     for (unsigned int faceIdx = 0; faceIdx < faces.size(); ++faceIdx)
     {
-      loadImage(
-        faces[faceIdx].string(),
-        [faceIdx,
-         this](int width, int height, const unsigned char* decodedData, int colorChannels)
-        { createCubemapTexture(width, height, decodedData, colorChannels, faceIdx); }
+      ImageLoader face(faces[faceIdx].string());
+      face.load();
+      createCubemapTexture(
+        face.getWidth(), face.getHeight(), face.getData(), face.getColorChannels(),
+        faceIdx
       );
     }
   }
 
   void CubemapTexture::createCubemapTexture(
     int width, int height, const unsigned char* data, int colorChannels, int faceIdx
-  )
+  ) const
   {
-    invoke(
-      [&width, &height, &data, &colorChannels, &faceIdx, this]()
-      {
-        const auto colorFormat = getColorFormat(colorChannels);
-        glTexImage2D(
-          GL_TEXTURE_CUBE_MAP_POSITIVE_X + faceIdx, 0, colorFormat, width, height, 0,
-          colorFormat, GL_UNSIGNED_BYTE, data
-        );
-      }
+    bind();
+    const auto colorFormat = getColorFormat(colorChannels);
+    glTexImage2D(
+      GL_TEXTURE_CUBE_MAP_POSITIVE_X + faceIdx, 0, colorFormat, width, height, 0,
+      colorFormat, GL_UNSIGNED_BYTE, data
     );
-  }
-
-  void CubemapTexture::bind() const
-  {
-    glGetIntegerv(GL_TEXTURE_BINDING_CUBE_MAP, &mResourceToRestore);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, mTexture);
-  }
-
-  void CubemapTexture::unbind() const
-  {
-    glBindTexture(GL_TEXTURE_CUBE_MAP, mResourceToRestore);
-  }
-
-  void CubemapTexture::passToFragmentShader(int textureLocation, int textureSlot) const
-  {
-    glActiveTexture(GL_TEXTURE0 + textureSlot);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, mTexture);
-    glUniform1i(textureLocation, textureSlot);
   }
 }  // namespace RenderSystem

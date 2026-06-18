@@ -24,12 +24,6 @@ namespace RenderSystem
 
   void VertexArrayObject::bind() const
   {
-    glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &mSavedVAO);
     glBindVertexArray(mVAO);
-  }
-
-  void VertexArrayObject::unbind() const
-  {
-    glBindVertexArray(mSavedVAO);
   }
 }

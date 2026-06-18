@@ -10,13 +10,11 @@ namespace RenderSystem
     ~VertexArrayObject();
 
     void bind() const;
-    void unbind() const;
 
    private:
     void init();
 
    protected:
     unsigned int mVAO;
-    mutable int mSavedVAO;
   };
 }

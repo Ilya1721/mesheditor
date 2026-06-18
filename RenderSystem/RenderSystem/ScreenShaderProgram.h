@@ -13,12 +13,14 @@ namespace RenderSystem
       const std::filesystem::path& fragmentShaderPath
     );
 
-    void setTexture(const Texture2D& texture);
+    void preRenderSetup() const override;
+    void setScreenTexture(const Texture2D& texture);
 
    private:
     void initUniformLocations();
 
    private:
-    int mScreenTexture;
+    mutable int mScreenTextureId;
+    int mScreenTextureLocation;
   };
 }  // namespace RenderSystem

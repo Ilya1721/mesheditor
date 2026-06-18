@@ -61,7 +61,7 @@ namespace RenderSystem
   {
     action();
     mViewMatrix = createViewMatrix();
-    mCameraPosChangedCallbacks.invokeCallbacks();
+    mCameraChangedCallbacks.invokeCallbacks();
   }
 
   void Camera::setEyeTargetUp(
@@ -283,10 +283,10 @@ namespace RenderSystem
     }
   }
 
-  void Camera::addOnCameraPosChangedCallback(
-    const std::function<cameraPosChangedCallback>& callback
+  void Camera::addOnCameraChangedCallback(
+    const std::function<CameraChangedCallback>& callback
   )
   {
-    mCameraPosChangedCallbacks.addCallback(callback);
+    mCameraChangedCallbacks.addCallback(callback);
   }
 }  // namespace RenderSystem

@@ -5,29 +5,31 @@
 #endif
 #include <glad/glad.h>
 
+#include <algorithm>
+
 namespace RenderSystem
 {
-  Texture2D::Texture2D(int width, int height) : Texture(), mWidth(width), mHeight(height)
+  Texture2D::Texture2D(int width, int height) : mTexture(), mWidth(width), mHeight(height)
   {
+    glGenTextures(1, &mTexture);
   }
 
-  Texture2D::Texture2D(Texture2D&& other) noexcept
+  Texture2D::~Texture2D()
   {
-    *this = std::move(other);
-  }
-
-  Texture2D& Texture2D::operator=(Texture2D&& other) noexcept
-  {
-    if (this != &other)
+    if (mTexture != 0)
     {
-      Texture::operator=(std::move(other));
-      mWidth = other.mWidth;
-      mHeight = other.mHeight;
-      other.mWidth = 0;
-      other.mHeight = 0;
+      glDeleteTextures(1, &mTexture);
     }
+  }
 
-    return *this;
+  void Texture2D::bind() const
+  {
+    glBindTexture(GL_TEXTURE_2D, mTexture);
+  }
+
+  unsigned int Texture2D::getId() const
+  {
+    return mTexture;
   }
 
   int Texture2D::getWidth() const
@@ -38,13 +40,5 @@ namespace RenderSystem
   int Texture2D::getHeight() const
   {
     return mHeight;
-  }
-
-  void Texture2D::swap(Texture2D& other) noexcept
-  {
-    std::swap(mTexture, other.mTexture);
-    std::swap(mResourceToRestore, other.mResourceToRestore);
-    std::swap(mWidth, other.mWidth);
-    std::swap(mHeight, other.mHeight);
   }
 }  // namespace RenderSystem

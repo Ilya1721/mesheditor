@@ -1,26 +1,29 @@
 #pragma once
 
-#include "RequiresBindBeforeInvoke.h"
-#include "Texture.h"
+#include <functional>
+
+#include "Texture2D.h"
 
 namespace RenderSystem
 {
-  class FrameBufferObject : public RequiresBindBeforeInvoke
+  class FrameBufferObject
   {
    public:
     FrameBufferObject();
 
     void attachTexture(
-      const Texture& texture, const std::function<void()>& textureSetupFunc
-    );
-    void attachDepthBuffer(int width, int height);
+      const Texture2D& texture,
+      int colorAttachment,
+      int readBufferMode,
+      int drawBufferMode,
+      bool attachDepthBuffer
+    ) const;
+    void bind() const;
 
    private:
     void init();
-    void bind() const override;
-    void unbind() const override;
 
-   private:
+   protected:
     unsigned int mFBO;
     unsigned int mDepthRBO;
   };

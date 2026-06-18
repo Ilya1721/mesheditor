@@ -5,6 +5,7 @@
 #include <glm/gtx/matrix_decompose.hpp>
 
 #include "Animation.h"
+#include "TextureFactory.h"
 
 namespace
 {
@@ -335,13 +336,13 @@ namespace RenderSystem
     return skeleton;
   }
 
-  std::shared_ptr<ImageTexture> GLTFModelLoader::loadTextureFromMemory(
+  std::shared_ptr<Texture2D> GLTFModelLoader::loadTextureFromMemory(
     const fastgltf::sources::BufferView& bufferViewSource
   )
   {
     const auto& bufferView = mAsset->bufferViews[bufferViewSource.bufferViewIndex];
     const auto& buffer = mAsset->buffers[bufferView.bufferIndex];
-    std::shared_ptr<ImageTexture> imageTexture;
+    std::shared_ptr<Texture2D> imageTexture;
 
     std::visit(
       [&imageTexture, &bufferView](auto&& data)
@@ -352,7 +353,7 @@ namespace RenderSystem
           auto convertedData = reinterpret_cast<const unsigned char*>(
             data.bytes.data() + bufferView.byteOffset
           );
-          imageTexture = std::make_shared<ImageTexture>(convertedData, data.bytes.size());
+          imageTexture = createImageTexture(convertedData, data.bytes.size());
         }
       },
       buffer.data
@@ -361,9 +362,9 @@ namespace RenderSystem
     return imageTexture;
   }
 
-  std::shared_ptr<ImageTexture> GLTFModelLoader::loadTexture(int imageIndex)
+  std::shared_ptr<Texture2D> GLTFModelLoader::loadTexture(int imageIndex)
   {
-    std::shared_ptr<ImageTexture> imageTexture;
+    std::shared_ptr<Texture2D> imageTexture;
     const fastgltf::Image& image = mAsset->images[imageIndex];
     std::visit(
       [this, &image, &imageTexture](auto&& data)
@@ -375,7 +376,7 @@ namespace RenderSystem
         }
         else if constexpr (std::is_same_v<ImageDataType, fastgltf::sources::URI>)
         {
-          imageTexture = std::make_shared<ImageTexture>(data.uri.c_str());
+          imageTexture = createImageTexture(data.uri.c_str());
         }
       },
       image.data

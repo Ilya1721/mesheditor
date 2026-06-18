@@ -1,22 +1,19 @@
 #pragma once
 
 #include "MeshRenderData.h"
-#include "RequiresBindBeforeInvoke.h"
+#include "RenderBuffer.h"
 #include "VertexArrayObject.h"
 #include "VertexBufferObject.h"
 
 namespace RenderSystem
 {
-  class MeshRenderBuffer : public RequiresBindBeforeInvoke
+  class MeshRenderBuffer : public RenderBuffer
   {
    public:
     void loadRenderData(const MeshRenderData& renderData);
-
-  private:
     void bind() const override;
-    void unbind() const override;
 
-  private:
+   private:
     VertexBufferObject mVBO;
     VertexArrayObject mVAO;
   };

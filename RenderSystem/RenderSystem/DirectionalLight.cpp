@@ -19,12 +19,8 @@ namespace RenderSystem
     setupSettings();
   }
 
-  void DirectionalLight::setupSettings()
+  void DirectionalLight::setupSettings() const
   {
-    glClearColor(
-      BACKGROUND_COLOR.r, BACKGROUND_COLOR.g, BACKGROUND_COLOR.b, BACKGROUND_COLOR.a
-    );
-    glEnable(GL_DEPTH_TEST);
     setParams(DIR_LIGHT_PARAMS);
   }
 
@@ -42,7 +38,7 @@ namespace RenderSystem
     mSpecular = getUniformLocation("directionalLightParams.specular");
   }
 
-  void DirectionalLight::setParams(const DirectionalLightParams& params)
+  void DirectionalLight::setParams(const DirectionalLightParams& params) const
   {
     setAmbient(glm::value_ptr(params.ambient));
     setDiffuse(glm::value_ptr(params.diffuse));

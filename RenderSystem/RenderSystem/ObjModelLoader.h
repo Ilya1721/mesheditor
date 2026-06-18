@@ -13,7 +13,7 @@ namespace RenderSystem
     BlinnPhongMaterial load(const std::filesystem::path& filePath);
 
   private:
-    std::shared_ptr<ImageTexture> parseTexture(const std::filesystem::path& filePath);
+    std::shared_ptr<Texture2D> parseTexture(const std::filesystem::path& filePath);
     std::string parseTexturePath();
   };
 

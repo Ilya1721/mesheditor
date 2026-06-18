@@ -1,67 +1,38 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include <unordered_map>
+#include <memory>
 
-#include "TAAColorBufferController.h"
-#include "TAADepthMapController.h"
-#include "TAAMotionVectorsController.h"
-#include "TAAResolveController.h"
-#include "ViewportListener.h"
-
-struct ObjectModel
-{
-  glm::mat4 prevModel;
-  glm::mat4 currentModel;
-};
+#include "Texture2D.h"
 
 namespace RenderSystem
 {
-  class ShaderProgram;
-  class Object3D;
-
-  class TAAController : public ViewportListener
+  class TAAController
   {
    public:
-    TAAController(
-      const path& depthMapVertexShaderPath,
-      const path& depthMapFragmentShaderPath,
-      const path& motionVectorsVertexShaderPath,
-      const path& motionVectorsFragmentShaderPath,
-      const path& resolveVertexShaderPath,
-      const path& resolveFragmentShaderPath
+    const Texture2D* getPrevColorTexture() const;
+    const Texture2D* getCurrColorTexture() const;
+    const Texture2D* getPrevDepthTexture() const;
+    const Texture2D* getCurrDepthTexture() const;
+    const Texture2D* getMotionVectorsTexture() const;
+    const Texture2D* getResolvedColorTexture() const;
+    glm::mat4 getJitteredProjection() const;
+
+    void update(
+      const glm::mat4& projection, unsigned int viewportWidth, unsigned int viewportHeight
     );
-
-    void onViewportChanged(Viewport* viewport) override;
-
-    glm::mat4 makeJitteredProjection();
-
-    void resetFrameIndex();
-    void setModel(const Object3D* object, const glm::mat4& model);
-    void setView(const glm::mat4& view);
-    void renderSceneToDepthMap(const std::function<void()>& renderSceneFunc);
-    void renderSceneToMotionVectorsTexture(const std::function<void()>& renderSceneFunc);
-    void renderSceneToColorBuffer(const std::function<void()>& renderSceneFunc);
-    const TAAColorTexture& resolveTAA(const std::function<void()>& renderFunc);
+    void swapTextures();
 
    private:
-    void updateViewportParams(
-      const glm::mat4& projection, int screenWidth, int screenHeight
-    );
-    void setProjection(const glm::mat4& projection);
-    void setScreenSize(int screenWidth, int screenHeight);
-
-   private:
+    mutable int mFrameIndex;
     glm::mat4 mProjection;
-    glm::mat4 mView;
     int mScreenWidth;
     int mScreenHeight;
-    int mFrameIndex;
-    bool mIsFirstFrame;
-    TAADepthMapController mDepthMapController;
-    TAAMotionVectorsController mMotionVectorsController;
-    TAAColorBufferController mColorBufferController;
-    TAAResolveController mResolveController;
-    std::unordered_map<const Object3D*, ObjectModel> mObjectModelMap;
+    std::shared_ptr<Texture2D> mPrevColorTexture;
+    std::shared_ptr<Texture2D> mCurrColorTexture;
+    std::shared_ptr<Texture2D> mPrevDepthMap;
+    std::shared_ptr<Texture2D> mCurrDepthMap;
+    std::shared_ptr<Texture2D> mMotionVectorsTexture;
+    std::shared_ptr<Texture2D> mResolvedColorTexture;
   };
 }  // namespace RenderSystem

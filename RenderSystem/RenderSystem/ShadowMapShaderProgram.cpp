@@ -12,7 +12,7 @@ namespace RenderSystem
   ShadowMapShaderProgram::ShadowMapShaderProgram(
     const path& vertexShaderPath, const path& fragmentShaderPath
   )
-    : ShaderProgram(vertexShaderPath, fragmentShaderPath),
+    : Object3DShaderProgram(vertexShaderPath, fragmentShaderPath),
       mModel(),
       mLightView(),
       mLightProjection()
@@ -20,52 +20,44 @@ namespace RenderSystem
     initUniformLocations();
   }
 
-  void ShadowMapShaderProgram::setModel(const glm::mat4& model)
+  void ShadowMapShaderProgram::setModel(const glm::mat4& model) const
   {
-    invoke([this, &model]()
-           { glUniformMatrix4fv(mModel, 1, false, glm::value_ptr(model)); });
+    bind();
+    glUniformMatrix4fv(mModel, 1, false, glm::value_ptr(model));
   }
 
-  void ShadowMapShaderProgram::setLightView(const glm::mat4& lightView)
+  void ShadowMapShaderProgram::setLightView(const glm::mat4& lightView) const
   {
-    invoke([this, &lightView]()
-           { glUniformMatrix4fv(mLightView, 1, false, glm::value_ptr(lightView)); });
+    bind();
+    glUniformMatrix4fv(mLightView, 1, false, glm::value_ptr(lightView));
   }
 
-  void ShadowMapShaderProgram::setLightProjection(const glm::mat4& lightProjection)
+  void ShadowMapShaderProgram::setLightProjection(const glm::mat4& lightProjection) const
   {
-    invoke(
-      [this, &lightProjection]()
-      { glUniformMatrix4fv(mLightProjection, 1, false, glm::value_ptr(lightProjection)); }
-    );
+    bind();
+    glUniformMatrix4fv(mLightProjection, 1, false, glm::value_ptr(lightProjection));
   }
 
-  void ShadowMapShaderProgram::setUseSkinningTransform(bool useSkinningTransform)
+  void ShadowMapShaderProgram::setUseSkinningTransform(bool useSkinningTransform) const
   {
-    invoke([this, useSkinningTransform]()
-           { glUniform1i(mUseSkinningTransform, useSkinningTransform); });
+    bind();
+    glUniform1i(mUseSkinningTransform, useSkinningTransform);
   }
 
   void ShadowMapShaderProgram::setSkinningTransforms(
     const std::vector<glm::mat4>& skinningTransforms
-  )
+  ) const
   {
-    if (skinningTransforms.empty())
+    if (!skinningTransforms.empty())
     {
-      return;
+      bind();
+      glUniformMatrix4fv(
+        mSkinningTransforms,
+        skinningTransforms.size(),
+        GL_FALSE,
+        glm::value_ptr(skinningTransforms[0])
+      );
     }
-
-    invoke(
-      [this, &skinningTransforms]()
-      {
-        glUniformMatrix4fv(
-          mSkinningTransforms,
-          skinningTransforms.size(),
-          GL_FALSE,
-          glm::value_ptr(skinningTransforms[0])
-        );
-      }
-    );
   }
 
   void ShadowMapShaderProgram::initUniformLocations()

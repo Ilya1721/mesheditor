@@ -9,36 +9,45 @@
 #include "Camera.h"
 #include "CameraListener.h"
 #include "ColorShaderProgram.h"
-#include "ExtraRenderModesController.h"
+#include "DefaultFrameBufferObject.h"
 #include "GlassShaderProgram.h"
+#include "HighlightedFacesData.h"
 #include "LightParams.h"
+#include "MeshRenderBuffer.h"
 #include "Object3D.h"
 #include "Object3DIntersection.h"
+#include "ObjectRenderer.h"
 #include "PBRShaderProgram.h"
 #include "ParticlesController.h"
+#include "ParticlesRenderBuffer.h"
 #include "ParticlesShaderProgram.h"
-#include "Renderer.h"
-#include "SceneDecorationsController.h"
+#include "PointCloudShaderProgram.h"
 #include "ScreenShaderProgram.h"
-#include "ShadowMapController.h"
+#include "ShadowMapShaderProgram.h"
 #include "ShadowShaderProgram.h"
-#include "SkyboxController.h"
+#include "SkyboxShaderProgram.h"
+#include "StaticQuadRenderBuffer.h"
 #include "TAAController.h"
-#include "ViewportListener.h"
+#include "TAADepthMapShaderProgram.h"
+#include "TAAMotionVectorsShaderProgram.h"
+#include "TAAResolveShaderProgram.h"
+#include "Viewport.h"
 #include "WaterController.h"
 #include "WaterShaderProgram.h"
-#include "PointCloudShaderProgram.h"
 
 namespace RenderSystem
 {
   using namespace GeometryCore;
 
-  struct Modelable;
+  using ObjectHighlightRendererMap =
+    std::unordered_map<const Object3D*, std::unique_ptr<ObjectHighlightRenderer>>;
+  using ObjectFaceHighlightRendererMap =
+    std::unordered_map<const Object3D*, std::unique_ptr<ObjectHighlightRenderer>>;
 
-  class Scene : public ViewportListener
+  class Scene
   {
    public:
-    Scene(const std::string& meshFilePath, float aspectRatio);
+    Scene(const Viewport* viewport, const std::string& meshFilePath);
     Scene(Scene&& scene) = delete;
 
     Object3DIntersection getRayIntersection(
@@ -49,20 +58,19 @@ namespace RenderSystem
       const;
     glm::vec3 getDefaultPointLightSourcePos() const;
     const Object3D& getRootObject() const;
-    std::vector<ViewportListener*> getViewportListeners();
     Camera* getCamera() const;
     glm::vec3 unProject(
       const glm::vec3& posGL3D, const glm::mat4& projection, const glm::vec4& viewportData
     );
 
-    void onViewportChanged(Viewport* viewport) override;
+    void onViewportChanged();
 
     void setHighlightedObject(const Object3D* object);
     void setHighlightedFacesData(const HighlightedFacesData& data);
     void setPickedObject(Object3D* pickedObject);
 
     void addPointLight(const PointLightParams& params, const glm::vec3& lightSourcePos);
-    void addSceneDecorations(const std::vector<SceneDecoration>& decorations);
+    void addSceneDecoration(std::unique_ptr<Object3D> decoration);
 
     void toggleWireframe();
     void removePointLight(unsigned int index);
@@ -85,57 +93,42 @@ namespace RenderSystem
     void stopGeneratingWater();
 
    private:
-    const TAAColorTexture& resolveTAA();
     ParticlesRenderData getParticlesRenderData() const;
-    MeshRenderData getSkyboxRenderData();
-    ShaderProgram* getSceneDecorationShader(const SceneDecoration& decoration) const;
+    MeshRenderData getSkyboxRenderData() const;
+    MeshRenderData getWaterRenderData() const;
 
     void addModelObject(const std::string& meshFilePath);
     void addFloorAsObject();
     void addCameraListeners();
-
-    void setBlinnPhongMaterial(const BlinnPhongMaterial& material);
-    void setGlassMaterial(const GlassMaterial& material);
-    void setPBRMaterial(const PBRMaterial& material);
-    void setColorMaterial(const ColorMaterial& material);
-    void setProjectionToShaders(const glm::mat4& projection);
-
-    void writeSceneToShadowMap();
-    void writeSceneToTAATextures();
+    void addObjectRenderers(const Object3D* object);
+    void addObjectMaterialRenderers(const Object3D* object);
+    void addObjectShadowRenderers(const Object3D* object);
+    void addObjectTAARenderers(const Object3D* object);
+    void addObjectMiscRenderers(const Object3D* object);
 
     void onObjectAddedToScene(const Object3D* object);
     void onSceneObjectUpdated(
       const Object3D* object, const std::unordered_set<UniqueVertex*>& vertices
     );
     void onSceneObjectBBoxUpdated();
-    void onCameraPosChanged();
+    void onCameraChanged();
 
-    void renderSceneObjects(
-      const std::function<void(const Object3D*)>& prerenderSetup, bool invokeModelShaders
-    );
-    void renderRawScene(
-      const std::function<void(const Object3D*)>& prerenderSetup, bool invokeModelShaders
-    );
-    void renderFullScene(
-      const std::function<void(const Object3D*)>& prerenderSetup, bool invokeModelShaders
-    );
-    void renderDecorations();
-    void renderHighlightedFaces();
-    void renderWireframe();
-    void renderObjectHighlighted();
-    void renderSkybox();
-    void renderFinalScreenTexture(const Texture2D& texture);
-    void renderShadows();
-    void renderParticles();
-    void renderWater();
+    void renderIntoShadowMapTexture() const;
+    void renderIntoTAAColorTexture() const;
+    void renderIntoTAADepthTexture() const;
+    void renderIntoTAAMotionVectorsTexture() const;
+    void renderIntoTAAResolvedColorTexture();
+    void renderToScreen() const;
 
     void registerListenersCallbacks();
     void registerRootObjectCallbacks();
 
-    void scenePrerenderSetup(const Object3D* obj);
-    void decorationPrerenderSetup(const SceneDecoration& decoration);
     void updateDirLightProjection();
+    void setResolveShaderTextures();
+    void setupRenderingSettings();
     void adjustFloor(Object3D* floor);
+    void setJitteredProjectionToShaders();
+    void setViewToShaders();
 
     void init(const std::string& meshFilePath);
     void initSceneObjects(const std::string& meshFilePath);
@@ -143,38 +136,74 @@ namespace RenderSystem
     void initControllers();
     void initListeners();
     void initDirLight();
-    void initParticles();
-    void initRenderer();
-    void initWater();
+    void initRenderers();
+    void initRenderBuffers();
+    void initTextures();
 
    private:
-    std::unique_ptr<Renderer> mRenderer;
-    std::unique_ptr<Camera> mCamera;
     std::unique_ptr<BlinnPhongShaderProgram> mBlinnPhongShaderProgram;
     std::unique_ptr<PBRShaderProgram> mPBRShaderProgram;
     std::unique_ptr<GlassShaderProgram> mGlassShaderProgram;
     std::unique_ptr<ShadowShaderProgram> mShadowShaderProgram;
+    std::unique_ptr<ShadowMapShaderProgram> mShadowMapShaderProgram;
+    std::unique_ptr<TAADepthMapShaderProgram> mTAADepthMapShaderProgram;
+    std::unique_ptr<TAAMotionVectorsShaderProgram> mTAAMotionVectorsShaderProgram;
+    std::unique_ptr<TAAResolveShaderProgram> mTAAResolveShaderProgram;
     std::unique_ptr<ScreenShaderProgram> mScreenShaderProgram;
     std::unique_ptr<ParticlesShaderProgram> mParticlesShaderProgram;
     std::unique_ptr<WaterShaderProgram> mWaterShaderProgram;
     std::unique_ptr<ColorShaderProgram> mColorShaderProgram;
+    std::unique_ptr<SkyboxShaderProgram> mSkyboxShaderProgram;
     std::unique_ptr<PointCloudShaderProgram> mPointCloudShaderProgram;
-    std::unique_ptr<ShadowMapController> mShadowMapController;
-    std::unique_ptr<SkyboxController> mSkyboxController;
+
     std::unique_ptr<TAAController> mTAAController;
-    std::unique_ptr<SceneDecorationsController> mDecorationsController;
-    std::unique_ptr<ExtraRenderModesController> mExtraRenderModesController;
     std::unique_ptr<AnimationController> mAnimationController;
     std::unique_ptr<ParticlesController> mParticlesController;
     std::unique_ptr<WaterController> mWaterController;
+
     std::vector<CameraListener*> mCameraListeners;
+    std::unique_ptr<Camera> mCamera;
+    const Viewport* mViewport;
 
-    Object3D* mModelObject;
-    Object3D* mPickedObject;
-    float mAspectRatio;
+    HighlightedFacesData mHighlightedFacesData;
+    bool mRenderWireframe;
 
-    MeshRenderData mSceneRenderData;
-    std::unordered_map<const Object3D*, int> mSceneObjectVertexOffsetMap;
+    std::shared_ptr<Texture2D> mWaterNormalMap;
+    std::shared_ptr<Texture2D> mShadowMap;
+    std::shared_ptr<Texture2D> mParticlesFlipbook;
+    std::shared_ptr<CubemapTexture> mSkyboxTexture;
+
     Object3D mRootObject;
+    Object3D* mPickedObject;
+    const Object3D* mModelObject;
+    const Object3D* mHighlightedObject;
+    std::vector<std::unique_ptr<Object3D>> mDecorations;
+
+    std::unordered_map<const Object3D*, Object3DRenderer*> mObjectRendererMap;
+    ObjectHighlightRendererMap mObjectHighlightRendererMap;
+    ObjectFaceHighlightRendererMap mFaceHighlightRendererMap;
+    std::vector<std::unique_ptr<Object3DRenderer>> mObjectRenderers;
+    std::vector<std::unique_ptr<Object3DRenderer>> mDecorationRenderers;
+    std::vector<std::unique_ptr<Object3DRenderer>> mShadowMapRenderers;
+    std::vector<std::unique_ptr<Object3DRenderer>> mTAADepthMapRenderers;
+    std::vector<std::unique_ptr<ObjectShadowRenderer>> mShadowRenderers;
+    std::vector<std::unique_ptr<ObjectWireframeRenderer>> mWireframeRenderers;
+    std::vector<std::unique_ptr<ObjectMotionVectorsRenderer>> mMotionVectorsRenderers;
+    std::unique_ptr<QuadRenderer> mTAAResolveRenderer;
+    std::unique_ptr<QuadRenderer> mScreenRenderer;
+    std::unique_ptr<SkyboxRenderer> mSkyboxRenderer;
+    std::unique_ptr<Object3DRenderer> mWaterRenderer;
+    std::unique_ptr<ParticlesRenderer> mParticlesRenderer;
+
+    DefaultFrameBufferObject mScreenFrameBufferObject;
+    FrameBufferObject mOffScreenFrameBufferObject;
+    MeshRenderData mModelRenderData;
+    MeshRenderData mDecorationsRenderData;
+    MeshRenderBuffer mModelRenderBuffer;
+    MeshRenderBuffer mDecorationsRenderBuffer;
+    MeshRenderBuffer mSkyboxRenderBuffer;
+    MeshRenderBuffer mWaterRenderBuffer;
+    ParticlesRenderBuffer mParticlesRenderBuffer;
+    StaticQuadRenderBuffer mScreenQuadRenderBuffer;
   };
 }  // namespace RenderSystem

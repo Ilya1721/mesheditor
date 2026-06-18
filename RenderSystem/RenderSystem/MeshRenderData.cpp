@@ -42,6 +42,14 @@ namespace RenderSystem
     }
   }
 
+  void MeshRenderData::append(const std::vector<Vertex>& vertices)
+  {
+    for (const auto& vertex : vertices)
+    {
+      append(vertex);
+    }
+  }
+
   void MeshRenderData::updateVertex(
     const OriginalVertexData& vertexData, int startVertexOffset
   )
@@ -54,7 +62,7 @@ namespace RenderSystem
     }
   }
 
-  int MeshRenderData::getVertexCount() const
+  size_t MeshRenderData::getVertexCount() const
   {
     return mCompactData.size() / 23;
   }

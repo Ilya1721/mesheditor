@@ -8,7 +8,6 @@ namespace RenderSystem
   {
    public:
     virtual ~ViewportListener() = default;
-
     virtual void onViewportChanged(Viewport* viewport) = 0;
   };
 }

@@ -2,68 +2,149 @@
 
 #include <glm/glm.hpp>
 #include <memory>
-#include <variant>
+#include <vector>
 
-#include "ImageTexture.h"
+#include "Texture2D.h"
 
 namespace RenderSystem
 {
-  static inline constexpr glm::vec3 DEFAULT_RGB {1.0f, 1.0f, 1.0f};
-
-  struct RGBOrTexture
+  struct Material
   {
-    glm::vec3 rgb = DEFAULT_RGB;
-    std::shared_ptr<ImageTexture> texture;
+    virtual ~Material() = default;
+    virtual void setUVScale(const glm::vec2& uvScale) {};
+    virtual std::shared_ptr<Material> clone() const
+    {
+      return std::make_shared<Material>(*this);
+    };
   };
 
-  struct BlinnPhongMaterial
+  struct BlinnPhongMaterial : public Material
   {
-    glm::vec3 ambient = DEFAULT_RGB;
-    RGBOrTexture diffuse;
-    glm::vec3 specular = DEFAULT_RGB;
-    float shininess;
+    BlinnPhongMaterial() = default;
+
+    BlinnPhongMaterial(
+      const glm::vec3& ambientIn,
+      const glm::vec3& diffuseIn,
+      const glm::vec3& specularIn,
+      float shininessIn,
+      const std::shared_ptr<Texture2D>& diffuseTextureIn = nullptr
+    )
+      : ambient(ambientIn),
+        diffuse(diffuseIn),
+        specular(specularIn),
+        shininess(shininessIn),
+        diffuseTexture(diffuseTextureIn)
+    {
+    }
+
+    glm::vec3 ambient {};
+    glm::vec3 diffuse {};
+    glm::vec3 specular {};
+    std::shared_ptr<Texture2D> diffuseTexture;
+    float shininess {};
+    glm::vec2 uvScale = glm::vec2(1.0f);
+
+    void setUVScale(const glm::vec2& newUVScale) override
+    {
+      uvScale = newUVScale;
+    }
+
+    std::shared_ptr<Material> clone() const override
+    {
+      return std::make_shared<BlinnPhongMaterial>(*this);
+    };
   };
 
-  struct GlassMaterial
+  struct GlassMaterial : public Material
   {
-    float refractiveIndex;
-    float reflectionStrength;
-    float transparency;
-    float interpolationFactor;
-    glm::vec3 color = DEFAULT_RGB;
+    GlassMaterial(
+      float refractiveIndexIn,
+      float reflectionStrengthIn,
+      float transparencyIn,
+      float interpolationFactorIn,
+      const glm::vec3& colorIn
+    )
+      : refractiveIndex(refractiveIndexIn),
+        reflectionStrength(reflectionStrengthIn),
+        transparency(transparencyIn),
+        interpolationFactor(interpolationFactorIn),
+        color(colorIn)
+    {
+    }
+
+    float refractiveIndex {};
+    float reflectionStrength {};
+    float transparency {};
+    float interpolationFactor {};
+    glm::vec3 color;
+
+    std::shared_ptr<Material> clone() const override
+    {
+      return std::make_shared<GlassMaterial>(*this);
+    };
   };
 
-  struct PBRMaterial
+  struct PBRMaterial : public Material
   {
-    std::shared_ptr<ImageTexture> baseColorTexture;
-    std::shared_ptr<ImageTexture> normalMap;
-    std::shared_ptr<ImageTexture> metallicRougnessTexture;
-    glm::vec3 baseColor = DEFAULT_RGB;
-    float metallic;
-    float rougness;
+    std::shared_ptr<Texture2D> baseColorTexture;
+    std::shared_ptr<Texture2D> normalMap;
+    std::shared_ptr<Texture2D> metallicRougnessTexture;
+    glm::vec3 baseColor;
+    float metallic {};
+    float rougness {};
+    glm::vec2 uvScale = glm::vec2(1.0f);
+
+    void setUVScale(const glm::vec2& newUVScale) override
+    {
+      uvScale = newUVScale;
+    }
+
+    std::shared_ptr<Material> clone() const override
+    {
+      return std::make_shared<PBRMaterial>(*this);
+    };
   };
 
-  struct ColorMaterial
+  struct ColorMaterial : public Material
   {
-    glm::vec3 color = DEFAULT_RGB;
+    glm::vec3 color;
+
+    std::shared_ptr<Material> clone() const override
+    {
+      return std::make_shared<ColorMaterial>(*this);
+    };
   };
 
-  struct PointCloudMaterial
+  struct PointCloudMaterial : public Material
   {
+    std::shared_ptr<Material> clone() const override
+    {
+      return std::make_shared<PointCloudMaterial>(*this);
+    };
   };
 
-  template <typename T>
-  concept MaterialType = std::same_as<std::remove_cvref_t<T>, BlinnPhongMaterial> ||
-                         std::same_as<std::remove_cvref_t<T>, GlassMaterial> ||
-                         std::same_as<std::remove_cvref_t<T>, PBRMaterial> ||
-                         std::same_as<std::remove_cvref_t<T>, ColorMaterial> ||
-                         std::same_as<std::remove_cvref_t<T>, PointCloudMaterial>;
+  struct Wave
+  {
+    float amplitude {};
+    float length {};
+    float speed {};
+    glm::vec2 direction;
+  };
 
-  using Material = std::variant<
-    std::monostate,
-    BlinnPhongMaterial,
-    GlassMaterial,
-    PBRMaterial,
-    ColorMaterial,
-    PointCloudMaterial>;
+  struct WaterMaterial : Material
+  {
+    int fresnelPower {};
+    float depthFalloff {};
+    float reflectionIntensity {};
+    float normalStrength {};
+    glm::vec3 shallowColor;
+    glm::vec3 deepColor;
+    std::vector<glm::vec2> normalMapMoves;
+    std::vector<Wave> waves;
+
+    virtual std::shared_ptr<Material> clone() const override
+    {
+      return std::make_shared<WaterMaterial>(*this);
+    };
+  };
 }  // namespace RenderSystem

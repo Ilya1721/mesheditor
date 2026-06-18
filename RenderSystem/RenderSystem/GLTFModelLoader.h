@@ -25,8 +25,8 @@ namespace RenderSystem
     std::unique_ptr<Mesh> parseMesh(const fastgltf::Node& node);
     std::vector<Vertex> parseVertices(size_t meshId);
     MaterialData parseMaterial(const fastgltf::Node& node);
-    std::shared_ptr<ImageTexture> loadTexture(int imageIndex);
-    std::shared_ptr<ImageTexture> loadTextureFromMemory(
+    std::shared_ptr<Texture2D> loadTexture(int imageIndex);
+    std::shared_ptr<Texture2D> loadTextureFromMemory(
       const fastgltf::sources::BufferView& bufferViewSource
     );
     Skeleton parseSkeleton(

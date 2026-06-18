@@ -24,12 +24,6 @@ namespace RenderSystem
 
   void VertexBufferObject::bind() const
   {
-    glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &mSavedVBO);
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-  }
-
-  void VertexBufferObject::unbind() const
-  {
-    glBindBuffer(GL_ARRAY_BUFFER, mSavedVBO);
   }
 }

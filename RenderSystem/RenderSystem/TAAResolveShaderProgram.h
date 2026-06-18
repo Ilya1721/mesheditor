@@ -2,10 +2,8 @@
 
 #include <glm/glm.hpp>
 
-#include "DepthTexture.h"
 #include "ShaderProgram.h"
-#include "TAAColorTexture.h"
-#include "TAAMotionVectorsTexture.h"
+#include "Texture2D.h"
 
 namespace RenderSystem
 {
@@ -17,23 +15,31 @@ namespace RenderSystem
       const std::filesystem::path& fragmentShaderPath
     );
 
-    void setCurrentColorTexture(const TAAColorTexture& texture) const;
-    void setPreviousColorTexture(const TAAColorTexture& texture) const;
-    void setPrevDepthMap(const DepthTexture& texture) const;
-    void setCurrDepthMap(const DepthTexture& texture) const;
-    void setMotionVectorsTexture(const TAAMotionVectorsTexture& texture) const;
-    void setIsFirstFrame(bool isFirstFrame);
-    void setScreenSize(const glm::vec2& size);
+    void preRenderSetup() const override;
+
+    void setPrevDepthMap(const Texture2D& texture) const;
+    void setCurrDepthMap(const Texture2D& texture) const;
+    void setPrevColorTexture(const Texture2D& texture) const;
+    void setCurrColorTexture(const Texture2D& texture) const;
+    void setMotionVectorsTexture(const Texture2D& texture) const;
+    void setIsFirstFrame(bool isFirstFrame) const;
+    void setScreenSize(const glm::vec2& size) const;
 
    private:
     void initUniformLocations();
 
    private:
-    int mCurrentColorTexture;
-    int mPreviousColorTexture;
-    int mPrevDepthMap;
-    int mCurrDepthMap;
-    int mMotionVectorsTexture;
+    mutable int mPrevDepthMapId;
+    int mPrevDepthMapLocation;
+    mutable int mCurrDepthMapId;
+    int mCurrDepthMapLocation;
+    mutable int mCurrColorTextureId;
+    int mCurrColorTextureLocation;
+    mutable int mPrevColorTextureId;
+    int mPrevColorTextureLocation;
+    mutable int mMotionVectorsTextureId;
+    int mMotionVectorsTextureLocation;
+
     int mIsFirstFrame;
     int mScreenSize;
   };

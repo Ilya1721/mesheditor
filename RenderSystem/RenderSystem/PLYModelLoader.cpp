@@ -1,6 +1,12 @@
 #include "PLYModelLoader.h"
 
+#ifdef __gl_h_
+#undef __gl_h_
+#endif
+#include <glad/glad.h>
+
 #include "Constants.h"
+#include "Material.h"
 #include "Utility/FileHelper.h"
 #include "Utility/StringHelper.h"
 
@@ -18,7 +24,9 @@ namespace
 
 namespace RenderSystem
 {
-  PointCloud PLYModelLoader::loadPointCloud(const std::filesystem::path& filePath)
+  std::unique_ptr<Object3D> PLYModelLoader::loadPointCloud(
+    const std::filesystem::path& filePath
+  )
   {
     mFileContent = readFile(filePath);
     if (mFileContent.empty())
@@ -29,13 +37,27 @@ namespace RenderSystem
     mContext = nullptr;
     mCurrentToken = strtok_s(mFileContent.data(), DELIMITERS.c_str(), &mContext);
     parseHeader();
+    const auto& vertices = parseVertices();
+    auto mesh = std::make_unique<Mesh>(vertices, false);
 
-    return parseVertices();
+    return std::make_unique<Object3D>(
+      std::move(mesh), PointCloudMaterial {}, glm::mat4(1.0f), GL_POINTS
+    );
   }
 
-  PointCloud PLYModelLoader::parseVertices()
+  std::unique_ptr<Object3D> PLYModelLoader::loadMultiplePointClouds(
+    const std::filesystem::path& folderPath
+  )
   {
-    PointCloud pointCloud;
+    auto mesh = std::make_unique<Mesh>(std::vector<Vertex> {}, false);
+    return std::make_unique<Object3D>(
+      std::move(mesh), PointCloudMaterial {}, glm::mat4(1.0f), GL_POINTS
+    );
+  }
+
+  std::vector<Vertex> PLYModelLoader::parseVertices()
+  {
+    std::vector<Vertex> vertices;
     for (size_t vIdx = 0; vIdx < mHeader.vertexCount; ++vIdx)
     {
       Vertex vertex {};
@@ -43,10 +65,10 @@ namespace RenderSystem
       {
         parseProperty(propertyType, vertex);
       }
-      pointCloud.push_back(vertex);
+      vertices.push_back(vertex);
     }
 
-    return pointCloud;
+    return vertices;
   }
 
   void PLYModelLoader::parseHeader()

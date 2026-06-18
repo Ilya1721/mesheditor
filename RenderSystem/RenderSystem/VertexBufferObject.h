@@ -10,13 +10,11 @@ namespace RenderSystem
     ~VertexBufferObject();
 
     void bind() const;
-    void unbind() const;
 
    private:
     void init();
 
    protected:
     unsigned int mVBO;
-    mutable int mSavedVBO;
   };
 }

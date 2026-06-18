@@ -7,6 +7,15 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
+namespace
+{
+  constexpr int PREV_DEPTH_MAP_TEXTURE_UNIT = 0;
+  constexpr int CURR_DEPTH_MAP_TEXTURE_UNIT = 1;
+  constexpr int PREV_COLOR_TEXTURE_UNIT = 2;
+  constexpr int CURR_COLOR_TEXTURE_UNIT = 3;
+  constexpr int MOTION_VECTORS_TEXTURE_UNIT = 4;
+}
+
 namespace RenderSystem
 {
   TAAResolveShaderProgram::TAAResolveShaderProgram(
@@ -18,54 +27,69 @@ namespace RenderSystem
     initUniformLocations();
   }
 
-  void TAAResolveShaderProgram::setCurrentColorTexture(const TAAColorTexture& texture
-  ) const
+  void TAAResolveShaderProgram::preRenderSetup() const
   {
-    invoke([this, &texture]() { texture.passToFragmentShader(mCurrentColorTexture, 0); });
+    glBindTextureUnit(PREV_DEPTH_MAP_TEXTURE_UNIT, mPrevDepthMapId);
+    glBindTextureUnit(CURR_DEPTH_MAP_TEXTURE_UNIT, mCurrDepthMapId);
+    glBindTextureUnit(PREV_COLOR_TEXTURE_UNIT, mPrevColorTextureId);
+    glBindTextureUnit(CURR_COLOR_TEXTURE_UNIT, mCurrColorTextureId);
+    glBindTextureUnit(MOTION_VECTORS_TEXTURE_UNIT, mMotionVectorsTextureId);
   }
 
-  void TAAResolveShaderProgram::setPreviousColorTexture(const TAAColorTexture& texture
-  ) const
+  void TAAResolveShaderProgram::setPrevDepthMap(const Texture2D& texture) const
   {
-    invoke([this, &texture]() { texture.passToFragmentShader(mPreviousColorTexture, 1); }
-    );
+    bind();
+    mPrevDepthMapId = texture.getId();
+    glUniform1i(mPrevDepthMapLocation, PREV_DEPTH_MAP_TEXTURE_UNIT);
   }
 
-  void TAAResolveShaderProgram::setPrevDepthMap(const DepthTexture& texture) const
+  void TAAResolveShaderProgram::setCurrDepthMap(const Texture2D& texture) const
   {
-    invoke([this, &texture]() { texture.passToFragmentShader(mPrevDepthMap, 2); });
+    bind();
+    mCurrDepthMapId = texture.getId();
+    glUniform1i(mCurrDepthMapLocation, CURR_DEPTH_MAP_TEXTURE_UNIT);
   }
 
-  void TAAResolveShaderProgram::setCurrDepthMap(const DepthTexture& texture) const
+  void TAAResolveShaderProgram::setPrevColorTexture(const Texture2D& texture) const
   {
-    invoke([this, &texture]() { texture.passToFragmentShader(mCurrDepthMap, 3); });
+    bind();
+    mPrevColorTextureId = texture.getId();
+    glUniform1i(mPrevColorTextureLocation, PREV_COLOR_TEXTURE_UNIT);
   }
 
-  void TAAResolveShaderProgram::setMotionVectorsTexture(
-    const TAAMotionVectorsTexture& texture
-  ) const
+  void TAAResolveShaderProgram::setCurrColorTexture(const Texture2D& texture) const
   {
-    invoke([this, &texture]() { texture.passToFragmentShader(mMotionVectorsTexture, 4); }
-    );
+    bind();
+    mCurrColorTextureId = texture.getId();
+    glUniform1i(mCurrColorTextureLocation, CURR_COLOR_TEXTURE_UNIT);
   }
 
-  void TAAResolveShaderProgram::setIsFirstFrame(bool isFirstFrame)
+  void TAAResolveShaderProgram::setMotionVectorsTexture(const Texture2D& texture) const
   {
-    invoke([this, isFirstFrame]() { glUniform1i(mIsFirstFrame, isFirstFrame); });
+    bind();
+    mMotionVectorsTextureId = texture.getId();
+    glUniform1i(mMotionVectorsTextureLocation, MOTION_VECTORS_TEXTURE_UNIT);
   }
 
-  void TAAResolveShaderProgram::setScreenSize(const glm::vec2& size)
+  void TAAResolveShaderProgram::setIsFirstFrame(bool isFirstFrame) const
   {
-    invoke([this, &size]() { glUniform2fv(mScreenSize, 1, glm::value_ptr(size)); });
+    bind();
+    glUniform1i(mIsFirstFrame, isFirstFrame);
+  }
+
+  void TAAResolveShaderProgram::setScreenSize(const glm::vec2& size) const
+  {
+    bind();
+    glUniform2fv(mScreenSize, 1, glm::value_ptr(size));
   }
 
   void TAAResolveShaderProgram::initUniformLocations()
   {
-    mCurrentColorTexture = getUniformLocation("currColorTexture");
-    mPreviousColorTexture = getUniformLocation("prevColorTexture");
-    mPrevDepthMap = getUniformLocation("prevDepthMap");
-    mCurrDepthMap = getUniformLocation("currDepthMap");
-    mMotionVectorsTexture = getUniformLocation("motionVectorsTexture");
+    mCurrColorTextureLocation = getUniformLocation("currColorTexture");
+    mPrevColorTextureLocation = getUniformLocation("prevColorTexture");
+    mPrevDepthMapLocation = getUniformLocation("prevDepthMap");
+    mCurrDepthMapLocation = getUniformLocation("currDepthMap");
+    mMotionVectorsTextureLocation = getUniformLocation("motionVectorsTexture");
     mIsFirstFrame = getUniformLocation("isFirstFrame");
     mScreenSize = getUniformLocation("screenSize");
   }

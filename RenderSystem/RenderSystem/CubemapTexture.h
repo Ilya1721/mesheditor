@@ -3,26 +3,26 @@
 #include <array>
 #include <filesystem>
 
-#include "Texture.h"
-
 using namespace std::filesystem;
 
 namespace RenderSystem
 {
-  class CubemapTexture : public Texture
+  class CubemapTexture
   {
    public:
     CubemapTexture(const std::array<path, 6>& cubemapFaces);
 
-    void passToFragmentShader(int textureLocation, int textureSlot) const override;
+    unsigned int getId() const;
+    void bind() const;
 
    private:
-    void initParameters();
+    void initParameters() const;
     void loadCubemapFaces(const std::array<path, 6>& faces);
     void createCubemapTexture(
       int width, int height, const unsigned char* data, int colorChannels, int faceIdx
-    );
-    void bind() const override;
-    void unbind() const override;
+    ) const;
+
+  private:
+    unsigned int mTexture;
   };
 }  // namespace RenderSystem

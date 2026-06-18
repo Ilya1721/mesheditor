@@ -9,6 +9,7 @@ namespace RenderSystem
 {
   void MeshRenderBuffer::loadRenderData(const MeshRenderData& renderData)
   {
+    bind();
     mVBO.bind();
     constexpr auto stride = 23 * sizeof(float);
     const auto& compactData = renderData.getCompactData();
@@ -42,16 +43,10 @@ namespace RenderSystem
     glVertexAttribPointer(
       6, 4, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<void*>(19 * sizeof(float))
     );
-    mVBO.unbind();
   }
 
   void MeshRenderBuffer::bind() const
   {
     mVAO.bind();
-  }
-
-  void MeshRenderBuffer::unbind() const
-  {
-    mVAO.unbind();
   }
 }

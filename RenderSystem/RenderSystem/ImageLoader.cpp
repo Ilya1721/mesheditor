@@ -4,38 +4,52 @@
 
 namespace RenderSystem
 {
-  void loadImage(
-    const std::string& filePath, const std::function<TextureCreator>& textureCreator
-  )
+  ImageLoader::ImageLoader(const std::string& filePath)
+    : mFilePath(filePath), mInputData(nullptr), mInputDataLength(0)
   {
-    int colorChannels, width, height;
-    auto data = stbi_load(filePath.c_str(), &width, &height, &colorChannels, 0);
-    if (!data)
-    {
-      throw std::exception("Couldn't load the image");
-    }
-    textureCreator(width, height, data, colorChannels);
-    stbi_image_free(data);
   }
 
-  void loadImage(
-    const unsigned char* data,
-    int dataLength,
-    const std::function<TextureCreator>& textureCreator
-  )
+  ImageLoader::ImageLoader(const unsigned char* data, int dataLength)
+    : mInputData(data), mInputDataLength(dataLength)
   {
-    if (data == nullptr || dataLength <= 0)
+  }
+
+  ImageLoader::~ImageLoader()
+  {
+    stbi_image_free(mData);
+  }
+
+  const unsigned char* ImageLoader::getData()
+  {
+    return mData;
+  }
+
+  int ImageLoader::getWidth() const
+  {
+    return mWidth;
+  }
+
+  int ImageLoader::getHeight() const
+  {
+    return mHeight;
+  }
+
+  int ImageLoader::getColorChannels() const
+  {
+    return mColorChannels;
+  }
+
+  void ImageLoader::load()
+  {
+    if (!mFilePath.empty())
     {
-      return;
+      mData = stbi_load(mFilePath.c_str(), &mWidth, &mHeight, &mColorChannels, 0);
     }
-    int width, height, colorChannels;
-    auto decodedData =
-      stbi_load_from_memory(data, dataLength, &width, &height, &colorChannels, 0);
-    if (!decodedData)
+    else
     {
-      throw std::exception("Couldn't load the image");
+      mData = stbi_load_from_memory(
+        mInputData, mInputDataLength, &mWidth, &mHeight, &mColorChannels, 0
+      );
     }
-    textureCreator(width, height, decodedData, colorChannels);
-    stbi_image_free(decodedData);
   }
 }

@@ -15,9 +15,9 @@ namespace RenderSystem
     init();
   }
 
-  const Flipbook& ParticlesController::getFlipbook() const
+  bool ParticlesController::isGeneratingParticles() const
   {
-    return mFlipbook;
+    return mGenerateParticles;
   }
 
   const std::vector<Particle>& ParticlesController::getParticles() const
@@ -32,10 +32,6 @@ namespace RenderSystem
 
   void ParticlesController::init()
   {
-    mFlipbook.texture = std::make_unique<FlipbookTexture>(FIRE_FLIPBOOK_PATH);
-    mFlipbook.rows = 6;
-    mFlipbook.cols = 6;
-    mFlipbook.totalFrames = mFlipbook.rows * mFlipbook.cols;
     mParticles.resize(MAX_PARTICLES);
   }
 
@@ -50,15 +46,9 @@ namespace RenderSystem
 
   void ParticlesController::update(float lastFrameTime)
   {
-    if (!mGenerateParticles)
-    {
-      return;
-    }
-
     mParticlesRemainder += mParticlesPerSecond * lastFrameTime;
     auto particlesToGenerate = static_cast<int>(mParticlesRemainder);
     mParticlesRemainder -= particlesToGenerate;
-
     updateActiveParticles(lastFrameTime);
     activateParticles(particlesToGenerate);
   }
@@ -151,7 +141,7 @@ namespace RenderSystem
     }
 
     auto lifeTime = particle.currentTime / particle.duration;
-    particle.blendedFrameIdx = lifeTime * mFlipbook.totalFrames;
+    particle.blendedFrameIdx = lifeTime * FLIPBOOK_TOTAL_FRAMES;
     particle.colorMultiplier.a = 1.0f - lifeTime;
     particle.sideLength = glm::mix(0.2f, 1.0f, glm::sin(lifeTime * glm::pi<float>()));
     particle.position += particle.velocity * lastFrameTime;
@@ -169,7 +159,7 @@ namespace RenderSystem
     particle.viewDirRotation = randomFloat(0.0f, glm::two_pi<float>());
     particle.currentTime = 0.0f;
     particle.duration = randomFloat(0.8f, 1.5f);
-    particle.blendedFrameIdx = randomFloat(0.0f, mFlipbook.totalFrames);
+    particle.blendedFrameIdx = randomFloat(0.0f, FLIPBOOK_TOTAL_FRAMES);
     particle.colorMultiplier = glm::vec4(1.0f);
     mActiveParticlesIndices.insert(particleIdx);
   }

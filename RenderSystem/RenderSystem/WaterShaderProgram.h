@@ -4,17 +4,13 @@
 
 #include "CameraListener.h"
 #include "CubemapTexture.h"
-#include "ImageTexture.h"
+#include "Material.h"
 #include "ShaderProgram.h"
-#include "ViewportListener.h"
-#include "Water.h"
+#include "Texture2D.h"
 
 namespace RenderSystem
 {
-  class WaterShaderProgram :
-    public ShaderProgram,
-    public CameraListener,
-    public ViewportListener
+  class WaterShaderProgram : public Object3DShaderProgram, public CameraListener
   {
    public:
     WaterShaderProgram(
@@ -22,38 +18,35 @@ namespace RenderSystem
       const std::filesystem::path& fragmentShaderPath
     );
 
-    void onCameraPosChanged(Camera* camera) override;
-    void onViewportChanged(Viewport* viewport) override;
+    void preRenderSetup() const override;
+    void onCameraChanged(const Camera* camera) const override;
+    void setModel(const glm::mat4& model) const override;
+    void setMaterial(const Material& material) const override;
 
-    void setModel(const glm::mat4& model);
-    void setVTime(float time);
-    void setFTime(float time);
-    void setWaves(const std::vector<Wave>& waves);
-    void setNormalMapMoves(const std::vector<glm::vec2>& normalMapMoves);
+    void setProjection(const glm::mat4& projection) const;
+    void setVTime(float time) const;
+    void setFTime(float time) const;
     void setSkyboxCubemap(const CubemapTexture& texture) const;
-    void setNormalMap(const ImageTexture& texture);
-    void setNormalStrength(float normalStrength);
-    void setDepthFalloff(float depthFalloff);
-    void setFresnelPower(float fresnelPower);
-    void setReflectionIntensity(float reflectionIntensity);
-    void setDeepColor(const glm::vec3& deepColor);
-    void setShallowColor(const glm::vec3& shallowColor);
+    void setNormalMap(const Texture2D& texture) const;
 
    private:
     void initUniformLocations();
-    void setCameraPos(const glm::vec3& cameraPos);
-    void setView(const glm::mat4& view);
-    void setProjection(const glm::mat4& projection);
+    void setCameraPos(const glm::vec3& cameraPos) const;
+    void setView(const glm::mat4& view) const;
+    void setWaves(const std::vector<Wave>& waves) const;
 
    private:
+    mutable int mSkyboxId;
+    int mSkyboxLocation;
+    mutable int mNormalMapId;
+    int mNormalMapLocation;
+
     int mModel;
     int mView;
     int mProjection;
     int mVTime;
     int mFTime;
     int mWaveCount;
-    int mSkybox;
-    int mNormalMap;
     int mNormalMapMoves;
     int mNormalMapMoveCount;
     int mNormalStrength;

@@ -10,6 +10,11 @@
 #include "Camera.h"
 #include "Viewport.h"
 
+namespace
+{
+  constexpr int FLIPBOOK_TEXTURE_UNIT = 0;
+}
+
 namespace RenderSystem
 {
 
@@ -27,14 +32,16 @@ namespace RenderSystem
     initUniformLocations();
   }
 
-  void ParticlesShaderProgram::onCameraPosChanged(Camera* camera)
+  void ParticlesShaderProgram::preRenderSetup() const
   {
-    setView(camera->getViewMatrix());
+    glBindTextureUnit(FLIPBOOK_TEXTURE_UNIT, mFlipbookTextureId);
   }
 
-  void ParticlesShaderProgram::onViewportChanged(Viewport* viewport)
+  void ParticlesShaderProgram::onCameraChanged(const Camera* camera) const
   {
-    setProjection(viewport->getProjectionMatrix());
+    bind();
+    const auto& view = camera->getViewMatrix();
+    glUniformMatrix4fv(mView, 1, false, glm::value_ptr(view));
   }
 
   void ParticlesShaderProgram::initUniformLocations()
@@ -46,30 +53,28 @@ namespace RenderSystem
     mFlipbookTexture = getUniformLocation("flipbookTexture");
   }
 
-  void ParticlesShaderProgram::setView(const glm::mat4& view)
+  void ParticlesShaderProgram::setProjection(const glm::mat4& projection) const
   {
-    invoke([this, &view]() { glUniformMatrix4fv(mView, 1, false, glm::value_ptr(view)); }
-    );
+    bind();
+    glUniformMatrix4fv(mProjection, 1, false, glm::value_ptr(projection));
   }
 
-  void ParticlesShaderProgram::setProjection(const glm::mat4& projection)
+  void ParticlesShaderProgram::setFlipbookCols(int cols) const
   {
-    invoke([this, &projection]()
-           { glUniformMatrix4fv(mProjection, 1, false, glm::value_ptr(projection)); });
+    bind();
+    glUniform1i(mFlipbookCols, cols);
   }
 
-  void ParticlesShaderProgram::setFlipbookCols(int cols)
+  void ParticlesShaderProgram::setFlipbookRows(int rows) const
   {
-    invoke([this, cols]() { glUniform1i(mFlipbookCols, cols); });
+    bind();
+    glUniform1i(mFlipbookRows, rows);
   }
 
-  void ParticlesShaderProgram::setFlipbookRows(int rows)
+  void ParticlesShaderProgram::setFlipbookTexture(const Texture2D& texture) const
   {
-    invoke([this, rows]() { glUniform1i(mFlipbookRows, rows); });
-  }
-
-  void ParticlesShaderProgram::setFlipbookTexture(const FlipbookTexture& texture)
-  {
-    invoke([this, &texture]() { texture.passToFragmentShader(mFlipbookTexture, 0); });
+    bind();
+    mFlipbookTextureId = texture.getId();
+    glUniform1i(mFlipbookTextureLocation, FLIPBOOK_TEXTURE_UNIT);
   }
 }

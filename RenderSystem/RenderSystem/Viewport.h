@@ -21,8 +21,9 @@ namespace RenderSystem
   class Viewport
   {
    public:
-    Viewport(int width, int height, const MeshCore::AABBox* rootBBox);
+    Viewport(int width, int height);
 
+    void setRootBBox(const MeshCore::AABBox* bbox);
     void setProjectionType(PROJECTION_TYPE projectionType);
     void resize(int width, int height);
     void zoom(float step);
@@ -30,11 +31,12 @@ namespace RenderSystem
       const std::function<viewportChangedCallback>& callback
     );
 
+    int getWidth() const;
+    int getHeight() const;
+    float getAspectRatio() const;
     float getFov() const;
     float getNearPlaneDistance() const;
     float getFarPlaneDistance() const;
-    float getWidth() const;
-    float getHeight() const;
     const glm::ivec2& getPos() const;
     const glm::mat4& getProjectionMatrix() const;
     const PROJECTION_TYPE getProjectionType() const;
@@ -44,12 +46,12 @@ namespace RenderSystem
     glm::mat4 createProjectionMatrix() const;
 
    private:
+    int mWidth;
+    int mHeight;
     float mFov;
     float mNearPlaneDistance;
     float mFarPlaneDistance;
-    float mWidth;
-    float mHeight;
-    float mBBoxViewportGapCoef;
+    float mOrthoZoomFactor;
 
     glm::ivec2 mPos;
     PROJECTION_TYPE mProjectionType;

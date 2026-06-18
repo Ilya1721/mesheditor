@@ -15,45 +15,39 @@ namespace RenderSystem
   void FrameBufferObject::bind() const
   {
     glBindFramebuffer(GL_FRAMEBUFFER, mFBO);
-  }
-
-  void FrameBufferObject::unbind() const
-  {
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindRenderbuffer(GL_RENDERBUFFER, mDepthRBO);
   }
 
   void FrameBufferObject::attachTexture(
-    const Texture& texture, const std::function<void()>& textureSetupFunc
-  )
+    const Texture2D& texture,
+    int colorAttachment,
+    int readBufferMode,
+    int drawBufferMode,
+    bool attachDepthBuffer
+  ) const
   {
-    invoke(
-      [&texture, &textureSetupFunc]()
-      {
-        glFramebufferTexture2D(
-          GL_FRAMEBUFFER, texture.getAttachmentId(), GL_TEXTURE_2D, texture.getId(), 0
-        );
-        textureSetupFunc();
-      }
+    bind();
+    texture.bind();
+    glFramebufferTexture2D(
+      GL_FRAMEBUFFER, colorAttachment, GL_TEXTURE_2D, texture.getId(), 0
     );
-  }
-
-  void FrameBufferObject::attachDepthBuffer(int width, int height)
-  {
-    invoke(
-      [this, width, height]()
-      {
-        glGenRenderbuffers(1, &mDepthRBO);
-        glBindRenderbuffer(GL_RENDERBUFFER, mDepthRBO);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, width, height);
-        glFramebufferRenderbuffer(
-          GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mDepthRBO
-        );
-      }
-    );
+    glReadBuffer(readBufferMode);
+    glDrawBuffer(drawBufferMode);
+    if (attachDepthBuffer)
+    {
+      glRenderbufferStorage(
+        GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, texture.getWidth(), texture.getHeight()
+      );
+      glFramebufferRenderbuffer(
+        GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mDepthRBO
+      );
+    }
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   }
 
   void FrameBufferObject::init()
   {
     glGenFramebuffers(1, &mFBO);
+    glGenRenderbuffers(1, &mDepthRBO);
   }
 }  // namespace RenderSystem

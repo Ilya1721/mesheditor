@@ -7,7 +7,7 @@
 
 namespace RenderSystem
 {
-  class PointCloudShaderProgram : public ShaderProgram, public CameraListener
+  class PointCloudShaderProgram : public Object3DShaderProgram, public CameraListener
   {
    public:
     PointCloudShaderProgram(
@@ -15,17 +15,18 @@ namespace RenderSystem
       const std::filesystem::path& fragmentShaderPath
     );
 
-    void onCameraPosChanged(Camera* camera) override;
-    void setModel(const glm::mat4& model);
-    void setProjection(const glm::mat4& projection);
-    void setPointScale(float pointScale);
-    void setMinPointSize(float minPointSize);
-    void setMaxPointSize(float maxPointSize);
-    void setLightPos(const glm::vec3& pos);
+    void onCameraChanged(const Camera* camera) const override;
+    void setModel(const glm::mat4& model) const override;
+    void setMaterial(const Material& material) const override;
+
+    void setProjection(const glm::mat4& projection) const;
+    void setPointScale(float pointScale) const;
+    void setMinPointSize(float minPointSize) const;
+    void setMaxPointSize(float maxPointSize) const;
+    void setLightPos(const glm::vec3& pos) const;
 
   private:
     void initUniformLocations();
-    void setView(const glm::mat4& view);
 
    private:
      int mModel;

@@ -1,19 +1,18 @@
 #pragma once
 
-#include "RequiresBindBeforeInvoke.h"
+#include <vector>
+
+#include "RenderBuffer.h"
 #include "VertexArrayObject.h"
 #include "VertexBufferObject.h"
 
 namespace RenderSystem
 {
-  class StaticQuadRenderBuffer : public RequiresBindBeforeInvoke
+  class StaticQuadRenderBuffer : public RenderBuffer
   {
    public:
     void loadRenderData(const std::vector<float>& renderData);
-
-   private:
     void bind() const override;
-    void unbind() const override;
 
    private:
     VertexBufferObject mVBO;

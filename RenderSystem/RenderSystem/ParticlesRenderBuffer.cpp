@@ -11,6 +11,7 @@ namespace RenderSystem
 {
   void ParticlesRenderBuffer::loadParticlesRenderData()
   {
+    bind();
     mParticlesVBO.bind();
     auto stride = 10 * sizeof(float);
     glBufferData(GL_ARRAY_BUFFER, stride * MAX_PARTICLES, nullptr, GL_DYNAMIC_DRAW);
@@ -37,23 +38,23 @@ namespace RenderSystem
       6, 4, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<void*>(6 * sizeof(float))
     );
     glVertexAttribDivisor(6, 1);
-    mParticlesVBO.unbind();
   }
 
   void ParticlesRenderBuffer::updateParticlesRenderData(
     const ParticlesRenderData& renderData
   )
   {
+    bind();
     mParticlesVBO.bind();
     const auto& compactData = renderData.getCompactData();
     glBufferSubData(
       GL_ARRAY_BUFFER, 0, compactData.size() * sizeof(float), compactData.data()
     );
-    mParticlesVBO.unbind();
   }
 
   void ParticlesRenderBuffer::loadQuadRenderData(const std::vector<float>& renderData)
   {
+    bind();
     mQuadVBO.bind();
     auto size = sizeof(float) * renderData.size();
     glBufferData(GL_ARRAY_BUFFER, size, renderData.data(), GL_STATIC_DRAW);
@@ -64,16 +65,10 @@ namespace RenderSystem
       1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
       reinterpret_cast<void*>(2 * sizeof(float))
     );
-    mQuadVBO.unbind();
   }
 
   void ParticlesRenderBuffer::bind() const
   {
     mVAO.bind();
-  }
-
-  void ParticlesRenderBuffer::unbind() const
-  {
-    mVAO.unbind();
   }
 }

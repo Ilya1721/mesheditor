@@ -54,10 +54,7 @@ namespace RenderSystem
    private:
     void initLibs(int windowWidth, int windowHeight);
     void init(const std::string& meshFilePath, int windowWidth, int windowHeight);
-    void resizeViewport(int width, int height);
     void setCallbacks();
-    void onViewportChanged();
-    void addViewportListeners();
 
    private:
     GLFWwindow* mWindow;
