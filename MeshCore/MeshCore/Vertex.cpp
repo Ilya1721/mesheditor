@@ -22,7 +22,11 @@ namespace MeshCore
   {
     Vertex newVertex(vertex);
     newVertex.pos = transform * glm::vec4(vertex.pos, 1.0f);
-    newVertex.normal = glm::normalize(transform * glm::vec4(vertex.normal, 0.0f));
+    newVertex.normal = transform * glm::vec4(vertex.normal, 0.0f);
+    if (glm::epsilonNotEqual(glm::length(newVertex.normal), 0.0f, 1e-5f))
+    {
+      newVertex.normal = glm::normalize(newVertex.normal);
+    }
 
     return newVertex;
   }

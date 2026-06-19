@@ -13,7 +13,7 @@ uniform sampler2D motionVectorsTexture;
 uniform bool isFirstFrame = true;
 uniform vec2 screenSize;
 
-float maxWeight = 0.85;
+float maxWeight = 0.95;
 float minWeight = 0.05;
 float maxSpeedPixels = 64.0;
 
