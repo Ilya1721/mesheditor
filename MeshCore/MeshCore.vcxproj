@@ -126,7 +126,6 @@
     <ClInclude Include="MeshCore\Intersection.h" />
     <ClInclude Include="MeshCore\Mesh.h" />
     <ClInclude Include="MeshCore\MeshFactory.h" />
-    <ClInclude Include="MeshCore\OutgoingEdgeFinder.h" />
     <ClInclude Include="MeshCore\PointCloudUitls.h" />
     <ClInclude Include="MeshCore\Surface.h" />
     <ClInclude Include="MeshCore\TransformUtils.h" />
@@ -147,7 +146,6 @@
     <ClCompile Include="MeshCore\Face.cpp" />
     <ClCompile Include="MeshCore\Mesh.cpp" />
     <ClCompile Include="MeshCore\MeshFactory.cpp" />
-    <ClCompile Include="MeshCore\OutgoingEdgeFinder.cpp" />
     <ClCompile Include="MeshCore\PointCloudUitls.cpp" />
     <ClCompile Include="MeshCore\Surface.cpp" />
     <ClCompile Include="MeshCore\TransformUtils.cpp" />

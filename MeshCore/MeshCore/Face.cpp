@@ -11,7 +11,6 @@
 #include "GeometryCore/Plane.h"
 #include "GeometryCore/Ray.h"
 #include "HalfEdge.h"
-#include "OutgoingEdgeFinder.h"
 #include "Vertex.h"
 
 using namespace GeometryCore;
@@ -85,17 +84,16 @@ namespace MeshCore
   ) const
   {
     std::unordered_set<Face*> uniqueAdjacentFaces;
-
-    for (const auto& edge : getHalfEdges())
+    for (const auto& halfEdge : getHalfEdges())
     {
-      OutgoingEdgeFinder finder(edge);
-      finder.collectAll();
-      auto& adjacentFaces = finder.getOutgoingEdgesFaces();
-      uniqueAdjacentFaces.insert(adjacentFaces.begin(), adjacentFaces.end());
+      auto adjacentFace = halfEdge->twin->face;
+      if (adjacentFace)
+      {
+        uniqueAdjacentFaces.insert(adjacentFace);
+      }
     }
 
     auto surfaceNormal = normalPtr ? *normalPtr : calcNormal();
-
     for (auto adjacentFaceIt = uniqueAdjacentFaces.begin();
          adjacentFaceIt != uniqueAdjacentFaces.end();)
     {

@@ -51,7 +51,8 @@ namespace MeshCore
   {
   }
 
-  Mesh::Mesh(const std::vector<Vertex>& vertices, bool buildHalfEdges) : mVertices(vertices)
+  Mesh::Mesh(const std::vector<Vertex>& vertices, bool buildHalfEdges)
+    : mVertices(vertices)
   {
     if (buildHalfEdges)
     {
@@ -115,7 +116,6 @@ namespace MeshCore
   ) const
   {
     std::unordered_map<HalfEdgeVerticesPair, HalfEdge*> halfEdgeVerticesMap;
-
     for (size_t halfEdgeIdx = 0; halfEdgeIdx < mHalfEdges.size(); halfEdgeIdx += 3)
     {
       auto firstVerticesPair = std::make_pair(
@@ -174,7 +174,6 @@ namespace MeshCore
   {
     auto& lastFace = mFaces[mFaces.size() - 1];
     lastFace->halfEdge = mHalfEdges[mHalfEdges.size() - 3].get();
-
     for (size_t halfEdgeOffset = 1; halfEdgeOffset <= 3; ++halfEdgeOffset)
     {
       mHalfEdges[mHalfEdges.size() - halfEdgeOffset]->face = lastFace.get();
@@ -183,8 +182,8 @@ namespace MeshCore
 
   void Mesh::setupTwinsForHalfEdges()
   {
+    std::vector<HalfEdge*> twinlessHalfEdges;
     auto halfEdgeVerticesMap = createHalfEdgeVerticesMap();
-
     for (auto& halfEdge : mHalfEdges)
     {
       auto twinIt = halfEdgeVerticesMap.find(
@@ -192,12 +191,28 @@ namespace MeshCore
       );
       if (twinIt == halfEdgeVerticesMap.end())
       {
-        throw std::exception("Mesh is non-manifold: missing twin half-edge.");
+        twinlessHalfEdges.push_back(halfEdge.get());
       }
-
-      auto twinHalfEdge = twinIt->second;
-      halfEdge->twin = twinHalfEdge;
-      twinHalfEdge->twin = halfEdge.get();
+      else
+      {
+        auto twinHalfEdge = twinIt->second;
+        halfEdge->twin = twinHalfEdge;
+        twinHalfEdge->twin = halfEdge.get();
+      }
+    }
+    for (const auto& twinlessHalfEdge : twinlessHalfEdges)
+    {
+      auto twinHalfEdge = std::make_unique<HalfEdge>();
+      twinHalfEdge->vertex = twinlessHalfEdge->next->vertex;
+      twinHalfEdge->twin = twinlessHalfEdge;
+      twinHalfEdge->face = nullptr;
+      twinlessHalfEdge->twin = twinHalfEdge.get();
+      mHalfEdges.push_back(std::move(twinHalfEdge));
+    }
+    for (auto& twinlessHalfEdge : twinlessHalfEdges)
+    {
+      twinlessHalfEdge->twin->next = twinlessHalfEdge->prev->twin;
+      twinlessHalfEdge->twin->prev = twinlessHalfEdge->next->twin;
     }
   }
 
