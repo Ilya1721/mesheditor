@@ -56,7 +56,7 @@ namespace RenderSystem
 
   void Object3D::init()
   {
-    mBBox.applyMesh(*mMesh);
+    mBBox.applyVertices(mMesh->getVertices());
     moveToOrigin();
   }
 
@@ -209,7 +209,7 @@ namespace RenderSystem
 
   void Object3D::onMeshUpdated(const std::unordered_set<UniqueVertex*>& vertices)
   {
-    mBBox.applyMesh(*mMesh);
+    mBBox.applyVertices(mMesh->getVertices());
     propagateBBoxToRoot();
     mObjectUpdatedCM.invokeCallbacks(this, vertices);
   }

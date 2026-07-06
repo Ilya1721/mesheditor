@@ -5,6 +5,11 @@
 
 namespace RenderSystem
 {
+  struct ModelLoaderConfig
+  {
+    bool solidifyPointCloud = false;
+  };
+
   class ModelLoaderUtils
   {
    protected:

@@ -124,14 +124,18 @@
     <ClInclude Include="MeshCore\Face.h" />
     <ClInclude Include="MeshCore\HalfEdge.h" />
     <ClInclude Include="MeshCore\Intersection.h" />
+    <ClInclude Include="MeshCore\MarchingCubesTables.h" />
+    <ClInclude Include="MeshCore\Octree.h" />
+    <ClInclude Include="MeshCore\KDTree.h" />
     <ClInclude Include="MeshCore\Mesh.h" />
     <ClInclude Include="MeshCore\MeshFactory.h" />
-    <ClInclude Include="MeshCore\PointCloudUitls.h" />
+    <ClInclude Include="MeshCore\PointCloudUtils.h" />
     <ClInclude Include="MeshCore\Surface.h" />
     <ClInclude Include="MeshCore\TransformUtils.h" />
     <ClInclude Include="MeshCore\TreeWalker.h" />
     <ClInclude Include="MeshCore\Vertex.h" />
     <ClInclude Include="MeshCore\VerticesHash.h" />
+    <ClInclude Include="MeshCore\VoxelGrid.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MeshCore\AABBox.cpp" />
@@ -144,12 +148,15 @@
     <ClCompile Include="MeshCore\BRepUVMapper.cpp" />
     <ClCompile Include="MeshCore\EdgeWalker.cpp" />
     <ClCompile Include="MeshCore\Face.cpp" />
+    <ClCompile Include="MeshCore\Octree.cpp" />
+    <ClCompile Include="MeshCore\KDTree.cpp" />
     <ClCompile Include="MeshCore\Mesh.cpp" />
     <ClCompile Include="MeshCore\MeshFactory.cpp" />
-    <ClCompile Include="MeshCore\PointCloudUitls.cpp" />
+    <ClCompile Include="MeshCore\PointCloudUtils.cpp" />
     <ClCompile Include="MeshCore\Surface.cpp" />
     <ClCompile Include="MeshCore\TransformUtils.cpp" />
     <ClCompile Include="MeshCore\Vertex.cpp" />
+    <ClCompile Include="MeshCore\VoxelGrid.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

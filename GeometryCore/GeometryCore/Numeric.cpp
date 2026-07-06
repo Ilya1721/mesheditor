@@ -29,14 +29,4 @@ namespace GeometryCore
     auto crossProductVector = glm::cross(leftEdge, rightEdge);
     return glm::length(crossProductVector) * 0.5f;
   }
-
-  bool isGreater(float first, float second, float tolerance)
-  {
-    return first - second > tolerance;
-  }
-
-  bool isLess(float first, float second, float tolerance)
-  {
-    return second - first > tolerance;
-  }
 }  // namespace GeometryCore

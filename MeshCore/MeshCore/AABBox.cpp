@@ -1,10 +1,10 @@
 #include "AABBox.h"
 
+#include "Constants.h"
 #include "GeometryCore/Numeric.h"
 #include "GeometryCore/Plane.h"
 #include "GeometryCore/Ray.h"
 #include "Mesh.h"
-#include "Vertex.h"
 
 using namespace GeometryCore;
 
@@ -36,12 +36,12 @@ namespace MeshCore
 {
   AABBox::AABBox()
   {
-    init();
+    clear();
+    calcBBoxPlanes();
   }
 
-  void AABBox::init()
+  AABBox::AABBox(const glm::vec3& min, const glm::vec3& max) : mMin(min), mMax(max)
   {
-    clear();
     calcBBoxPlanes();
   }
 
@@ -52,23 +52,15 @@ namespace MeshCore
     calcBBoxPlanes();
   }
 
-  void AABBox::applyMesh(const Mesh& mesh)
+  void AABBox::applyVertices(const std::vector<Vertex>& vertices)
   {
     glm::vec3 min = mMin;
     glm::vec3 max = mMax;
-
-    for (const auto& vertex : mesh.getVertices())
+    for (const auto& vertex : vertices)
     {
-      min.x = std::min(min.x, vertex.pos.x);
-      max.x = std::max(max.x, vertex.pos.x);
-
-      min.y = std::min(min.y, vertex.pos.y);
-      max.y = std::max(max.y, vertex.pos.y);
-
-      min.z = std::min(min.z, vertex.pos.z);
-      max.z = std::max(max.z, vertex.pos.z);
+      min = glm::min(min, vertex.pos);
+      max = glm::max(max, vertex.pos);
     }
-
     setMinMax(min, max);
   }
 
@@ -96,7 +88,7 @@ namespace MeshCore
 
   glm::vec3 AABBox::getCenter() const
   {
-    return (mMin + mMax) * 0.5f;
+    return 0.5f * (mMin + mMax);
   }
 
   const glm::vec3& AABBox::getMin() const
@@ -134,27 +126,26 @@ namespace MeshCore
     for (auto& bboxPlane : mBBoxPlanes)
     {
       auto intersectionPoint = bboxPlane.getIntersectionPoint(ray);
-      if (intersectionPoint && isPointInsideBBox(intersectionPoint.value()))
+      if (intersectionPoint && isPointInside(intersectionPoint.value()))
       {
         return intersectionPoint;
       }
     }
-
     return {};
   }
 
-  bool AABBox::isPointInsideBBox(const glm::vec3& point) const
+  bool AABBox::isPointInside(const glm::vec3& point) const
   {
-    for (int coordIdx = 0; coordIdx < 3; ++coordIdx)
-    {
-      if (isLess(point[coordIdx], mMin[coordIdx]) ||
-          isGreater(point[coordIdx], mMax[coordIdx]))
-      {
-        return false;
-      }
-    }
+    return (point.x >= mMin.x && point.x <= mMax.x) &&
+           (point.y >= mMin.y && point.y <= mMax.y) &&
+           (point.z >= mMin.z && point.z <= mMax.z);
+  }
 
-    return true;
+  bool AABBox::intersects(const AABBox& other) const
+  {
+    return (mMin.x <= other.mMax.x && mMax.x >= other.mMin.x) &&
+           (mMin.y <= other.mMax.y && mMax.y >= other.mMin.y) &&
+           (mMin.z <= other.mMax.z && mMax.z >= other.mMin.z);
   }
 
   void AABBox::calcBBoxPlanes()

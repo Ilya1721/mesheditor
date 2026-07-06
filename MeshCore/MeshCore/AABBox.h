@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "GeometryCore/Plane.h"
+#include "Vertex.h"
 
 namespace GeometryCore
 {
@@ -20,8 +21,9 @@ namespace MeshCore
   {
    public:
     AABBox();
+    AABBox(const glm::vec3& min, const glm::vec3& max);
 
-    void applyMesh(const Mesh& mesh);
+    void applyVertices(const std::vector<Vertex>& vertices);
     void applyBBox(const AABBox& other);
     void applyTransform(const glm::mat4& transform);
     void clear();
@@ -34,11 +36,11 @@ namespace MeshCore
     float getDepth() const;
     std::optional<glm::vec3> getRayIntersectionPoint(const Ray& ray) const;
     const std::vector<Plane> getBBoxPlanes() const;
-    bool isPointInsideBBox(const glm::vec3& point) const;
+    bool isPointInside(const glm::vec3& point) const;
+    bool intersects(const AABBox& other) const;
 
    private:
     void calcBBoxPlanes();
-    void init();
     void setMinMax(const glm::vec3& min, const glm::vec3& max);
 
    private:

@@ -27,9 +27,11 @@ namespace RenderSystem
     using ModelTransform = std::pair<std::string, glm::mat4>;
 
    public:
-    std::unique_ptr<Object3D> loadPointCloud(const std::filesystem::path& filePath);
+    std::unique_ptr<Object3D> loadPointCloud(
+      const std::filesystem::path& filePath, const ModelLoaderConfig& config
+    );
     std::unique_ptr<Object3D> loadMultiplePointClouds(
-      const std::filesystem::path& folderPath
+      const std::filesystem::path& folderPath, const ModelLoaderConfig& config
     );
 
    private:

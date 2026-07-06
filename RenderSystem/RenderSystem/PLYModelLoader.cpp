@@ -9,6 +9,7 @@
 
 #include "Constants.h"
 #include "Material.h"
+#include "MeshCore/PointCloudUtils.h"
 #include "Utility/FileHelper.h"
 #include "Utility/StringHelper.h"
 
@@ -17,27 +18,50 @@ namespace fs = std::filesystem;
 
 namespace
 {
+  using namespace RenderSystem;
+
   template <typename T> float parseBinaryToken(char*& strPtr)
   {
     T value = *reinterpret_cast<const T*>(strPtr);
     strPtr += sizeof(T);
     return value;
   }
+
+  std::unique_ptr<Object3D> createObject3D(
+    const std::vector<Vertex>& pointCloud, const ModelLoaderConfig& config
+  )
+  {
+    int renderMode;
+    std::unique_ptr<Mesh> mesh;
+    if (config.solidifyPointCloud)
+    {
+      mesh = pointCloudToMesh(pointCloud);
+      renderMode = GL_TRIANGLES;
+    }
+    else
+    {
+      mesh = std::make_unique<Mesh>(pointCloud, false);
+      renderMode = GL_POINTS;
+    }
+
+    return std::make_unique<Object3D>(
+      std::move(mesh), PointCloudMaterial {}, glm::mat4(1.0f), renderMode
+    );
+  }
 }
 
 namespace RenderSystem
 {
-  std::unique_ptr<Object3D> PLYModelLoader::loadPointCloud(const fs::path& filePath)
+  std::unique_ptr<Object3D> PLYModelLoader::loadPointCloud(
+    const fs::path& filePath, const ModelLoaderConfig& config
+  )
   {
     const auto& pointCloud = loadVertices(filePath);
-    auto mesh = std::make_unique<Mesh>(pointCloud, false);
-    return std::make_unique<Object3D>(
-      std::move(mesh), PointCloudMaterial {}, glm::mat4(1.0f), GL_POINTS
-    );
+    return createObject3D(pointCloud, config);
   }
 
   std::unique_ptr<Object3D> PLYModelLoader::loadMultiplePointClouds(
-    const fs::path& folderPath
+    const fs::path& folderPath, const ModelLoaderConfig& config
   )
   {
     fs::path confFilePath;
@@ -60,10 +84,7 @@ namespace RenderSystem
       pointCloud = parseFilesFromConf(confFilePath);
     }
 
-    auto mesh = std::make_unique<Mesh>(pointCloud, false);
-    return std::make_unique<Object3D>(
-      std::move(mesh), PointCloudMaterial {}, glm::mat4(1.0f), GL_POINTS
-    );
+    return createObject3D(pointCloud, config);
   }
 
   void PLYModelLoader::readFileContent(const std::filesystem::path& filePath)

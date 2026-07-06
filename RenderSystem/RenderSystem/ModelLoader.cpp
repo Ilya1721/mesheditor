@@ -2,7 +2,7 @@
 
 #include "Constants.h"
 #include "GLTFModelLoader.h"
-#include "MeshCore/PointCloudUitls.h"
+#include "MeshCore/PointCloudUtils.h"
 #include "ObjModelLoader.h"
 #include "PLYModelLoader.h"
 #include "STLModelLoader.h"
@@ -33,7 +33,9 @@ namespace
     throw std::exception("Folder with unsupported files");
   }
 
-  std::unique_ptr<Object3D> loadModelFromFile(const fs::path& filePath)
+  std::unique_ptr<Object3D> loadModelFromFile(
+    const fs::path& filePath, const ModelLoaderConfig& config
+  )
   {
     const auto& extension = filePath.extension().string();
     if (isEqual(extension, ".stl"))
@@ -54,7 +56,7 @@ namespace
     else if (isEqual(extension, ".ply"))
     {
       PLYModelLoader loader;
-      return loader.loadPointCloud(filePath);
+      return loader.loadPointCloud(filePath, config);
     }
     else
     {
@@ -62,13 +64,15 @@ namespace
     }
   }
 
-  std::unique_ptr<Object3D> loadModelFromDirectory(const fs::path& folderPath)
+  std::unique_ptr<Object3D> loadModelFromDirectory(
+    const fs::path& folderPath, const ModelLoaderConfig& config
+  )
   {
     auto folderFilesExtension = getFolderFilesExtension(folderPath);
     if (folderFilesExtension == ".ply")
     {
       PLYModelLoader loader;
-      return loader.loadMultiplePointClouds(folderPath);
+      return loader.loadMultiplePointClouds(folderPath, config);
     }
 
     return {};
@@ -77,13 +81,15 @@ namespace
 
 namespace RenderSystem
 {
-  std::unique_ptr<Object3D> loadModel(const std::filesystem::path& path)
+  std::unique_ptr<Object3D> loadModel(
+    const std::filesystem::path& path, const ModelLoaderConfig& config
+  )
   {
     if (fs::is_directory(path))
     {
-      return loadModelFromDirectory(path);
+      return loadModelFromDirectory(path, config);
     }
 
-    return loadModelFromFile(path);
+    return loadModelFromFile(path, config);
   }
 }  // namespace RenderSystem
