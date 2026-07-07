@@ -20,49 +20,37 @@ namespace
 {
   using namespace RenderSystem;
 
+  inline const PointCloudMaterial POINT_CLOUD_MATERIAL;
+
   template <typename T> float parseBinaryToken(char*& strPtr)
   {
     T value = *reinterpret_cast<const T*>(strPtr);
     strPtr += sizeof(T);
     return value;
   }
-
-  std::unique_ptr<Object3D> createObject3D(
-    const std::vector<Vertex>& pointCloud, const ModelLoaderConfig& config
-  )
-  {
-    int renderMode;
-    std::unique_ptr<Mesh> mesh;
-    if (config.solidifyPointCloud)
-    {
-      mesh = pointCloudToMesh(pointCloud);
-      renderMode = GL_TRIANGLES;
-    }
-    else
-    {
-      mesh = std::make_unique<Mesh>(pointCloud, false);
-      renderMode = GL_POINTS;
-    }
-
-    return std::make_unique<Object3D>(
-      std::move(mesh), PointCloudMaterial {}, glm::mat4(1.0f), renderMode
-    );
-  }
 }
 
 namespace RenderSystem
 {
-  std::unique_ptr<Object3D> PLYModelLoader::loadPointCloud(
-    const fs::path& filePath, const ModelLoaderConfig& config
-  )
+  PLYModelLoader::PLYModelLoader(const ModelLoaderConfig& config) : mConfig(config)
   {
-    const auto& pointCloud = loadVertices(filePath);
-    return createObject3D(pointCloud, config);
   }
 
-  std::unique_ptr<Object3D> PLYModelLoader::loadMultiplePointClouds(
-    const fs::path& folderPath, const ModelLoaderConfig& config
-  )
+  std::unique_ptr<Object3D> PLYModelLoader::loadPointCloud(const fs::path& filePath)
+  {
+    auto vertices = loadVertices(filePath);
+    if (!mConfig.pointCloud.convertToMesh)
+    {
+      return createObject3D(vertices);
+    }
+    AABBox bbox;
+    bbox.applyVertices(vertices);
+    auto bboxCenter = bbox.getCenter();
+    vertices = getReconstructedVertices(vertices, bboxCenter);
+    return createObject3D(vertices);
+  }
+
+  std::unique_ptr<Object3D> PLYModelLoader::loadPointClouds(const fs::path& folderPath)
   {
     fs::path confFilePath;
     for (const auto& entry : fs::directory_iterator(folderPath))
@@ -84,7 +72,51 @@ namespace RenderSystem
       pointCloud = parseFilesFromConf(confFilePath);
     }
 
-    return createObject3D(pointCloud, config);
+    return createObject3D(pointCloud);
+  }
+
+  std::vector<Vertex> PLYModelLoader::scansToPointCloud(
+    const std::vector<std::vector<Vertex>>& scans
+  ) const
+  {
+    std::vector<Vertex> pointCloud;
+    if (!mConfig.pointCloud.convertToMesh)
+    {
+      for (const auto& scan : scans)
+      {
+        pointCloud.insert(pointCloud.end(), scan.begin(), scan.end());
+      }
+      return pointCloud;
+    }
+
+    AABBox bbox;
+    for (const auto& scan : scans)
+    {
+      bbox.applyVertices(scan);
+    }
+    const auto& bboxCenter = bbox.getCenter();
+    for (const auto& scan : scans)
+    {
+      auto reconstructedVertices = getReconstructedVertices(scan, bboxCenter);
+      pointCloud.insert(
+        pointCloud.end(), reconstructedVertices.begin(), reconstructedVertices.end()
+      );
+    }
+    return pointCloud;
+  }
+
+  std::unique_ptr<Object3D> PLYModelLoader::createObject3D(
+    const std::vector<Vertex>& vertices
+  ) const
+  {
+    auto convertToMesh = mConfig.pointCloud.convertToMesh;
+    auto renderMode = convertToMesh ? GL_TRIANGLES : GL_POINTS;
+    auto buildHalfEdges = convertToMesh ? true : false;
+    auto mesh = std::make_unique<Mesh>(vertices, buildHalfEdges);
+    auto material = convertToMesh ? PEARL_MATERIAL.clone() : POINT_CLOUD_MATERIAL.clone();
+    return std::make_unique<Object3D>(
+      std::move(mesh), *material, glm::mat4(1.0f), renderMode
+    );
   }
 
   void PLYModelLoader::readFileContent(const std::filesystem::path& filePath)
@@ -131,33 +163,31 @@ namespace RenderSystem
 
   std::vector<Vertex> PLYModelLoader::parseMultipleFiles(const fs::path& folderPath)
   {
-    std::vector<Vertex> pointCloud;
+    std::vector<std::vector<Vertex>> scans;
     for (const auto& entry : fs::directory_iterator(folderPath))
     {
       const auto& filePath = entry.path();
       if (filePath.extension().string() == ".ply")
       {
-        const auto& vertices = loadVertices(filePath);
-        pointCloud.insert(pointCloud.end(), vertices.begin(), vertices.end());
+        auto vertices = loadVertices(filePath);
+        scans.push_back(vertices);
       }
     }
-
-    return pointCloud;
+    return scansToPointCloud(scans);
   }
 
   std::vector<Vertex> PLYModelLoader::parseFilesFromConf(const fs::path& confPath)
   {
-    std::vector<Vertex> pointCloud;
+    std::vector<std::vector<Vertex>> scans;
     auto modelTransforms = parseConfFile(confPath);
     const auto& folder = confPath.parent_path();
     for (const auto& [fileName, transform] : modelTransforms)
     {
       const auto& filePath = folder / fileName;
-      const auto& vertices = loadVertices(filePath, transform);
-      pointCloud.insert(pointCloud.end(), vertices.begin(), vertices.end());
+      auto vertices = loadVertices(filePath, transform);
+      scans.push_back(vertices);
     }
-
-    return pointCloud;
+    return scansToPointCloud(scans);
   }
 
   std::vector<Vertex> PLYModelLoader::parseVertices(const glm::mat4& transform)

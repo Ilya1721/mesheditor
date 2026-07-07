@@ -5,9 +5,14 @@
 
 namespace RenderSystem
 {
+  struct PointCloudConfig
+  {
+    bool convertToMesh = false;
+  };
+
   struct ModelLoaderConfig
   {
-    bool solidifyPointCloud = false;
+    PointCloudConfig pointCloud;
   };
 
   class ModelLoaderUtils

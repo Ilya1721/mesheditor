@@ -471,9 +471,7 @@ namespace RenderSystem
 
   void Scene::addModelObject(const std::string& meshFilePath)
   {
-    ModelLoaderConfig config;
-    config.solidifyPointCloud = true;
-    auto modelObject = loadModel(meshFilePath, config);
+    auto modelObject = loadModel(meshFilePath);
     mModelObject = modelObject.get();
     mRootObject.addChild(std::move(modelObject));
   }

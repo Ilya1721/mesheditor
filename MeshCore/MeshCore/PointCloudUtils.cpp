@@ -2,6 +2,7 @@
 
 #include <eigen/Dense>
 
+#include "AABBox.h"
 #include "KDTree.h"
 #include "VoxelGrid.h"
 
@@ -9,7 +10,6 @@ namespace
 {
   using namespace MeshCore;
 
-  //constexpr size_t K = 20;
   constexpr size_t K = 5;
 
   glm::mat3 outerProduct(const glm::vec3& v)
@@ -66,7 +66,16 @@ namespace
     return glm::normalize(smallestEigenVectorGLM);
   }
 
-  std::vector<Vertex> setupNormalsForVertices(const std::vector<Vertex>& vertices)
+  glm::vec3 getOrientedNormal(
+    const glm::vec3& pos, const glm::vec3& normal, const glm::vec3& bboxCenter
+  )
+  {
+    return glm::dot(normal, pos - bboxCenter) < 0.0f ? -normal : normal;
+  }
+
+  std::vector<Vertex> setupNormalsForVertices(
+    const std::vector<Vertex>& vertices, const glm::vec3& bboxCenter
+  )
   {
     auto k = std::min(K, vertices.size() - 1);
     std::vector<Vertex> verticesWithNormals = vertices;
@@ -76,20 +85,21 @@ namespace
       auto nearestVertices = pointKDTree.getNearestVertices(vertex, k);
       auto centroid = getCentroid(nearestVertices, vertex);
       auto covariance = getCovarianceMatrix(nearestVertices, centroid);
-      vertex.normal = getSmallestEigenVector(covariance);
+      auto normal = getSmallestEigenVector(covariance);
+      vertex.normal = getOrientedNormal(vertex.pos, normal, bboxCenter);
     }
-
     return verticesWithNormals;
   }
 }
 
 namespace MeshCore
 {
-  std::unique_ptr<Mesh> pointCloudToMesh(const std::vector<Vertex>& pointCloud)
+  std::vector<Vertex> getReconstructedVertices(
+    const std::vector<Vertex>& pointCloud, const glm::vec3& bboxCenter
+  )
   {
-    auto vertices = setupNormalsForVertices(pointCloud);
+    auto vertices = setupNormalsForVertices(pointCloud, bboxCenter);
     VoxelGrid voxelGrid(vertices);
-    auto reconstructedVertices = voxelGrid.getReconstructedVertices();
-    return std::make_unique<Mesh>(reconstructedVertices);
+    return voxelGrid.getReconstructedVertices();
   }
 }

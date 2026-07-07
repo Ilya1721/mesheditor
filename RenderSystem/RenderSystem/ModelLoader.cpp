@@ -55,8 +55,8 @@ namespace
     }
     else if (isEqual(extension, ".ply"))
     {
-      PLYModelLoader loader;
-      return loader.loadPointCloud(filePath, config);
+      PLYModelLoader loader(config);
+      return loader.loadPointCloud(filePath);
     }
     else
     {
@@ -71,8 +71,8 @@ namespace
     auto folderFilesExtension = getFolderFilesExtension(folderPath);
     if (folderFilesExtension == ".ply")
     {
-      PLYModelLoader loader;
-      return loader.loadMultiplePointClouds(folderPath, config);
+      PLYModelLoader loader(config);
+      return loader.loadPointClouds(folderPath);
     }
 
     return {};

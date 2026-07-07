@@ -12,7 +12,7 @@ namespace MeshCore
   struct Voxel
   {
     std::vector<Vertex> vertices;
-    glm::vec3 accumulatedVector = glm::vec3(0.0f);
+    glm::vec3 accumulatedNormal = glm::vec3(0.0f);
     float scalarField = 0.0f;
   };
 
@@ -47,7 +47,7 @@ namespace MeshCore
 
     void insert(const Vertex& vertex);
     void setupBounds(const std::vector<Vertex>& vertices);
-    void setupAccumulatedVectors();
+    void setupAccumulatedNormals();
     void setupScalarFields();
     void setupVoxelSize();
     void setupResolution(size_t vertexCount);

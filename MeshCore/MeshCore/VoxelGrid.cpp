@@ -123,9 +123,9 @@ namespace
     float spacing
   )
   {
-    auto centerValue = center->accumulatedVector[component];
-    auto plusValue = plus ? plus->accumulatedVector[component] : 0.0f;
-    auto minusValue = minus ? minus->accumulatedVector[component] : 0.0f;
+    auto centerValue = center->accumulatedNormal[component];
+    auto plusValue = plus ? plus->accumulatedNormal[component] : 0.0f;
+    auto minusValue = minus ? minus->accumulatedNormal[component] : 0.0f;
     if (plus && minus)
     {
       return (plusValue - minusValue) / (2.0f * spacing);
@@ -177,16 +177,16 @@ namespace MeshCore
       mMaxBound = glm::max(mMaxBound, vertex.pos);
     }
     auto size = mMaxBound - mMinBound;
-    auto padding = 0.1f * size;
+    auto padding = glm::max(0.1f * size, glm::vec3(0.1f));
     mMinBound -= padding;
     mMaxBound += padding;
   }
 
-  void VoxelGrid::setupAccumulatedVectors()
+  void VoxelGrid::setupAccumulatedNormals()
   {
     for (auto& voxel : mVoxels)
     {
-      voxel.accumulatedVector = averageNormal(voxel.vertices);
+      voxel.accumulatedNormal = averageNormal(voxel.vertices);
     }
   }
 
@@ -357,7 +357,7 @@ namespace MeshCore
 
   std::vector<Vertex> VoxelGrid::getReconstructedVertices()
   {
-    setupAccumulatedVectors();
+    setupAccumulatedNormals();
     setupScalarFields();
     return reconstructVertices();
   }

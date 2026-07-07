@@ -4,5 +4,7 @@
 
 namespace MeshCore
 {
-  std::unique_ptr<Mesh> pointCloudToMesh(const std::vector<Vertex>& pointCloud);
+  std::vector<Vertex> getReconstructedVertices(
+    const std::vector<Vertex>& pointCloud, const glm::vec3& bboxCenter
+  );
 }
