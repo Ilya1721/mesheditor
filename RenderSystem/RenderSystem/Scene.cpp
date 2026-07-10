@@ -652,7 +652,6 @@ namespace RenderSystem
     const auto& bbox = mModelObject->getBBox();
     const auto orthoSize = std::max(bbox.getWidth(), bbox.getHeight());
     const auto width = orthoSize * mViewport->getAspectRatio();
-
     glm::mat4 lightProjectionMatrix = glm::ortho(
       -width, width, -orthoSize, orthoSize, NEAR_PLANE_DISTANCE, FAR_PLANE_DISTANCE
     );

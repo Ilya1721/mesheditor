@@ -9,14 +9,23 @@ out vec4 fragColor;
 
 float getShadowFactor()
 {
-  vec3 fragPosClipSpace = fragPosLightSpace.xyz / fragPosLightSpace.w;
-  vec3 fragPosNDC = fragPosClipSpace * 0.5 + 0.5;
+    vec3 fragPosClipSpace = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    vec3 fragPosNDC = fragPosClipSpace * 0.5 + 0.5;
+    vec2 texelSize = 1.0 / vec2(textureSize(shadowMap, 0));
 
-  float fragDepthOnTexture = texture(shadowMap, fragPosNDC.xy).r;
-  float fragDepthOnScreen = fragPosNDC.z;
-  float shadow = (fragDepthOnScreen - shadowBias < fragDepthOnTexture) ? 1.0 : 0.5;
+    float shadow = 0.0;
+    for (int x = -1; x <= 1; ++x)
+    {
+      for (int y = -1; y <= 1; ++y)
+      {
+        vec2 textureCoords = fragPosNDC.xy + vec2(x, y) * texelSize;
+        float fragDepthOnTexture = texture(shadowMap, textureCoords).r;
+        float fragDepthOnScreen = fragPosNDC.z;
+        shadow += (fragDepthOnScreen - shadowBias < fragDepthOnTexture) ? 1.0 : 0.5;
+      }
+    }
 
-  return shadow;
+    return shadow / 9.0;
 }
 
 void main()

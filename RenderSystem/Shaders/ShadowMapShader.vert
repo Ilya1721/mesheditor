@@ -24,7 +24,6 @@ void main()
             weights.z * skinningTransforms[jointIndices.z] +
             weights.w * skinningTransforms[jointIndices.w];
     }
-
     vec4 skinnedPos = skinningTransform * vec4(pos, 1.0);
     gl_Position = lightProjection * lightView * model * skinnedPos;
 }

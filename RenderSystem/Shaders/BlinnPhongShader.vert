@@ -18,5 +18,5 @@ void main()
 	vertexUV = uvScale * textureCoords;
 	vertexNormal = vec3(model * vec4(normal, 0.0));
 	vertexPos = vec3(model * vec4(pos, 1.0));
-	gl_Position = projection * view * vec4(vertexPos, 1.0);
+	gl_Position = projection * view * model * vec4(pos, 1.0);
 }
