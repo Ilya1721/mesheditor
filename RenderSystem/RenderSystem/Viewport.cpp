@@ -28,7 +28,6 @@ namespace RenderSystem
   glm::mat4 Viewport::createProjectionMatrix() const
   {
     auto aspectRatio = mWidth / static_cast<float>(mHeight);
-
     if (mProjectionType == PROJECTION_TYPE::ORTHOGRAPHIC)
     {
       float height = mRootBBox->getHeight() * mOrthoZoomFactor;
@@ -37,7 +36,6 @@ namespace RenderSystem
         -width, width, -height, height, mNearPlaneDistance, mFarPlaneDistance
       );
     }
-
     return glm::perspective(
       glm::radians(mFov), aspectRatio, mNearPlaneDistance, mFarPlaneDistance
     );

@@ -95,6 +95,7 @@ namespace RenderSystem
   inline constexpr float POINT_LIGHT_BBOX_Y_COEF = 0.2f;
   inline constexpr float POINT_LIGHT_RADIUS = 1.0f;
   inline constexpr float ANISOTROPIC_FILTERING_LEVEL = 8.0f;
+  inline constexpr int SHADOW_MAP_SIZE = 2048;
   inline const std::string WINDOW_TITLE = "Mesh Editor";
 
   inline constexpr bool DEBUG_RENDER = true;
@@ -171,8 +172,9 @@ namespace RenderSystem
 
   inline constexpr int SAMPLE_COUNT_TAA = 8;
 
-  inline constexpr auto DIR_LIGHT_POS =
-    glm::vec3(LIGHT_SOURCE_POS_X, LIGHT_SOURCE_POS_Y, LIGHT_SOURCE_POS_Z);
+  inline constexpr glm::vec3 DIR_LIGHT_POS(
+    LIGHT_SOURCE_POS_X, LIGHT_SOURCE_POS_Y, LIGHT_SOURCE_POS_Z
+  );
 
   inline const std::vector<float> SCREEN_QUAD_VERTICES = {
     -1.0f, -1.0f, 0.0f, 0.0f, 1.0f, -1.0f, 1.0f, 0.0f, -1.0f, 1.0f, 0.0f, 1.0f,

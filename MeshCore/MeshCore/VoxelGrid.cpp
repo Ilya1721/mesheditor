@@ -157,7 +157,7 @@ namespace MeshCore
 {
   VoxelGrid::VoxelGrid(const std::vector<Vertex>& vertices)
     : mMinBound(std::numeric_limits<float>::max()),
-      mMaxBound(std::numeric_limits<float>::min())
+      mMaxBound(-std::numeric_limits<float>::max())
   {
     setupResolution(vertices.size());
     setupBounds(vertices);

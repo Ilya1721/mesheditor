@@ -92,6 +92,7 @@ namespace RenderSystem
     mPBRShaderProgram->setLightColor(LIGHT_COLOR);
     mWaterShaderProgram->setLightColor(LIGHT_COLOR);
     mShadowShaderProgram->setShadowBias(SHADOW_BIAS);
+    mShadowShaderProgram->setShadowMap(*mShadowMap);
     mPointCloudShaderProgram->setPointScale(CLOUD_POINT_SCALE);
     mPointCloudShaderProgram->setMinPointSize(CLOUD_POINT_MIN_SIZE);
     mPointCloudShaderProgram->setMaxPointSize(CLOUD_POINT_MAX_SIZE);
@@ -338,6 +339,7 @@ namespace RenderSystem
     mSkyboxTexture = std::make_shared<CubemapTexture>(SKYBOX_CUBEMAP_TEXTURES);
     mWaterNormalMap = createImageTexture(WATER_NORMAL_MAP_PATH);
     mParticlesFlipbook = createImageTexture(FIRE_FLIPBOOK_PATH);
+    mShadowMap = createDepthTexture(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
   }
 
   void Scene::initRenderers()
@@ -793,8 +795,6 @@ namespace RenderSystem
     mCamera->adjust(
       mViewport->getProjectionType(), mModelObject->getBBox(), mViewport->getFov()
     );
-    mShadowMap = createDepthTexture(width, height);
-    mShadowShaderProgram->setShadowMap(*mShadowMap);
     mTAAController->update(mViewport->getProjectionMatrix(), width, height);
     mScreenShaderProgram->setScreenTexture(*mTAAController->getResolvedColorTexture());
     mTAAResolveShaderProgram->setScreenSize(glm::vec2(width, height));
